@@ -82,65 +82,6 @@ function Targeting.TeleportToTarget()
     end
 end
 
---// AntiStomp logic
-local antiStompConnection = nil
-function Targeting.StartAntiStomp()
-    local Config = Targeting.Config
-    if not Config or not Config.AntiStomp then return end
-    if antiStompConnection then antiStompConnection:Disconnect() end
-    antiStompConnection = LocalPlayer.CharacterAdded:Connect(function(char)
-        local hum = char:WaitForChild("Humanoid", 5)
-        if not hum then return end
-        hum.StateChanged:Connect(function(_, newState)
-            if newState == Enum.HumanoidStateType.Dead or newState == Enum.HumanoidStateType.Physics then
-                if not Config.AntiStomp then return end
-                task.wait(0.1)
-                if Config.AntiStompMode == "Void" then
-                    local hrp = char:FindFirstChild("HumanoidRootPart")
-                    if hrp then
-                        hrp.CFrame = CFrame.new(0, -10000, 0)
-                    end
-                elseif Config.AntiStompMode == "Force Reset" then
-                    local hum = char:FindFirstChildOfClass("Humanoid")
-                    if hum then
-                        hum.Health = 0
-                    end
-                end
-            end
-        end)
-    end)
-    -- Apply to current character if exists
-    if LocalPlayer.Character then
-        local hum = LocalPlayer.Character:FindFirstChildOfClass("Humanoid")
-        if hum then
-            hum.StateChanged:Connect(function(_, newState)
-                if newState == Enum.HumanoidStateType.Dead or newState == Enum.HumanoidStateType.Physics then
-                    if not Config.AntiStomp then return end
-                    task.wait(0.1)
-                    if Config.AntiStompMode == "Void" then
-                        local hrp = LocalPlayer.Character and LocalPlayer.Character:FindFirstChild("HumanoidRootPart")
-                        if hrp then
-                            hrp.CFrame = CFrame.new(0, -10000, 0)
-                        end
-                    elseif Config.AntiStompMode == "Force Reset" then
-                        local hum2 = LocalPlayer.Character and LocalPlayer.Character:FindFirstChildOfClass("Humanoid")
-                        if hum2 then
-                            hum2.Health = 0
-                        end
-                    end
-                end
-            end)
-        end
-    end
-end
-
-function Targeting.StopAntiStomp()
-    if antiStompConnection then
-        antiStompConnection:Disconnect()
-        antiStompConnection = nil
-    end
-end
-
 function Targeting.UpdateHighlight(target)
     local Config = Targeting.Config
     if not Config then return end

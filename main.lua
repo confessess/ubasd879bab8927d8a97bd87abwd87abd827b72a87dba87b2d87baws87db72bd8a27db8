@@ -1,38 +1,38 @@
-local BASE_URL = "https://raw.githubusercontent.com/confessess/zee-hvh/main/"
-
-local function loadModule(path)
-    return loadstring(game:HttpGet(BASE_URL .. path))()
-end
-
-local Config = loadModule("config.lua")
-
-local Targeting = loadModule("modules/targeting.lua")
-Targeting.SetConfig(Config)
-
-local Visuals = loadModule("modules/visuals.lua")
-Visuals.SetConfig(Config)
-Visuals.SetTargeting(Targeting)
-
-local Combat = loadModule("modules/combat.lua")
-Combat.SetConfig(Config)
-Combat.SetTargeting(Targeting)
-Combat.SetVisuals(Visuals)
-
-local UI = loadModule("modules/ui.lua")
-UI.SetConfig(Config)
-UI.SetTargeting(Targeting)
-UI.SetCombat(Combat)
-UI.Build()
-
---// Render Loop
+local Players = game:GetService("Players")
 local RunService = game:GetService("RunService")
 local UserInputService = game:GetService("UserInputService")
-local Players = game:GetService("Players")
 local LocalPlayer = Players.LocalPlayer
 
+--// Load modules
+local Config = require(game.ReplicatedStorage.Config)
+local Targeting = require(game.ReplicatedStorage.Modules.Targeting)
+local Combat = require(game.ReplicatedStorage.Modules.Combat)
+local Misc = require(game.ReplicatedStorage.Modules.Misc)
+local Visuals = require(game.ReplicatedStorage.Modules.Visuals)
+local UI = require(game.ReplicatedStorage.Modules.UI)
+
+--// Wire config to all modules
+Targeting.SetConfig(Config)
+Combat.SetConfig(Config)
+Misc.SetConfig(Config)
+Visuals.SetConfig(Config)
+UI.SetConfig(Config)
+
+--// Wire cross-module references
+Combat.SetTargeting(Targeting)
+Combat.SetVisuals(Visuals)
+Visuals.SetTargeting(Targeting)
+UI.SetTargeting(Targeting)
+UI.SetCombat(Combat)
+UI.SetMisc(Misc)
+
+--// Build GUI
+UI.Build()
+
+--// Render loop
 RunService.RenderStepped:Connect(function()
     Visuals.Update()
-    
+
     local char = LocalPlayer.Character
     if char then
         local tool = char:FindFirstChildOfClass("Tool")
@@ -66,6 +66,11 @@ LocalPlayer.CharacterAdded:Connect(function()
     Config.Spectate = false
     Targeting.StopSpectate()
 end)
+
+--// Start AntiStomp if enabled
+if Config.AntiStomp then
+    Misc.StartAntiStomp()
+end
 
 print("[ZeeHood] HvH Suite loaded.")
 print("[ZeeHood] Toggle UI with " .. Config.ToggleKey.Name)

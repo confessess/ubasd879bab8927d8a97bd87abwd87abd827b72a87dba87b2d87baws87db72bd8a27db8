@@ -60,6 +60,10 @@ function UI.SetCombat(combat)
     UI.Combat = combat
 end
 
+function UI.SetMisc(misc)
+    UI.Misc = misc
+end
+
 function UI.UpdateHotkeyDisplay()
     local Config = UI.Config
     if not Config or not UI.HotkeyDisplay then return end
@@ -693,6 +697,11 @@ function UI.Build()
     local MiscCard = CreateCard(MiscPage, UDim2.fromOffset(10, 72), UDim2.new(1, -20, 0, 200))
     CreateToggle(MiscCard, 14, "AntiStomp", Config.AntiStomp, "AntiStomp", true, function(v)
         Config.AntiStomp = v
+        if v then
+            UI.Misc.StartAntiStomp()
+        else
+            UI.Misc.StopAntiStomp()
+        end
     end)
     local antiStompDropdown = BuildDropdown(MiscCard, 50, "AntiStomp Mode", Config.AntiStompMode or "Void",
         {"Void", "Force Reset"},
