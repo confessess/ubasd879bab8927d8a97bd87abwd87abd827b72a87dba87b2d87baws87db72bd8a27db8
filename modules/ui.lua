@@ -98,7 +98,6 @@ function UI.UpdateHotkeyDisplay()
     end
     UI.HotkeyDisplay.Size = UDim2.fromOffset(155, math.max(36, y + 4))
 end
-
 function UI.Build()
     local Config = UI.Config
     if not Config then return end
@@ -253,7 +252,7 @@ function UI.Build()
         ClipsDescendants = true,
         ZIndex = 13,
     }, Body)
-    local TabNames = {"Combat", "Visuals", "Target", "Settings"}
+    local TabNames = {"Combat", "Visuals", "Target", "Misc", "Settings"}
     local TabButtons = {}
     local Pages = {}
     for index, name in ipairs(TabNames) do
@@ -292,7 +291,6 @@ function UI.Build()
         }, Content)
         Pages[name] = page
     end
-
     local function PageTitle(page, title, description)
         New("TextLabel", {
             Size = UDim2.new(1, -20, 0, 28),
@@ -486,7 +484,133 @@ function UI.Build()
         end)
         return btn
     end
-
+    --// Dropdown helper: returns {Container, Header, List, setText, isOpen}
+    local function BuildDropdown(parent, y, labelText, currentValue, options, onSelect)
+        New("TextLabel", {
+            Size = UDim2.new(1, -20, 0, 20),
+            Position = UDim2.fromOffset(10, y),
+            BackgroundTransparency = 1,
+            Text = labelText,
+            TextColor3 = Color3.fromRGB(200, 190, 215),
+            TextSize = 12,
+            Font = Enum.Font.GothamMedium,
+            TextXAlignment = Enum.TextXAlignment.Left,
+            ZIndex = 16,
+        }, parent)
+        local container = New("Frame", {
+            Size = UDim2.new(1, -20, 0, 32),
+            Position = UDim2.fromOffset(10, y + 24),
+            BackgroundColor3 = Color3.fromRGB(22, 14, 32),
+            BackgroundTransparency = 0.15,
+            BorderSizePixel = 0,
+            ZIndex = 16,
+        }, parent)
+        Corner(container, 8)
+        Stroke(container, 0.85, 1, Color3.fromRGB(140, 90, 200))
+        local header = New("TextButton", {
+            Size = UDim2.new(1, 0, 0, 32),
+            BackgroundColor3 = Color3.fromRGB(22, 14, 32),
+            BackgroundTransparency = 0,
+            BorderSizePixel = 0,
+            Text = "  " .. currentValue .. "  ▼",
+            TextColor3 = Color3.fromRGB(220, 215, 235),
+            TextSize = 12,
+            Font = Enum.Font.GothamMedium,
+            TextXAlignment = Enum.TextXAlignment.Left,
+            AutoButtonColor = false,
+            ZIndex = 17,
+        }, container)
+        Corner(header, 8)
+        -- List is a Frame parented to Main, positioned absolutely over the container
+        local list = New("Frame", {
+            Size = UDim2.fromOffset(0, 0),
+            Position = UDim2.fromOffset(0, 0),
+            BackgroundColor3 = Color3.fromRGB(18, 11, 27),
+            BackgroundTransparency = 0.05,
+            BorderSizePixel = 0,
+            ZIndex = 100,
+            ClipsDescendants = true,
+            Visible = false,
+        }, Main)
+        Corner(list, 8)
+        Stroke(list, 0.9, 1, Color3.fromRGB(140, 90, 200))
+        local open = false
+        local itemHeight = 26
+        local itemGap = 2
+        local padding = 4
+        local totalHeight = #options * itemHeight + (#options - 1) * itemGap + padding * 2
+        local optionButtons = {}
+        for i, optText in ipairs(options) do
+            local btn = New("TextButton", {
+                Size = UDim2.new(1, -padding * 2, 0, itemHeight),
+                Position = UDim2.fromOffset(padding, padding + (i - 1) * (itemHeight + itemGap)),
+                BackgroundColor3 = Color3.fromRGB(30, 20, 42),
+                BackgroundTransparency = 1,
+                BorderSizePixel = 0,
+                Text = optText,
+                TextColor3 = Color3.fromRGB(180, 170, 200),
+                TextSize = 11,
+                Font = Enum.Font.GothamMedium,
+                AutoButtonColor = false,
+                ZIndex = 101,
+            }, list)
+            Corner(btn, 4)
+            btn.MouseEnter:Connect(function()
+                Tween(btn, {BackgroundTransparency = 0.3, TextColor3 = Color3.fromRGB(235, 220, 255)}, 0.15):Play()
+            end)
+            btn.MouseLeave:Connect(function()
+                Tween(btn, {BackgroundTransparency = 1, TextColor3 = Color3.fromRGB(180, 170, 200)}, 0.15):Play()
+            end)
+            btn.MouseButton1Click:Connect(function()
+                onSelect(optText)
+                header.Text = "  " .. optText .. "  ▼"
+                open = false
+                Tween(list, {Size = UDim2.fromOffset(container.AbsoluteSize.X, 0)}, 0.2):Play()
+                task.delay(0.2, function()
+                    if not open then list.Visible = false end
+                end)
+            end)
+            optionButtons[i] = btn
+        end
+        local function updatePosition()
+            local absPos = container.AbsolutePosition
+            local absSize = container.AbsoluteSize
+            list.Position = UDim2.fromOffset(absPos.X, absPos.Y + absSize.Y + 2)
+        end
+        header.MouseButton1Click:Connect(function()
+            open = not open
+            if open then
+                updatePosition()
+                list.Visible = true
+                header.Text = "  " .. currentValue .. "  ▲"
+                Tween(list, {Size = UDim2.fromOffset(container.AbsoluteSize.X, math.min(140, totalHeight))}, 0.2):Play()
+            else
+                header.Text = "  " .. currentValue .. "  ▼"
+                Tween(list, {Size = UDim2.fromOffset(container.AbsoluteSize.X, 0)}, 0.2):Play()
+                task.delay(0.2, function()
+                    if not open then list.Visible = false end
+                end)
+            end
+        end)
+        return {
+            Container = container,
+            Header = header,
+            List = list,
+            IsOpen = function() return open end,
+            Close = function()
+                open = false
+                header.Text = "  " .. currentValue .. "  ▼"
+                Tween(list, {Size = UDim2.fromOffset(container.AbsoluteSize.X, 0)}, 0.2):Play()
+                task.delay(0.2, function()
+                    if not open then list.Visible = false end
+                end)
+            end,
+            SetValue = function(v)
+                currentValue = v
+                header.Text = "  " .. v .. "  ▼"
+            end,
+        }
+    end
     --// COMBAT PAGE
     local CombatPage = Pages.Combat
     PageTitle(CombatPage, "Combat", "Frame teleport shoot, rapid fire, and hotkeys.")
@@ -525,126 +649,9 @@ function UI.Build()
     local TargetPage = Pages.Target
     PageTitle(TargetPage, "Target", "Player selection, part targeting, and spectate.")
     local TargetCard = CreateCard(TargetPage, UDim2.fromOffset(10, 72), UDim2.new(1, -20, 0, 310))
-    New("TextLabel", {
-        Size = UDim2.new(1, -20, 0, 20),
-        Position = UDim2.fromOffset(10, 14),
-        BackgroundTransparency = 1,
-        Text = "Target Part",
-        TextColor3 = Color3.fromRGB(200, 190, 215),
-        TextSize = 12,
-        Font = Enum.Font.GothamMedium,
-        TextXAlignment = Enum.TextXAlignment.Left,
-        ZIndex = 16,
-    }, TargetCard)
-    local DropdownContainer = New("Frame", {
-        Size = UDim2.new(1, -20, 0, 32),
-        Position = UDim2.fromOffset(10, 38),
-        BackgroundColor3 = Color3.fromRGB(22, 14, 32),
-        BackgroundTransparency = 0.15,
-        BorderSizePixel = 0,
-        ZIndex = 16,
-    }, TargetCard)
-    Corner(DropdownContainer, 8)
-    Stroke(DropdownContainer, 0.85, 1, Color3.fromRGB(140, 90, 200))
-    local DropdownHeader = New("TextButton", {
-        Size = UDim2.new(1, 0, 0, 32),
-        BackgroundColor3 = Color3.fromRGB(22, 14, 32),
-        BackgroundTransparency = 0,
-        BorderSizePixel = 0,
-        Text = "  " .. Config.TargetPart .. "  ▼",
-        TextColor3 = Color3.fromRGB(220, 215, 235),
-        TextSize = 12,
-        Font = Enum.Font.GothamMedium,
-        TextXAlignment = Enum.TextXAlignment.Left,
-        AutoButtonColor = false,
-        ZIndex = 17,
-    }, DropdownContainer)
-    Corner(DropdownHeader, 8)
-    -- Dropdown uses a Frame (not ScrollingFrame) parented to Main with explicit width
-    local DropdownList = New("Frame", {
-        Size = UDim2.fromOffset(500, 0),
-        Position = UDim2.fromOffset(0, 0),
-        BackgroundColor3 = Color3.fromRGB(18, 11, 27),
-        BackgroundTransparency = 0.05,
-        BorderSizePixel = 0,
-        ZIndex = 100,
-        ClipsDescendants = true,
-        Visible = false,
-    }, Main)
-    Corner(DropdownList, 8)
-    Stroke(DropdownList, 0.9, 1, Color3.fromRGB(140, 90, 200))
-    New("UIListLayout", {
-        Padding = UDim.new(0, 2),
-        FillDirection = Enum.FillDirection.Vertical,
-        HorizontalAlignment = Enum.HorizontalAlignment.Center,
-        SortOrder = Enum.SortOrder.LayoutOrder,
-        Parent = DropdownList,
-    })
-    New("UIPadding", {
-        PaddingTop = UDim.new(0, 4),
-        PaddingBottom = UDim.new(0, 4),
-        PaddingLeft = UDim.new(0, 4),
-        PaddingRight = UDim.new(0, 4),
-        Parent = DropdownList,
-    })
-    local parts = {"Head", "HumanoidRootPart", "Torso", "UpperTorso", "LowerTorso", "LeftLeg", "RightLeg"}
-    local dropdownOpen = false
-    for idx, partName in ipairs(parts) do
-        local opt = New("TextButton", {
-            Size = UDim2.new(1, -8, 0, 26),
-            BackgroundColor3 = Color3.fromRGB(30, 20, 42),
-            BackgroundTransparency = 1,
-            BorderSizePixel = 0,
-            Text = partName,
-            TextColor3 = Color3.fromRGB(180, 170, 200),
-            TextSize = 11,
-            Font = Enum.Font.GothamMedium,
-            AutoButtonColor = false,
-            ZIndex = 101,
-            LayoutOrder = idx,
-        }, DropdownList)
-        Corner(opt, 4)
-        opt.MouseEnter:Connect(function()
-            Tween(opt, {BackgroundTransparency = 0.3, TextColor3 = Color3.fromRGB(235, 220, 255)}, 0.15):Play()
-        end)
-        opt.MouseLeave:Connect(function()
-            Tween(opt, {BackgroundTransparency = 1, TextColor3 = Color3.fromRGB(180, 170, 200)}, 0.15):Play()
-        end)
-        opt.MouseButton1Click:Connect(function()
-            Config.TargetPart = partName
-            DropdownHeader.Text = "  " .. partName .. "  ▼"
-            dropdownOpen = false
-            Tween(DropdownList, {Size = UDim2.fromOffset(DropdownContainer.AbsoluteSize.X, 0)}, 0.2):Play()
-            task.delay(0.2, function()
-                if not dropdownOpen then
-                    DropdownList.Visible = false
-                end
-            end)
-        end)
-    end
-    local function updateDropdownPosition()
-        local absPos = DropdownContainer.AbsolutePosition
-        local absSize = DropdownContainer.AbsoluteSize
-        DropdownList.Position = UDim2.fromOffset(absPos.X, absPos.Y + absSize.Y + 2)
-        DropdownList.Size = UDim2.fromOffset(absSize.X, 0)
-    end
-    DropdownHeader.MouseButton1Click:Connect(function()
-        dropdownOpen = not dropdownOpen
-        if dropdownOpen then
-            updateDropdownPosition()
-            DropdownHeader.Text = "  " .. Config.TargetPart .. "  ▲"
-            DropdownList.Visible = true
-            Tween(DropdownList, {Size = UDim2.fromOffset(DropdownContainer.AbsoluteSize.X, math.min(140, #parts * 28 + 8))}, 0.2):Play()
-        else
-            DropdownHeader.Text = "  " .. Config.TargetPart .. "  ▼"
-            Tween(DropdownList, {Size = UDim2.fromOffset(DropdownContainer.AbsoluteSize.X, 0)}, 0.2):Play()
-            task.delay(0.2, function()
-                if not dropdownOpen then
-                    DropdownList.Visible = false
-                end
-            end)
-        end
-    end)
+    local targetPartDropdown = BuildDropdown(TargetCard, 14, "Target Part", Config.TargetPart,
+        {"Head", "HumanoidRootPart", "Torso", "UpperTorso", "LowerTorso", "LeftLeg", "RightLeg"},
+        function(v) Config.TargetPart = v end)
     CreateActionButton(TargetCard, 76, "TP to Target", function()
         if UI.Targeting and UI.Targeting.TeleportToTarget then
             UI.Targeting.TeleportToTarget()
@@ -680,6 +687,16 @@ function UI.Build()
     }, TargetCard)
     Corner(PlayerList, 8)
     New("UIListLayout", {Padding = UDim.new(0, 2), Parent = PlayerList})
+    --// MISC PAGE
+    local MiscPage = Pages.Misc
+    PageTitle(MiscPage, "Misc", "AntiStomp and utility features.")
+    local MiscCard = CreateCard(MiscPage, UDim2.fromOffset(10, 72), UDim2.new(1, -20, 0, 200))
+    CreateToggle(MiscCard, 14, "AntiStomp", Config.AntiStomp, "AntiStomp", true, function(v)
+        Config.AntiStomp = v
+    end)
+    local antiStompDropdown = BuildDropdown(MiscCard, 50, "AntiStomp Mode", Config.AntiStompMode or "Void",
+        {"Void", "Force Reset"},
+        function(v) Config.AntiStompMode = v end)
 
     --// SPECTATE PANEL (middle-right, shows when spectating)
     local SpectatePanel = New("Frame", {
@@ -776,7 +793,6 @@ function UI.Build()
             SetSpectateMode(enabled)
         end
     end
-
     --// SETTINGS PAGE
     local SettingsPage = Pages.Settings
     PageTitle(SettingsPage, "Settings", "Interface customization and hotkey display.")
@@ -854,15 +870,12 @@ function UI.Build()
         for pageName, page in pairs(Pages) do
             page.Visible = pageName == name
         end
-        if dropdownOpen then
-            dropdownOpen = false
-            DropdownHeader.Text = "  " .. Config.TargetPart .. "  ▼"
-            Tween(DropdownList, {Size = UDim2.fromOffset(DropdownContainer.AbsoluteSize.X, 0)}, 0.2):Play()
-            task.delay(0.2, function()
-                if not dropdownOpen then
-                    DropdownList.Visible = false
-                end
-            end)
+        -- close all dropdowns on tab switch
+        if targetPartDropdown and targetPartDropdown.IsOpen() then
+            targetPartDropdown.Close()
+        end
+        if antiStompDropdown and antiStompDropdown.IsOpen() then
+            antiStompDropdown.Close()
         end
     end
     for name, data in pairs(TabButtons) do

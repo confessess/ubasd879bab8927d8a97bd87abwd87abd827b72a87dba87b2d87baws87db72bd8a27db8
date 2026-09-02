@@ -15,9 +15,13 @@ return {
     MaxTargetDistance = 5000000000000000,
     ToggleKey = Enum.KeyCode.RightShift,
     ShowHotkeys = true,
+    -- AntiStomp
+    AntiStomp = false,
+    AntiStompMode = "Void",
     -- Toggle hotkeys (nil = unbound)
     FrameTPKey = nil,
     OneFrameDelayKey = nil,
     RapidFireKey = nil,
     SpectateKey = nil,
+    AntiStompKey = nil,
 }

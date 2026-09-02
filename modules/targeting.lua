@@ -28,7 +28,6 @@ end
 function Targeting.GetTarget()
     local Config = Targeting.Config
     if not Config then return nil end
-
     if Config.TargetMode == "Selected" and Targeting.SelectedTarget then
         local char = Targeting.SelectedTarget.Character
         if char then
@@ -38,23 +37,18 @@ function Targeting.GetTarget()
             end
         end
     end
-
     local myChar = LocalPlayer.Character
     if not myChar or not myChar:FindFirstChild("HumanoidRootPart") then return nil end
-
     local myPos = myChar.HumanoidRootPart.Position
     local closest = nil
     local minDist = math.huge
-
     for _, plr in ipairs(Players:GetPlayers()) do
         if plr ~= LocalPlayer and plr.Character then
             local char = plr.Character
             local hum = char:FindFirstChildOfClass("Humanoid")
             if not hum or hum.Health <= 0 then continue end
-
             local part = getCharacterPart(char, Config.TargetPart)
             local hrp = char:FindFirstChild("HumanoidRootPart")
-
             if part and hrp then
                 local dist = (myPos - hrp.Position).Magnitude
                 local sp, onScreen = Camera:WorldToViewportPoint(part.Position)
@@ -74,16 +68,12 @@ end
 function Targeting.TeleportToTarget()
     local Config = Targeting.Config
     if not Config then return end
-
     local target = Targeting.GetTarget()
     if not target or not target.Parent then return end
-
     local myChar = LocalPlayer.Character
     if not myChar then return end
-
     local hrp = myChar:FindFirstChild("HumanoidRootPart")
     if not hrp then return end
-
     local targetHrp = target.Parent:FindFirstChild("HumanoidRootPart")
     if targetHrp then
         hrp.CFrame = targetHrp.CFrame + Vector3.new(0, 3, 0)
@@ -92,10 +82,68 @@ function Targeting.TeleportToTarget()
     end
 end
 
+--// AntiStomp logic
+local antiStompConnection = nil
+function Targeting.StartAntiStomp()
+    local Config = Targeting.Config
+    if not Config or not Config.AntiStomp then return end
+    if antiStompConnection then antiStompConnection:Disconnect() end
+    antiStompConnection = LocalPlayer.CharacterAdded:Connect(function(char)
+        local hum = char:WaitForChild("Humanoid", 5)
+        if not hum then return end
+        hum.StateChanged:Connect(function(_, newState)
+            if newState == Enum.HumanoidStateType.Dead or newState == Enum.HumanoidStateType.Physics then
+                if not Config.AntiStomp then return end
+                task.wait(0.1)
+                if Config.AntiStompMode == "Void" then
+                    local hrp = char:FindFirstChild("HumanoidRootPart")
+                    if hrp then
+                        hrp.CFrame = CFrame.new(0, -10000, 0)
+                    end
+                elseif Config.AntiStompMode == "Force Reset" then
+                    local hum = char:FindFirstChildOfClass("Humanoid")
+                    if hum then
+                        hum.Health = 0
+                    end
+                end
+            end
+        end)
+    end)
+    -- Apply to current character if exists
+    if LocalPlayer.Character then
+        local hum = LocalPlayer.Character:FindFirstChildOfClass("Humanoid")
+        if hum then
+            hum.StateChanged:Connect(function(_, newState)
+                if newState == Enum.HumanoidStateType.Dead or newState == Enum.HumanoidStateType.Physics then
+                    if not Config.AntiStomp then return end
+                    task.wait(0.1)
+                    if Config.AntiStompMode == "Void" then
+                        local hrp = LocalPlayer.Character and LocalPlayer.Character:FindFirstChild("HumanoidRootPart")
+                        if hrp then
+                            hrp.CFrame = CFrame.new(0, -10000, 0)
+                        end
+                    elseif Config.AntiStompMode == "Force Reset" then
+                        local hum2 = LocalPlayer.Character and LocalPlayer.Character:FindFirstChildOfClass("Humanoid")
+                        if hum2 then
+                            hum2.Health = 0
+                        end
+                    end
+                end
+            end)
+        end
+    end
+end
+
+function Targeting.StopAntiStomp()
+    if antiStompConnection then
+        antiStompConnection:Disconnect()
+        antiStompConnection = nil
+    end
+end
+
 function Targeting.UpdateHighlight(target)
     local Config = Targeting.Config
     if not Config then return end
-
     if not Config.Highlights then
         if Targeting.HighlightBox then Targeting.HighlightBox:Destroy() end
         return
