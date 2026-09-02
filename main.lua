@@ -65,13 +65,23 @@ UserInputService.InputBegan:Connect(function(input, gp)
     end
 end)
 
---// Reset on respawn
+--// Reset on respawn — keep target if they're still alive
 LocalPlayer.CharacterAdded:Connect(function()
+    local savedTarget = Targeting.SelectedTarget
     Combat.Reset()
-    Targeting.SelectedTarget = nil
     Config.Spectate = false
     Targeting.StopSpectate()
     Misc.Reset()
+    --// Restore target after respawn if still valid
+    task.delay(0.5, function()
+        if savedTarget and savedTarget.Parent then
+            local targetChar = savedTarget.Parent
+            local targetHumanoid = targetChar:FindFirstChildOfClass("Humanoid")
+            if targetHumanoid and targetHumanoid.Health > 0 then
+                Targeting.SelectedTarget = savedTarget
+            end
+        end
+    end)
 end)
 
 print("[ZeeHood] HvH Suite loaded with ENI Misc.")

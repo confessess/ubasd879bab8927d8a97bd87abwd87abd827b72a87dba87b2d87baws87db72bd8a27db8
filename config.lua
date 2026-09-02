@@ -29,8 +29,15 @@ return {
     SpamCloseVerticalJitter = 50,
     SpamFarBase = Vector3.new(500000, 500000, 500000),
     SpamFarJitter = 5000,
-    SpamSpeed = 1,  -- teleports per frame (1-10)
+    SpamSpeed = 1,
     SpamEnabledKey = nil,
+    
+    -- Auto Armor
+    AutoArmor = false,
+    AutoArmorOnDamage = false,
+    AutoArmorPos = Vector3.new(0, 0, 0),
+    AutoArmorTriggerHealth = 50,
+    AutoArmorCooldown = 1,
     
     -- Toggle hotkeys
     FrameTPKey = nil,
@@ -38,10 +45,4 @@ return {
     RapidFireKey = nil,
     SpectateKey = nil,
     AntiStompKey = nil,
-
-    -- AutoArmor
-    AutoArmor = false,
-    AutoArmorPos = Vector3.new(-934.12, -25.38, 571.02),
-    AutoArmorTriggerHealth = 50,
-    AutoArmorCooldown = 5,
 }
