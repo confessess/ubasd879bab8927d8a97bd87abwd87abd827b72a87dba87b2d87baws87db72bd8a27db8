@@ -110,8 +110,13 @@ function Combat.FrameTeleportActivate(tool, isRapidFire)
         RunService.Heartbeat:Wait()
     end
     
-    hrp.CFrame = origHRP
-    hrp.Velocity = Vector3.new(0, 0, 0)
+    --// ENI's conditional snap-back
+    --// If spam is on, let spam handle positioning. If off, snap back like normal.
+    if not Config.SpamEnabled then
+        hrp.CFrame = origHRP
+        hrp.Velocity = Vector3.new(0, 0, 0)
+    end
+    
     Camera.CFrame = origCam
     
     Visuals.PlayHitmarker()
