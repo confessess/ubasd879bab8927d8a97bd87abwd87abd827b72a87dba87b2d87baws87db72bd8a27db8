@@ -45,23 +45,26 @@ function Misc.TeleportSpam()
     if not Misc.Config or not Misc.Config.SpamEnabled then return end
 
     local Config = Misc.Config
+    local speed = math.clamp(Config.SpamSpeed or 1, 1, 10)
 
-    if Config.SpamRange == "Close" then
-        local newPos = Vector3.new(
-            math.random(-Config.SpamCloseRadius, Config.SpamCloseRadius),
-            Config.SpamCloseHeight + math.random(-Config.SpamCloseVerticalJitter, Config.SpamCloseVerticalJitter),
-            math.random(-Config.SpamCloseRadius, Config.SpamCloseRadius)
-        )
-        Misc.HRP.CFrame = CFrame.new(newPos)
-    else
-        local base = Config.SpamFarBase or Vector3.new(500000, 500000, 500000)
-        local jitter = Config.SpamFarJitter or 5000
-        local newPos = base + Vector3.new(
-            math.random(-jitter, jitter),
-            math.random(-jitter, jitter),
-            math.random(-jitter, jitter)
-        )
-        Misc.HRP.CFrame = CFrame.new(newPos)
+    for i = 1, speed do
+        if Config.SpamRange == "Close" then
+            local newPos = Vector3.new(
+                math.random(-Config.SpamCloseRadius, Config.SpamCloseRadius),
+                Config.SpamCloseHeight + math.random(-Config.SpamCloseVerticalJitter, Config.SpamCloseVerticalJitter),
+                math.random(-Config.SpamCloseRadius, Config.SpamCloseRadius)
+            )
+            Misc.HRP.CFrame = CFrame.new(newPos)
+        else
+            local base = Config.SpamFarBase or Vector3.new(500000, 500000, 500000)
+            local jitter = Config.SpamFarJitter or 5000
+            local newPos = base + Vector3.new(
+                math.random(-jitter, jitter),
+                math.random(-jitter, jitter),
+                math.random(-jitter, jitter)
+            )
+            Misc.HRP.CFrame = CFrame.new(newPos)
+        end
     end
 end
 

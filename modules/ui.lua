@@ -703,11 +703,11 @@ function UI.Build()
         BorderSizePixel = 0,
         ScrollBarThickness = 3,
         ScrollBarImageColor3 = Color3.fromRGB(100, 70, 150),
-        CanvasSize = UDim2.new(0, 0, 0, 450),
+        CanvasSize = UDim2.new(0, 0, 0, 500),
         ZIndex = 14,
     }, MiscPage)
     
-    local MiscCard = CreateCard(MiscScroll, UDim2.fromOffset(0, 0), UDim2.new(1, 0, 0, 440))
+       local MiscCard = CreateCard(MiscScroll, UDim2.fromOffset(0, 0), UDim2.new(1, 0, 0, 490))
     
     --// AntiStomp
     CreateToggle(MiscCard, 14, "AntiStomp", Config.AntiStomp, "AntiStomp", true, function(v)
@@ -746,7 +746,9 @@ function UI.Build()
     CreateSlider(MiscCard, 356, "Far Jitter", 0, 50000, Config.SpamFarJitter or 5000, function(v)
         Config.SpamFarJitter = v
     end)
-
+    CreateSlider(MiscCard, 412, "Spam Speed", 1, 10, Config.SpamSpeed or 1, function(v)
+        Config.SpamSpeed = v
+    end)
     --// SPECTATE PANEL (middle-right, shows when spectating)
     local SpectatePanel = New("Frame", {
         Size = UDim2.fromOffset(200, 320),
