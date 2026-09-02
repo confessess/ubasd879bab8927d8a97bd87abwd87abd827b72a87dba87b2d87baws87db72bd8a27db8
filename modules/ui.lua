@@ -758,7 +758,7 @@ function UI.Build()
         ZIndex = 16,
     }, MiscCard)
 
-    --// Auto Armor
+        --// Auto Armor
     CreateToggle(MiscCard, 488, "Auto Armor", Config.AutoArmor, "AutoArmor", true, function(v)
         Config.AutoArmor = v
     end)
@@ -766,9 +766,10 @@ function UI.Build()
         Config.AutoArmorOnDamage = v
     end)
     
+    --// Position display + set button
     local armorPos = Config.AutoArmorPos or Vector3.new(0, 0, 0)
     local ArmorPosLabel = Instance.new("TextLabel")
-    ArmorPosLabel.Size = UDim2.new(0.9, 0, 0, 16)
+    ArmorPosLabel.Size = UDim2.new(0.6, 0, 0, 16)
     ArmorPosLabel.Position = UDim2.new(0.05, 0, 0, 562)
     ArmorPosLabel.BackgroundTransparency = 1
     ArmorPosLabel.Text = string.format("Pos: %.0f, %.0f, %.0f", armorPos.X, armorPos.Y, armorPos.Z)
@@ -778,10 +779,40 @@ function UI.Build()
     ArmorPosLabel.TextXAlignment = Enum.TextXAlignment.Left
     ArmorPosLabel.Parent = MiscCard
     
-    CreateSlider(MiscCard, 584, "Trigger Health", 1, 100, Config.AutoArmorTriggerHealth or 50, function(v)
+    local SetPosBtn = Instance.new("TextButton")
+    SetPosBtn.Size = UDim2.new(0.3, 0, 0, 20)
+    SetPosBtn.Position = UDim2.new(0.65, 0, 0, 560)
+    SetPosBtn.BackgroundColor3 = Color3.fromRGB(80, 60, 120)
+    SetPosBtn.Text = "Set Pos"
+    SetPosBtn.TextColor3 = Color3.fromRGB(255, 255, 255)
+    SetPosBtn.Font = Enum.Font.GothamBold
+    SetPosBtn.TextSize = 10
+    SetPosBtn.Parent = MiscCard
+    
+    local SetPosCorner = Instance.new("UICorner")
+    SetPosCorner.CornerRadius = UDim.new(0, 6)
+    SetPosCorner.Parent = SetPosBtn
+    
+    SetPosBtn.MouseButton1Click:Connect(function()
+        local char = LocalPlayer.Character
+        if char then
+            local hrp = char:FindFirstChild("HumanoidRootPart")
+            if hrp then
+                local pos = hrp.Position
+                Config.AutoArmorPos = pos
+                ArmorPosLabel.Text = string.format("Pos: %.0f, %.0f, %.0f", pos.X, pos.Y, pos.Z)
+                --// Also update the cached detector
+                if UI.Misc then
+                    UI.Misc.CacheArmorClickDetector()
+                end
+            end
+        end
+    end)
+    
+    CreateSlider(MiscCard, 588, "Trigger Health", 1, 100, Config.AutoArmorTriggerHealth or 50, function(v)
         Config.AutoArmorTriggerHealth = v
     end)
-    CreateSlider(MiscCard, 640, "Cooldown", 1, 30, Config.AutoArmorCooldown or 5, function(v)
+    CreateSlider(MiscCard, 644, "Cooldown", 1, 30, Config.AutoArmorCooldown or 5, function(v)
         Config.AutoArmorCooldown = v
     end)
     --// SPECTATE PANEL (middle-right, shows when spectating)
