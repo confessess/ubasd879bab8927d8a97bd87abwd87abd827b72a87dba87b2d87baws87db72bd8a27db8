@@ -63,18 +63,18 @@ end
 function UI.UpdateHotkeyDisplay()
     local Config = UI.Config
     if not Config or not UI.HotkeyDisplay then return end
-    
+
     for _, child in ipairs(UI.HotkeyDisplay:GetChildren()) do
         if child:IsA("TextLabel") then child:Destroy() end
     end
-    
+
     if not Config.ShowHotkeys then
         UI.HotkeyDisplay.Visible = false
         return
     end
-    
+
     UI.HotkeyDisplay.Visible = not UI.GUIVisible
-    
+
     local y = 6
     local function addLine(text)
         New("TextLabel", {
@@ -90,7 +90,7 @@ function UI.UpdateHotkeyDisplay()
         }, UI.HotkeyDisplay)
         y = y + 16
     end
-    
+
     addLine("MENU  •  " .. Config.ToggleKey.Name)
     if Config.RapidFireKey then
         addLine("RAPID  •  " .. Config.RapidFireKey.Name)
@@ -98,19 +98,19 @@ function UI.UpdateHotkeyDisplay()
     if Config.FrameTPKey then
         addLine("TP  •  " .. Config.FrameTPKey.Name)
     end
-    
+
     UI.HotkeyDisplay.Size = UDim2.fromOffset(155, math.max(36, y + 4))
 end
 
 function UI.Build()
     local Config = UI.Config
     if not Config then return end
-    
+
     local oldGui = PlayerGui:FindFirstChild("ZeeHoodUI")
     if oldGui then oldGui:Destroy() end
     local oldBlur = Lighting:FindFirstChild("ZeeHoodBlur")
     if oldBlur then oldBlur:Destroy() end
-    
+
     local ScreenGui = New("ScreenGui", {
         Name = "ZeeHoodUI",
         ResetOnSpawn = false,
@@ -118,7 +118,7 @@ function UI.Build()
         ZIndexBehavior = Enum.ZIndexBehavior.Sibling,
     }, PlayerGui)
     UI.ScreenGui = ScreenGui
-    
+
     local Background = New("Frame", {
         Name = "Background",
         Size = UDim2.fromScale(1, 1),
@@ -128,7 +128,7 @@ function UI.Build()
         ZIndex = 1,
         Visible = false,
     }, ScreenGui)
-    
+
     New("UIGradient", {
         Rotation = 35,
         Color = ColorSequence.new({
@@ -137,7 +137,7 @@ function UI.Build()
             ColorSequenceKeypoint.new(1, Color3.fromRGB(27, 7, 45)),
         }),
     }, Background)
-    
+
     local StarContainer = New("Frame", {
         Name = "Stars",
         Size = UDim2.fromScale(1, 1),
@@ -145,7 +145,7 @@ function UI.Build()
         ClipsDescendants = true,
         ZIndex = 2,
     }, Background)
-    
+
     for i = 1, 60 do
         local size = math.random(1, 3)
         local star = New("Frame", {
@@ -167,12 +167,12 @@ function UI.Build()
             end
         end)
     end
-    
+
     local Blur = New("BlurEffect", {
         Name = "ZeeHoodBlur",
         Size = 0,
     }, Lighting)
-    
+
     local GUI_WIDTH, GUI_HEIGHT = 760, 540
     local Main = New("Frame", {
         Name = "Main",
@@ -188,7 +188,7 @@ function UI.Build()
     UI.Main = Main
     Corner(Main, 20)
     Stroke(Main, 0.72, 1)
-    
+
     New("Frame", {
         Size = UDim2.new(1, -40, 0, 1),
         Position = UDim2.fromOffset(20, 1),
@@ -198,14 +198,14 @@ function UI.Build()
         ZIndex = 11,
     }, Main)
     Corner(Main, 1)
-    
+
     local TopBar = New("Frame", {
         Size = UDim2.new(1, -30, 0, 62),
         Position = UDim2.fromOffset(15, 10),
         BackgroundTransparency = 1,
         ZIndex = 12,
     }, Main)
-    
+
     New("TextLabel", {
         Size = UDim2.fromOffset(400, 27),
         Position = UDim2.fromOffset(8, 3),
@@ -217,7 +217,7 @@ function UI.Build()
         TextXAlignment = Enum.TextXAlignment.Left,
         ZIndex = 13,
     }, TopBar)
-    
+
     New("TextLabel", {
         Size = UDim2.fromOffset(400, 20),
         Position = UDim2.fromOffset(9, 30),
@@ -229,7 +229,7 @@ function UI.Build()
         TextXAlignment = Enum.TextXAlignment.Left,
         ZIndex = 13,
     }, TopBar)
-    
+
     local CloseBtn = New("TextButton", {
         Size = UDim2.fromOffset(34, 34),
         Position = UDim2.new(1, -34, 0, 7),
@@ -244,14 +244,14 @@ function UI.Build()
         ZIndex = 15,
     }, TopBar)
     Corner(CloseBtn, 9)
-    
+
     local Body = New("Frame", {
         Size = UDim2.new(1, -30, 1, -82),
         Position = UDim2.fromOffset(15, 72),
         BackgroundTransparency = 1,
         ZIndex = 12,
     }, Main)
-    
+
     local Sidebar = New("Frame", {
         Size = UDim2.new(0, 175, 1, 0),
         Position = UDim2.fromOffset(0, 0),
@@ -262,7 +262,7 @@ function UI.Build()
     }, Body)
     Corner(Sidebar, 15)
     Stroke(Sidebar, 0.91, 1)
-    
+
     local Content = New("Frame", {
         Size = UDim2.new(1, -190, 1, 0),
         Position = UDim2.fromOffset(190, 0),
@@ -270,11 +270,11 @@ function UI.Build()
         ClipsDescendants = true,
         ZIndex = 13,
     }, Body)
-    
+
     local TabNames = {"Combat", "Visuals", "Target", "Settings"}
     local TabButtons = {}
     local Pages = {}
-    
+
     for index, name in ipairs(TabNames) do
         local button = New("TextButton", {
             Size = UDim2.new(1, -32, 0, 43),
@@ -292,7 +292,7 @@ function UI.Build()
         }, Sidebar)
         Corner(button, 10)
         New("UIPadding", {PaddingLeft = UDim.new(0, 16)}, button)
-        
+
         local indicator = New("Frame", {
             Size = UDim2.fromOffset(3, 18),
             Position = UDim2.new(0, 8, 0, 25 + ((index - 1) * 50)),
@@ -302,9 +302,9 @@ function UI.Build()
             ZIndex = 20,
         }, Sidebar)
         Corner(indicator, 3)
-        
+
         TabButtons[name] = {Button = button, Indicator = indicator}
-        
+
         local page = New("Frame", {
             Name = name,
             Size = UDim2.fromScale(1, 1),
@@ -314,7 +314,7 @@ function UI.Build()
         }, Content)
         Pages[name] = page
     end
-    
+
     local function PageTitle(page, title, description)
         New("TextLabel", {
             Size = UDim2.new(1, -20, 0, 28),
@@ -339,7 +339,7 @@ function UI.Build()
             ZIndex = 15,
         }, page)
     end
-    
+
     local function CreateCard(page, position, size)
         local card = New("Frame", {
             Size = size,
@@ -353,7 +353,7 @@ function UI.Build()
         Stroke(card, 0.91, 1)
         return card
     end
-    
+
     local function CreateToggle(parent, y, text, default, callback)
         local frame = New("Frame", {
             Size = UDim2.new(1, -20, 0, 32),
@@ -398,7 +398,7 @@ function UI.Build()
         end)
         return function() return state end
     end
-    
+
     local function CreateSlider(parent, y, text, min, max, default, callback)
         local frame = New("Frame", {
             Size = UDim2.new(1, -20, 0, 48),
@@ -456,7 +456,7 @@ function UI.Build()
             end
         end)
     end
-    
+
     local function CreateKeybindRow(parent, y, labelText, currentKey, onSet)
         local frame = New("Frame", {
             Size = UDim2.new(1, -20, 0, 32),
@@ -496,12 +496,12 @@ function UI.Build()
         end)
         return btn
     end
-    
+
     --// COMBAT PAGE
     local CombatPage = Pages.Combat
     PageTitle(CombatPage, "Combat", "Frame teleport shoot, rapid fire, and hotkeys.")
     local CombatCard = CreateCard(CombatPage, UDim2.fromOffset(10, 72), UDim2.new(1, -20, 0, 260))
-    
+
     CreateToggle(CombatCard, 14, "Frame TP Shoot", Config.FrameTP, function(v)
         Config.FrameTP = v
     end)
@@ -514,17 +514,17 @@ function UI.Build()
     CreateToggle(CombatCard, 122, "Hitmarkers", Config.Hitmarkers, function(v)
         Config.Hitmarkers = v
     end)
-    
+
     local tpKeyBtn = CreateKeybindRow(CombatCard, 158, "Frame TP Key", Config.FrameTPKey, "FrameTP")
     local rapidKeyBtn = CreateKeybindRow(CombatCard, 194, "Rapid Fire Key", Config.RapidFireKey, "RapidFire")
     UI.TPKeyButton = tpKeyBtn
     UI.RapidKeyButton = rapidKeyBtn
-    
+
     --// VISUALS PAGE
     local VisualsPage = Pages.Visuals
     PageTitle(VisualsPage, "Visuals", "FOV, tracers, and target highlighting.")
     local VisualsCard = CreateCard(VisualsPage, UDim2.fromOffset(10, 72), UDim2.new(1, -20, 0, 200))
-    
+
     CreateToggle(VisualsCard, 14, "FOV Circle", Config.FOV_Enabled, function(v)
         Config.FOV_Enabled = v
     end)
@@ -537,12 +537,12 @@ function UI.Build()
     CreateToggle(VisualsCard, 146, "Highlights", Config.Highlights, function(v)
         Config.Highlights = v
     end)
-    
+
     --// TARGET PAGE
     local TargetPage = Pages.Target
     PageTitle(TargetPage, "Target", "Player selection, part targeting, and spectate.")
     local TargetCard = CreateCard(TargetPage, UDim2.fromOffset(10, 72), UDim2.new(1, -20, 0, 260))
-    
+
     New("TextLabel", {
         Size = UDim2.new(1, -20, 0, 20),
         Position = UDim2.fromOffset(10, 14),
@@ -554,7 +554,7 @@ function UI.Build()
         TextXAlignment = Enum.TextXAlignment.Left,
         ZIndex = 16,
     }, TargetCard)
-    
+
     local DropdownContainer = New("Frame", {
         Size = UDim2.new(1, -20, 0, 32),
         Position = UDim2.fromOffset(10, 38),
@@ -565,10 +565,12 @@ function UI.Build()
     }, TargetCard)
     Corner(DropdownContainer, 8)
     Stroke(DropdownContainer, 0.85, 1, Color3.fromRGB(140, 90, 200))
-    
+
     local DropdownHeader = New("TextButton", {
         Size = UDim2.new(1, 0, 0, 32),
-        BackgroundTransparency = 1,
+        BackgroundColor3 = Color3.fromRGB(22, 14, 32),
+        BackgroundTransparency = 0,
+        BorderSizePixel = 0,
         Text = "  " .. Config.TargetPart .. "  ▼",
         TextColor3 = Color3.fromRGB(220, 215, 235),
         TextSize = 12,
@@ -577,34 +579,37 @@ function UI.Build()
         AutoButtonColor = false,
         ZIndex = 17,
     }, DropdownContainer)
-    
+    Corner(DropdownHeader, 8)
+
+    -- DropdownList is now parented to TargetCard so it floats above other elements
+    -- and isn't clipped by Content frame or DropdownContainer
     local DropdownList = New("ScrollingFrame", {
-        Size = UDim2.new(1, 0, 0, 0),
-        Position = UDim2.fromOffset(0, 34),
+        Size = UDim2.new(1, -20, 0, 0),
+        Position = UDim2.fromOffset(10, 72),
         BackgroundColor3 = Color3.fromRGB(18, 11, 27),
         BackgroundTransparency = 0.05,
         BorderSizePixel = 0,
         ScrollBarThickness = 3,
         ScrollBarImageColor3 = Color3.fromRGB(100, 70, 150),
         CanvasSize = UDim2.new(0, 0, 0, 0),
-        ZIndex = 18,
+        ZIndex = 30,
         ClipsDescendants = true,
-    }, DropdownContainer)
+        Visible = false,
+    }, TargetCard)
     Corner(DropdownList, 8)
     Stroke(DropdownList, 0.9, 1, Color3.fromRGB(140, 90, 200))
-    
+
     New("UIListLayout", {
         Padding = UDim.new(0, 2),
         Parent = DropdownList,
     })
-    
+
     local parts = {"Head", "HumanoidRootPart", "Torso", "UpperTorso", "LowerTorso", "LeftLeg", "RightLeg"}
     local dropdownOpen = false
-    
+
     for _, partName in ipairs(parts) do
         local opt = New("TextButton", {
             Size = UDim2.new(1, -8, 0, 26),
-            Position = UDim2.fromOffset(4, 0),
             BackgroundColor3 = Color3.fromRGB(30, 20, 42),
             BackgroundTransparency = 1,
             BorderSizePixel = 0,
@@ -613,7 +618,7 @@ function UI.Build()
             TextSize = 11,
             Font = Enum.Font.GothamMedium,
             AutoButtonColor = false,
-            ZIndex = 19,
+            ZIndex = 31,
         }, DropdownList)
         Corner(opt, 4)
         opt.MouseEnter:Connect(function()
@@ -626,30 +631,36 @@ function UI.Build()
             Config.TargetPart = partName
             DropdownHeader.Text = "  " .. partName .. "  ▼"
             dropdownOpen = false
-            Tween(DropdownList, {Size = UDim2.new(1, 0, 0, 0)}, 0.2):Play()
+            DropdownList.Visible = false
         end)
     end
-    
+
     DropdownList.CanvasSize = UDim2.new(0, 0, 0, #parts * 28)
-    
+
     DropdownHeader.MouseButton1Click:Connect(function()
         dropdownOpen = not dropdownOpen
         if dropdownOpen then
             DropdownHeader.Text = "  " .. Config.TargetPart .. "  ▲"
-            Tween(DropdownList, {Size = UDim2.new(1, 0, 0, math.min(140, #parts * 28))}, 0.2):Play()
+            DropdownList.Visible = true
+            Tween(DropdownList, {Size = UDim2.new(1, -20, 0, math.min(140, #parts * 28))}, 0.2):Play()
         else
             DropdownHeader.Text = "  " .. Config.TargetPart .. "  ▼"
-            Tween(DropdownList, {Size = UDim2.new(1, 0, 0, 0)}, 0.2):Play()
+            Tween(DropdownList, {Size = UDim2.new(1, -20, 0, 0)}, 0.2):Play()
+            task.delay(0.2, function()
+                if not dropdownOpen then
+                    DropdownList.Visible = false
+                end
+            end)
         end
     end)
-    
+
     CreateToggle(TargetCard, 82, "Spectate Target", Config.Spectate, function(v)
         Config.Spectate = v
         if not v then
             UI.Targeting.StopSpectate()
         end
     end)
-    
+
     New("TextLabel", {
         Size = UDim2.new(1, -20, 0, 18),
         Position = UDim2.fromOffset(10, 120),
@@ -661,7 +672,7 @@ function UI.Build()
         TextXAlignment = Enum.TextXAlignment.Left,
         ZIndex = 16,
     }, TargetCard)
-    
+
     local PlayerList = New("ScrollingFrame", {
         Size = UDim2.new(1, -20, 0, 120),
         Position = UDim2.fromOffset(10, 140),
@@ -675,19 +686,20 @@ function UI.Build()
     }, TargetCard)
     Corner(PlayerList, 8)
     New("UIListLayout", {Padding = UDim.new(0, 2), Parent = PlayerList})
-    
+
     local function refreshList()
         UI.Targeting.RefreshPlayerList(PlayerList, refreshList)
     end
     refreshList()
     Players.PlayerAdded:Connect(refreshList)
     Players.PlayerRemoving:Connect(refreshList)
-    
+
     --// SETTINGS PAGE
     local SettingsPage = Pages.Settings
     PageTitle(SettingsPage, "Settings", "Interface customization and hotkey display.")
-    local SettingsCard = CreateCard(SettingsPage, UDim2.fromOffset(10, 72), UDim2.new(1, -20, 0, 200))
-    
+    -- Increased card height from 200 to 260 to prevent overlap
+    local SettingsCard = CreateCard(SettingsPage, UDim2.fromOffset(10, 72), UDim2.new(1, -20, 0, 260))
+
     New("TextLabel", {
         Size = UDim2.new(1, -140, 0, 25),
         Position = UDim2.fromOffset(15, 14),
@@ -699,7 +711,7 @@ function UI.Build()
         TextXAlignment = Enum.TextXAlignment.Left,
         ZIndex = 16,
     }, SettingsCard)
-    
+
     New("TextLabel", {
         Size = UDim2.new(1, -140, 0, 35),
         Position = UDim2.fromOffset(15, 43),
@@ -712,10 +724,10 @@ function UI.Build()
         TextXAlignment = Enum.TextXAlignment.Left,
         ZIndex = 16,
     }, SettingsCard)
-    
+
     local KeybindButton = New("TextButton", {
         Size = UDim2.fromOffset(115, 38),
-        Position = UDim2.new(1, -130, 0.5, -19),
+        Position = UDim2.new(1, -130, 0, 14),
         BackgroundColor3 = PURPLE,
         BackgroundTransparency = 0.18,
         BorderSizePixel = 0,
@@ -727,12 +739,13 @@ function UI.Build()
         ZIndex = 17,
     }, SettingsCard)
     Corner(KeybindButton, 9)
-    
-    CreateToggle(SettingsCard, 90, "Show Hotkeys", Config.ShowHotkeys, function(v)
+
+    -- Moved ShowHotkeys down from y=90 to y=120 to clear the keybind button
+    CreateToggle(SettingsCard, 120, "Show Hotkeys", Config.ShowHotkeys, function(v)
         Config.ShowHotkeys = v
         UI.UpdateHotkeyDisplay()
     end)
-    
+
     --// Hotkey Display (top right, outside Main)
     local HotkeyDisplay = New("Frame", {
         Name = "HotkeyDisplay",
@@ -748,7 +761,7 @@ function UI.Build()
     Corner(HotkeyDisplay, 10)
     Stroke(HotkeyDisplay, 0.88, 1)
     UI.HotkeyDisplay = HotkeyDisplay
-    
+
     --// Tab System
     local ActiveTab = nil
     local function SelectTab(name)
@@ -764,8 +777,15 @@ function UI.Build()
         for pageName, page in pairs(Pages) do
             page.Visible = pageName == name
         end
+        -- Close dropdown when switching tabs
+        if dropdownOpen then
+            dropdownOpen = false
+            DropdownHeader.Text = "  " .. Config.TargetPart .. "  ▼"
+            DropdownList.Visible = false
+            DropdownList.Size = UDim2.new(1, -20, 0, 0)
+        end
     end
-    
+
     for name, data in pairs(TabButtons) do
         data.Button.MouseButton1Click:Connect(function() SelectTab(name) end)
         data.Button.MouseEnter:Connect(function()
@@ -779,9 +799,9 @@ function UI.Build()
             end
         end)
     end
-    
+
     SelectTab("Combat")
-    
+
     --// Keybind Changing
     UI.ListeningKey = nil
     KeybindButton.MouseButton1Click:Connect(function()
@@ -790,7 +810,7 @@ function UI.Build()
         KeybindButton.Text = "PRESS KEY"
         Tween(KeybindButton, {BackgroundTransparency = 0}, 0.2):Play()
     end)
-    
+
     --// GUI Toggle
     local function SetGUIVisible(visible)
         UI.GUIVisible = visible
@@ -818,10 +838,10 @@ function UI.Build()
         UI.UpdateHotkeyDisplay()
     end
     UI.SetGUIVisible = SetGUIVisible
-    
+
     UserInputService.InputBegan:Connect(function(input, gameProcessed)
         if gameProcessed then return end
-        
+
         if UI.ListeningKey then
             if input.UserInputType == Enum.UserInputType.Keyboard and input.KeyCode ~= Enum.KeyCode.Unknown then
                 if input.KeyCode == Enum.KeyCode.Delete or input.KeyCode == Enum.KeyCode.Backspace then
@@ -844,7 +864,7 @@ function UI.Build()
                         if UI.TPKeyButton then UI.TPKeyButton.Text = input.KeyCode.Name end
                     end
                 end
-                
+
                 UI.ListeningKey = nil
                 Tween(KeybindButton, {BackgroundTransparency = 0.18}, 0.2):Play()
                 if UI.RapidKeyButton then Tween(UI.RapidKeyButton, {BackgroundTransparency = 0.2}, 0.2):Play() end
@@ -853,7 +873,7 @@ function UI.Build()
             end
             return
         end
-        
+
         if input.UserInputType == Enum.UserInputType.Keyboard then
             if input.KeyCode == Config.ToggleKey then
                 SetGUIVisible(not UI.GUIVisible)
@@ -864,11 +884,11 @@ function UI.Build()
             end
         end
     end)
-    
+
     CloseBtn.MouseButton1Click:Connect(function()
         SetGUIVisible(false)
     end)
-    
+
     local function Hover(button, normal, hover)
         button.MouseEnter:Connect(function()
             Tween(button, {BackgroundTransparency = hover}, 0.15):Play()
@@ -877,13 +897,13 @@ function UI.Build()
             Tween(button, {BackgroundTransparency = normal}, 0.15):Play()
         end)
     end
-    
+
     Hover(CloseBtn, 0.2, 0.05)
     Hover(KeybindButton, 0.18, 0.05)
-    
+
     Main.Size = UDim2.fromOffset(GUI_WIDTH, 0)
     SetGUIVisible(true)
-    
+
     return ScreenGui
 end
 
