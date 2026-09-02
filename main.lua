@@ -1,44 +1,38 @@
-local Players = game:GetService("Players")
-local RunService = game:GetService("RunService")
-local UserInputService = game:GetService("UserInputService")
-local LocalPlayer = Players.LocalPlayer
+local BASE_URL = "https://raw.githubusercontent.com/confessess/zee-hvh/main/"
 
---// Get the script's parent folder (main folder where main.lua lives)
-local MainFolder = script.Parent
+local function loadModule(path)
+    return loadstring(game:HttpGet(BASE_URL .. path))()
+end
 
---// Load Config from main folder
-local Config = require(MainFolder.Config)
+local Config = loadModule("config.lua")
 
---// Load modules from the Modules subfolder
-local ModulesFolder = MainFolder:WaitForChild("Modules")
-local Targeting = require(ModulesFolder.Targeting)
-local Combat = require(ModulesFolder.Combat)
-local Misc = require(ModulesFolder.Misc)
-local Visuals = require(ModulesFolder.Visuals)
-local UI = require(ModulesFolder.UI)
-
---// Wire config to all modules
+local Targeting = loadModule("modules/targeting.lua")
 Targeting.SetConfig(Config)
-Combat.SetConfig(Config)
-Misc.SetConfig(Config)
-Visuals.SetConfig(Config)
-UI.SetConfig(Config)
 
---// Wire cross-module references
+local Visuals = loadModule("modules/visuals.lua")
+Visuals.SetConfig(Config)
+Visuals.SetTargeting(Targeting)
+
+local Combat = loadModule("modules/combat.lua")
+Combat.SetConfig(Config)
 Combat.SetTargeting(Targeting)
 Combat.SetVisuals(Visuals)
-Visuals.SetTargeting(Targeting)
+
+local UI = loadModule("modules/ui.lua")
+UI.SetConfig(Config)
 UI.SetTargeting(Targeting)
 UI.SetCombat(Combat)
-UI.SetMisc(Misc)
-
---// Build GUI
 UI.Build()
 
---// Render loop
+--// Render Loop
+local RunService = game:GetService("RunService")
+local UserInputService = game:GetService("UserInputService")
+local Players = game:GetService("Players")
+local LocalPlayer = Players.LocalPlayer
+
 RunService.RenderStepped:Connect(function()
     Visuals.Update()
-
+    
     local char = LocalPlayer.Character
     if char then
         local tool = char:FindFirstChildOfClass("Tool")
@@ -72,11 +66,6 @@ LocalPlayer.CharacterAdded:Connect(function()
     Config.Spectate = false
     Targeting.StopSpectate()
 end)
-
---// Start AntiStomp if enabled
-if Config.AntiStomp then
-    Misc.StartAntiStomp()
-end
 
 print("[ZeeHood] HvH Suite loaded.")
 print("[ZeeHood] Toggle UI with " .. Config.ToggleKey.Name)
