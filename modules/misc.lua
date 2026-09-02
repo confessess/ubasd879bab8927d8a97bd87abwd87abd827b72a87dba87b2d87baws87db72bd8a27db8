@@ -1,6 +1,7 @@
 local Players = game:GetService("Players")
 local RunService = game:GetService("RunService")
 local LocalPlayer = Players.LocalPlayer
+local Workspace = game:GetService("Workspace")
 
 math.randomseed(tick())
 
@@ -14,7 +15,59 @@ local Misc = {
     AntiStompTriggered = false,
     LastArmorTime = 0,
     CachedClickDetector = nil,
+    CachedPrompt = nil,
+    NotificationGui = nil,
 }
+
+--// ==================== NOTIFICATIONS ====================
+function Misc.Notify(text, color)
+    color = color or Color3.fromRGB(100, 200, 150)
+    
+    if not Misc.NotificationGui then
+        local sg = Instance.new("ScreenGui")
+        sg.Name = "ENINotifications"
+        sg.ResetOnSpawn = false
+        sg.Parent = game.CoreGui
+        Misc.NotificationGui = sg
+    end
+    
+    local frame = Instance.new("Frame")
+    frame.Size = UDim2.new(0, 280, 0, 36)
+    frame.Position = UDim2.new(0.5, -140, 0, -40)
+    frame.BackgroundColor3 = Color3.fromRGB(30, 30, 40)
+    frame.BorderSizePixel = 0
+    frame.Parent = Misc.NotificationGui
+    
+    local corner = Instance.new("UICorner")
+    corner.CornerRadius = UDim.new(0, 8)
+    corner.Parent = frame
+    
+    local stroke = Instance.new("UIStroke")
+    stroke.Color = color
+    stroke.Thickness = 1
+    stroke.Parent = frame
+    
+    local label = Instance.new("TextLabel")
+    label.Size = UDim2.new(1, -20, 1, 0)
+    label.Position = UDim2.new(0, 10, 0, 0)
+    label.BackgroundTransparency = 1
+    label.Text = text
+    label.TextColor3 = Color3.fromRGB(235, 235, 255)
+    label.Font = Enum.Font.GothamBold
+    label.TextSize = 12
+    label.TextXAlignment = Enum.TextXAlignment.Left
+    label.Parent = frame
+    
+    --// Slide in
+    frame:TweenPosition(UDim2.new(0.5, -140, 0, 20), Enum.EasingDirection.Out, Enum.EasingStyle.Quad, 0.3, true)
+    
+    --// Fade out and destroy
+    task.delay(2.5, function()
+        frame:TweenPosition(UDim2.new(0.5, -140, 0, -40), Enum.EasingDirection.In, Enum.EasingStyle.Quad, 0.3, true)
+        task.wait(0.35)
+        if frame then frame:Destroy() end
+    end)
+end
 
 function Misc.SetConfig(config)
     Misc.Config = config
@@ -45,16 +98,35 @@ end
 
 --// ==================== CLICK DETECTOR CACHE ====================
 function Misc.CacheArmorClickDetector()
+    Misc.CachedClickDetector = nil
+    Misc.CachedPrompt = nil
+    
     if not Misc.Config or not Misc.Config.AutoArmorPos then return end
     local pos = Misc.Config.AutoArmorPos
+    
+    --// Search for ClickDetector
     for _, obj in pairs(workspace:GetDescendants()) do
         if obj:IsA("ClickDetector") and obj.Parent and obj.Parent:IsA("BasePart") then
-            if (obj.Parent.Position - pos).Magnitude < 5 then
+            if (obj.Parent.Position - pos).Magnitude < 8 then
                 Misc.CachedClickDetector = obj
+                print("[ENI] Cached ClickDetector for armor")
                 return
             end
         end
     end
+    
+    --// Search for ProximityPrompt
+    for _, obj in pairs(workspace:GetDescendants()) do
+        if obj:IsA("ProximityPrompt") and obj.Parent and obj.Parent:IsA("BasePart") then
+            if (obj.Parent.Position - pos).Magnitude < 8 then
+                Misc.CachedPrompt = obj
+                print("[ENI] Cached ProximityPrompt for armor")
+                return
+            end
+        end
+    end
+    
+    print("[ENI] No click detector or prompt found near armor position")
 end
 
 --// ==================== ANTI-STOMP ====================
@@ -152,7 +224,10 @@ end
 --// ==================== AUTO ARMOR (FAST) ====================
 function Misc.AutoArmorFast()
     if not Misc.Config or not Misc.Config.AutoArmor then return end
-    if not Misc.Config.AutoArmorPos then return end
+    if not Misc.Config.AutoArmorPos then 
+        Misc.Notify("Armor position not set!", Color3.fromRGB(200, 60, 60))
+        return 
+    end
     
     local now = tick()
     local cooldown = Misc.Config.AutoArmorCooldown or 1
@@ -163,26 +238,69 @@ function Misc.AutoArmorFast()
     
     Misc.LastArmorTime = now
     
+    --// Pause spam briefly so we dont get teleported away
+    local wasSpamming = Misc.Config.SpamEnabled
+    if wasSpamming then
+        Misc.StopSpam()
+    end
+    
     local origCF = hrp.CFrame
     local armorPos = Misc.Config.AutoArmorPos
+    local cam = Workspace.CurrentCamera
+    local origCam = cam.CFrame
     
     --// Teleport to armor position
     hrp.CFrame = CFrame.new(armorPos + Vector3.new(0, 2, 0))
     
+    --// Look down at the button
+    cam.CFrame = CFrame.new(armorPos + Vector3.new(0, 2, 0), armorPos)
+    
     --// One frame for server to register position
     RunService.Heartbeat:Wait()
     
-    --// Click the detector
-    if Misc.CachedClickDetector then
-        if fireclickdetector then
-            pcall(function() fireclickdetector(Misc.CachedClickDetector) end)
-        else
-            pcall(function() Misc.CachedClickDetector:FireServer() end)
-        end
+    local clicked = false
+    
+    --// Method 1: Executor native fireclickdetector
+    if Misc.CachedClickDetector and fireclickdetector then
+        local ok = pcall(function() fireclickdetector(Misc.CachedClickDetector) end)
+        if ok then clicked = true end
     end
     
-    --// INSTANT snap back
+    --// Method 2: ProximityPrompt
+    if not clicked and Misc.CachedPrompt then
+        local ok = pcall(function() 
+            Misc.CachedPrompt:InputHoldBegin()
+            task.wait(0.1)
+            Misc.CachedPrompt:InputHoldEnd()
+        end)
+        if ok then clicked = true end
+    end
+    
+    --// Method 3: VirtualInputManager click at screen center
+    if not clicked then
+        local vim = game:GetService("VirtualInputManager")
+        local screenSize = cam.ViewportSize
+        vim:SendMouseButtonEvent(screenSize.X/2, screenSize.Y/2, 0, true, game, 1)
+        task.wait(0.05)
+        vim:SendMouseButtonEvent(screenSize.X/2, screenSize.Y/2, 0, false, game, 1)
+        clicked = true
+    end
+    
+    --// Notification
+    if clicked then
+        Misc.Notify("Armor grabbed!", Color3.fromRGB(100, 200, 150))
+    else
+        Misc.Notify("Failed to grab armor", Color3.fromRGB(200, 60, 60))
+    end
+    
+    --// Snap back
     hrp.CFrame = origCF
+    cam.CFrame = origCam
+    
+    --// Resume spam if it was on
+    if wasSpamming then
+        Misc.StartSpam()
+    end
 end
 
 --// ==================== TELEPORT SPAM ====================
