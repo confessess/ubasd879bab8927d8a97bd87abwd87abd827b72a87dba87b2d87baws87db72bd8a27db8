@@ -60,8 +60,8 @@ function UI.SetCombat(combat)
     UI.Combat = combat
 end
 
-function UI.SetSpam(spam)
-    UI.Spam = spam
+function UI.SetMisc(misc)
+    UI.Misc = misc
 end
 
 function UI.UpdateHotkeyDisplay()

@@ -1,79 +1,127 @@
 local Players = game:GetService("Players")
+local RunService = game:GetService("RunService")
+local Workspace = game:GetService("Workspace")
 local LocalPlayer = Players.LocalPlayer
+
+math.randomseed(tick())
 
 local Misc = {
     Config = nil,
+    SpamConnection = nil,
+    Character = nil,
+    Humanoid = nil,
+    HRP = nil,
 }
 
+--// ==================== CONFIG & CHARACTER ====================
 function Misc.SetConfig(config)
     Misc.Config = config
 end
 
---// AntiStomp
-local antiStompConnections = {}
+function Misc.RefreshCharacter()
+    Misc.Character = LocalPlayer.Character or LocalPlayer.CharacterAdded:Wait()
+    Misc.Humanoid = Misc.Character:WaitForChild("Humanoid")
+    Misc.HRP = Misc.Character:WaitForChild("HumanoidRootPart")
+end
 
-local function executeAntiStomp()
-    local Config = Misc.Config
-    if not Config or not Config.AntiStomp then return end
-    local char = LocalPlayer.Character
-    if not char then return end
+--// ==================== ANTI-STOMP ====================
+function Misc.CheckAntiStomp()
+    if not Misc.Config or not Misc.Config.AntiStomp then return end
+    if not Misc.Humanoid then return end
 
-    if Config.AntiStompMode == "Void" then
-        local hrp = char:FindFirstChild("HumanoidRootPart")
-        if hrp then
-            hrp.CFrame = CFrame.new(0, -10000, 0)
+    if Misc.Humanoid.Health <= 0 or Misc.Humanoid:GetState() == Enum.HumanoidStateType.Dead then
+        if Misc.Config.AntiStompMode == "Void" then
+            --// Teleport deep underground to avoid stomp animations
+            if Misc.HRP then
+                Misc.HRP.CFrame = CFrame.new(0, -50000, 0)
+            end
+        elseif Misc.Config.AntiStompMode == "Force Reset" then
+            --// Force respawn
+            local char = LocalPlayer.Character
+            if char then
+                char:BreakJoints()
+            end
         end
-    elseif Config.AntiStompMode == "Force Reset" then
-        local hum = char:FindFirstChildOfClass("Humanoid")
-        if hum then
-            hum.Health = 0
-        end
     end
 end
 
-local function applyAntiStomp(char)
+--// ==================== TELEPORT SPAM ====================
+function Misc.TeleportSpam()
+    if not Misc.HRP or not Misc.HRP.Parent then return end
+    if not Misc.Config or not Misc.Config.SpamEnabled then return end
+
     local Config = Misc.Config
-    if not Config or not Config.AntiStomp then return end
-    local hum = char:FindFirstChildOfClass("Humanoid")
-    if not hum then return end
 
-    local conn = hum.StateChanged:Connect(function(oldState, newState)
-        if not Config.AntiStomp then return end
-        if newState == Enum.HumanoidStateType.PlatformStanding or newState == Enum.HumanoidStateType.Physics then
-            executeAntiStomp()
-        end
-    end)
-
-    table.insert(antiStompConnections, conn)
+    if Config.SpamRange == "Close" then
+        local newPos = Vector3.new(
+            math.random(-Config.SpamCloseRadius, Config.SpamCloseRadius),
+            Config.SpamCloseHeight + math.random(-Config.SpamCloseVerticalJitter, Config.SpamCloseVerticalJitter),
+            math.random(-Config.SpamCloseRadius, Config.SpamCloseRadius)
+        )
+        Misc.HRP.CFrame = CFrame.new(newPos)
+    else
+        local base = Config.SpamFarBase or Vector3.new(500000, 500000, 500000)
+        local jitter = Config.SpamFarJitter or 5000
+        local newPos = base + Vector3.new(
+            math.random(-jitter, jitter),
+            math.random(-jitter, jitter),
+            math.random(-jitter, jitter)
+        )
+        Misc.HRP.CFrame = CFrame.new(newPos)
+    end
 end
 
-function Misc.StartAntiStomp()
-    local Config = Misc.Config
-    if not Config or not Config.AntiStomp then return end
-
-    for _, conn in ipairs(antiStompConnections) do
-        conn:Disconnect()
-    end
-    antiStompConnections = {}
-
-    if LocalPlayer.Character then
-        applyAntiStomp(LocalPlayer.Character)
-    end
-
-    local conn = LocalPlayer.CharacterAdded:Connect(function(char)
-        task.wait(0.3)
-        applyAntiStomp(char)
-    end)
-    table.insert(antiStompConnections, conn)
+function Misc.StartSpam()
+    if Misc.SpamConnection then Misc.SpamConnection:Disconnect() end
+    Misc.SpamConnection = RunService.RenderStepped:Connect(Misc.TeleportSpam)
 end
 
-function Misc.StopAntiStomp()
-    for _, conn in ipairs(antiStompConnections) do
-        conn:Disconnect()
+function Misc.StopSpam()
+    if Misc.SpamConnection then
+        Misc.SpamConnection:Disconnect()
+        Misc.SpamConnection = nil
     end
-    antiStompConnections = {}
 end
 
---// Future: Ragebot, AutoStomp, AntiAim, etc.
+function Misc.ToggleSpam(enabled)
+    if not Misc.Config then return end
+    Misc.Config.SpamEnabled = enabled
+    if enabled then
+        Misc.StartSpam()
+    else
+        Misc.StopSpam()
+    end
+end
+
+--// ==================== MAIN LOOP ====================
+function Misc.OnHeartbeat()
+    Misc.CheckAntiStomp()
+end
+
+function Misc.Start()
+    --// Anti-stomp runs on heartbeat
+    RunService.Heartbeat:Connect(Misc.OnHeartbeat)
+    --// Spam runs on renderstepped if enabled
+    if Misc.Config and Misc.Config.SpamEnabled then
+        Misc.StartSpam()
+    end
+end
+
+--// ==================== RESET ====================
+function Misc.Reset()
+    Misc.StopSpam()
+    Misc.RefreshCharacter()
+    if Misc.Config and Misc.Config.SpamEnabled then
+        Misc.StartSpam()
+    end
+end
+
+--// ==================== INIT ====================
+Misc.RefreshCharacter()
+LocalPlayer.CharacterAdded:Connect(function()
+    task.wait(0.5)
+    Misc.RefreshCharacter()
+    Misc.Reset()
+end)
 
 return Misc
