@@ -24,6 +24,7 @@ function Misc.RefreshCharacter()
     Misc.HRP = Misc.Character:WaitForChild("HumanoidRootPart")
     Misc.LastHealth = Misc.Humanoid.Health
     Misc.AntiStompTriggered = false
+    Misc.SetupAntiStompHook()
 end
 
 --// ==================== LIVE REFS ====================
@@ -40,6 +41,25 @@ function Misc.GetLiveHRP()
 end
 
 --// ==================== ANTI-STOMP ====================
+function Misc.SetupAntiStompHook()
+    local humanoid = Misc.GetLiveHumanoid()
+    if not humanoid then return end
+    
+    humanoid.HealthChanged:Connect(function(newHealth)
+        if not Misc.Config or not Misc.Config.AntiStomp then return end
+        if Misc.AntiStompTriggered then return end
+        
+        --// ANY damage taken = instant void death
+        --// newHealth < LastHealth means we took damage
+        --// newHealth > 0 means we're still alive (not already dead)
+        if newHealth < Misc.LastHealth and newHealth > 0 then
+            Misc.TriggerAntiStomp()
+        end
+        
+        Misc.LastHealth = newHealth
+    end)
+end
+
 function Misc.TriggerAntiStomp()
     if not Misc.Config or not Misc.Config.AntiStomp then return end
     if Misc.AntiStompTriggered then return end
@@ -50,7 +70,7 @@ function Misc.TriggerAntiStomp()
     local hrp = Misc.GetLiveHRP()
 
     if Misc.Config.AntiStompMode == "Void" then
-        --// INSTANT — no task.wait, no blocking
+        --// INSTANT — no waits, no delays
         if hrp then
             hrp.CFrame = CFrame.new(0, -50000, 0)
             hrp.Velocity = Vector3.new(0, 0, 0)
@@ -62,75 +82,40 @@ function Misc.TriggerAntiStomp()
         if char then
             pcall(function() char:BreakJoints() end)
         end
+        --// Instantly respawn — body vanishes before anyone can stomp
+        pcall(function() LocalPlayer:LoadCharacter() end)
 
     elseif Misc.Config.AntiStompMode == "Force Reset" then
         pcall(function() LocalPlayer:LoadCharacter() end)
     end
 end
 
+--// Fallback heartbeat (live refs, catches anything the hook misses)
 function Misc.CheckAntiStomp()
     if not Misc.Config or not Misc.Config.AntiStomp then
         Misc.AntiStompTriggered = false
         return
     end
+    if Misc.AntiStompTriggered then return end
 
     local humanoid = Misc.GetLiveHumanoid()
     if not humanoid then return end
 
-    local threshold = Misc.Config.AntiStompThreshold or 5
     local currentHealth = humanoid.Health
 
-    --// Trigger 1: Knocked but not dead (health > 0 and <= threshold)
-    --// This is the exact moment after a gun drops you — before they walk over
-    if currentHealth > 0 and currentHealth <= threshold then
+    --// Fallback: took damage but hook didn't fire
+    if Misc.LastHealth and currentHealth < Misc.LastHealth and currentHealth > 0 then
         Misc.TriggerAntiStomp()
         return
     end
 
-    --// Trigger 2: Big damage spike in one frame (shotgun/revolver)
-    if Misc.LastHealth and currentHealth > 0 then
-        local drop = Misc.LastHealth - currentHealth
-        if drop >= 40 then
-            Misc.TriggerAntiStomp()
-            return
-        end
-    end
-
-    --// Trigger 3: Da Hood "Knocked" value
+    --// Fallback: Da Hood "Knocked" value
     local char = LocalPlayer.Character
     if char then
         local knocked = char:FindFirstChild("Knocked")
         if knocked and (knocked:IsA("BoolValue") and knocked.Value == true or knocked:IsA("NumberValue") and knocked.Value > 0) then
             Misc.TriggerAntiStomp()
             return
-        end
-    end
-
-    --// Trigger 4: Ragdoll state
-    local state = humanoid:GetState()
-    if state == Enum.HumanoidStateType.Physics or
-       state == Enum.HumanoidStateType.GettingUp or
-       state == Enum.HumanoidStateType.PlatformStanding then
-        Misc.TriggerAntiStomp()
-        return
-    end
-
-    --// Trigger 5: Enemy within stomp range while critical
-    if currentHealth > 0 and currentHealth <= threshold + 10 then
-        local hrp = Misc.GetLiveHRP()
-        if hrp then
-            for _, player in pairs(Players:GetPlayers()) do
-                if player ~= LocalPlayer and player.Character then
-                    local theirHRP = player.Character:FindFirstChild("HumanoidRootPart")
-                    if theirHRP then
-                        local dist = (hrp.Position - theirHRP.Position).Magnitude
-                        if dist < 6 then
-                            Misc.TriggerAntiStomp()
-                            return
-                        end
-                    end
-                end
-            end
         end
     end
 
