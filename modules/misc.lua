@@ -50,24 +50,20 @@ function Misc.TriggerAntiStomp()
     local hrp = Misc.GetLiveHRP()
 
     if Misc.Config.AntiStompMode == "Void" then
-        --// Teleport deep underground and die instantly
+        --// INSTANT — no task.wait, no blocking
         if hrp then
             hrp.CFrame = CFrame.new(0, -50000, 0)
             hrp.Velocity = Vector3.new(0, 0, 0)
             hrp.AssemblyLinearVelocity = Vector3.new(0, 0, 0)
         end
-        task.wait(0.05)
-        --// Force death after teleport
         if humanoid then
             humanoid.Health = 0
         end
-        --// Break joints as backup
         if char then
             pcall(function() char:BreakJoints() end)
         end
 
     elseif Misc.Config.AntiStompMode == "Force Reset" then
-        --// Instant respawn — bypass death animation entirely
         pcall(function() LocalPlayer:LoadCharacter() end)
     end
 end
@@ -81,22 +77,26 @@ function Misc.CheckAntiStomp()
     local humanoid = Misc.GetLiveHumanoid()
     if not humanoid then return end
 
-    local threshold = Misc.Config.AntiStompThreshold or 15
+    local threshold = Misc.Config.AntiStompThreshold or 5
     local currentHealth = humanoid.Health
 
-    --// Trigger 1: Health dropped below threshold (knocked)
-    if currentHealth <= threshold and currentHealth > 0 then
+    --// Trigger 1: Knocked but not dead (health > 0 and <= threshold)
+    --// This is the exact moment after a gun drops you — before they walk over
+    if currentHealth > 0 and currentHealth <= threshold then
         Misc.TriggerAntiStomp()
         return
     end
 
-    --// Trigger 2: Health dropped hard in one frame (heavy damage)
-    if Misc.LastHealth and currentHealth < Misc.LastHealth - 25 then
-        Misc.TriggerAntiStomp()
-        return
+    --// Trigger 2: Big damage spike in one frame (shotgun/revolver)
+    if Misc.LastHealth and currentHealth > 0 then
+        local drop = Misc.LastHealth - currentHealth
+        if drop >= 40 then
+            Misc.TriggerAntiStomp()
+            return
+        end
     end
 
-    --// Trigger 3: Da Hood "Knocked" value check
+    --// Trigger 3: Da Hood "Knocked" value
     local char = LocalPlayer.Character
     if char then
         local knocked = char:FindFirstChild("Knocked")
@@ -106,7 +106,7 @@ function Misc.CheckAntiStomp()
         end
     end
 
-    --// Trigger 4: Ragdoll / physics state
+    --// Trigger 4: Ragdoll state
     local state = humanoid:GetState()
     if state == Enum.HumanoidStateType.Physics or
        state == Enum.HumanoidStateType.GettingUp or
@@ -115,8 +115,8 @@ function Misc.CheckAntiStomp()
         return
     end
 
-    --// Trigger 5: Someone is standing on you while low health
-    if currentHealth <= threshold + 15 then
+    --// Trigger 5: Enemy within stomp range while critical
+    if currentHealth > 0 and currentHealth <= threshold + 10 then
         local hrp = Misc.GetLiveHRP()
         if hrp then
             for _, player in pairs(Players:GetPlayers()) do
