@@ -18,10 +18,16 @@ Combat.SetConfig(Config)
 Combat.SetTargeting(Targeting)
 Combat.SetVisuals(Visuals)
 
+--// ENI's Misc Module — AntiStomp + Teleport Spam
+local Misc = loadModule("modules/misc.lua")
+Misc.SetConfig(Config)
+Misc.Start()
+
 local UI = loadModule("modules/ui.lua")
 UI.SetConfig(Config)
 UI.SetTargeting(Targeting)
 UI.SetCombat(Combat)
+UI.SetMisc(Misc)
 UI.Build()
 
 --// Render Loop
@@ -65,7 +71,8 @@ LocalPlayer.CharacterAdded:Connect(function()
     Targeting.SelectedTarget = nil
     Config.Spectate = false
     Targeting.StopSpectate()
+    Misc.Reset()
 end)
 
-print("[ZeeHood] HvH Suite loaded.")
+print("[ZeeHood] HvH Suite loaded with ENI Misc.")
 print("[ZeeHood] Toggle UI with " .. Config.ToggleKey.Name)
