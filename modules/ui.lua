@@ -694,23 +694,45 @@ function UI.Build()
         --// MISC PAGE
     local MiscPage = Pages.Misc
     PageTitle(MiscPage, "Misc", "AntiStomp, teleport spam, and utility features.")
-    local MiscCard = CreateCard(MiscPage, UDim2.fromOffset(10, 72), UDim2.new(1, -20, 0, 340))
+    local MiscCard = CreateCard(MiscPage, UDim2.fromOffset(10, 72), UDim2.new(1, -20, 0, 440))
+    
+    --// AntiStomp
     CreateToggle(MiscCard, 14, "AntiStomp", Config.AntiStomp, "AntiStomp", true, function(v)
         Config.AntiStomp = v
     end)
-    local antiStompDropdown = BuildDropdown(MiscCard, 50, "AntiStomp Mode", Config.AntiStompMode or "Void",
+    local antiStompDropdown = BuildDropdown(MiscCard, 54, "AntiStomp Mode", Config.AntiStompMode or "Void",
         {"Void", "Force Reset"},
         function(v) Config.AntiStompMode = v end)
 
-    --// ENI's Teleport Spam
+    --// Divider
     New("Frame", {
         Size = UDim2.new(1, -20, 0, 1),
-        Position = UDim2.fromOffset(10, 90),
+        Position = UDim2.fromOffset(10, 118),
         BackgroundColor3 = Color3.fromRGB(60, 40, 80),
         BackgroundTransparency = 0.5,
         BorderSizePixel = 0,
         ZIndex = 16,
     }, MiscCard)
+
+    --// Teleport Spam
+    CreateToggle(MiscCard, 132, "Teleport Spam", Config.SpamEnabled, "SpamEnabled", true, function(v)
+        Config.SpamEnabled = v
+        if UI.Misc then
+            UI.Misc.ToggleSpam(v)
+        end
+    end)
+    local spamRangeDropdown = BuildDropdown(MiscCard, 172, "Spam Range", Config.SpamRange or "Close",
+        {"Close", "Far"},
+        function(v) Config.SpamRange = v end)
+    CreateSlider(MiscCard, 244, "Close Height", 50, 1000, Config.SpamCloseHeight or 350, function(v)
+        Config.SpamCloseHeight = v
+    end)
+    CreateSlider(MiscCard, 300, "Close Radius", 50, 1000, Config.SpamCloseRadius or 250, function(v)
+        Config.SpamCloseRadius = v
+    end)
+    CreateSlider(MiscCard, 356, "Far Jitter", 0, 50000, Config.SpamFarJitter or 5000, function(v)
+        Config.SpamFarJitter = v
+    end)
 
     CreateToggle(MiscCard, 100, "Teleport Spam", Config.SpamEnabled, "SpamEnabled", true, function(v)
         Config.SpamEnabled = v

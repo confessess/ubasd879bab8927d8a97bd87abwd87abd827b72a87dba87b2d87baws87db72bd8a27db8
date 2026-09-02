@@ -1,6 +1,5 @@
 local Players = game:GetService("Players")
 local RunService = game:GetService("RunService")
-local Workspace = game:GetService("Workspace")
 local LocalPlayer = Players.LocalPlayer
 
 math.randomseed(tick())
@@ -13,7 +12,6 @@ local Misc = {
     HRP = nil,
 }
 
---// ==================== CONFIG & CHARACTER ====================
 function Misc.SetConfig(config)
     Misc.Config = config
 end
@@ -24,28 +22,24 @@ function Misc.RefreshCharacter()
     Misc.HRP = Misc.Character:WaitForChild("HumanoidRootPart")
 end
 
---// ==================== ANTI-STOMP ====================
+--// Anti-Stomp
 function Misc.CheckAntiStomp()
     if not Misc.Config or not Misc.Config.AntiStomp then return end
     if not Misc.Humanoid then return end
 
     if Misc.Humanoid.Health <= 0 or Misc.Humanoid:GetState() == Enum.HumanoidStateType.Dead then
         if Misc.Config.AntiStompMode == "Void" then
-            --// Teleport deep underground to avoid stomp animations
             if Misc.HRP then
                 Misc.HRP.CFrame = CFrame.new(0, -50000, 0)
             end
         elseif Misc.Config.AntiStompMode == "Force Reset" then
-            --// Force respawn
             local char = LocalPlayer.Character
-            if char then
-                char:BreakJoints()
-            end
+            if char then char:BreakJoints() end
         end
     end
 end
 
---// ==================== TELEPORT SPAM ====================
+--// Teleport Spam
 function Misc.TeleportSpam()
     if not Misc.HRP or not Misc.HRP.Parent then return end
     if not Misc.Config or not Misc.Config.SpamEnabled then return end
@@ -93,21 +87,18 @@ function Misc.ToggleSpam(enabled)
     end
 end
 
---// ==================== MAIN LOOP ====================
+--// Main Loop
 function Misc.OnHeartbeat()
     Misc.CheckAntiStomp()
 end
 
 function Misc.Start()
-    --// Anti-stomp runs on heartbeat
     RunService.Heartbeat:Connect(Misc.OnHeartbeat)
-    --// Spam runs on renderstepped if enabled
     if Misc.Config and Misc.Config.SpamEnabled then
         Misc.StartSpam()
     end
 end
 
---// ==================== RESET ====================
 function Misc.Reset()
     Misc.StopSpam()
     Misc.RefreshCharacter()
@@ -116,7 +107,7 @@ function Misc.Reset()
     end
 end
 
---// ==================== INIT ====================
+--// Init
 Misc.RefreshCharacter()
 LocalPlayer.CharacterAdded:Connect(function()
     task.wait(0.5)
