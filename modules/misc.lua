@@ -7,7 +7,6 @@ math.randomseed(tick())
 local Misc = {
     Config = nil,
     SpamConnection = nil,
-    AntiStompConnection = nil,
     Character = nil,
     Humanoid = nil,
     HRP = nil,
@@ -45,66 +44,58 @@ function Misc.TriggerAntiStomp()
     if not Misc.Config or not Misc.Config.AntiStomp then return end
     if Misc.AntiStompTriggered then return end
     Misc.AntiStompTriggered = true
-    
+
     local char = LocalPlayer.Character
-    if not char then return end
-    
+    local humanoid = Misc.GetLiveHumanoid()
     local hrp = Misc.GetLiveHRP()
-    
+
     if Misc.Config.AntiStompMode == "Void" then
+        --// Teleport deep underground and die instantly
         if hrp then
-            --// Instant void teleport
             hrp.CFrame = CFrame.new(0, -50000, 0)
             hrp.Velocity = Vector3.new(0, 0, 0)
             hrp.AssemblyLinearVelocity = Vector3.new(0, 0, 0)
-            hrp.AssemblyAngularVelocity = Vector3.new(0, 0, 0)
-            if hrp:IsA("BasePart") then
-                hrp.Anchored = true
-                task.delay(2, function()
-                    if hrp and hrp.Parent then hrp.Anchored = false end
-                end)
-            end
         end
-        
-    elseif Misc.Config.AntiStompMode == "Force Reset" then
-        --// Nuclear option — try everything
-        pcall(function() LocalPlayer:LoadCharacter() end)
         task.wait(0.05)
-        if char and char.Parent then
+        --// Force death after teleport
+        if humanoid then
+            humanoid.Health = 0
+        end
+        --// Break joints as backup
+        if char then
             pcall(function() char:BreakJoints() end)
         end
-        task.wait(0.05)
-        --// If still alive, destroy character
-        if char and char.Parent then
-            pcall(function() char:Destroy() end)
-        end
+
+    elseif Misc.Config.AntiStompMode == "Force Reset" then
+        --// Instant respawn — bypass death animation entirely
+        pcall(function() LocalPlayer:LoadCharacter() end)
     end
 end
 
 function Misc.CheckAntiStomp()
-    if not Misc.Config or not Misc.Config.AntiStomp then 
+    if not Misc.Config or not Misc.Config.AntiStomp then
         Misc.AntiStompTriggered = false
-        return 
+        return
     end
-    
+
     local humanoid = Misc.GetLiveHumanoid()
     if not humanoid then return end
-    
+
     local threshold = Misc.Config.AntiStompThreshold or 15
     local currentHealth = humanoid.Health
-    
+
     --// Trigger 1: Health dropped below threshold (knocked)
     if currentHealth <= threshold and currentHealth > 0 then
         Misc.TriggerAntiStomp()
         return
     end
-    
+
     --// Trigger 2: Health dropped hard in one frame (heavy damage)
     if Misc.LastHealth and currentHealth < Misc.LastHealth - 25 then
         Misc.TriggerAntiStomp()
         return
     end
-    
+
     --// Trigger 3: Da Hood "Knocked" value check
     local char = LocalPlayer.Character
     if char then
@@ -114,7 +105,7 @@ function Misc.CheckAntiStomp()
             return
         end
     end
-    
+
     --// Trigger 4: Ragdoll / physics state
     local state = humanoid:GetState()
     if state == Enum.HumanoidStateType.Physics or
@@ -123,7 +114,7 @@ function Misc.CheckAntiStomp()
         Misc.TriggerAntiStomp()
         return
     end
-    
+
     --// Trigger 5: Someone is standing on you while low health
     if currentHealth <= threshold + 15 then
         local hrp = Misc.GetLiveHRP()
@@ -142,7 +133,7 @@ function Misc.CheckAntiStomp()
             end
         end
     end
-    
+
     Misc.LastHealth = currentHealth
 end
 
