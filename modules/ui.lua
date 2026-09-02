@@ -1,22 +1,27 @@
---// modules/ui.lua
---// Dark Glass UI integrated with Zee Hood HVH
-
 local Players = game:GetService("Players")
 local UserInputService = game:GetService("UserInputService")
 local TweenService = game:GetService("TweenService")
-local RunService = game:GetService("RunService")
 local Lighting = game:GetService("Lighting")
 
 local Player = Players.LocalPlayer
 local PlayerGui = Player:WaitForChild("PlayerGui")
 
-local Config = require(script.Parent.Parent.config)
-local Targeting = require(script.Parent.targeting)
-local Combat = require(script.Parent.combat)
+local UI = {
+    Config = nil,
+    Targeting = nil,
+    Combat = nil,
+    ScreenGui = nil,
+    Main = nil,
+    HotkeyDisplay = nil,
+    GUIVisible = false,
+    ListeningKey = nil,
+    TPKeyButton = nil,
+    RapidKeyButton = nil,
+}
 
-local UI = {}
+local PURPLE = Color3.fromRGB(145, 75, 255)
+local PURPLE_LIGHT = Color3.fromRGB(195, 140, 255)
 
---// Helpers
 local function New(className, properties, parent)
     local object = Instance.new(className)
     for property, value in pairs(properties or {}) do
@@ -39,38 +44,81 @@ local function Stroke(parent, transparency, thickness, color)
 end
 
 local function Tween(object, properties, duration, style, direction)
-    local info = TweenInfo.new(
-        duration or 0.3,
-        style or Enum.EasingStyle.Quint,
-        direction or Enum.EasingDirection.Out
-    )
+    local info = TweenInfo.new(duration or 0.3, style or Enum.EasingStyle.Quint, direction or Enum.EasingDirection.Out)
     return TweenService:Create(object, info, properties)
 end
 
---// Colors
-local PURPLE = Color3.fromRGB(145, 75, 255)
-local PURPLE_LIGHT = Color3.fromRGB(195, 140, 255)
+function UI.SetConfig(config)
+    UI.Config = config
+end
 
---// Cleanup old
-local function Cleanup()
+function UI.SetTargeting(targeting)
+    UI.Targeting = targeting
+end
+
+function UI.SetCombat(combat)
+    UI.Combat = combat
+end
+
+function UI.UpdateHotkeyDisplay()
+    local Config = UI.Config
+    if not Config or not UI.HotkeyDisplay then return end
+    
+    for _, child in ipairs(UI.HotkeyDisplay:GetChildren()) do
+        if child:IsA("TextLabel") then child:Destroy() end
+    end
+    
+    if not Config.ShowHotkeys then
+        UI.HotkeyDisplay.Visible = false
+        return
+    end
+    
+    UI.HotkeyDisplay.Visible = not UI.GUIVisible
+    
+    local y = 6
+    local function addLine(text)
+        New("TextLabel", {
+            Size = UDim2.new(1, -16, 0, 18),
+            Position = UDim2.fromOffset(8, y),
+            BackgroundTransparency = 1,
+            Text = text,
+            TextColor3 = Color3.fromRGB(195, 175, 220),
+            TextSize = 10,
+            Font = Enum.Font.GothamMedium,
+            TextXAlignment = Enum.TextXAlignment.Left,
+            ZIndex = 51,
+        }, UI.HotkeyDisplay)
+        y = y + 16
+    end
+    
+    addLine("MENU  •  " .. Config.ToggleKey.Name)
+    if Config.RapidFireKey then
+        addLine("RAPID  •  " .. Config.RapidFireKey.Name)
+    end
+    if Config.FrameTPKey then
+        addLine("TP  •  " .. Config.FrameTPKey.Name)
+    end
+    
+    UI.HotkeyDisplay.Size = UDim2.fromOffset(155, math.max(36, y + 4))
+end
+
+function UI.Build()
+    local Config = UI.Config
+    if not Config then return end
+    
     local oldGui = PlayerGui:FindFirstChild("ZeeHoodUI")
     if oldGui then oldGui:Destroy() end
     local oldBlur = Lighting:FindFirstChild("ZeeHoodBlur")
     if oldBlur then oldBlur:Destroy() end
-end
-
-function UI.Build()
-    Cleanup()
     
-    --// ScreenGui
     local ScreenGui = New("ScreenGui", {
         Name = "ZeeHoodUI",
         ResetOnSpawn = false,
         IgnoreGuiInset = true,
         ZIndexBehavior = Enum.ZIndexBehavior.Sibling,
     }, PlayerGui)
+    UI.ScreenGui = ScreenGui
     
-    --// Background
     local Background = New("Frame", {
         Name = "Background",
         Size = UDim2.fromScale(1, 1),
@@ -90,7 +138,6 @@ function UI.Build()
         }),
     }, Background)
     
-    --// Stars
     local StarContainer = New("Frame", {
         Name = "Stars",
         Size = UDim2.fromScale(1, 1),
@@ -110,27 +157,23 @@ function UI.Build()
             ZIndex = 2,
         }, StarContainer)
         Corner(star, size)
-        
         task.spawn(function()
             while star.Parent do
-                local fadeTime = math.random(5, 15) / 10
-                Tween(star, {BackgroundTransparency = math.random(15, 55) / 100}, fadeTime, Enum.EasingStyle.Sine, Enum.EasingDirection.InOut):Play()
-                task.wait(fadeTime)
-                Tween(star, {BackgroundTransparency = math.random(65, 95) / 100}, fadeTime, Enum.EasingStyle.Sine, Enum.EasingDirection.InOut):Play()
-                task.wait(fadeTime + math.random(1, 15) / 10)
+                local ft = math.random(5, 15) / 10
+                Tween(star, {BackgroundTransparency = math.random(15, 55) / 100}, ft, Enum.EasingStyle.Sine, Enum.EasingDirection.InOut):Play()
+                task.wait(ft)
+                Tween(star, {BackgroundTransparency = math.random(65, 95) / 100}, ft, Enum.EasingStyle.Sine, Enum.EasingDirection.InOut):Play()
+                task.wait(ft + math.random(1, 15) / 10)
             end
         end)
     end
     
-    --// Blur
     local Blur = New("BlurEffect", {
         Name = "ZeeHoodBlur",
         Size = 0,
     }, Lighting)
     
-    --// Main Window
-    local GUI_WIDTH, GUI_HEIGHT = 760, 520
-    
+    local GUI_WIDTH, GUI_HEIGHT = 760, 540
     local Main = New("Frame", {
         Name = "Main",
         Size = UDim2.fromOffset(GUI_WIDTH, GUI_HEIGHT),
@@ -142,12 +185,11 @@ function UI.Build()
         ZIndex = 10,
         Visible = false,
     }, ScreenGui)
-    
+    UI.Main = Main
     Corner(Main, 20)
     Stroke(Main, 0.72, 1)
     
-    --// Top Highlight
-    local TopHighlight = New("Frame", {
+    New("Frame", {
         Size = UDim2.new(1, -40, 0, 1),
         Position = UDim2.fromOffset(20, 1),
         BackgroundColor3 = Color3.fromRGB(195, 140, 255),
@@ -155,9 +197,8 @@ function UI.Build()
         BorderSizePixel = 0,
         ZIndex = 11,
     }, Main)
-    Corner(TopHighlight, 1)
+    Corner(Main, 1)
     
-    --// Top Bar
     local TopBar = New("Frame", {
         Size = UDim2.new(1, -30, 0, 62),
         Position = UDim2.fromOffset(15, 10),
@@ -189,7 +230,6 @@ function UI.Build()
         ZIndex = 13,
     }, TopBar)
     
-    --// Close Button
     local CloseBtn = New("TextButton", {
         Size = UDim2.fromOffset(34, 34),
         Position = UDim2.new(1, -34, 0, 7),
@@ -205,7 +245,6 @@ function UI.Build()
     }, TopBar)
     Corner(CloseBtn, 9)
     
-    --// Body
     local Body = New("Frame", {
         Size = UDim2.new(1, -30, 1, -82),
         Position = UDim2.fromOffset(15, 72),
@@ -213,7 +252,6 @@ function UI.Build()
         ZIndex = 12,
     }, Main)
     
-    --// Sidebar
     local Sidebar = New("Frame", {
         Size = UDim2.new(0, 175, 1, 0),
         Position = UDim2.fromOffset(0, 0),
@@ -225,7 +263,6 @@ function UI.Build()
     Corner(Sidebar, 15)
     Stroke(Sidebar, 0.91, 1)
     
-    --// Content
     local Content = New("Frame", {
         Size = UDim2.new(1, -190, 1, 0),
         Position = UDim2.fromOffset(190, 0),
@@ -234,7 +271,6 @@ function UI.Build()
         ZIndex = 13,
     }, Body)
     
-    --// Tabs
     local TabNames = {"Combat", "Visuals", "Target", "Settings"}
     local TabButtons = {}
     local Pages = {}
@@ -279,7 +315,6 @@ function UI.Build()
         Pages[name] = page
     end
     
-    --// Page Title Helper
     local function PageTitle(page, title, description)
         New("TextLabel", {
             Size = UDim2.new(1, -20, 0, 28),
@@ -292,7 +327,6 @@ function UI.Build()
             TextXAlignment = Enum.TextXAlignment.Left,
             ZIndex = 15,
         }, page)
-        
         New("TextLabel", {
             Size = UDim2.new(1, -20, 0, 22),
             Position = UDim2.fromOffset(10, 35),
@@ -306,7 +340,6 @@ function UI.Build()
         }, page)
     end
     
-    --// Card Helper
     local function CreateCard(page, position, size)
         local card = New("Frame", {
             Size = size,
@@ -321,7 +354,6 @@ function UI.Build()
         return card
     end
     
-    --// Toggle Helper
     local function CreateToggle(parent, y, text, default, callback)
         local frame = New("Frame", {
             Size = UDim2.new(1, -20, 0, 32),
@@ -329,7 +361,6 @@ function UI.Build()
             BackgroundTransparency = 1,
             ZIndex = 16,
         }, parent)
-        
         New("TextLabel", {
             Size = UDim2.new(1, -60, 1, 0),
             BackgroundTransparency = 1,
@@ -340,7 +371,6 @@ function UI.Build()
             TextXAlignment = Enum.TextXAlignment.Left,
             ZIndex = 17,
         }, frame)
-        
         local toggle = New("TextButton", {
             Size = UDim2.fromOffset(44, 22),
             Position = UDim2.new(1, -50, 0.5, -11),
@@ -351,7 +381,6 @@ function UI.Build()
             ZIndex = 17,
         }, frame)
         Corner(toggle, 11)
-        
         local knob = New("Frame", {
             Size = UDim2.fromOffset(18, 18),
             Position = default and UDim2.new(1, -20, 0.5, -9) or UDim2.new(0, 2, 0.5, -9),
@@ -360,7 +389,6 @@ function UI.Build()
             ZIndex = 18,
         }, toggle)
         Corner(knob, 20)
-        
         local state = default
         toggle.MouseButton1Click:Connect(function()
             state = not state
@@ -368,11 +396,9 @@ function UI.Build()
             Tween(knob, {Position = state and UDim2.new(1, -20, 0.5, -9) or UDim2.new(0, 2, 0.5, -9)}, 0.2):Play()
             callback(state)
         end)
-        
         return function() return state end
     end
     
-    --// Slider Helper
     local function CreateSlider(parent, y, text, min, max, default, callback)
         local frame = New("Frame", {
             Size = UDim2.new(1, -20, 0, 48),
@@ -380,7 +406,6 @@ function UI.Build()
             BackgroundTransparency = 1,
             ZIndex = 16,
         }, parent)
-        
         local label = New("TextLabel", {
             Size = UDim2.new(1, 0, 0, 20),
             BackgroundTransparency = 1,
@@ -391,7 +416,6 @@ function UI.Build()
             TextXAlignment = Enum.TextXAlignment.Left,
             ZIndex = 17,
         }, frame)
-        
         local track = New("Frame", {
             Size = UDim2.new(1, 0, 0, 5),
             Position = UDim2.new(0, 0, 0, 30),
@@ -400,7 +424,6 @@ function UI.Build()
             ZIndex = 17,
         }, frame)
         Corner(track, 3)
-        
         local fill = New("Frame", {
             Size = UDim2.new((default - min) / (max - min), 0, 1, 0),
             BackgroundColor3 = PURPLE,
@@ -408,7 +431,6 @@ function UI.Build()
             ZIndex = 18,
         }, track)
         Corner(fill, 3)
-        
         local dragging = false
         local function setValue(input)
             local pos = math.clamp((input.Position.X - track.AbsolutePosition.X) / track.AbsoluteSize.X, 0, 1)
@@ -417,20 +439,17 @@ function UI.Build()
             label.Text = text .. " [" .. val .. "]"
             callback(val)
         end
-        
         track.InputBegan:Connect(function(input)
             if input.UserInputType == Enum.UserInputType.MouseButton1 then
                 dragging = true
                 setValue(input)
             end
         end)
-        
         UserInputService.InputChanged:Connect(function(input)
             if dragging and input.UserInputType == Enum.UserInputType.MouseMovement then
                 setValue(input)
             end
         end)
-        
         UserInputService.InputEnded:Connect(function(input)
             if input.UserInputType == Enum.UserInputType.MouseButton1 then
                 dragging = false
@@ -438,11 +457,50 @@ function UI.Build()
         end)
     end
     
+    local function CreateKeybindRow(parent, y, labelText, currentKey, onSet)
+        local frame = New("Frame", {
+            Size = UDim2.new(1, -20, 0, 32),
+            Position = UDim2.fromOffset(10, y),
+            BackgroundTransparency = 1,
+            ZIndex = 16,
+        }, parent)
+        New("TextLabel", {
+            Size = UDim2.new(1, -130, 1, 0),
+            BackgroundTransparency = 1,
+            Text = labelText,
+            TextColor3 = Color3.fromRGB(200, 190, 215),
+            TextSize = 12,
+            Font = Enum.Font.GothamMedium,
+            TextXAlignment = Enum.TextXAlignment.Left,
+            ZIndex = 17,
+        }, frame)
+        local btn = New("TextButton", {
+            Size = UDim2.fromOffset(100, 28),
+            Position = UDim2.new(1, -110, 0.5, -14),
+            BackgroundColor3 = Color3.fromRGB(45, 65, 110),
+            BackgroundTransparency = 0.2,
+            BorderSizePixel = 0,
+            Text = currentKey and currentKey.Name or "None",
+            TextColor3 = Color3.fromRGB(220, 220, 235),
+            TextSize = 11,
+            Font = Enum.Font.GothamBold,
+            AutoButtonColor = false,
+            ZIndex = 17,
+        }, frame)
+        Corner(btn, 6)
+        btn.MouseButton1Click:Connect(function()
+            if UI.ListeningKey then return end
+            UI.ListeningKey = onSet
+            btn.Text = "PRESS KEY"
+            Tween(btn, {BackgroundTransparency = 0}, 0.2):Play()
+        end)
+        return btn
+    end
+    
     --// COMBAT PAGE
     local CombatPage = Pages.Combat
-    PageTitle(CombatPage, "Combat", "Frame teleport shoot and rapid fire controls.")
-    
-    local CombatCard = CreateCard(CombatPage, UDim2.fromOffset(10, 72), UDim2.new(1, -20, 0, 200))
+    PageTitle(CombatPage, "Combat", "Frame teleport shoot, rapid fire, and hotkeys.")
+    local CombatCard = CreateCard(CombatPage, UDim2.fromOffset(10, 72), UDim2.new(1, -20, 0, 260))
     
     CreateToggle(CombatCard, 14, "Frame TP Shoot", Config.FrameTP, function(v)
         Config.FrameTP = v
@@ -457,10 +515,14 @@ function UI.Build()
         Config.Hitmarkers = v
     end)
     
+    local tpKeyBtn = CreateKeybindRow(CombatCard, 158, "Frame TP Key", Config.FrameTPKey, "FrameTP")
+    local rapidKeyBtn = CreateKeybindRow(CombatCard, 194, "Rapid Fire Key", Config.RapidFireKey, "RapidFire")
+    UI.TPKeyButton = tpKeyBtn
+    UI.RapidKeyButton = rapidKeyBtn
+    
     --// VISUALS PAGE
     local VisualsPage = Pages.Visuals
     PageTitle(VisualsPage, "Visuals", "FOV, tracers, and target highlighting.")
-    
     local VisualsCard = CreateCard(VisualsPage, UDim2.fromOffset(10, 72), UDim2.new(1, -20, 0, 200))
     
     CreateToggle(VisualsCard, 14, "FOV Circle", Config.FOV_Enabled, function(v)
@@ -478,15 +540,14 @@ function UI.Build()
     
     --// TARGET PAGE
     local TargetPage = Pages.Target
-    PageTitle(TargetPage, "Target", "Player selection and spectate controls.")
+    PageTitle(TargetPage, "Target", "Player selection, part targeting, and spectate.")
+    local TargetCard = CreateCard(TargetPage, UDim2.fromOffset(10, 72), UDim2.new(1, -20, 0, 260))
     
-    local TargetCard = CreateCard(TargetPage, UDim2.fromOffset(10, 72), UDim2.new(1, -20, 0, 180))
-    
-    local targetLabel = New("TextLabel", {
+    New("TextLabel", {
         Size = UDim2.new(1, -20, 0, 20),
         Position = UDim2.fromOffset(10, 14),
         BackgroundTransparency = 1,
-        Text = "Target Part: " .. Config.TargetPart,
+        Text = "Target Part",
         TextColor3 = Color3.fromRGB(200, 190, 215),
         TextSize = 12,
         Font = Enum.Font.GothamMedium,
@@ -494,55 +555,129 @@ function UI.Build()
         ZIndex = 16,
     }, TargetCard)
     
-    local partBtn = New("TextButton", {
-        Size = UDim2.fromOffset(120, 28),
-        Position = UDim2.new(1, -130, 0, 10),
-        BackgroundColor3 = Color3.fromRGB(45, 65, 110),
+    local DropdownContainer = New("Frame", {
+        Size = UDim2.new(1, -20, 0, 32),
+        Position = UDim2.fromOffset(10, 38),
+        BackgroundColor3 = Color3.fromRGB(22, 14, 32),
+        BackgroundTransparency = 0.15,
         BorderSizePixel = 0,
-        Text = "Cycle Part",
-        TextColor3 = Color3.fromRGB(220, 220, 235),
-        TextSize = 11,
-        Font = Enum.Font.GothamBold,
+        ZIndex = 16,
+    }, TargetCard)
+    Corner(DropdownContainer, 8)
+    Stroke(DropdownContainer, 0.85, 1, Color3.fromRGB(140, 90, 200))
+    
+    local DropdownHeader = New("TextButton", {
+        Size = UDim2.new(1, 0, 0, 32),
+        BackgroundTransparency = 1,
+        Text = "  " .. Config.TargetPart .. "  ▼",
+        TextColor3 = Color3.fromRGB(220, 215, 235),
+        TextSize = 12,
+        Font = Enum.Font.GothamMedium,
+        TextXAlignment = Enum.TextXAlignment.Left,
         AutoButtonColor = false,
         ZIndex = 17,
-    }, TargetCard)
-    Corner(partBtn, 6)
+    }, DropdownContainer)
+    
+    local DropdownList = New("ScrollingFrame", {
+        Size = UDim2.new(1, 0, 0, 0),
+        Position = UDim2.fromOffset(0, 34),
+        BackgroundColor3 = Color3.fromRGB(18, 11, 27),
+        BackgroundTransparency = 0.05,
+        BorderSizePixel = 0,
+        ScrollBarThickness = 3,
+        ScrollBarImageColor3 = Color3.fromRGB(100, 70, 150),
+        CanvasSize = UDim2.new(0, 0, 0, 0),
+        ZIndex = 18,
+        ClipsDescendants = true,
+    }, DropdownContainer)
+    Corner(DropdownList, 8)
+    Stroke(DropdownList, 0.9, 1, Color3.fromRGB(140, 90, 200))
+    
+    New("UIListLayout", {
+        Padding = UDim.new(0, 2),
+        Parent = DropdownList,
+    })
     
     local parts = {"Head", "HumanoidRootPart", "Torso", "UpperTorso", "LowerTorso", "LeftLeg", "RightLeg"}
-    local pIdx = 1
-    partBtn.MouseButton1Click:Connect(function()
-        pIdx = pIdx % #parts + 1
-        Config.TargetPart = parts[pIdx]
-        targetLabel.Text = "Target Part: " .. Config.TargetPart
-    end)
+    local dropdownOpen = false
     
-    CreateToggle(TargetCard, 50, "Spectate Target", Config.Spectate, function(v)
-        Config.Spectate = v
-        if not v then
-            Targeting.StopSpectate()
+    for _, partName in ipairs(parts) do
+        local opt = New("TextButton", {
+            Size = UDim2.new(1, -8, 0, 26),
+            Position = UDim2.fromOffset(4, 0),
+            BackgroundColor3 = Color3.fromRGB(30, 20, 42),
+            BackgroundTransparency = 1,
+            BorderSizePixel = 0,
+            Text = partName,
+            TextColor3 = Color3.fromRGB(180, 170, 200),
+            TextSize = 11,
+            Font = Enum.Font.GothamMedium,
+            AutoButtonColor = false,
+            ZIndex = 19,
+        }, DropdownList)
+        Corner(opt, 4)
+        opt.MouseEnter:Connect(function()
+            Tween(opt, {BackgroundTransparency = 0.3, TextColor3 = Color3.fromRGB(235, 220, 255)}, 0.15):Play()
+        end)
+        opt.MouseLeave:Connect(function()
+            Tween(opt, {BackgroundTransparency = 1, TextColor3 = Color3.fromRGB(180, 170, 200)}, 0.15):Play()
+        end)
+        opt.MouseButton1Click:Connect(function()
+            Config.TargetPart = partName
+            DropdownHeader.Text = "  " .. partName .. "  ▼"
+            dropdownOpen = false
+            Tween(DropdownList, {Size = UDim2.new(1, 0, 0, 0)}, 0.2):Play()
+        end)
+    end
+    
+    DropdownList.CanvasSize = UDim2.new(0, 0, 0, #parts * 28)
+    
+    DropdownHeader.MouseButton1Click:Connect(function()
+        dropdownOpen = not dropdownOpen
+        if dropdownOpen then
+            DropdownHeader.Text = "  " .. Config.TargetPart .. "  ▲"
+            Tween(DropdownList, {Size = UDim2.new(1, 0, 0, math.min(140, #parts * 28))}, 0.2):Play()
+        else
+            DropdownHeader.Text = "  " .. Config.TargetPart .. "  ▼"
+            Tween(DropdownList, {Size = UDim2.new(1, 0, 0, 0)}, 0.2):Play()
         end
     end)
     
-    -- Player List
+    CreateToggle(TargetCard, 82, "Spectate Target", Config.Spectate, function(v)
+        Config.Spectate = v
+        if not v then
+            UI.Targeting.StopSpectate()
+        end
+    end)
+    
+    New("TextLabel", {
+        Size = UDim2.new(1, -20, 0, 18),
+        Position = UDim2.fromOffset(10, 120),
+        BackgroundTransparency = 1,
+        Text = "Player List",
+        TextColor3 = Color3.fromRGB(160, 150, 175),
+        TextSize = 10,
+        Font = Enum.Font.GothamBold,
+        TextXAlignment = Enum.TextXAlignment.Left,
+        ZIndex = 16,
+    }, TargetCard)
+    
     local PlayerList = New("ScrollingFrame", {
-        Size = UDim2.new(1, -20, 0, 140),
-        Position = UDim2.fromOffset(10, 90),
+        Size = UDim2.new(1, -20, 0, 120),
+        Position = UDim2.fromOffset(10, 140),
         BackgroundColor3 = Color3.fromRGB(12, 8, 18),
         BackgroundTransparency = 0.3,
         BorderSizePixel = 0,
         ScrollBarThickness = 3,
+        ScrollBarImageColor3 = Color3.fromRGB(100, 70, 150),
         CanvasSize = UDim2.new(0, 0, 0, 0),
         ZIndex = 16,
     }, TargetCard)
     Corner(PlayerList, 8)
-    
-    New("UIListLayout", {
-        Padding = UDim.new(0, 2),
-        Parent = PlayerList,
-    })
+    New("UIListLayout", {Padding = UDim.new(0, 2), Parent = PlayerList})
     
     local function refreshList()
-        Targeting.RefreshPlayerList(PlayerList, refreshList)
+        UI.Targeting.RefreshPlayerList(PlayerList, refreshList)
     end
     refreshList()
     Players.PlayerAdded:Connect(refreshList)
@@ -550,15 +685,14 @@ function UI.Build()
     
     --// SETTINGS PAGE
     local SettingsPage = Pages.Settings
-    PageTitle(SettingsPage, "Settings", "Interface customization.")
-    
-    local SettingsCard = CreateCard(SettingsPage, UDim2.fromOffset(10, 72), UDim2.new(1, -20, 0, 100))
+    PageTitle(SettingsPage, "Settings", "Interface customization and hotkey display.")
+    local SettingsCard = CreateCard(SettingsPage, UDim2.fromOffset(10, 72), UDim2.new(1, -20, 0, 200))
     
     New("TextLabel", {
         Size = UDim2.new(1, -140, 0, 25),
         Position = UDim2.fromOffset(15, 14),
         BackgroundTransparency = 1,
-        Text = "Toggle Keybind",
+        Text = "Menu Toggle Key",
         TextColor3 = Color3.fromRGB(235, 220, 255),
         TextSize = 14,
         Font = Enum.Font.GothamBold,
@@ -594,9 +728,29 @@ function UI.Build()
     }, SettingsCard)
     Corner(KeybindButton, 9)
     
+    CreateToggle(SettingsCard, 90, "Show Hotkeys", Config.ShowHotkeys, function(v)
+        Config.ShowHotkeys = v
+        UI.UpdateHotkeyDisplay()
+    end)
+    
+    --// Hotkey Display (top right, outside Main)
+    local HotkeyDisplay = New("Frame", {
+        Name = "HotkeyDisplay",
+        Size = UDim2.fromOffset(155, 36),
+        AnchorPoint = Vector2.new(1, 0),
+        Position = UDim2.new(1, -20, 0, 20),
+        BackgroundColor3 = Color3.fromRGB(15, 9, 23),
+        BackgroundTransparency = 0.08,
+        BorderSizePixel = 0,
+        Visible = false,
+        ZIndex = 50,
+    }, ScreenGui)
+    Corner(HotkeyDisplay, 10)
+    Stroke(HotkeyDisplay, 0.88, 1)
+    UI.HotkeyDisplay = HotkeyDisplay
+    
     --// Tab System
     local ActiveTab = nil
-    
     local function SelectTab(name)
         ActiveTab = name
         for tabName, data in pairs(TabButtons) do
@@ -629,19 +783,17 @@ function UI.Build()
     SelectTab("Combat")
     
     --// Keybind Changing
-    local ListeningForKey = false
+    UI.ListeningKey = nil
     KeybindButton.MouseButton1Click:Connect(function()
-        if ListeningForKey then return end
-        ListeningForKey = true
+        if UI.ListeningKey then return end
+        UI.ListeningKey = "Toggle"
         KeybindButton.Text = "PRESS KEY"
         Tween(KeybindButton, {BackgroundTransparency = 0}, 0.2):Play()
     end)
     
     --// GUI Toggle
-    local GUIVisible = false
-    
     local function SetGUIVisible(visible)
-        GUIVisible = visible
+        UI.GUIVisible = visible
         if visible then
             Main.Visible = true
             Background.Visible = true
@@ -657,39 +809,66 @@ function UI.Build()
             }, 0.3, Enum.EasingStyle.Quint, Enum.EasingDirection.In):Play()
             Tween(Blur, {Size = 0}, 0.3):Play()
             task.delay(0.3, function()
-                if not GUIVisible then
+                if not UI.GUIVisible then
                     Main.Visible = false
                     Background.Visible = false
                 end
             end)
         end
+        UI.UpdateHotkeyDisplay()
     end
+    UI.SetGUIVisible = SetGUIVisible
     
-    --// Input
     UserInputService.InputBegan:Connect(function(input, gameProcessed)
         if gameProcessed then return end
         
-        if ListeningForKey then
+        if UI.ListeningKey then
             if input.UserInputType == Enum.UserInputType.Keyboard and input.KeyCode ~= Enum.KeyCode.Unknown then
-                Config.ToggleKey = input.KeyCode
-                KeybindButton.Text = Config.ToggleKey.Name
-                ListeningForKey = false
+                if input.KeyCode == Enum.KeyCode.Delete or input.KeyCode == Enum.KeyCode.Backspace then
+                    if UI.ListeningKey == "RapidFire" then
+                        Config.RapidFireKey = nil
+                        if UI.RapidKeyButton then UI.RapidKeyButton.Text = "None" end
+                    elseif UI.ListeningKey == "FrameTP" then
+                        Config.FrameTPKey = nil
+                        if UI.TPKeyButton then UI.TPKeyButton.Text = "None" end
+                    end
+                else
+                    if UI.ListeningKey == "Toggle" then
+                        Config.ToggleKey = input.KeyCode
+                        KeybindButton.Text = Config.ToggleKey.Name
+                    elseif UI.ListeningKey == "RapidFire" then
+                        Config.RapidFireKey = input.KeyCode
+                        if UI.RapidKeyButton then UI.RapidKeyButton.Text = input.KeyCode.Name end
+                    elseif UI.ListeningKey == "FrameTP" then
+                        Config.FrameTPKey = input.KeyCode
+                        if UI.TPKeyButton then UI.TPKeyButton.Text = input.KeyCode.Name end
+                    end
+                end
+                
+                UI.ListeningKey = nil
                 Tween(KeybindButton, {BackgroundTransparency = 0.18}, 0.2):Play()
+                if UI.RapidKeyButton then Tween(UI.RapidKeyButton, {BackgroundTransparency = 0.2}, 0.2):Play() end
+                if UI.TPKeyButton then Tween(UI.TPKeyButton, {BackgroundTransparency = 0.2}, 0.2):Play() end
+                UI.UpdateHotkeyDisplay()
             end
             return
         end
         
-        if input.UserInputType == Enum.UserInputType.Keyboard and input.KeyCode == Config.ToggleKey then
-            SetGUIVisible(not GUIVisible)
+        if input.UserInputType == Enum.UserInputType.Keyboard then
+            if input.KeyCode == Config.ToggleKey then
+                SetGUIVisible(not UI.GUIVisible)
+            elseif Config.RapidFireKey and input.KeyCode == Config.RapidFireKey then
+                Config.RapidFire = not Config.RapidFire
+            elseif Config.FrameTPKey and input.KeyCode == Config.FrameTPKey then
+                Config.FrameTP = not Config.FrameTP
+            end
         end
     end)
     
-    --// Close
     CloseBtn.MouseButton1Click:Connect(function()
         SetGUIVisible(false)
     end)
     
-    --// Hover effects
     local function Hover(button, normal, hover)
         button.MouseEnter:Connect(function()
             Tween(button, {BackgroundTransparency = hover}, 0.15):Play()
@@ -702,7 +881,6 @@ function UI.Build()
     Hover(CloseBtn, 0.2, 0.05)
     Hover(KeybindButton, 0.18, 0.05)
     
-    --// Init
     Main.Size = UDim2.fromOffset(GUI_WIDTH, 0)
     SetGUIVisible(true)
     

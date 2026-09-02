@@ -1,13 +1,7 @@
---// config.lua
---// All tunable settings in one place
-
 return {
-    -- Combat
     FrameTP = true,
     OneFrameDelay = false,
     RapidFire = true,
-    
-    -- Visuals
     FOV_Enabled = true,
     FOV_Radius = 250,
     FOV_Color = Color3.fromRGB(255, 80, 80),
@@ -15,15 +9,12 @@ return {
     Tracer_Color = Color3.fromRGB(255, 60, 60),
     Hitmarkers = true,
     Highlights = true,
-    
-    -- Targeting
+    Spectate = false,
     TargetPart = "Head",
-    TargetMode = "Closest", -- "Closest" or "Selected"
-    
-    -- UI
+    TargetMode = "Closest",
+    MaxTargetDistance = 5000000000000000,
     ToggleKey = Enum.KeyCode.RightShift,
     ShowHotkeys = true,
-    
-    -- Internal
-    MaxTargetDistance = 9999999999999,
+    RapidFireKey = nil,
+    FrameTPKey = nil,
 }

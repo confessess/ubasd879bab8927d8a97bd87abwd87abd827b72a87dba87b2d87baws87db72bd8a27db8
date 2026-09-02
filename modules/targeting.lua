@@ -1,20 +1,18 @@
---// modules/targeting.lua
---// Target acquisition, player list, spectate
-
 local Players = game:GetService("Players")
 local Workspace = game:GetService("Workspace")
 local UserInputService = game:GetService("UserInputService")
-local RunService = game:GetService("RunService")
 local LocalPlayer = Players.LocalPlayer
 local Camera = Workspace.CurrentCamera
-
-local Config = require(game:GetService("ReplicatedFirst"):WaitForChild("ZeeHConfig", 5) or script.Parent.config)
 
 local Targeting = {
     SelectedTarget = nil,
     HighlightBox = nil,
-    SpectateConnection = nil,
+    Config = nil,
 }
+
+function Targeting.SetConfig(config)
+    Targeting.Config = config
+end
 
 local function getCharacterPart(char, partName)
     local part = char:FindFirstChild(partName)
@@ -28,6 +26,9 @@ local function getCharacterPart(char, partName)
 end
 
 function Targeting.GetTarget()
+    local Config = Targeting.Config
+    if not Config then return nil end
+    
     if Config.TargetMode == "Selected" and Targeting.SelectedTarget then
         local char = Targeting.SelectedTarget.Character
         if char then
@@ -71,6 +72,9 @@ function Targeting.GetTarget()
 end
 
 function Targeting.UpdateHighlight(target)
+    local Config = Targeting.Config
+    if not Config then return end
+    
     if not Config.Highlights then
         if Targeting.HighlightBox then Targeting.HighlightBox:Destroy() end
         return
@@ -92,7 +96,8 @@ function Targeting.UpdateHighlight(target)
 end
 
 function Targeting.UpdateSpectate()
-    if not Config.Spectate then return end
+    local Config = Targeting.Config
+    if not Config or not Config.Spectate then return end
     local target = Targeting.GetTarget()
     if target and target.Parent and target.Parent:FindFirstChild("Humanoid") then
         Camera.CameraSubject = target.Parent.Humanoid
@@ -129,7 +134,7 @@ function Targeting.RefreshPlayerList(container, onSelect)
             corner.CornerRadius = UDim.new(0, 4)
             btn.MouseButton1Click:Connect(function()
                 Targeting.SelectedTarget = plr
-                Config.TargetMode = "Selected"
+                Targeting.Config.TargetMode = "Selected"
                 onSelect()
             end)
             y = y + 26

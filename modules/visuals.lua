@@ -1,34 +1,39 @@
---// modules/visuals.lua
---// FOV, Tracers, Hitmarkers
-
 local UserInputService = game:GetService("UserInputService")
 local Workspace = game:GetService("Workspace")
 local Camera = Workspace.CurrentCamera
 
-local Drawing = require(script.Parent.Parent.utils.drawing)
-local Targeting = require(script.Parent.targeting)
+local Visuals = {
+    Config = nil,
+    Targeting = nil,
+}
 
-local Config = require(game:GetService("ReplicatedFirst"):WaitForChild("ZeeHConfig", 5) or script.Parent.Parent.config)
+local DrawingObjects = {}
+local function DrawingNew(type, props)
+    local obj = Drawing.new(type)
+    for k, v in pairs(props or {}) do
+        obj[k] = v
+    end
+    table.insert(DrawingObjects, obj)
+    return obj
+end
 
-local Visuals = {}
-
-local FOV_Circle = Drawing.New("Circle", {
+local FOV_Circle = DrawingNew("Circle", {
     Visible = false,
     Thickness = 1.2,
-    Color = Config.FOV_Color,
+    Color = Color3.fromRGB(255, 80, 80),
     Transparency = 0.6,
     Filled = false,
     NumSides = 64,
 })
 
-local Tracer = Drawing.New("Line", {
+local Tracer = DrawingNew("Line", {
     Visible = false,
     Thickness = 1,
-    Color = Config.Tracer_Color,
+    Color = Color3.fromRGB(255, 60, 60),
     Transparency = 0.5,
 })
 
-local Hitmarker = Drawing.New("Text", {
+local Hitmarker = DrawingNew("Text", {
     Visible = false,
     Size = 20,
     Center = true,
@@ -37,15 +42,25 @@ local Hitmarker = Drawing.New("Text", {
     Text = "✕",
 })
 
+function Visuals.SetConfig(config)
+    Visuals.Config = config
+end
+
+function Visuals.SetTargeting(targeting)
+    Visuals.Targeting = targeting
+end
+
 function Visuals.Update()
+    local Config = Visuals.Config
+    local Targeting = Visuals.Targeting
+    if not Config or not Targeting then return end
+    
     local mousePos = UserInputService:GetMouseLocation()
     
-    -- FOV
     FOV_Circle.Visible = Config.FOV_Enabled
     FOV_Circle.Position = mousePos
     FOV_Circle.Radius = Config.FOV_Radius
     
-    -- Tracers
     local target = Targeting.GetTarget()
     if Config.Tracers and target then
         local sp, onScreen = Camera:WorldToViewportPoint(target.Position)
@@ -60,15 +75,12 @@ function Visuals.Update()
         Tracer.Visible = false
     end
     
-    -- Highlight
     Targeting.UpdateHighlight(target)
-    
-    -- Spectate
     Targeting.UpdateSpectate()
 end
 
 function Visuals.PlayHitmarker()
-    if not Config.Hitmarkers then return end
+    if not Visuals.Config or not Visuals.Config.Hitmarkers then return end
     Hitmarker.Position = UserInputService:GetMouseLocation() + Vector2.new(0, -15)
     Hitmarker.Visible = true
     Hitmarker.Color = Color3.fromRGB(255, 80, 80)

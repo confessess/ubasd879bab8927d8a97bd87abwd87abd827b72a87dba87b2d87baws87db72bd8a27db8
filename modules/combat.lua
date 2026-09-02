@@ -1,20 +1,27 @@
---// modules/combat.lua
---// Frame Teleport Shoot + Rapid Fire
-
 local Players = game:GetService("Players")
 local RunService = game:GetService("RunService")
 local Workspace = game:GetService("Workspace")
 local LocalPlayer = Players.LocalPlayer
 local Camera = Workspace.CurrentCamera
 
-local Targeting = require(script.Parent.targeting)
-local Visuals = require(script.Parent.visuals)
-
-local Config = require(game:GetService("ReplicatedFirst"):WaitForChild("ZeeHConfig", 5) or script.Parent.Parent.config)
-
 local Combat = {
     ModifiedTools = {},
+    Config = nil,
+    Targeting = nil,
+    Visuals = nil,
 }
+
+function Combat.SetConfig(config)
+    Combat.Config = config
+end
+
+function Combat.SetTargeting(targeting)
+    Combat.Targeting = targeting
+end
+
+function Combat.SetVisuals(visuals)
+    Combat.Visuals = visuals
+end
 
 function Combat.SetupFullAuto(tool)
     if Combat.ModifiedTools[tool] or not tool:FindFirstChild("GunScript") then return end
@@ -41,6 +48,15 @@ function Combat.SetupFullAuto(tool)
 end
 
 function Combat.FrameTeleportActivate(tool, isRapidFire)
+    local Config = Combat.Config
+    local Targeting = Combat.Targeting
+    local Visuals = Combat.Visuals
+    
+    if not Config or not Targeting or not Visuals then
+        tool:Activate()
+        return
+    end
+    
     if not Config.FrameTP then
         tool:Activate()
         return
