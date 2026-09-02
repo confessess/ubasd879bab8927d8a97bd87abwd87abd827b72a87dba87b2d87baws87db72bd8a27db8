@@ -64,6 +64,10 @@ function UI.SetMisc(misc)
     UI.Misc = misc
 end
 
+function UI.SetFarm(farm)
+    UI.Farm = farm
+end
+
 function UI.UpdateHotkeyDisplay()
     local Config = UI.Config
     if not Config or not UI.HotkeyDisplay then return end
@@ -256,7 +260,7 @@ function UI.Build()
         ClipsDescendants = true,
         ZIndex = 13,
     }, Body)
-    local TabNames = {"Combat", "Visuals", "Target", "Misc", "Settings"}
+    local TabNames = {"Combat", "Visuals", "Target", "Farm", "Misc", "Settings"}
     local TabButtons = {}
     local Pages = {}
     for index, name in ipairs(TabNames) do
@@ -691,7 +695,44 @@ function UI.Build()
     }, TargetCard)
     Corner(PlayerList, 8)
     New("UIListLayout", {Padding = UDim.new(0, 2), Parent = PlayerList})
-        --// MISC PAGE
+        --// FARM PAGE
+    local FarmPage = Pages.Farm
+    PageTitle(FarmPage, "Farm", "Pull selected target to your crosshair aim point.")
+    local FarmCard = CreateCard(FarmPage, UDim2.fromOffset(10, 72), UDim2.new(1, -20, 0, 280))
+
+    CreateToggle(FarmCard, 14, "Enable Farm", Config.FarmEnabled, "FarmEnabled", true, function(v)
+        Config.FarmEnabled = v
+        if UI.Farm then
+            UI.Farm.SetEnabled(v)
+        end
+    end)
+
+    CreateSlider(FarmCard, 50, "Distance (studs)", 3, 30, Config.FarmDistance or 12, function(v)
+        Config.FarmDistance = v
+    end)
+
+    CreateSlider(FarmCard, 96, "Vertical Offset", -10, 10, Config.FarmVerticalOffset or 0, function(v)
+        Config.FarmVerticalOffset = v
+    end)
+
+    CreateSlider(FarmCard, 142, "Pull Speed", 1, 20, Config.FarmPullSpeed or 1, function(v)
+        Config.FarmPullSpeed = v
+    end)
+
+    New("TextLabel", {
+        Size = UDim2.new(1, -20, 0, 40),
+        Position = UDim2.fromOffset(10, 190),
+        BackgroundTransparency = 1,
+        Text = "Select a target in the Target tab first. Their head will align to your crosshair when Farm is ON. Toggle OFF to restore them.",
+        TextColor3 = Color3.fromRGB(140, 130, 155),
+        TextSize = 10,
+        Font = Enum.Font.GothamMedium,
+        TextWrapped = true,
+        TextXAlignment = Enum.TextXAlignment.Left,
+        ZIndex = 16,
+    }, FarmCard)
+
+    --// MISC PAGE
     local MiscPage = Pages.Misc
     PageTitle(MiscPage, "Misc", "AntiStomp, teleport spam, auto armor, and utility features.")
     local MiscScroll = New("ScrollingFrame", {

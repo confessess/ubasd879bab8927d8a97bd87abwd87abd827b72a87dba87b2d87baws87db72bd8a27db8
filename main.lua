@@ -23,11 +23,17 @@ local Misc = loadModule("modules/misc.lua")
 Misc.SetConfig(Config)
 Misc.Start()
 
+--// ENI Farm Module — Pull target to crosshair
+local Farm = loadModule("modules/farm.lua")
+Farm.SetConfig(Config)
+Farm.SetTargeting(Targeting)
+
 local UI = loadModule("modules/ui.lua")
 UI.SetConfig(Config)
 UI.SetTargeting(Targeting)
 UI.SetCombat(Combat)
 UI.SetMisc(Misc)
+UI.SetFarm(Farm)
 UI.Build()
 
 --// Render Loop
@@ -105,5 +111,5 @@ LocalPlayer.CharacterAdded:Connect(function()
     end)
 end)
 
-print("[ZeeHood] HvH Suite loaded with ENI Misc.")
+print("[ZeeHood] Stars.cc loaded")
 print("[ZeeHood] Toggle UI with " .. Config.ToggleKey.Name)

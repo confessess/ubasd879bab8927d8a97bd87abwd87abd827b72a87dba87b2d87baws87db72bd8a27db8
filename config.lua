@@ -15,12 +15,12 @@ return {
     MaxTargetDistance = 5000000000000000,
     ToggleKey = Enum.KeyCode.RightShift,
     ShowHotkeys = true,
-    
+
     -- AntiStomp
     AntiStomp = false,
     AntiStompMode = "Void",
     AntiStompThreshold = 50,
-    
+
     -- Teleport Spam
     SpamEnabled = false,
     SpamRange = "Close",
@@ -31,14 +31,21 @@ return {
     SpamFarJitter = 5000,
     SpamSpeed = 1,
     SpamEnabledKey = nil,
-    
+
     -- Auto Armor
     AutoArmor = false,
     AutoArmorOnDamage = false,
     AutoArmorPos = Vector3.new(-934.12, -25.38, 571.02),
     AutoArmorTriggerHealth = 50,
     AutoArmorCooldown = 1,
-    
+
+    -- Farm
+    FarmEnabled = false,
+    FarmDistance = 12,
+    FarmVerticalOffset = 0,
+    FarmPullSpeed = 1,
+    FarmEnabledKey = nil,
+
     -- Toggle hotkeys
     FrameTPKey = nil,
     OneFrameDelayKey = nil,
