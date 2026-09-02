@@ -15,6 +15,14 @@ return {
     MaxTargetDistance = 5000000000000000,
     ToggleKey = Enum.KeyCode.RightShift,
     ShowHotkeys = true,
-    RapidFireKey = nil,
+    -- Toggle hotkeys (nil = unbound)
     FrameTPKey = nil,
+    OneFrameDelayKey = nil,
+    RapidFireKey = nil,
+    HitmarkersKey = nil,
+    FOV_EnabledKey = nil,
+    TracersKey = nil,
+    HighlightsKey = nil,
+    SpectateKey = nil,
+    ShowHotkeysKey = nil,
 }
