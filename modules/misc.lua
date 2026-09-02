@@ -68,14 +68,16 @@ function Misc.SetupAntiStompHook()
             return 
         end
         
-        --// AntiStomp: any damage = instant death
+        local threshold = Misc.Config.AntiStompThreshold or 50
+        
+        --// AntiStomp: health drops BELOW threshold = instant death
         if Misc.Config and Misc.Config.AntiStomp and not Misc.AntiStompTriggered then
-            if newHealth < Misc.LastHealth then
+            if newHealth <= threshold then
                 Misc.TriggerAntiStomp()
             end
         end
         
-        --// AutoArmor: any damage = grab armor instantly
+        --// AutoArmor: ANY damage = grab armor instantly
         if Misc.Config and Misc.Config.AutoArmor and Misc.Config.AutoArmorOnDamage then
             if newHealth < Misc.LastHealth then
                 Misc.AutoArmorFast()
@@ -125,13 +127,16 @@ function Misc.CheckAntiStomp()
     local humanoid = Misc.GetLiveHumanoid()
     if not humanoid then return end
 
+    local threshold = Misc.Config.AntiStompThreshold or 50
     local currentHealth = humanoid.Health
 
-    if Misc.LastHealth and currentHealth < Misc.LastHealth and currentHealth > 0 then
+    --// Trigger: health below threshold
+    if currentHealth > 0 and currentHealth <= threshold then
         Misc.TriggerAntiStomp()
         return
     end
 
+    --// Fallback: Da Hood "Knocked" value
     local char = LocalPlayer.Character
     if char then
         local knocked = char:FindFirstChild("Knocked")
@@ -169,7 +174,6 @@ function Misc.AutoArmorFast()
     
     --// Click the detector
     if Misc.CachedClickDetector then
-        --// Try executor native function first (bypasses distance checks)
         if fireclickdetector then
             pcall(function() fireclickdetector(Misc.CachedClickDetector) end)
         else
@@ -177,7 +181,7 @@ function Misc.AutoArmorFast()
         end
     end
     
-    --// INSTANT snap back — no extra waits
+    --// INSTANT snap back
     hrp.CFrame = origCF
 end
 

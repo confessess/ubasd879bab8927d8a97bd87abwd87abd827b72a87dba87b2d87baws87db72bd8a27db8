@@ -701,11 +701,11 @@ function UI.Build()
         BorderSizePixel = 0,
         ScrollBarThickness = 3,
         ScrollBarImageColor3 = Color3.fromRGB(100, 70, 150),
-        CanvasSize = UDim2.new(0, 0, 0, 670),
+        CanvasSize = UDim2.new(0, 0, 0, 710),
         ZIndex = 14,
     }, MiscPage)
     
-    local MiscCard = CreateCard(MiscScroll, UDim2.fromOffset(0, 0), UDim2.new(1, 0, 0, 660))
+    local MiscCard = CreateCard(MiscScroll, UDim2.fromOffset(0, 0), UDim2.new(1, 0, 0, 700))
     
     --// AntiStomp
     CreateToggle(MiscCard, 14, "AntiStomp", Config.AntiStomp, "AntiStomp", true, function(v)
@@ -762,11 +762,14 @@ function UI.Build()
     CreateToggle(MiscCard, 488, "Auto Armor", Config.AutoArmor, "AutoArmor", true, function(v)
         Config.AutoArmor = v
     end)
+    CreateToggle(MiscCard, 528, "Armor On Any Damage", Config.AutoArmorOnDamage, "AutoArmorOnDamage", true, function(v)
+        Config.AutoArmorOnDamage = v
+    end)
     
     local armorPos = Config.AutoArmorPos or Vector3.new(0, 0, 0)
     local ArmorPosLabel = Instance.new("TextLabel")
     ArmorPosLabel.Size = UDim2.new(0.9, 0, 0, 16)
-    ArmorPosLabel.Position = UDim2.new(0.05, 0, 0, 522)
+    ArmorPosLabel.Position = UDim2.new(0.05, 0, 0, 562)
     ArmorPosLabel.BackgroundTransparency = 1
     ArmorPosLabel.Text = string.format("Pos: %.0f, %.0f, %.0f", armorPos.X, armorPos.Y, armorPos.Z)
     ArmorPosLabel.TextColor3 = Color3.fromRGB(130, 130, 150)
@@ -775,10 +778,10 @@ function UI.Build()
     ArmorPosLabel.TextXAlignment = Enum.TextXAlignment.Left
     ArmorPosLabel.Parent = MiscCard
     
-    CreateSlider(MiscCard, 544, "Trigger Health", 1, 100, Config.AutoArmorTriggerHealth or 50, function(v)
+    CreateSlider(MiscCard, 584, "Trigger Health", 1, 100, Config.AutoArmorTriggerHealth or 50, function(v)
         Config.AutoArmorTriggerHealth = v
     end)
-    CreateSlider(MiscCard, 600, "Cooldown", 1, 30, Config.AutoArmorCooldown or 5, function(v)
+    CreateSlider(MiscCard, 640, "Cooldown", 1, 30, Config.AutoArmorCooldown or 5, function(v)
         Config.AutoArmorCooldown = v
     end)
     --// SPECTATE PANEL (middle-right, shows when spectating)
