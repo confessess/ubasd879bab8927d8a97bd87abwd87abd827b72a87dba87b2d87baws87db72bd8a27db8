@@ -12,6 +12,7 @@ local Misc = {
     HRP = nil,
     LastHealth = 100,
     AntiStompTriggered = false,
+    LastArmorTime = 0,
 }
 
 function Misc.SetConfig(config)
@@ -48,11 +49,10 @@ function Misc.SetupAntiStompHook()
     humanoid.HealthChanged:Connect(function(newHealth)
         if not Misc.Config or not Misc.Config.AntiStomp then return end
         if Misc.AntiStompTriggered then return end
+        if newHealth <= 0 then return end
         
         --// ANY damage taken = instant void death
-        --// newHealth < LastHealth means we took damage
-        --// newHealth > 0 means we're still alive (not already dead)
-        if newHealth < Misc.LastHealth and newHealth > 0 then
+        if newHealth < Misc.LastHealth then
             Misc.TriggerAntiStomp()
         end
         
@@ -70,7 +70,6 @@ function Misc.TriggerAntiStomp()
     local hrp = Misc.GetLiveHRP()
 
     if Misc.Config.AntiStompMode == "Void" then
-        --// INSTANT — no waits, no delays
         if hrp then
             hrp.CFrame = CFrame.new(0, -50000, 0)
             hrp.Velocity = Vector3.new(0, 0, 0)
@@ -82,7 +81,6 @@ function Misc.TriggerAntiStomp()
         if char then
             pcall(function() char:BreakJoints() end)
         end
-        --// Instantly respawn — body vanishes before anyone can stomp
         pcall(function() LocalPlayer:LoadCharacter() end)
 
     elseif Misc.Config.AntiStompMode == "Force Reset" then
@@ -90,7 +88,7 @@ function Misc.TriggerAntiStomp()
     end
 end
 
---// Fallback heartbeat (live refs, catches anything the hook misses)
+--// Fallback heartbeat
 function Misc.CheckAntiStomp()
     if not Misc.Config or not Misc.Config.AntiStomp then
         Misc.AntiStompTriggered = false
@@ -103,13 +101,11 @@ function Misc.CheckAntiStomp()
 
     local currentHealth = humanoid.Health
 
-    --// Fallback: took damage but hook didn't fire
     if Misc.LastHealth and currentHealth < Misc.LastHealth and currentHealth > 0 then
         Misc.TriggerAntiStomp()
         return
     end
 
-    --// Fallback: Da Hood "Knocked" value
     local char = LocalPlayer.Character
     if char then
         local knocked = char:FindFirstChild("Knocked")
@@ -120,6 +116,62 @@ function Misc.CheckAntiStomp()
     end
 
     Misc.LastHealth = currentHealth
+end
+
+--// ==================== AUTO ARMOR ====================
+function Misc.AutoArmor()
+    if not Misc.Config or not Misc.Config.AutoArmor then return end
+    if not Misc.Config.AutoArmorPos then return end
+    
+    local now = tick()
+    local cooldown = Misc.Config.AutoArmorCooldown or 5
+    if (now - Misc.LastArmorTime) < cooldown then return end
+    
+    local hrp = Misc.GetLiveHRP()
+    if not hrp then return end
+    
+    Misc.LastArmorTime = now
+    
+    task.spawn(function()
+        local origCF = hrp.CFrame
+        local armorPos = Misc.Config.AutoArmorPos
+        local cam = workspace.CurrentCamera
+        local origCam = cam.CFrame
+        
+        --// Teleport to armor button (stand slightly above it)
+        hrp.CFrame = CFrame.new(armorPos + Vector3.new(0, 2, 0))
+        
+        --// Look straight down at the button
+        cam.CFrame = CFrame.new(armorPos + Vector3.new(0, 2, 0), armorPos)
+        
+        --// Try to find and fire ClickDetector directly
+        local clickDetector = nil
+        for _, obj in pairs(workspace:GetDescendants()) do
+            if obj:IsA("ClickDetector") and obj.Parent and obj.Parent:IsA("BasePart") then
+                if (obj.Parent.Position - armorPos).Magnitude < 10 then
+                    clickDetector = obj
+                    break
+                end
+            end
+        end
+        
+        if clickDetector then
+            pcall(function() clickDetector:FireServer() end)
+        end
+        
+        --// Simulate mouse click as backup
+        task.wait(0.05)
+        local VirtualInputManager = game:GetService("VirtualInputManager")
+        local screenSize = cam.ViewportSize
+        VirtualInputManager:SendMouseButtonEvent(screenSize.X/2, screenSize.Y/2, 0, true, game, 1)
+        task.wait(0.05)
+        VirtualInputManager:SendMouseButtonEvent(screenSize.X/2, screenSize.Y/2, 0, false, game, 1)
+        
+        --// Snap back
+        task.wait(0.05)
+        hrp.CFrame = origCF
+        cam.CFrame = origCam
+    end)
 end
 
 --// ==================== TELEPORT SPAM ====================
@@ -176,6 +228,17 @@ end
 --// ==================== MAIN LOOP ====================
 function Misc.OnHeartbeat()
     Misc.CheckAntiStomp()
+    
+    --// Auto Armor check
+    if Misc.Config and Misc.Config.AutoArmor then
+        local humanoid = Misc.GetLiveHumanoid()
+        if humanoid then
+            local triggerHealth = Misc.Config.AutoArmorTriggerHealth or 50
+            if humanoid.Health < triggerHealth and humanoid.Health > 0 then
+                Misc.AutoArmor()
+            end
+        end
+    end
 end
 
 function Misc.Start()
