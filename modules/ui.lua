@@ -694,7 +694,20 @@ function UI.Build()
         --// MISC PAGE
     local MiscPage = Pages.Misc
     PageTitle(MiscPage, "Misc", "AntiStomp, teleport spam, and utility features.")
-    local MiscCard = CreateCard(MiscPage, UDim2.fromOffset(10, 72), UDim2.new(1, -20, 0, 440))
+    
+    --// Scrollable container so the tall card doesn't get clipped
+    local MiscScroll = New("ScrollingFrame", {
+        Size = UDim2.new(1, -20, 1, -72),
+        Position = UDim2.fromOffset(10, 72),
+        BackgroundTransparency = 1,
+        BorderSizePixel = 0,
+        ScrollBarThickness = 3,
+        ScrollBarImageColor3 = Color3.fromRGB(100, 70, 150),
+        CanvasSize = UDim2.new(0, 0, 0, 450),
+        ZIndex = 14,
+    }, MiscPage)
+    
+    local MiscCard = CreateCard(MiscScroll, UDim2.fromOffset(0, 0), UDim2.new(1, 0, 0, 440))
     
     --// AntiStomp
     CreateToggle(MiscCard, 14, "AntiStomp", Config.AntiStomp, "AntiStomp", true, function(v)
@@ -733,7 +746,6 @@ function UI.Build()
     CreateSlider(MiscCard, 356, "Far Jitter", 0, 50000, Config.SpamFarJitter or 5000, function(v)
         Config.SpamFarJitter = v
     end)
-
 
     --// SPECTATE PANEL (middle-right, shows when spectating)
     local SpectatePanel = New("Frame", {
