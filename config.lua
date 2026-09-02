@@ -1,4 +1,10 @@
 return {
+    -- ... existing config ...
+
+    -- Auth
+    SavedKey = nil, -- set this to auto-fill the key box
+    AutoValidate = false, -- if true + SavedKey set, skips gate on rejoin
+
     FrameTP = true,
     OneFrameDelay = false,
     RapidFire = true,
