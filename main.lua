@@ -1,19 +1,22 @@
 local BASE_URL = "https://raw.githubusercontent.com/confessess/zee-hvh/main/"
 
 local function loadModule(path)
-    return loadstring(game:HttpGet(BASE_URL .. path))()
+    local url = BASE_URL .. path
+    local src = game:HttpGet(url, true)
+    if not src or src == "" then
+        error("Failed to fetch: " .. url)
+    end
+    return loadstring(src)()
 end
 
 -- ═════════════════════════════════════════════════════════════════════════════
--- INLINED AUTH MODULE (no external fetch)
+-- INLINED AUTH MODULE
 -- ═════════════════════════════════════════════════════════════════════════════
 local Auth = {
     Validated = false,
     Key = nil,
     HWID = nil,
-    AuthURL = "https://your-server.com/api/validate", -- CHANGE THIS
-
-    -- Fallback keys for testing (remove in production)
+    AuthURL = "http://10.177.177.224:3000/api/validate",
     FallbackKeys = {},
 }
 
@@ -21,85 +24,39 @@ local HttpService = game:GetService("HttpService")
 local Players = game:GetService("Players")
 local LocalPlayer = Players.LocalPlayer
 
--- ── HWID Generation ─────────────────────────────────────────────────────────
 function Auth.GenerateHWID()
-    -- Try executor-specific HWID methods first
     local hwid = nil
 
-    -- Synapse X
-    if syn and syn.get_hwid then
-        hwid = syn.get_hwid()
-    -- KRNL
-    elseif krnl and krnl.get_hwid then
-        hwid = krnl.get_hwid()
-    -- Script-Ware
-    elseif gethwid then
-        hwid = gethwid()
-    -- Fluxus
-    elseif fluxus and fluxus.get_hwid then
-        hwid = fluxus.get_hwid()
-    -- Codex
-    elseif codex and codex.get_hwid then
-        hwid = codex.get_hwid()
-    -- Delta
-    elseif delta and delta.get_hwid then
-        hwid = delta.get_hwid()
-    -- Electron
-    elseif electron and electron.get_hwid then
-        hwid = electron.get_hwid()
-    -- Oxygen U
-    elseif oxy and oxy.get_hwid then
-        hwid = oxy.get_hwid()
-    -- Trigon
-    elseif trigon and trigon.get_hwid then
-        hwid = trigon.get_hwid()
-    -- Vega X
-    elseif vega and vega.get_hwid then
-        hwid = vega.get_hwid()
-    -- Hydrogen
-    elseif hydrogen and hydrogen.get_hwid then
-        hwid = hydrogen.get_hwid()
-    -- Arceus X
-    elseif arceus and arceus.get_hwid then
-        hwid = arceus.get_hwid()
-    -- Celery
-    elseif celery and celery.get_hwid then
-        hwid = celery.get_hwid()
-    -- Macsploit
-    elseif macsploit and macsploit.get_hwid then
-        hwid = macsploit.get_hwid()
-    -- Solara
-    elseif solara and solara.get_hwid then
-        hwid = solara.get_hwid()
-    -- Xeno
-    elseif xeno and xeno.get_hwid then
-        hwid = xeno.get_hwid()
+    if syn and syn.get_hwid then hwid = syn.get_hwid()
+    elseif krnl and krnl.get_hwid then hwid = krnl.get_hwid()
+    elseif gethwid then hwid = gethwid()
+    elseif fluxus and fluxus.get_hwid then hwid = fluxus.get_hwid()
+    elseif codex and codex.get_hwid then hwid = codex.get_hwid()
+    elseif delta and delta.get_hwid then hwid = delta.get_hwid()
+    elseif electron and electron.get_hwid then hwid = electron.get_hwid()
+    elseif oxy and oxy.get_hwid then hwid = oxy.get_hwid()
+    elseif trigon and trigon.get_hwid then hwid = trigon.get_hwid()
+    elseif vega and vega.get_hwid then hwid = vega.get_hwid()
+    elseif hydrogen and hydrogen.get_hwid then hwid = hydrogen.get_hwid()
+    elseif arceus and arceus.get_hwid then hwid = arceus.get_hwid()
+    elseif celery and celery.get_hwid then hwid = celery.get_hwid()
+    elseif macsploit and macsploit.get_hwid then hwid = macsploit.get_hwid()
+    elseif solara and solara.get_hwid then hwid = solara.get_hwid()
+    elseif xeno and xeno.get_hwid then hwid = xeno.get_hwid()
+    elseif identifyexecutor then
+        local name = identifyexecutor()
+        if name then
+            hwid = "POTASSIUM-" .. tostring(LocalPlayer.UserId) .. "-" .. name:gsub("%s+", "-")
+        end
     end
 
-    -- Fallback: composite fingerprint from available data
     if not hwid or #hwid < 8 then
         local fingerprint = tostring(LocalPlayer.UserId)
-
-        -- Add machine-level identifiers if available
-        if getreg and getgc then
-            -- Some executors expose registry/gamecache for fingerprinting
-            pcall(function()
-                local reg = getreg()
-                if reg and type(reg) == "table" then
-                    fingerprint = fingerprint .. tostring(#reg)
-                end
-            end)
-        end
-
-        -- Roblox client version as additional entropy
         pcall(function()
-            local version = game:HttpGet("https://setup.rbxcdn.com/version")
-            if version then
-                fingerprint = fingerprint .. version:sub(1, 20)
-            end
+            local version = game:HttpGet("https://setup.rbxcdn.com/version", true)
+            if version then fingerprint = fingerprint .. version:sub(1, 20) end
         end)
 
-        -- Hash the composite fingerprint
         local hash = 0
         for i = 1, #fingerprint do
             hash = ((hash << 5) - hash) + string.byte(fingerprint, i)
@@ -113,30 +70,43 @@ function Auth.GenerateHWID()
     return hwid
 end
 
--- ── Validation ──────────────────────────────────────────────────────────────
 function Auth.ValidateKey(inputKey)
     local hwid = Auth.GenerateHWID()
 
-    -- Check fallback keys first (dev/testing)
     if Auth.FallbackKeys[inputKey] then
         Auth.Validated = true
         Auth.Key = inputKey
         return true, "fallback"
     end
 
-    -- Remote validation
     local success, response = pcall(function()
-        local payload = HttpService:JSONEncode({
-            key = inputKey,
-            hwid = hwid
-        })
+        local payload = HttpService:JSONEncode({ key = inputKey, hwid = hwid })
 
-        return game:HttpPost(
-            Auth.AuthURL,
-            payload,
-            false,
-            "application/json"
-        )
+        if game.HttpPost then
+            return game:HttpPost(Auth.AuthURL, payload, false, "application/json")
+        end
+
+        if request then
+            local res = request({
+                Url = Auth.AuthURL,
+                Method = "POST",
+                Headers = { ["Content-Type"] = "application/json" },
+                Body = payload
+            })
+            return res and res.Body
+        end
+
+        if syn and syn.request then
+            local res = syn.request({
+                Url = Auth.AuthURL,
+                Method = "POST",
+                Headers = { ["Content-Type"] = "application/json" },
+                Body = payload
+            })
+            return res and res.Body
+        end
+
+        error("No HTTP POST method available in this executor")
     end)
 
     if success and response then
@@ -153,47 +123,27 @@ function Auth.ValidateKey(inputKey)
     return false, "connection_failed"
 end
 
-function Auth.IsValidated()
-    return Auth.Validated
-end
-
-function Auth.GetKey()
-    return Auth.Key
-end
-
+function Auth.IsValidated() return Auth.Validated end
+function Auth.GetKey() return Auth.Key end
 function Auth.GetHWID()
-    if not Auth.HWID then
-        Auth.GenerateHWID()
-    end
+    if not Auth.HWID then Auth.GenerateHWID() end
     return Auth.HWID
 end
 
-return Auth
-
-
 -- ═════════════════════════════════════════════════════════════════════════════
--- INLINED KEYGATE MODULE (no external fetch)
+-- INLINED KEYGATE MODULE
 -- ═════════════════════════════════════════════════════════════════════════════
-local Players = game:GetService("Players")
 local TweenService = game:GetService("TweenService")
 local UserInputService = game:GetService("UserInputService")
-
 local Player = Players.LocalPlayer
 local PlayerGui = Player:WaitForChild("PlayerGui")
 
-local KeyGate = {
-    ScreenGui = nil,
-    OnSuccess = nil,
-}
-
+local KeyGate = { ScreenGui = nil, OnSuccess = nil }
 local PURPLE = Color3.fromRGB(145, 75, 255)
-local PURPLE_LIGHT = Color3.fromRGB(195, 140, 255)
 
 local function New(className, properties, parent)
     local object = Instance.new(className)
-    for property, value in pairs(properties or {}) do
-        object[property] = value
-    end
+    for property, value in pairs(properties or {}) do object[property] = value end
     object.Parent = parent
     return object
 end
@@ -229,7 +179,6 @@ function KeyGate.Build(authModule, onSuccessCallback)
     }, PlayerGui)
     KeyGate.ScreenGui = ScreenGui
 
-    -- Background
     local Background = New("Frame", {
         Size = UDim2.fromScale(1, 1),
         BackgroundColor3 = Color3.fromRGB(4, 3, 9),
@@ -247,7 +196,6 @@ function KeyGate.Build(authModule, onSuccessCallback)
         }),
     }, Background)
 
-    -- Stars
     local StarContainer = New("Frame", {
         Name = "Stars",
         Size = UDim2.fromScale(1, 1),
@@ -278,7 +226,6 @@ function KeyGate.Build(authModule, onSuccessCallback)
         end)
     end
 
-    -- Main Card
     local Main = New("Frame", {
         Size = UDim2.fromOffset(440, 340),
         Position = UDim2.fromScale(0.5, 0.5),
@@ -291,7 +238,6 @@ function KeyGate.Build(authModule, onSuccessCallback)
     Corner(Main, 20)
     Stroke(Main, 0.72, 1)
 
-    -- Top accent line
     New("Frame", {
         Size = UDim2.new(1, -40, 0, 1),
         Position = UDim2.fromOffset(20, 1),
@@ -301,7 +247,6 @@ function KeyGate.Build(authModule, onSuccessCallback)
         ZIndex = 11,
     }, Main)
 
-    -- Title
     New("TextLabel", {
         Size = UDim2.fromOffset(400, 32),
         Position = UDim2.fromOffset(20, 18),
@@ -326,7 +271,6 @@ function KeyGate.Build(authModule, onSuccessCallback)
         ZIndex = 12,
     }, Main)
 
-    -- HWID Display
     local hwid = authModule.GetHWID and authModule.GetHWID() or "unknown"
     local shortHWID = #hwid > 24 and hwid:sub(1, 12) .. "..." .. hwid:sub(-8) or hwid
 
@@ -342,7 +286,6 @@ function KeyGate.Build(authModule, onSuccessCallback)
         ZIndex = 12,
     }, Main)
 
-    -- Key Input
     local InputFrame = New("Frame", {
         Size = UDim2.new(1, -40, 0, 44),
         Position = UDim2.fromOffset(20, 100),
@@ -369,7 +312,6 @@ function KeyGate.Build(authModule, onSuccessCallback)
         ZIndex = 13,
     }, InputFrame)
 
-    -- Status Label
     local StatusLabel = New("TextLabel", {
         Size = UDim2.new(1, -40, 0, 20),
         Position = UDim2.fromOffset(20, 152),
@@ -382,7 +324,6 @@ function KeyGate.Build(authModule, onSuccessCallback)
         ZIndex = 12,
     }, Main)
 
-    -- Submit Button
     local SubmitBtn = New("TextButton", {
         Size = UDim2.new(1, -40, 0, 40),
         Position = UDim2.fromOffset(20, 185),
@@ -398,7 +339,6 @@ function KeyGate.Build(authModule, onSuccessCallback)
     }, Main)
     Corner(SubmitBtn, 10)
 
-    -- HWID Info Box
     local InfoFrame = New("Frame", {
         Size = UDim2.new(1, -40, 0, 60),
         Position = UDim2.fromOffset(20, 238),
@@ -423,7 +363,6 @@ function KeyGate.Build(authModule, onSuccessCallback)
         ZIndex = 13,
     }, InfoFrame)
 
-    -- Button hover
     SubmitBtn.MouseEnter:Connect(function()
         Tween(SubmitBtn, {BackgroundTransparency = 0.05}, 0.15):Play()
     end)
@@ -487,22 +426,15 @@ function KeyGate.Build(authModule, onSuccessCallback)
         if entered then TryAuth() end
     end)
 
-    -- Entrance animation
     Main.Size = UDim2.fromOffset(440, 0)
     Tween(Main, {Size = UDim2.fromOffset(440, 340)}, 0.5, Enum.EasingStyle.Quint, Enum.EasingDirection.Out):Play()
 
     return ScreenGui
 end
 
-return KeyGate
-
-
 -- ═════════════════════════════════════════════════════════════════════════════
--- AUTH SETUP
+-- MAIN ENTRY
 -- ═════════════════════════════════════════════════════════════════════════════
-
--- UPDATE THIS TO YOUR BACKEND URL
-Auth.AuthURL = "http://localhost:3000/api/validate"
 
 KeyGate.Build(Auth, function(key, source)
     print("[ZeeHood] Key validated: " .. key .. " (" .. source .. ")")
@@ -536,10 +468,8 @@ KeyGate.Build(Auth, function(key, source)
     UI.SetFarm(Farm)
     UI.Build()
 
-    -- Render Loop
     local RunService = game:GetService("RunService")
     local UserInputService = game:GetService("UserInputService")
-    local Players = game:GetService("Players")
     local LocalPlayer = Players.LocalPlayer
 
     RunService.RenderStepped:Connect(function()
