@@ -28,7 +28,7 @@ end
 function Targeting.GetTarget()
     local Config = Targeting.Config
     if not Config then return nil end
-    
+
     if Config.TargetMode == "Selected" and Targeting.SelectedTarget then
         local char = Targeting.SelectedTarget.Character
         if char then
@@ -38,23 +38,23 @@ function Targeting.GetTarget()
             end
         end
     end
-    
+
     local myChar = LocalPlayer.Character
     if not myChar or not myChar:FindFirstChild("HumanoidRootPart") then return nil end
-    
+
     local myPos = myChar.HumanoidRootPart.Position
     local closest = nil
     local minDist = math.huge
-    
+
     for _, plr in ipairs(Players:GetPlayers()) do
         if plr ~= LocalPlayer and plr.Character then
             local char = plr.Character
             local hum = char:FindFirstChildOfClass("Humanoid")
             if not hum or hum.Health <= 0 then continue end
-            
+
             local part = getCharacterPart(char, Config.TargetPart)
             local hrp = char:FindFirstChild("HumanoidRootPart")
-            
+
             if part and hrp then
                 local dist = (myPos - hrp.Position).Magnitude
                 local sp, onScreen = Camera:WorldToViewportPoint(part.Position)
@@ -71,10 +71,31 @@ function Targeting.GetTarget()
     return closest
 end
 
+function Targeting.TeleportToTarget()
+    local Config = Targeting.Config
+    if not Config then return end
+
+    local target = Targeting.GetTarget()
+    if not target or not target.Parent then return end
+
+    local myChar = LocalPlayer.Character
+    if not myChar then return end
+
+    local hrp = myChar:FindFirstChild("HumanoidRootPart")
+    if not hrp then return end
+
+    local targetHrp = target.Parent:FindFirstChild("HumanoidRootPart")
+    if targetHrp then
+        hrp.CFrame = targetHrp.CFrame + Vector3.new(0, 3, 0)
+    else
+        hrp.CFrame = target.CFrame + Vector3.new(0, 3, 0)
+    end
+end
+
 function Targeting.UpdateHighlight(target)
     local Config = Targeting.Config
     if not Config then return end
-    
+
     if not Config.Highlights then
         if Targeting.HighlightBox then Targeting.HighlightBox:Destroy() end
         return

@@ -330,7 +330,6 @@ function UI.Build()
         Stroke(card, 0.91, 1)
         return card
     end
-    -- toggleId = nil means no hotkey. hasHotkey = true means show the inline keybind button.
     local function CreateToggle(parent, y, text, default, toggleId, hasHotkey, callback)
         local frame = New("Frame", {
             Size = UDim2.new(1, -20, 0, 32),
@@ -404,7 +403,7 @@ function UI.Build()
         if toggleId then
             UI.ToggleCallbacks[toggleId] = setState
         end
-        return function() return state end
+        return setState
     end
     local function CreateSlider(parent, y, text, min, max, default, callback)
         local frame = New("Frame", {
@@ -463,6 +462,30 @@ function UI.Build()
             end
         end)
     end
+    local function CreateActionButton(parent, y, text, callback)
+        local btn = New("TextButton", {
+            Size = UDim2.new(1, -20, 0, 30),
+            Position = UDim2.fromOffset(10, y),
+            BackgroundColor3 = PURPLE,
+            BackgroundTransparency = 0.18,
+            BorderSizePixel = 0,
+            Text = text,
+            TextColor3 = Color3.fromRGB(255, 250, 255),
+            TextSize = 12,
+            Font = Enum.Font.GothamBold,
+            AutoButtonColor = false,
+            ZIndex = 16,
+        }, parent)
+        Corner(btn, 8)
+        btn.MouseButton1Click:Connect(callback)
+        btn.MouseEnter:Connect(function()
+            Tween(btn, {BackgroundTransparency = 0.05}, 0.15):Play()
+        end)
+        btn.MouseLeave:Connect(function()
+            Tween(btn, {BackgroundTransparency = 0.18}, 0.15):Play()
+        end)
+        return btn
+    end
 
     --// COMBAT PAGE
     local CombatPage = Pages.Combat
@@ -501,7 +524,7 @@ function UI.Build()
     --// TARGET PAGE
     local TargetPage = Pages.Target
     PageTitle(TargetPage, "Target", "Player selection, part targeting, and spectate.")
-    local TargetCard = CreateCard(TargetPage, UDim2.fromOffset(10, 72), UDim2.new(1, -20, 0, 260))
+    local TargetCard = CreateCard(TargetPage, UDim2.fromOffset(10, 72), UDim2.new(1, -20, 0, 310))
     New("TextLabel", {
         Size = UDim2.new(1, -20, 0, 20),
         Position = UDim2.fromOffset(10, 14),
@@ -537,17 +560,13 @@ function UI.Build()
         ZIndex = 17,
     }, DropdownContainer)
     Corner(DropdownHeader, 8)
-    -- Floating dropdown list parented to Main so it escapes Content clipping
-    local DropdownList = New("ScrollingFrame", {
-        Size = UDim2.fromOffset(0, 0),
+    -- Dropdown uses a Frame (not ScrollingFrame) parented to Main with explicit width
+    local DropdownList = New("Frame", {
+        Size = UDim2.fromOffset(500, 0),
         Position = UDim2.fromOffset(0, 0),
         BackgroundColor3 = Color3.fromRGB(18, 11, 27),
         BackgroundTransparency = 0.05,
         BorderSizePixel = 0,
-        ScrollBarThickness = 3,
-        ScrollBarImageColor3 = Color3.fromRGB(100, 70, 150),
-        AutomaticCanvasSize = Enum.AutomaticSize.Y,
-        CanvasSize = UDim2.new(0, 0, 0, 0),
         ZIndex = 100,
         ClipsDescendants = true,
         Visible = false,
@@ -559,6 +578,13 @@ function UI.Build()
         FillDirection = Enum.FillDirection.Vertical,
         HorizontalAlignment = Enum.HorizontalAlignment.Center,
         SortOrder = Enum.SortOrder.LayoutOrder,
+        Parent = DropdownList,
+    })
+    New("UIPadding", {
+        PaddingTop = UDim.new(0, 4),
+        PaddingBottom = UDim.new(0, 4),
+        PaddingLeft = UDim.new(0, 4),
+        PaddingRight = UDim.new(0, 4),
         Parent = DropdownList,
     })
     local parts = {"Head", "HumanoidRootPart", "Torso", "UpperTorso", "LowerTorso", "LeftLeg", "RightLeg"}
@@ -588,7 +614,12 @@ function UI.Build()
             Config.TargetPart = partName
             DropdownHeader.Text = "  " .. partName .. "  ▼"
             dropdownOpen = false
-            DropdownList.Visible = false
+            Tween(DropdownList, {Size = UDim2.fromOffset(DropdownContainer.AbsoluteSize.X, 0)}, 0.2):Play()
+            task.delay(0.2, function()
+                if not dropdownOpen then
+                    DropdownList.Visible = false
+                end
+            end)
         end)
     end
     local function updateDropdownPosition()
@@ -603,7 +634,7 @@ function UI.Build()
             updateDropdownPosition()
             DropdownHeader.Text = "  " .. Config.TargetPart .. "  ▲"
             DropdownList.Visible = true
-            Tween(DropdownList, {Size = UDim2.fromOffset(DropdownContainer.AbsoluteSize.X, math.min(140, #parts * 28))}, 0.2):Play()
+            Tween(DropdownList, {Size = UDim2.fromOffset(DropdownContainer.AbsoluteSize.X, math.min(140, #parts * 28 + 8))}, 0.2):Play()
         else
             DropdownHeader.Text = "  " .. Config.TargetPart .. "  ▼"
             Tween(DropdownList, {Size = UDim2.fromOffset(DropdownContainer.AbsoluteSize.X, 0)}, 0.2):Play()
@@ -614,7 +645,12 @@ function UI.Build()
             end)
         end
     end)
-    CreateToggle(TargetCard, 82, "Spectate Target", Config.Spectate, "Spectate", true, function(v)
+    CreateActionButton(TargetCard, 76, "TP to Target", function()
+        if UI.Targeting and UI.Targeting.TeleportToTarget then
+            UI.Targeting.TeleportToTarget()
+        end
+    end)
+    local mainSpectateSetState = CreateToggle(TargetCard, 114, "Spectate Target", Config.Spectate, "Spectate", true, function(v)
         Config.Spectate = v
         if not v then
             UI.Targeting.StopSpectate()
@@ -622,7 +658,7 @@ function UI.Build()
     end)
     New("TextLabel", {
         Size = UDim2.new(1, -20, 0, 18),
-        Position = UDim2.fromOffset(10, 120),
+        Position = UDim2.fromOffset(10, 152),
         BackgroundTransparency = 1,
         Text = "Player List",
         TextColor3 = Color3.fromRGB(160, 150, 175),
@@ -633,7 +669,7 @@ function UI.Build()
     }, TargetCard)
     local PlayerList = New("ScrollingFrame", {
         Size = UDim2.new(1, -20, 0, 120),
-        Position = UDim2.fromOffset(10, 140),
+        Position = UDim2.fromOffset(10, 172),
         BackgroundColor3 = Color3.fromRGB(12, 8, 18),
         BackgroundTransparency = 0.3,
         BorderSizePixel = 0,
@@ -644,12 +680,102 @@ function UI.Build()
     }, TargetCard)
     Corner(PlayerList, 8)
     New("UIListLayout", {Padding = UDim.new(0, 2), Parent = PlayerList})
-    local function refreshList()
-        UI.Targeting.RefreshPlayerList(PlayerList, refreshList)
+
+    --// SPECTATE PANEL (middle-right, shows when spectating)
+    local SpectatePanel = New("Frame", {
+        Size = UDim2.fromOffset(200, 320),
+        Position = UDim2.new(1, -220, 0.5, -160),
+        BackgroundColor3 = Color3.fromRGB(9, 6, 15),
+        BackgroundTransparency = 0.04,
+        BorderSizePixel = 0,
+        ZIndex = 60,
+        Visible = false,
+    }, ScreenGui)
+    Corner(SpectatePanel, 16)
+    Stroke(SpectatePanel, 0.72, 1)
+    New("TextLabel", {
+        Size = UDim2.new(1, -20, 0, 24),
+        Position = UDim2.fromOffset(10, 10),
+        BackgroundTransparency = 1,
+        Text = "SPECTATE",
+        TextColor3 = Color3.fromRGB(245, 240, 250),
+        TextSize = 16,
+        Font = Enum.Font.GothamBold,
+        TextXAlignment = Enum.TextXAlignment.Left,
+        ZIndex = 61,
+    }, SpectatePanel)
+    local panelSpectateSetState = CreateToggle(SpectatePanel, 42, "Spectate Target", Config.Spectate, "SpectatePanel", false, function(v)
+        Config.Spectate = v
+        if not v then
+            UI.Targeting.StopSpectate()
+            SpectatePanel.Visible = false
+            SetGUIVisible(true)
+        end
+        if UI.ToggleCallbacks["Spectate"] then
+            UI.ToggleCallbacks["Spectate"](v)
+        end
+    end)
+    New("TextLabel", {
+        Size = UDim2.new(1, -20, 0, 18),
+        Position = UDim2.fromOffset(10, 82),
+        BackgroundTransparency = 1,
+        Text = "Player List",
+        TextColor3 = Color3.fromRGB(160, 150, 175),
+        TextSize = 10,
+        Font = Enum.Font.GothamBold,
+        TextXAlignment = Enum.TextXAlignment.Left,
+        ZIndex = 61,
+    }, SpectatePanel)
+    local PanelPlayerList = New("ScrollingFrame", {
+        Size = UDim2.new(1, -20, 1, -108),
+        Position = UDim2.fromOffset(10, 102),
+        BackgroundColor3 = Color3.fromRGB(12, 8, 18),
+        BackgroundTransparency = 0.3,
+        BorderSizePixel = 0,
+        ScrollBarThickness = 3,
+        ScrollBarImageColor3 = Color3.fromRGB(100, 70, 150),
+        CanvasSize = UDim2.new(0, 0, 0, 0),
+        ZIndex = 61,
+    }, SpectatePanel)
+    Corner(PanelPlayerList, 8)
+    New("UIListLayout", {Padding = UDim.new(0, 2), Parent = PanelPlayerList})
+
+    --// Shared refresh for both player lists
+    local function refreshAllLists()
+        UI.Targeting.RefreshPlayerList(PlayerList, refreshAllLists)
+        UI.Targeting.RefreshPlayerList(PanelPlayerList, refreshAllLists)
     end
-    refreshList()
-    Players.PlayerAdded:Connect(refreshList)
-    Players.PlayerRemoving:Connect(refreshList)
+    refreshAllLists()
+    Players.PlayerAdded:Connect(refreshAllLists)
+    Players.PlayerRemoving:Connect(refreshAllLists)
+
+    --// Spectate mode handler
+    local function SetSpectateMode(enabled)
+        Config.Spectate = enabled
+        if enabled then
+            SetGUIVisible(false)
+            SpectatePanel.Visible = true
+        else
+            UI.Targeting.StopSpectate()
+            SpectatePanel.Visible = false
+            SetGUIVisible(true)
+        end
+        if UI.ToggleCallbacks["Spectate"] then
+            UI.ToggleCallbacks["Spectate"](enabled)
+        end
+        if UI.ToggleCallbacks["SpectatePanel"] then
+            UI.ToggleCallbacks["SpectatePanel"](enabled)
+        end
+    end
+
+    --// Override main spectate callback to use SetSpectateMode
+    local origSpectateCallback = UI.ToggleCallbacks["Spectate"]
+    UI.ToggleCallbacks["Spectate"] = function(enabled)
+        origSpectateCallback(enabled)
+        if enabled ~= SpectatePanel.Visible then
+            SetSpectateMode(enabled)
+        end
+    end
 
     --// SETTINGS PAGE
     local SettingsPage = Pages.Settings
@@ -731,8 +857,12 @@ function UI.Build()
         if dropdownOpen then
             dropdownOpen = false
             DropdownHeader.Text = "  " .. Config.TargetPart .. "  ▼"
-            DropdownList.Visible = false
-            DropdownList.Size = UDim2.fromOffset(DropdownContainer.AbsoluteSize.X, 0)
+            Tween(DropdownList, {Size = UDim2.fromOffset(DropdownContainer.AbsoluteSize.X, 0)}, 0.2):Play()
+            task.delay(0.2, function()
+                if not dropdownOpen then
+                    DropdownList.Visible = false
+                end
+            end)
         end
     end
     for name, data in pairs(TabButtons) do
