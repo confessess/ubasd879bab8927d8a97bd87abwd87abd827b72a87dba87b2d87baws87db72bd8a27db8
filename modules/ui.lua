@@ -734,24 +734,7 @@ function UI.Build()
         Config.SpamFarJitter = v
     end)
 
-    CreateToggle(MiscCard, 100, "Teleport Spam", Config.SpamEnabled, "SpamEnabled", true, function(v)
-        Config.SpamEnabled = v
-        if UI.Spam then
-            if v then UI.Spam.Start() else UI.Spam.Stop() end
-        end
-    end)
-    local spamRangeDropdown = BuildDropdown(MiscCard, 136, "Spam Range", Config.SpamRange or "Close",
-        {"Close", "Far"},
-        function(v) Config.SpamRange = v end)
-    CreateSlider(MiscCard, 180, "Close Height", 50, 1000, Config.SpamCloseHeight or 350, function(v)
-        Config.SpamCloseHeight = v
-    end)
-    CreateSlider(MiscCard, 228, "Close Radius", 50, 1000, Config.SpamCloseRadius or 250, function(v)
-        Config.SpamCloseRadius = v
-    end)
-    CreateSlider(MiscCard, 276, "Far Jitter", 0, 50000, Config.SpamFarJitter or 5000, function(v)
-        Config.SpamFarJitter = v
-    end)
+
     --// SPECTATE PANEL (middle-right, shows when spectating)
     local SpectatePanel = New("Frame", {
         Size = UDim2.fromOffset(200, 320),
