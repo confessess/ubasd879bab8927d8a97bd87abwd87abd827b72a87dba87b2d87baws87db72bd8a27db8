@@ -3,13 +3,19 @@ local RunService = game:GetService("RunService")
 local UserInputService = game:GetService("UserInputService")
 local LocalPlayer = Players.LocalPlayer
 
---// Load modules
-local Config = require(game.ReplicatedStorage.Config)
-local Targeting = require(game.ReplicatedStorage.Modules.Targeting)
-local Combat = require(game.ReplicatedStorage.Modules.Combat)
-local Misc = require(game.ReplicatedStorage.Modules.Misc)
-local Visuals = require(game.ReplicatedStorage.Modules.Visuals)
-local UI = require(game.ReplicatedStorage.Modules.UI)
+--// Get the script's parent folder (main folder where main.lua lives)
+local MainFolder = script.Parent
+
+--// Load Config from main folder
+local Config = require(MainFolder.Config)
+
+--// Load modules from the Modules subfolder
+local ModulesFolder = MainFolder:WaitForChild("Modules")
+local Targeting = require(ModulesFolder.Targeting)
+local Combat = require(ModulesFolder.Combat)
+local Misc = require(ModulesFolder.Misc)
+local Visuals = require(ModulesFolder.Visuals)
+local UI = require(ModulesFolder.UI)
 
 --// Wire config to all modules
 Targeting.SetConfig(Config)
