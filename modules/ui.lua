@@ -704,12 +704,15 @@ function UI.Build()
         CanvasSize = UDim2.new(0, 0, 0, 710),
         ZIndex = 14,
     }, MiscPage)
-    
+
     local MiscCard = CreateCard(MiscScroll, UDim2.fromOffset(0, 0), UDim2.new(1, 0, 0, 700))
-    
+
     --// AntiStomp
     CreateToggle(MiscCard, 14, "AntiStomp", Config.AntiStomp, "AntiStomp", true, function(v)
         Config.AntiStomp = v
+        if UI.Misc then
+            UI.Misc.SetAntiStomp(v)
+        end
     end)
     local antiStompDropdown = BuildDropdown(MiscCard, 54, "AntiStomp Mode", Config.AntiStompMode or "Void",
         {"Void", "Force Reset"},
@@ -761,11 +764,17 @@ function UI.Build()
         --// Auto Armor
     CreateToggle(MiscCard, 488, "Auto Armor", Config.AutoArmor, "AutoArmor", true, function(v)
         Config.AutoArmor = v
+        if UI.Misc then
+            UI.Misc.SetAutoArmor(v)
+        end
     end)
     CreateToggle(MiscCard, 528, "Armor On Any Damage", Config.AutoArmorOnDamage, "AutoArmorOnDamage", true, function(v)
         Config.AutoArmorOnDamage = v
+        if UI.Misc then
+            UI.Misc.EvaluateHealthHook()
+        end
     end)
-    
+
     --// Position display + set button
     local armorPos = Config.AutoArmorPos or Vector3.new(0, 0, 0)
     local ArmorPosLabel = Instance.new("TextLabel")
@@ -778,7 +787,7 @@ function UI.Build()
     ArmorPosLabel.TextSize = 10
     ArmorPosLabel.TextXAlignment = Enum.TextXAlignment.Left
     ArmorPosLabel.Parent = MiscCard
-    
+
     local SetPosBtn = Instance.new("TextButton")
     SetPosBtn.Size = UDim2.new(0.3, 0, 0, 20)
     SetPosBtn.Position = UDim2.new(0.65, 0, 0, 560)
@@ -788,11 +797,11 @@ function UI.Build()
     SetPosBtn.Font = Enum.Font.GothamBold
     SetPosBtn.TextSize = 10
     SetPosBtn.Parent = MiscCard
-    
+
     local SetPosCorner = Instance.new("UICorner")
     SetPosCorner.CornerRadius = UDim.new(0, 6)
     SetPosCorner.Parent = SetPosBtn
-    
+
     SetPosBtn.MouseButton1Click:Connect(function()
         local char = LocalPlayer.Character
         if char then
@@ -808,7 +817,7 @@ function UI.Build()
             end
         end
     end)
-    
+
     CreateSlider(MiscCard, 588, "Trigger Health", 1, 100, Config.AutoArmorTriggerHealth or 50, function(v)
         Config.AutoArmorTriggerHealth = v
     end)

@@ -37,13 +37,22 @@ local Players = game:GetService("Players")
 local LocalPlayer = Players.LocalPlayer
 
 RunService.RenderStepped:Connect(function()
-    Visuals.Update()
-    
+    --// Only run visuals if any visual feature is enabled
+    local anyVisuals = Config.FOV_Enabled or Config.Tracers or Config.Highlights or Config.Spectate or Config.Hitmarkers
+    if anyVisuals then
+        Visuals.Update()
+    else
+        Visuals.Clear()
+    end
+
     local char = LocalPlayer.Character
     if char then
         local tool = char:FindFirstChildOfClass("Tool")
         if tool then
-            Combat.SetupFullAuto(tool)
+            --// Only patch fire-rate when RapidFire is toggled on
+            if Config.RapidFire then
+                Combat.SetupFullAuto(tool)
+            end
             if Config.RapidFire and UserInputService:IsMouseButtonPressed(Enum.UserInputType.MouseButton1) then
                 Combat.FrameTeleportActivate(tool, true)
             end
@@ -73,12 +82,12 @@ LocalPlayer.CharacterAdded:Connect(function()
     if savedTarget and savedTarget.Parent then
         savedPlayer = Players:GetPlayerFromCharacter(savedTarget.Parent)
     end
-    
+
     Combat.Reset()
     Config.Spectate = false
     Targeting.StopSpectate()
     Misc.Reset()
-    
+
     --// Restore target after respawn
     task.delay(0.5, function()
         if savedPlayer then

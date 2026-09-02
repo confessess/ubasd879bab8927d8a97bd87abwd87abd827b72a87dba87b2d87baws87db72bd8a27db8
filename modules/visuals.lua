@@ -54,13 +54,13 @@ function Visuals.Update()
     local Config = Visuals.Config
     local Targeting = Visuals.Targeting
     if not Config or not Targeting then return end
-    
+
     local mousePos = UserInputService:GetMouseLocation()
-    
+
     FOV_Circle.Visible = Config.FOV_Enabled
     FOV_Circle.Position = mousePos
     FOV_Circle.Radius = Config.FOV_Radius
-    
+
     local target = Targeting.GetTarget()
     if Config.Tracers and target then
         local sp, onScreen = Camera:WorldToViewportPoint(target.Position)
@@ -74,9 +74,18 @@ function Visuals.Update()
     else
         Tracer.Visible = false
     end
-    
+
     Targeting.UpdateHighlight(target)
     Targeting.UpdateSpectate()
+end
+
+function Visuals.Clear()
+    FOV_Circle.Visible = false
+    Tracer.Visible = false
+    Hitmarker.Visible = false
+    if Visuals.Targeting then
+        Visuals.Targeting.UpdateHighlight(nil)
+    end
 end
 
 function Visuals.PlayHitmarker()

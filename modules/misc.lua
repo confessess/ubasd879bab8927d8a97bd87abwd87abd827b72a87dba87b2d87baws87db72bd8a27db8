@@ -8,6 +8,8 @@ math.randomseed(tick())
 local Misc = {
     Config = nil,
     SpamConnection = nil,
+    HeartbeatConnection = nil,
+    HealthChangedConnection = nil,
     Character = nil,
     Humanoid = nil,
     HRP = nil,
@@ -23,7 +25,7 @@ local Misc = {
 --// ==================== NOTIFICATIONS ====================
 function Misc.Notify(text, color)
     color = color or Color3.fromRGB(100, 200, 150)
-    
+
     if not Misc.NotificationGui then
         local sg = Instance.new("ScreenGui")
         sg.Name = "ENINotifications"
@@ -31,23 +33,23 @@ function Misc.Notify(text, color)
         sg.Parent = game.CoreGui
         Misc.NotificationGui = sg
     end
-    
+
     local frame = Instance.new("Frame")
     frame.Size = UDim2.new(0, 280, 0, 36)
     frame.Position = UDim2.new(0.5, -140, 0, -40)
     frame.BackgroundColor3 = Color3.fromRGB(30, 30, 40)
     frame.BorderSizePixel = 0
     frame.Parent = Misc.NotificationGui
-    
+
     local corner = Instance.new("UICorner")
     corner.CornerRadius = UDim.new(0, 8)
     corner.Parent = frame
-    
+
     local stroke = Instance.new("UIStroke")
     stroke.Color = color
     stroke.Thickness = 1
     stroke.Parent = frame
-    
+
     local label = Instance.new("TextLabel")
     label.Size = UDim2.new(1, -20, 1, 0)
     label.Position = UDim2.new(0, 10, 0, 0)
@@ -58,9 +60,9 @@ function Misc.Notify(text, color)
     label.TextSize = 12
     label.TextXAlignment = Enum.TextXAlignment.Left
     label.Parent = frame
-    
+
     frame:TweenPosition(UDim2.new(0.5, -140, 0, 20), Enum.EasingDirection.Out, Enum.EasingStyle.Quad, 0.3, true)
-    
+
     task.delay(2.5, function()
         frame:TweenPosition(UDim2.new(0.5, -140, 0, -40), Enum.EasingDirection.In, Enum.EasingStyle.Quad, 0.3, true)
         task.wait(0.35)
@@ -71,6 +73,8 @@ end
 function Misc.SetConfig(config)
     Misc.Config = config
     Misc.CacheArmorDetector()
+    Misc.EvaluateHealthHook()
+    Misc.EvaluateHeartbeat()
 end
 
 function Misc.RefreshCharacter()
@@ -79,7 +83,7 @@ function Misc.RefreshCharacter()
     Misc.HRP = Misc.Character:WaitForChild("HumanoidRootPart")
     Misc.LastHealth = Misc.Humanoid.Health
     Misc.AntiStompTriggered = false
-    Misc.SetupAntiStompHook()
+    Misc.EvaluateHealthHook()
 end
 
 function Misc.GetLiveHumanoid()
@@ -99,15 +103,15 @@ function Misc.CacheArmorDetector()
     Misc.CachedClickDetector = nil
     Misc.CachedPrompt = nil
     Misc.CachedTouchPart = nil
-    
+
     if not Misc.Config or not Misc.Config.AutoArmorPos then return end
     local pos = Misc.Config.AutoArmorPos
-    
+
     for _, obj in pairs(workspace:GetDescendants()) do
         if not obj.Parent or not obj.Parent:IsA("BasePart") then continue end
         local partPos = obj.Parent.Position
         if (partPos - pos).Magnitude > 15 then continue end
-        
+
         if obj:IsA("ClickDetector") then
             Misc.CachedClickDetector = obj
             print("[ENI] Cached ClickDetector for armor at " .. tostring(partPos))
@@ -122,30 +126,43 @@ function Misc.CacheArmorDetector()
 end
 
 --// ==================== ANTI-STOMP ====================
-function Misc.SetupAntiStompHook()
+function Misc.EvaluateHealthHook()
+    --// Disconnect existing hook first
+    if Misc.HealthChangedConnection then
+        Misc.HealthChangedConnection:Disconnect()
+        Misc.HealthChangedConnection = nil
+    end
+
     local humanoid = Misc.GetLiveHumanoid()
     if not humanoid then return end
-    
-    humanoid.HealthChanged:Connect(function(newHealth)
+    if not Misc.Config then return end
+
+    --// Only connect if AntiStomp or AutoArmorOnDamage is enabled
+    local needHook = Misc.Config.AntiStomp or (Misc.Config.AutoArmor and Misc.Config.AutoArmorOnDamage)
+    if not needHook then return end
+
+    Misc.HealthChangedConnection = humanoid.HealthChanged:Connect(function(newHealth)
         if newHealth <= 0 then 
             Misc.LastHealth = newHealth
             return 
         end
-        
+
         local threshold = Misc.Config.AntiStompThreshold or 50
-        
-        if Misc.Config and Misc.Config.AntiStomp and not Misc.AntiStompTriggered then
+
+        --// AntiStomp via health hook
+        if Misc.Config.AntiStomp and not Misc.AntiStompTriggered then
             if newHealth <= threshold then
                 Misc.TriggerAntiStomp()
             end
         end
-        
-        if Misc.Config and Misc.Config.AutoArmor and Misc.Config.AutoArmorOnDamage then
+
+        --// AutoArmor on damage
+        if Misc.Config.AutoArmor and Misc.Config.AutoArmorOnDamage then
             if newHealth < Misc.LastHealth then
                 Misc.AutoArmorFast()
             end
         end
-        
+
         Misc.LastHealth = newHealth
     end)
 end
@@ -215,43 +232,43 @@ function Misc.AutoArmorFast()
         Misc.Notify("Armor position not set!", Color3.fromRGB(200, 60, 60))
         return 
     end
-    
+
     local now = tick()
     local cooldown = Misc.Config.AutoArmorCooldown or 1
     if (now - Misc.LastArmorTime) < cooldown then return end
-    
+
     local hrp = Misc.GetLiveHRP()
     if not hrp then return end
-    
+
     Misc.LastArmorTime = now
-    
+
     --// Pause spam
     local wasSpamming = Misc.Config.SpamEnabled
     if wasSpamming then
         Misc.StopSpam()
     end
-    
+
     local origCF = hrp.CFrame
     local armorPos = Misc.Config.AutoArmorPos
     local cam = Workspace.CurrentCamera
     local origCam = cam.CFrame
-    
+
     task.spawn(function()
         --// Teleport DIRECTLY onto the button
         hrp.CFrame = CFrame.new(armorPos)
         hrp.Velocity = Vector3.new(0, 0, 0)
         hrp.AssemblyLinearVelocity = Vector3.new(0, 0, 0)
-        
+
         --// Look at the button
         cam.CFrame = CFrame.new(armorPos + Vector3.new(0, 3, 0), armorPos)
-        
+
         --// Wait for server to register position (CRITICAL — 5 heartbeats)
         for i = 1, 5 do
             RunService.Heartbeat:Wait()
         end
-        
+
         local success = false
-        
+
         --// Method 1: fireclickdetector (executor native)
         if not success and Misc.CachedClickDetector then
             if fireclickdetector then
@@ -269,7 +286,7 @@ function Misc.AutoArmorFast()
                 success = true
             end
         end
-        
+
         --// Method 2: ProximityPrompt
         if not success and Misc.CachedPrompt then
             if fireproximityprompt then
@@ -284,7 +301,7 @@ function Misc.AutoArmorFast()
                 success = true
             end
         end
-        
+
         --// Method 3: TouchInterest (walk into the part)
         if not success and Misc.CachedTouchPart then
             pcall(function()
@@ -295,7 +312,7 @@ function Misc.AutoArmorFast()
             end)
             success = true
         end
-        
+
         --// Method 4: VirtualInputManager (last resort)
         if not success then
             local vim = game:GetService("VirtualInputManager")
@@ -308,26 +325,26 @@ function Misc.AutoArmorFast()
             end
             success = true
         end
-        
+
         --// Wait for server to process
         for i = 1, 3 do
             RunService.Heartbeat:Wait()
         end
-        
+
         --// Notification
         if success then
             Misc.Notify("Armor grabbed!", Color3.fromRGB(100, 200, 150))
         else
             Misc.Notify("Failed to grab armor", Color3.fromRGB(200, 60, 60))
         end
-        
+
         --// Snap back
         hrp.CFrame = origCF
         hrp.Velocity = Vector3.new(0, 0, 0)
         cam.CFrame = origCam
-        
-        --// Resume spam
-        if wasSpamming then
+
+        --// Resume spam only if still enabled
+        if Misc.Config.SpamEnabled then
             Misc.StartSpam()
         end
     end)
@@ -384,10 +401,27 @@ function Misc.ToggleSpam(enabled)
     end
 end
 
---// ==================== MAIN LOOP ====================
+--// ==================== CONNECTION MANAGEMENT ====================
+function Misc.EvaluateHeartbeat()
+    local needHeartbeat = false
+    if Misc.Config then
+        if Misc.Config.AntiStomp then needHeartbeat = true end
+        if Misc.Config.AutoArmor and not Misc.Config.AutoArmorOnDamage then needHeartbeat = true end
+    end
+
+    if needHeartbeat and not Misc.HeartbeatConnection then
+        Misc.HeartbeatConnection = RunService.Heartbeat:Connect(Misc.OnHeartbeat)
+    elseif not needHeartbeat and Misc.HeartbeatConnection then
+        Misc.HeartbeatConnection:Disconnect()
+        Misc.HeartbeatConnection = nil
+    end
+end
+
 function Misc.OnHeartbeat()
-    Misc.CheckAntiStomp()
-    
+    if Misc.Config and Misc.Config.AntiStomp then
+        Misc.CheckAntiStomp()
+    end
+
     if Misc.Config and Misc.Config.AutoArmor and not Misc.Config.AutoArmorOnDamage then
         local humanoid = Misc.GetLiveHumanoid()
         if humanoid then
@@ -399,8 +433,23 @@ function Misc.OnHeartbeat()
     end
 end
 
+function Misc.SetAntiStomp(enabled)
+    if not Misc.Config then return end
+    Misc.Config.AntiStomp = enabled
+    Misc.AntiStompTriggered = false
+    Misc.EvaluateHealthHook()
+    Misc.EvaluateHeartbeat()
+end
+
+function Misc.SetAutoArmor(enabled)
+    if not Misc.Config then return end
+    Misc.Config.AutoArmor = enabled
+    Misc.EvaluateHealthHook()
+    Misc.EvaluateHeartbeat()
+end
+
 function Misc.Start()
-    RunService.Heartbeat:Connect(Misc.OnHeartbeat)
+    Misc.EvaluateHeartbeat()
     if Misc.Config and Misc.Config.SpamEnabled then
         Misc.StartSpam()
     end
