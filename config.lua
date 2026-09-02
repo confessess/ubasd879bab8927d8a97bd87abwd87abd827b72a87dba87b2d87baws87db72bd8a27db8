@@ -19,6 +19,7 @@ return {
     -- AntiStomp
     AntiStomp = false,
     AntiStompMode = "Void",
+    AntiStompThreshold = 50,
     
     -- Teleport Spam
     SpamEnabled = false,
@@ -28,6 +29,7 @@ return {
     SpamCloseVerticalJitter = 50,
     SpamFarBase = Vector3.new(500000, 500000, 500000),
     SpamFarJitter = 5000,
+    SpamSpeed = 1,  -- teleports per frame (1-10)
     SpamEnabledKey = nil,
     
     -- Toggle hotkeys
@@ -36,4 +38,10 @@ return {
     RapidFireKey = nil,
     SpectateKey = nil,
     AntiStompKey = nil,
+
+    -- AutoArmor
+    AutoArmor = false,
+    AutoArmorPos = Vector3.new(-934.12, -25.38, 571.02),
+    AutoArmorTriggerHealth = 50,
+    AutoArmorCooldown = 5,
 }
