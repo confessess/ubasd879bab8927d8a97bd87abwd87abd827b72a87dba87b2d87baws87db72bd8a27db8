@@ -201,7 +201,7 @@ function UI.Build()
         Size = UDim2.fromOffset(400, 27),
         Position = UDim2.fromOffset(8, 3),
         BackgroundTransparency = 1,
-        Text = "stars.cc",
+        Text = "Stars.cc",
         TextColor3 = Color3.fromRGB(245, 238, 250),
         TextSize = 20,
         Font = Enum.Font.GothamBold,
