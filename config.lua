@@ -19,10 +19,5 @@ return {
     FrameTPKey = nil,
     OneFrameDelayKey = nil,
     RapidFireKey = nil,
-    HitmarkersKey = nil,
-    FOV_EnabledKey = nil,
-    TracersKey = nil,
-    HighlightsKey = nil,
     SpectateKey = nil,
-    ShowHotkeysKey = nil,
 }

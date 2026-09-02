@@ -330,15 +330,17 @@ function UI.Build()
         Stroke(card, 0.91, 1)
         return card
     end
-    local function CreateToggle(parent, y, text, default, toggleId, callback)
+    -- toggleId = nil means no hotkey. hasHotkey = true means show the inline keybind button.
+    local function CreateToggle(parent, y, text, default, toggleId, hasHotkey, callback)
         local frame = New("Frame", {
             Size = UDim2.new(1, -20, 0, 32),
             Position = UDim2.fromOffset(10, y),
             BackgroundTransparency = 1,
             ZIndex = 16,
         }, parent)
+        local labelWidth = hasHotkey and 168 or 120
         New("TextLabel", {
-            Size = UDim2.new(1, -168, 1, 0),
+            Size = UDim2.new(1, -labelWidth, 1, 0),
             BackgroundTransparency = 1,
             Text = text,
             TextColor3 = Color3.fromRGB(200, 190, 215),
@@ -347,28 +349,28 @@ function UI.Build()
             TextXAlignment = Enum.TextXAlignment.Left,
             ZIndex = 17,
         }, frame)
-        local keybindKey = toggleId and Config[toggleId .. "Key"]
-        local keyBtn = New("TextButton", {
-            Size = UDim2.fromOffset(44, 20),
-            Position = UDim2.new(1, -102, 0.5, -10),
-            BackgroundColor3 = Color3.fromRGB(45, 65, 110),
-            BackgroundTransparency = 0.2,
-            BorderSizePixel = 0,
-            Text = keybindKey and keybindKey.Name or "—",
-            TextColor3 = Color3.fromRGB(180, 180, 200),
-            TextSize = 10,
-            Font = Enum.Font.GothamBold,
-            AutoButtonColor = false,
-            ZIndex = 17,
-        }, frame)
-        Corner(keyBtn, 5)
-        keyBtn.MouseButton1Click:Connect(function()
-            if UI.ListeningKey then return end
-            UI.ListeningKey = toggleId
-            keyBtn.Text = "..."
-            Tween(keyBtn, {BackgroundTransparency = 0}, 0.2):Play()
-        end)
-        if toggleId then
+        if hasHotkey and toggleId then
+            local keybindKey = Config[toggleId .. "Key"]
+            local keyBtn = New("TextButton", {
+                Size = UDim2.fromOffset(44, 20),
+                Position = UDim2.new(1, -102, 0.5, -10),
+                BackgroundColor3 = Color3.fromRGB(45, 65, 110),
+                BackgroundTransparency = 0.2,
+                BorderSizePixel = 0,
+                Text = keybindKey and keybindKey.Name or "—",
+                TextColor3 = Color3.fromRGB(180, 180, 200),
+                TextSize = 10,
+                Font = Enum.Font.GothamBold,
+                AutoButtonColor = false,
+                ZIndex = 17,
+            }, frame)
+            Corner(keyBtn, 5)
+            keyBtn.MouseButton1Click:Connect(function()
+                if UI.ListeningKey then return end
+                UI.ListeningKey = toggleId
+                keyBtn.Text = "..."
+                Tween(keyBtn, {BackgroundTransparency = 0}, 0.2):Play()
+            end)
             UI.KeybindButtons[toggleId] = keyBtn
         end
         local toggle = New("TextButton", {
@@ -465,35 +467,35 @@ function UI.Build()
     --// COMBAT PAGE
     local CombatPage = Pages.Combat
     PageTitle(CombatPage, "Combat", "Frame teleport shoot, rapid fire, and hotkeys.")
-    local CombatCard = CreateCard(CombatPage, UDim2.fromOffset(10, 72), UDim2.new(1, -20, 0, 180))
-    CreateToggle(CombatCard, 14, "Frame TP Shoot", Config.FrameTP, "FrameTP", function(v)
+    local CombatCard = CreateCard(CombatPage, UDim2.fromOffset(10, 72), UDim2.new(1, -20, 0, 140))
+    CreateToggle(CombatCard, 14, "Frame TP Shoot", Config.FrameTP, "FrameTP", true, function(v)
         Config.FrameTP = v
     end)
-    CreateToggle(CombatCard, 50, "One-Frame Delay", Config.OneFrameDelay, "OneFrameDelay", function(v)
+    CreateToggle(CombatCard, 50, "One-Frame Delay", Config.OneFrameDelay, "OneFrameDelay", true, function(v)
         Config.OneFrameDelay = v
     end)
-    CreateToggle(CombatCard, 86, "Rapid Fire", Config.RapidFire, "RapidFire", function(v)
+    CreateToggle(CombatCard, 86, "Rapid Fire", Config.RapidFire, "RapidFire", true, function(v)
         Config.RapidFire = v
-    end)
-    CreateToggle(CombatCard, 122, "Hitmarkers", Config.Hitmarkers, "Hitmarkers", function(v)
-        Config.Hitmarkers = v
     end)
 
     --// VISUALS PAGE
     local VisualsPage = Pages.Visuals
-    PageTitle(VisualsPage, "Visuals", "FOV, tracers, and target highlighting.")
-    local VisualsCard = CreateCard(VisualsPage, UDim2.fromOffset(10, 72), UDim2.new(1, -20, 0, 200))
-    CreateToggle(VisualsCard, 14, "FOV Circle", Config.FOV_Enabled, "FOV_Enabled", function(v)
+    PageTitle(VisualsPage, "Visuals", "FOV, tracers, hitmarkers, and target highlighting.")
+    local VisualsCard = CreateCard(VisualsPage, UDim2.fromOffset(10, 72), UDim2.new(1, -20, 0, 236))
+    CreateToggle(VisualsCard, 14, "FOV Circle", Config.FOV_Enabled, "FOV_Enabled", false, function(v)
         Config.FOV_Enabled = v
     end)
     CreateSlider(VisualsCard, 50, "FOV Radius", 50, 600, Config.FOV_Radius, function(v)
         Config.FOV_Radius = v
     end)
-    CreateToggle(VisualsCard, 110, "Tracers", Config.Tracers, "Tracers", function(v)
+    CreateToggle(VisualsCard, 110, "Tracers", Config.Tracers, "Tracers", false, function(v)
         Config.Tracers = v
     end)
-    CreateToggle(VisualsCard, 146, "Highlights", Config.Highlights, "Highlights", function(v)
+    CreateToggle(VisualsCard, 146, "Highlights", Config.Highlights, "Highlights", false, function(v)
         Config.Highlights = v
+    end)
+    CreateToggle(VisualsCard, 182, "Hitmarkers", Config.Hitmarkers, "Hitmarkers", false, function(v)
+        Config.Hitmarkers = v
     end)
 
     --// TARGET PAGE
@@ -535,9 +537,10 @@ function UI.Build()
         ZIndex = 17,
     }, DropdownContainer)
     Corner(DropdownHeader, 8)
+    -- Floating dropdown list parented to Main so it escapes Content clipping
     local DropdownList = New("ScrollingFrame", {
-        Size = UDim2.new(1, -20, 0, 0),
-        Position = UDim2.fromOffset(10, 72),
+        Size = UDim2.fromOffset(0, 0),
+        Position = UDim2.fromOffset(0, 0),
         BackgroundColor3 = Color3.fromRGB(18, 11, 27),
         BackgroundTransparency = 0.05,
         BorderSizePixel = 0,
@@ -545,9 +548,10 @@ function UI.Build()
         ScrollBarImageColor3 = Color3.fromRGB(100, 70, 150),
         AutomaticCanvasSize = Enum.AutomaticSize.Y,
         CanvasSize = UDim2.new(0, 0, 0, 0),
-        ZIndex = 30,
+        ZIndex = 100,
         ClipsDescendants = true,
-    }, TargetCard)
+        Visible = false,
+    }, Main)
     Corner(DropdownList, 8)
     Stroke(DropdownList, 0.9, 1, Color3.fromRGB(140, 90, 200))
     New("UIListLayout", {
@@ -570,7 +574,7 @@ function UI.Build()
             TextSize = 11,
             Font = Enum.Font.GothamMedium,
             AutoButtonColor = false,
-            ZIndex = 31,
+            ZIndex = 101,
             LayoutOrder = idx,
         }, DropdownList)
         Corner(opt, 4)
@@ -584,20 +588,33 @@ function UI.Build()
             Config.TargetPart = partName
             DropdownHeader.Text = "  " .. partName .. "  ▼"
             dropdownOpen = false
-            Tween(DropdownList, {Size = UDim2.new(1, -20, 0, 0)}, 0.2):Play()
+            DropdownList.Visible = false
         end)
+    end
+    local function updateDropdownPosition()
+        local absPos = DropdownContainer.AbsolutePosition
+        local absSize = DropdownContainer.AbsoluteSize
+        DropdownList.Position = UDim2.fromOffset(absPos.X, absPos.Y + absSize.Y + 2)
+        DropdownList.Size = UDim2.fromOffset(absSize.X, 0)
     end
     DropdownHeader.MouseButton1Click:Connect(function()
         dropdownOpen = not dropdownOpen
         if dropdownOpen then
+            updateDropdownPosition()
             DropdownHeader.Text = "  " .. Config.TargetPart .. "  ▲"
-            Tween(DropdownList, {Size = UDim2.new(1, -20, 0, math.min(140, #parts * 28))}, 0.2):Play()
+            DropdownList.Visible = true
+            Tween(DropdownList, {Size = UDim2.fromOffset(DropdownContainer.AbsoluteSize.X, math.min(140, #parts * 28))}, 0.2):Play()
         else
             DropdownHeader.Text = "  " .. Config.TargetPart .. "  ▼"
-            Tween(DropdownList, {Size = UDim2.new(1, -20, 0, 0)}, 0.2):Play()
+            Tween(DropdownList, {Size = UDim2.fromOffset(DropdownContainer.AbsoluteSize.X, 0)}, 0.2):Play()
+            task.delay(0.2, function()
+                if not dropdownOpen then
+                    DropdownList.Visible = false
+                end
+            end)
         end
     end)
-    CreateToggle(TargetCard, 82, "Spectate Target", Config.Spectate, "Spectate", function(v)
+    CreateToggle(TargetCard, 82, "Spectate Target", Config.Spectate, "Spectate", true, function(v)
         Config.Spectate = v
         if not v then
             UI.Targeting.StopSpectate()
@@ -675,7 +692,7 @@ function UI.Build()
         ZIndex = 17,
     }, SettingsCard)
     Corner(KeybindButton, 9)
-    CreateToggle(SettingsCard, 90, "Show Hotkeys", Config.ShowHotkeys, "ShowHotkeys", function(v)
+    CreateToggle(SettingsCard, 90, "Show Hotkeys", Config.ShowHotkeys, "ShowHotkeys", false, function(v)
         Config.ShowHotkeys = v
         UI.UpdateHotkeyDisplay()
     end)
@@ -714,7 +731,8 @@ function UI.Build()
         if dropdownOpen then
             dropdownOpen = false
             DropdownHeader.Text = "  " .. Config.TargetPart .. "  ▼"
-            Tween(DropdownList, {Size = UDim2.new(1, -20, 0, 0)}, 0.2):Play()
+            DropdownList.Visible = false
+            DropdownList.Size = UDim2.fromOffset(DropdownContainer.AbsoluteSize.X, 0)
         end
     end
     for name, data in pairs(TabButtons) do
