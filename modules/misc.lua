@@ -108,26 +108,34 @@ function Misc.CacheArmorDetector()
     local pos = Misc.Config.AutoArmorPos
 
     for _, obj in pairs(workspace:GetDescendants()) do
-        if not obj.Parent or not obj.Parent:IsA("BasePart") then continue end
-        local partPos = obj.Parent.Position
-        if (partPos - pos).Magnitude > 15 then continue end
+        if not obj.Parent then continue end
+        local parentPos = nil
+        if obj.Parent:IsA("BasePart") then
+            parentPos = obj.Parent.Position
+        elseif obj.Parent:IsA("Model") and obj.Parent:FindFirstChild("HumanoidRootPart") then
+            parentPos = obj.Parent.HumanoidRootPart.Position
+        elseif obj.Parent:IsA("Model") and obj.Parent:FindFirstChild("Head") then
+            parentPos = obj.Parent.Head.Position
+        end
+
+        if not parentPos then continue end
+        if (parentPos - pos).Magnitude > 25 then continue end
 
         if obj:IsA("ClickDetector") then
             Misc.CachedClickDetector = obj
-            print("[ENI] Cached ClickDetector for armor at " .. tostring(partPos))
+            print("[ENI] Cached ClickDetector for armor at " .. tostring(parentPos))
         elseif obj:IsA("ProximityPrompt") then
             Misc.CachedPrompt = obj
-            print("[ENI] Cached ProximityPrompt for armor at " .. tostring(partPos))
+            print("[ENI] Cached ProximityPrompt for armor at " .. tostring(parentPos))
         elseif obj:IsA("TouchInterest") then
             Misc.CachedTouchPart = obj.Parent
-            print("[ENI] Cached TouchInterest for armor at " .. tostring(partPos))
+            print("[ENI] Cached TouchInterest for armor at " .. tostring(parentPos))
         end
     end
 end
 
 --// ==================== ANTI-STOMP ====================
 function Misc.EvaluateHealthHook()
-    --// Disconnect existing hook first
     if Misc.HealthChangedConnection then
         Misc.HealthChangedConnection:Disconnect()
         Misc.HealthChangedConnection = nil
@@ -137,7 +145,6 @@ function Misc.EvaluateHealthHook()
     if not humanoid then return end
     if not Misc.Config then return end
 
-    --// Only connect if AntiStomp or AutoArmorOnDamage is enabled
     local needHook = Misc.Config.AntiStomp or (Misc.Config.AutoArmor and Misc.Config.AutoArmorOnDamage)
     if not needHook then return end
 
@@ -149,14 +156,12 @@ function Misc.EvaluateHealthHook()
 
         local threshold = Misc.Config.AntiStompThreshold or 50
 
-        --// AntiStomp via health hook
         if Misc.Config.AntiStomp and not Misc.AntiStompTriggered then
             if newHealth <= threshold then
                 Misc.TriggerAntiStomp()
             end
         end
 
-        --// AutoArmor on damage
         if Misc.Config.AutoArmor and Misc.Config.AutoArmorOnDamage then
             if newHealth < Misc.LastHealth then
                 Misc.AutoArmorFast()
@@ -191,6 +196,19 @@ function Misc.TriggerAntiStomp()
         pcall(function() LocalPlayer:LoadCharacter() end)
 
     elseif Misc.Config.AntiStompMode == "Force Reset" then
+        --// Force-kill first (same as Void but without the teleport)
+        --// This ensures LoadCharacter() actually respawns us even when knocked
+        if hrp then
+            hrp.Velocity = Vector3.new(0, 0, 0)
+            hrp.AssemblyLinearVelocity = Vector3.new(0, 0, 0)
+        end
+        if humanoid then
+            humanoid.Health = 0
+        end
+        if char then
+            pcall(function() char:BreakJoints() end)
+        end
+        task.wait(0.05)
         pcall(function() LocalPlayer:LoadCharacter() end)
     end
 end
@@ -238,7 +256,9 @@ function Misc.AutoArmorFast()
     if (now - Misc.LastArmorTime) < cooldown then return end
 
     local hrp = Misc.GetLiveHRP()
-    if not hrp then return end
+    local humanoid = Misc.GetLiveHumanoid()
+    if not hrp or not humanoid then return end
+    if humanoid.Health <= 0 then return end
 
     Misc.LastArmorTime = now
 
@@ -254,88 +274,175 @@ function Misc.AutoArmorFast()
     local origCam = cam.CFrame
 
     task.spawn(function()
-        --// Teleport DIRECTLY onto the button
-        hrp.CFrame = CFrame.new(armorPos)
+        --// Refresh cache each time in case armor stand wasn't loaded initially
+        Misc.CacheArmorDetector()
+
+        --// Teleport slightly above the armor position so we fall onto it
+        hrp.CFrame = CFrame.new(armorPos + Vector3.new(0, 4, 0))
         hrp.Velocity = Vector3.new(0, 0, 0)
         hrp.AssemblyLinearVelocity = Vector3.new(0, 0, 0)
 
-        --// Look at the button
-        cam.CFrame = CFrame.new(armorPos + Vector3.new(0, 3, 0), armorPos)
+        --// Look at the armor
+        cam.CFrame = CFrame.new(armorPos + Vector3.new(0, 6, 5), armorPos)
 
-        --// Wait for server to register position (CRITICAL — 5 heartbeats)
-        for i = 1, 5 do
+        --// Wait for server to register position (10 heartbeats for stability)
+        for i = 1, 10 do
             RunService.Heartbeat:Wait()
         end
 
         local success = false
 
-        --// Method 1: fireclickdetector (executor native)
-        if not success and Misc.CachedClickDetector then
-            if fireclickdetector then
-                for i = 1, 3 do
-                    pcall(function() fireclickdetector(Misc.CachedClickDetector, 0) end)
-                    RunService.Heartbeat:Wait()
-                end
-                success = true
-            else
-                --// Fallback: Fire the event directly
-                for i = 1, 3 do
-                    pcall(function() Misc.CachedClickDetector.MouseClick:Fire() end)
-                    RunService.Heartbeat:Wait()
-                end
-                success = true
-            end
-        end
-
-        --// Method 2: ProximityPrompt
-        if not success and Misc.CachedPrompt then
-            if fireproximityprompt then
-                pcall(function() fireproximityprompt(Misc.CachedPrompt) end)
-                success = true
-            else
+        --// Method 1: ProximityPrompt (most common in Hood games)
+        if not success then
+            -- Try cached prompt first
+            if Misc.CachedPrompt then
                 pcall(function()
-                    Misc.CachedPrompt:InputHoldBegin()
-                    RunService.Heartbeat:Wait()
-                    Misc.CachedPrompt:InputHoldEnd()
+                    if fireproximityprompt then
+                        fireproximityprompt(Misc.CachedPrompt)
+                        success = true
+                    else
+                        Misc.CachedPrompt:InputHoldBegin()
+                        task.wait(Misc.CachedPrompt.HoldDuration + 0.1)
+                        Misc.CachedPrompt:InputHoldEnd()
+                        success = true
+                    end
                 end)
-                success = true
+            end
+
+            -- Fallback: scan for any prompt near armor pos
+            if not success then
+                for _, obj in pairs(workspace:GetDescendants()) do
+                    if obj:IsA("ProximityPrompt") then
+                        local parent = obj.Parent
+                        if parent and parent:IsA("BasePart") then
+                            if (parent.Position - armorPos).Magnitude <= 20 then
+                                pcall(function()
+                                    if fireproximityprompt then
+                                        fireproximityprompt(obj)
+                                    else
+                                        obj:InputHoldBegin()
+                                        task.wait(obj.HoldDuration + 0.1)
+                                        obj:InputHoldEnd()
+                                    end
+                                    success = true
+                                end)
+                                if success then break end
+                            end
+                        end
+                    end
+                end
             end
         end
 
-        --// Method 3: TouchInterest (walk into the part)
+        --// Method 2: ClickDetector
+        if not success then
+            if Misc.CachedClickDetector then
+                pcall(function()
+                    if fireclickdetector then
+                        fireclickdetector(Misc.CachedClickDetector)
+                    else
+                        Misc.CachedClickDetector.MouseClick:Fire()
+                    end
+                    success = true
+                end)
+            end
+
+            -- Fallback: scan for any clickdetector near armor pos
+            if not success then
+                for _, obj in pairs(workspace:GetDescendants()) do
+                    if obj:IsA("ClickDetector") then
+                        local parent = obj.Parent
+                        if parent and parent:IsA("BasePart") then
+                            if (parent.Position - armorPos).Magnitude <= 20 then
+                                pcall(function()
+                                    if fireclickdetector then
+                                        fireclickdetector(obj)
+                                    else
+                                        obj.MouseClick:Fire()
+                                    end
+                                    success = true
+                                end)
+                                if success then break end
+                            end
+                        end
+                    end
+                end
+            end
+        end
+
+        --// Method 3: TouchInterest
         if not success and Misc.CachedTouchPart then
             pcall(function()
                 local touchPart = Misc.CachedTouchPart
                 if touchPart.Touched then
                     touchPart.Touched:Fire(hrp)
+                    success = true
                 end
             end)
-            success = true
         end
 
-        --// Method 4: VirtualInputManager (last resort)
+        --// Method 4: VirtualInputManager (last resort - simulates E key and click)
         if not success then
             local vim = game:GetService("VirtualInputManager")
             local screenSize = cam.ViewportSize
+
+            -- Simulate E key (common for prompts)
             for i = 1, 3 do
-                vim:SendMouseButtonEvent(screenSize.X/2, screenSize.Y/2, 0, true, game, 1)
+                pcall(function()
+                    vim:SendKeyEvent(true, Enum.KeyCode.E, false, game)
+                    task.wait(0.1)
+                    vim:SendKeyEvent(false, Enum.KeyCode.E, false, game)
+                end)
                 RunService.Heartbeat:Wait()
-                vim:SendMouseButtonEvent(screenSize.X/2, screenSize.Y/2, 0, false, game, 1)
+            end
+
+            -- Simulate mouse click at center of screen
+            for i = 1, 3 do
+                pcall(function()
+                    vim:SendMouseButtonEvent(screenSize.X/2, screenSize.Y/2, 0, true, game, 1)
+                    task.wait(0.05)
+                    vim:SendMouseButtonEvent(screenSize.X/2, screenSize.Y/2, 0, false, game, 1)
+                end)
                 RunService.Heartbeat:Wait()
             end
             success = true
         end
 
-        --// Wait for server to process
-        for i = 1, 3 do
+        --// Wait for server to process and armor to apply
+        for i = 1, 8 do
             RunService.Heartbeat:Wait()
         end
 
+        --// Check if armor was actually obtained
+        local char = LocalPlayer.Character
+        local gotArmor = false
+        if char then
+            -- Common armor value locations in Hood games
+            local armorVal = char:FindFirstChild("Armor") or char:FindFirstChild("BodyArmor") or char:FindFirstChild("BulletProof")
+            if not armorVal and humanoid then
+                armorVal = humanoid:FindFirstChild("Armor") or humanoid:FindFirstChild("BodyArmor")
+            end
+            if armorVal then
+                if armorVal:IsA("NumberValue") and armorVal.Value > 0 then
+                    gotArmor = true
+                elseif armorVal:IsA("IntValue") and armorVal.Value > 0 then
+                    gotArmor = true
+                end
+            end
+            -- Some games use a BoolValue for armor
+            local armorBool = char:FindFirstChild("HasArmor") or char:FindFirstChild("WearingArmor")
+            if armorBool and armorBool:IsA("BoolValue") and armorBool.Value then
+                gotArmor = true
+            end
+        end
+
         --// Notification
-        if success then
+        if gotArmor then
             Misc.Notify("Armor grabbed!", Color3.fromRGB(100, 200, 150))
+        elseif success then
+            Misc.Notify("Armor interaction sent", Color3.fromRGB(150, 150, 200))
         else
-            Misc.Notify("Failed to grab armor", Color3.fromRGB(200, 60, 60))
+            Misc.Notify("Failed to grab armor - set position closer to stand", Color3.fromRGB(200, 60, 60))
         end
 
         --// Snap back

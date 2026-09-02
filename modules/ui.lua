@@ -812,7 +812,7 @@ function UI.Build()
                 ArmorPosLabel.Text = string.format("Pos: %.0f, %.0f, %.0f", pos.X, pos.Y, pos.Z)
                 --// Also update the cached detector
                 if UI.Misc then
-                    UI.Misc.CacheArmorClickDetector()
+                    UI.Misc.CacheArmorDetector()
                 end
             end
         end
