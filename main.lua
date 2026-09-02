@@ -18,7 +18,7 @@ Combat.SetConfig(Config)
 Combat.SetTargeting(Targeting)
 Combat.SetVisuals(Visuals)
 
---// ENI's Misc Module — AntiStomp + Teleport Spam
+--// ENI's Misc Module — AntiStomp + Teleport Spam + Auto Armor
 local Misc = loadModule("modules/misc.lua")
 Misc.SetConfig(Config)
 Misc.Start()
@@ -65,21 +65,33 @@ UserInputService.InputBegan:Connect(function(input, gp)
     end
 end)
 
---// Reset on respawn — keep target if they're still alive
+--// Reset on respawn — KEEP TARGET even if they died and respawned
 LocalPlayer.CharacterAdded:Connect(function()
+    --// Save the target PLAYER, not just the part
     local savedTarget = Targeting.SelectedTarget
+    local savedPlayer = nil
+    if savedTarget and savedTarget.Parent then
+        savedPlayer = Players:GetPlayerFromCharacter(savedTarget.Parent)
+    end
+    
     Combat.Reset()
     Config.Spectate = false
     Targeting.StopSpectate()
     Misc.Reset()
-    --// Restore target after respawn if still valid
+    
+    --// Restore target after respawn
     task.delay(0.5, function()
-        if savedTarget and savedTarget.Parent then
-            local targetChar = savedTarget.Parent
-            local targetHumanoid = targetChar:FindFirstChildOfClass("Humanoid")
-            if targetHumanoid and targetHumanoid.Health > 0 then
-                Targeting.SelectedTarget = savedTarget
+        if savedPlayer then
+            --// Target is a player — find their new character after respawn
+            if savedPlayer.Character then
+                local targetPart = savedPlayer.Character:FindFirstChild(Config.TargetPart or "Head")
+                if targetPart then
+                    Targeting.SelectedTarget = targetPart
+                end
             end
+        elseif savedTarget and savedTarget.Parent then
+            --// Fallback: target part still exists (they didn't die)
+            Targeting.SelectedTarget = savedTarget
         end
     end)
 end)
