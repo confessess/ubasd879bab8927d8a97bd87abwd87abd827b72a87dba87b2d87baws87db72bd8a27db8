@@ -35,7 +35,7 @@ return {
     -- Auto Armor
     AutoArmor = false,
     AutoArmorOnDamage = false,
-    AutoArmorPos = Vector3.new(0, 0, 0),
+    AutoArmorPos = Vector3.new(-934.12, -25.38, 571.02),
     AutoArmorTriggerHealth = 50,
     AutoArmorCooldown = 1,
     
