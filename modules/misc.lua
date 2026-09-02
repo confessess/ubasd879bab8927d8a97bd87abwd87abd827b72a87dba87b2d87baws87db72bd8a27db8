@@ -16,6 +16,7 @@ local Misc = {
     LastArmorTime = 0,
     CachedClickDetector = nil,
     CachedPrompt = nil,
+    CachedTouchPart = nil,
     NotificationGui = nil,
 }
 
@@ -58,10 +59,8 @@ function Misc.Notify(text, color)
     label.TextXAlignment = Enum.TextXAlignment.Left
     label.Parent = frame
     
-    --// Slide in
     frame:TweenPosition(UDim2.new(0.5, -140, 0, 20), Enum.EasingDirection.Out, Enum.EasingStyle.Quad, 0.3, true)
     
-    --// Fade out and destroy
     task.delay(2.5, function()
         frame:TweenPosition(UDim2.new(0.5, -140, 0, -40), Enum.EasingDirection.In, Enum.EasingStyle.Quad, 0.3, true)
         task.wait(0.35)
@@ -71,7 +70,7 @@ end
 
 function Misc.SetConfig(config)
     Misc.Config = config
-    Misc.CacheArmorClickDetector()
+    Misc.CacheArmorDetector()
 end
 
 function Misc.RefreshCharacter()
@@ -83,7 +82,6 @@ function Misc.RefreshCharacter()
     Misc.SetupAntiStompHook()
 end
 
---// ==================== LIVE REFS ====================
 function Misc.GetLiveHumanoid()
     local char = LocalPlayer.Character
     if not char then return nil end
@@ -96,37 +94,31 @@ function Misc.GetLiveHRP()
     return char:FindFirstChild("HumanoidRootPart")
 end
 
---// ==================== CLICK DETECTOR CACHE ====================
-function Misc.CacheArmorClickDetector()
+--// ==================== ARMOR DETECTOR CACHE ====================
+function Misc.CacheArmorDetector()
     Misc.CachedClickDetector = nil
     Misc.CachedPrompt = nil
+    Misc.CachedTouchPart = nil
     
     if not Misc.Config or not Misc.Config.AutoArmorPos then return end
     local pos = Misc.Config.AutoArmorPos
     
-    --// Search for ClickDetector
     for _, obj in pairs(workspace:GetDescendants()) do
-        if obj:IsA("ClickDetector") and obj.Parent and obj.Parent:IsA("BasePart") then
-            if (obj.Parent.Position - pos).Magnitude < 8 then
-                Misc.CachedClickDetector = obj
-                print("[ENI] Cached ClickDetector for armor")
-                return
-            end
+        if not obj.Parent or not obj.Parent:IsA("BasePart") then continue end
+        local partPos = obj.Parent.Position
+        if (partPos - pos).Magnitude > 15 then continue end
+        
+        if obj:IsA("ClickDetector") then
+            Misc.CachedClickDetector = obj
+            print("[ENI] Cached ClickDetector for armor at " .. tostring(partPos))
+        elseif obj:IsA("ProximityPrompt") then
+            Misc.CachedPrompt = obj
+            print("[ENI] Cached ProximityPrompt for armor at " .. tostring(partPos))
+        elseif obj:IsA("TouchInterest") then
+            Misc.CachedTouchPart = obj.Parent
+            print("[ENI] Cached TouchInterest for armor at " .. tostring(partPos))
         end
     end
-    
-    --// Search for ProximityPrompt
-    for _, obj in pairs(workspace:GetDescendants()) do
-        if obj:IsA("ProximityPrompt") and obj.Parent and obj.Parent:IsA("BasePart") then
-            if (obj.Parent.Position - pos).Magnitude < 8 then
-                Misc.CachedPrompt = obj
-                print("[ENI] Cached ProximityPrompt for armor")
-                return
-            end
-        end
-    end
-    
-    print("[ENI] No click detector or prompt found near armor position")
 end
 
 --// ==================== ANTI-STOMP ====================
@@ -142,14 +134,12 @@ function Misc.SetupAntiStompHook()
         
         local threshold = Misc.Config.AntiStompThreshold or 50
         
-        --// AntiStomp: health drops BELOW threshold = instant death
         if Misc.Config and Misc.Config.AntiStomp and not Misc.AntiStompTriggered then
             if newHealth <= threshold then
                 Misc.TriggerAntiStomp()
             end
         end
         
-        --// AutoArmor: ANY damage = grab armor instantly
         if Misc.Config and Misc.Config.AutoArmor and Misc.Config.AutoArmorOnDamage then
             if newHealth < Misc.LastHealth then
                 Misc.AutoArmorFast()
@@ -188,7 +178,6 @@ function Misc.TriggerAntiStomp()
     end
 end
 
---// Fallback heartbeat
 function Misc.CheckAntiStomp()
     if not Misc.Config or not Misc.Config.AntiStomp then
         Misc.AntiStompTriggered = false
@@ -202,13 +191,11 @@ function Misc.CheckAntiStomp()
     local threshold = Misc.Config.AntiStompThreshold or 50
     local currentHealth = humanoid.Health
 
-    --// Trigger: health below threshold
     if currentHealth > 0 and currentHealth <= threshold then
         Misc.TriggerAntiStomp()
         return
     end
 
-    --// Fallback: Da Hood "Knocked" value
     local char = LocalPlayer.Character
     if char then
         local knocked = char:FindFirstChild("Knocked")
@@ -221,7 +208,7 @@ function Misc.CheckAntiStomp()
     Misc.LastHealth = currentHealth
 end
 
---// ==================== AUTO ARMOR (FAST) ====================
+--// ==================== AUTO ARMOR (ROBUST) ====================
 function Misc.AutoArmorFast()
     if not Misc.Config or not Misc.Config.AutoArmor then return end
     if not Misc.Config.AutoArmorPos then 
@@ -238,7 +225,7 @@ function Misc.AutoArmorFast()
     
     Misc.LastArmorTime = now
     
-    --// Pause spam briefly so we dont get teleported away
+    --// Pause spam
     local wasSpamming = Misc.Config.SpamEnabled
     if wasSpamming then
         Misc.StopSpam()
@@ -249,58 +236,101 @@ function Misc.AutoArmorFast()
     local cam = Workspace.CurrentCamera
     local origCam = cam.CFrame
     
-    --// Teleport to armor position
-    hrp.CFrame = CFrame.new(armorPos + Vector3.new(0, 2, 0))
-    
-    --// Look down at the button
-    cam.CFrame = CFrame.new(armorPos + Vector3.new(0, 2, 0), armorPos)
-    
-    --// One frame for server to register position
-    RunService.Heartbeat:Wait()
-    
-    local clicked = false
-    
-    --// Method 1: Executor native fireclickdetector
-    if Misc.CachedClickDetector and fireclickdetector then
-        local ok = pcall(function() fireclickdetector(Misc.CachedClickDetector) end)
-        if ok then clicked = true end
-    end
-    
-    --// Method 2: ProximityPrompt
-    if not clicked and Misc.CachedPrompt then
-        local ok = pcall(function() 
-            Misc.CachedPrompt:InputHoldBegin()
-            task.wait(0.1)
-            Misc.CachedPrompt:InputHoldEnd()
-        end)
-        if ok then clicked = true end
-    end
-    
-    --// Method 3: VirtualInputManager click at screen center
-    if not clicked then
-        local vim = game:GetService("VirtualInputManager")
-        local screenSize = cam.ViewportSize
-        vim:SendMouseButtonEvent(screenSize.X/2, screenSize.Y/2, 0, true, game, 1)
-        task.wait(0.05)
-        vim:SendMouseButtonEvent(screenSize.X/2, screenSize.Y/2, 0, false, game, 1)
-        clicked = true
-    end
-    
-    --// Notification
-    if clicked then
-        Misc.Notify("Armor grabbed!", Color3.fromRGB(100, 200, 150))
-    else
-        Misc.Notify("Failed to grab armor", Color3.fromRGB(200, 60, 60))
-    end
-    
-    --// Snap back
-    hrp.CFrame = origCF
-    cam.CFrame = origCam
-    
-    --// Resume spam if it was on
-    if wasSpamming then
-        Misc.StartSpam()
-    end
+    task.spawn(function()
+        --// Teleport DIRECTLY onto the button
+        hrp.CFrame = CFrame.new(armorPos)
+        hrp.Velocity = Vector3.new(0, 0, 0)
+        hrp.AssemblyLinearVelocity = Vector3.new(0, 0, 0)
+        
+        --// Look at the button
+        cam.CFrame = CFrame.new(armorPos + Vector3.new(0, 3, 0), armorPos)
+        
+        --// Wait for server to register position (CRITICAL — 5 heartbeats)
+        for i = 1, 5 do
+            RunService.Heartbeat:Wait()
+        end
+        
+        local success = false
+        
+        --// Method 1: fireclickdetector (executor native)
+        if not success and Misc.CachedClickDetector then
+            if fireclickdetector then
+                for i = 1, 3 do
+                    pcall(function() fireclickdetector(Misc.CachedClickDetector, 0) end)
+                    RunService.Heartbeat:Wait()
+                end
+                success = true
+            else
+                --// Fallback: Fire the event directly
+                for i = 1, 3 do
+                    pcall(function() Misc.CachedClickDetector.MouseClick:Fire() end)
+                    RunService.Heartbeat:Wait()
+                end
+                success = true
+            end
+        end
+        
+        --// Method 2: ProximityPrompt
+        if not success and Misc.CachedPrompt then
+            if fireproximityprompt then
+                pcall(function() fireproximityprompt(Misc.CachedPrompt) end)
+                success = true
+            else
+                pcall(function()
+                    Misc.CachedPrompt:InputHoldBegin()
+                    RunService.Heartbeat:Wait()
+                    Misc.CachedPrompt:InputHoldEnd()
+                end)
+                success = true
+            end
+        end
+        
+        --// Method 3: TouchInterest (walk into the part)
+        if not success and Misc.CachedTouchPart then
+            pcall(function()
+                local touchPart = Misc.CachedTouchPart
+                if touchPart.Touched then
+                    touchPart.Touched:Fire(hrp)
+                end
+            end)
+            success = true
+        end
+        
+        --// Method 4: VirtualInputManager (last resort)
+        if not success then
+            local vim = game:GetService("VirtualInputManager")
+            local screenSize = cam.ViewportSize
+            for i = 1, 3 do
+                vim:SendMouseButtonEvent(screenSize.X/2, screenSize.Y/2, 0, true, game, 1)
+                RunService.Heartbeat:Wait()
+                vim:SendMouseButtonEvent(screenSize.X/2, screenSize.Y/2, 0, false, game, 1)
+                RunService.Heartbeat:Wait()
+            end
+            success = true
+        end
+        
+        --// Wait for server to process
+        for i = 1, 3 do
+            RunService.Heartbeat:Wait()
+        end
+        
+        --// Notification
+        if success then
+            Misc.Notify("Armor grabbed!", Color3.fromRGB(100, 200, 150))
+        else
+            Misc.Notify("Failed to grab armor", Color3.fromRGB(200, 60, 60))
+        end
+        
+        --// Snap back
+        hrp.CFrame = origCF
+        hrp.Velocity = Vector3.new(0, 0, 0)
+        cam.CFrame = origCam
+        
+        --// Resume spam
+        if wasSpamming then
+            Misc.StartSpam()
+        end
+    end)
 end
 
 --// ==================== TELEPORT SPAM ====================
@@ -358,7 +388,6 @@ end
 function Misc.OnHeartbeat()
     Misc.CheckAntiStomp()
     
-    --// Auto Armor (threshold mode — only when OnDamage is OFF)
     if Misc.Config and Misc.Config.AutoArmor and not Misc.Config.AutoArmorOnDamage then
         local humanoid = Misc.GetLiveHumanoid()
         if humanoid then
