@@ -13,10 +13,12 @@ local Misc = {
     LastHealth = 100,
     AntiStompTriggered = false,
     LastArmorTime = 0,
+    CachedClickDetector = nil,
 }
 
 function Misc.SetConfig(config)
     Misc.Config = config
+    Misc.CacheArmorClickDetector()
 end
 
 function Misc.RefreshCharacter()
@@ -41,19 +43,43 @@ function Misc.GetLiveHRP()
     return char:FindFirstChild("HumanoidRootPart")
 end
 
+--// ==================== CLICK DETECTOR CACHE ====================
+function Misc.CacheArmorClickDetector()
+    if not Misc.Config or not Misc.Config.AutoArmorPos then return end
+    local pos = Misc.Config.AutoArmorPos
+    for _, obj in pairs(workspace:GetDescendants()) do
+        if obj:IsA("ClickDetector") and obj.Parent and obj.Parent:IsA("BasePart") then
+            if (obj.Parent.Position - pos).Magnitude < 5 then
+                Misc.CachedClickDetector = obj
+                return
+            end
+        end
+    end
+end
+
 --// ==================== ANTI-STOMP ====================
 function Misc.SetupAntiStompHook()
     local humanoid = Misc.GetLiveHumanoid()
     if not humanoid then return end
     
     humanoid.HealthChanged:Connect(function(newHealth)
-        if not Misc.Config or not Misc.Config.AntiStomp then return end
-        if Misc.AntiStompTriggered then return end
-        if newHealth <= 0 then return end
+        if newHealth <= 0 then 
+            Misc.LastHealth = newHealth
+            return 
+        end
         
-        --// ANY damage taken = instant void death
-        if newHealth < Misc.LastHealth then
-            Misc.TriggerAntiStomp()
+        --// AntiStomp: any damage = instant death
+        if Misc.Config and Misc.Config.AntiStomp and not Misc.AntiStompTriggered then
+            if newHealth < Misc.LastHealth then
+                Misc.TriggerAntiStomp()
+            end
+        end
+        
+        --// AutoArmor: any damage = grab armor instantly
+        if Misc.Config and Misc.Config.AutoArmor and Misc.Config.AutoArmorOnDamage then
+            if newHealth < Misc.LastHealth then
+                Misc.AutoArmorFast()
+            end
         end
         
         Misc.LastHealth = newHealth
@@ -118,13 +144,13 @@ function Misc.CheckAntiStomp()
     Misc.LastHealth = currentHealth
 end
 
---// ==================== AUTO ARMOR ====================
-function Misc.AutoArmor()
+--// ==================== AUTO ARMOR (FAST) ====================
+function Misc.AutoArmorFast()
     if not Misc.Config or not Misc.Config.AutoArmor then return end
     if not Misc.Config.AutoArmorPos then return end
     
     local now = tick()
-    local cooldown = Misc.Config.AutoArmorCooldown or 5
+    local cooldown = Misc.Config.AutoArmorCooldown or 1
     if (now - Misc.LastArmorTime) < cooldown then return end
     
     local hrp = Misc.GetLiveHRP()
@@ -132,46 +158,27 @@ function Misc.AutoArmor()
     
     Misc.LastArmorTime = now
     
-    task.spawn(function()
-        local origCF = hrp.CFrame
-        local armorPos = Misc.Config.AutoArmorPos
-        local cam = workspace.CurrentCamera
-        local origCam = cam.CFrame
-        
-        --// Teleport to armor button (stand slightly above it)
-        hrp.CFrame = CFrame.new(armorPos + Vector3.new(0, 2, 0))
-        
-        --// Look straight down at the button
-        cam.CFrame = CFrame.new(armorPos + Vector3.new(0, 2, 0), armorPos)
-        
-        --// Try to find and fire ClickDetector directly
-        local clickDetector = nil
-        for _, obj in pairs(workspace:GetDescendants()) do
-            if obj:IsA("ClickDetector") and obj.Parent and obj.Parent:IsA("BasePart") then
-                if (obj.Parent.Position - armorPos).Magnitude < 10 then
-                    clickDetector = obj
-                    break
-                end
-            end
+    local origCF = hrp.CFrame
+    local armorPos = Misc.Config.AutoArmorPos
+    
+    --// Teleport to armor position
+    hrp.CFrame = CFrame.new(armorPos + Vector3.new(0, 2, 0))
+    
+    --// One frame for server to register position
+    RunService.Heartbeat:Wait()
+    
+    --// Click the detector
+    if Misc.CachedClickDetector then
+        --// Try executor native function first (bypasses distance checks)
+        if fireclickdetector then
+            pcall(function() fireclickdetector(Misc.CachedClickDetector) end)
+        else
+            pcall(function() Misc.CachedClickDetector:FireServer() end)
         end
-        
-        if clickDetector then
-            pcall(function() clickDetector:FireServer() end)
-        end
-        
-        --// Simulate mouse click as backup
-        task.wait(0.05)
-        local VirtualInputManager = game:GetService("VirtualInputManager")
-        local screenSize = cam.ViewportSize
-        VirtualInputManager:SendMouseButtonEvent(screenSize.X/2, screenSize.Y/2, 0, true, game, 1)
-        task.wait(0.05)
-        VirtualInputManager:SendMouseButtonEvent(screenSize.X/2, screenSize.Y/2, 0, false, game, 1)
-        
-        --// Snap back
-        task.wait(0.05)
-        hrp.CFrame = origCF
-        cam.CFrame = origCam
-    end)
+    end
+    
+    --// INSTANT snap back — no extra waits
+    hrp.CFrame = origCF
 end
 
 --// ==================== TELEPORT SPAM ====================
@@ -229,13 +236,13 @@ end
 function Misc.OnHeartbeat()
     Misc.CheckAntiStomp()
     
-    --// Auto Armor check
-    if Misc.Config and Misc.Config.AutoArmor then
+    --// Auto Armor (threshold mode — only when OnDamage is OFF)
+    if Misc.Config and Misc.Config.AutoArmor and not Misc.Config.AutoArmorOnDamage then
         local humanoid = Misc.GetLiveHumanoid()
         if humanoid then
             local triggerHealth = Misc.Config.AutoArmorTriggerHealth or 50
             if humanoid.Health < triggerHealth and humanoid.Health > 0 then
-                Misc.AutoArmor()
+                Misc.AutoArmorFast()
             end
         end
     end
