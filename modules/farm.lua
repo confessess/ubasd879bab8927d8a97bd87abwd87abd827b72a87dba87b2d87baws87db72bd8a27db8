@@ -149,7 +149,7 @@ function Farm.HighlightTarget(player)
     if not char then return end
 
     local hl = Instance.new("Highlight")
-    hl.Name = "ENI_FarmHighlight"
+    hl.Name = "Eni_FarmHighlight"
     hl.FillColor = Color3.fromRGB(145, 75, 255)
     hl.OutlineColor = Color3.fromRGB(255, 200, 255)
     hl.FillTransparency = 0.3
@@ -244,7 +244,7 @@ function Farm.Stop()
         Farm.HeartbeatConn = nil
     end
     Farm.RestoreTarget()
-    print("[ENI Farm] STOPPED — Target restored")
+    print("[Stars Farm] STOPPED — Target restored")
 end
 
 function Farm.SetEnabled(enabled)

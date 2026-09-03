@@ -28,7 +28,7 @@ function Misc.Notify(text, color)
 
     if not Misc.NotificationGui then
         local sg = Instance.new("ScreenGui")
-        sg.Name = "ENINotifications"
+        sg.Name = "StarsNotifications"
         sg.ResetOnSpawn = false
         sg.Parent = game.CoreGui
         Misc.NotificationGui = sg
@@ -123,13 +123,13 @@ function Misc.CacheArmorDetector()
 
         if obj:IsA("ClickDetector") then
             Misc.CachedClickDetector = obj
-            print("[ENI] Cached ClickDetector for armor at " .. tostring(parentPos))
+            print("[Stars] Cached ClickDetector for armor at " .. tostring(parentPos))
         elseif obj:IsA("ProximityPrompt") then
             Misc.CachedPrompt = obj
-            print("[ENI] Cached ProximityPrompt for armor at " .. tostring(parentPos))
+            print("[Stars] Cached ProximityPrompt for armor at " .. tostring(parentPos))
         elseif obj:IsA("TouchInterest") then
             Misc.CachedTouchPart = obj.Parent
-            print("[ENI] Cached TouchInterest for armor at " .. tostring(parentPos))
+            print("[Stars] Cached TouchInterest for armor at " .. tostring(parentPos))
         end
     end
 end
