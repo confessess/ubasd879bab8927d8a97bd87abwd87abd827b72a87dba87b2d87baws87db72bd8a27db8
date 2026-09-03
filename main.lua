@@ -54,12 +54,13 @@ function Auth.GenerateHWID()
             local version = game:HttpGet("https://setup.rbxcdn.com/version", true)
             if version then fingerprint = fingerprint .. version:sub(1, 20) end
         end)
+        -- Use bit32 for Luau compatibility (Lua 5.1 / Roblox)
         local hash = 0
         for i = 1, #fingerprint do
-            hash = ((hash << 5) - hash) + string.byte(fingerprint, i)
-            hash = hash & 0xFFFFFFFF
+            hash = bit32.bor(bit32.lshift(hash, 5), bit32.band(bit32.arshift(hash, 27), 0x1F))
+            hash = bit32.band(hash + string.byte(fingerprint, i), 0xFFFFFFFF)
         end
-        hwid = string.format("FALLBACK-%08X-%08X", hash & 0xFFFFFFFF, LocalPlayer.UserId)
+        hwid = string.format("FALLBACK-%08X-%08X", hash, LocalPlayer.UserId)
     end
     Auth.HWID = hwid
     return hwid
