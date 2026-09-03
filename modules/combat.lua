@@ -586,18 +586,27 @@ local function KarmaFireAtTarget(target, myTool, myRoot, shots)
     local targetRoot = target.Character and target.Character:FindFirstChild("HumanoidRootPart")
     if not targetHead or not targetRoot then return false end
 
-    local behindPos = targetRoot.CFrame * CFrame.new(0, 0, -3)
+    -- INSTANT TP — no wait for aim
+    local behindPos = targetRoot.CFrame * CFrame.new(0, 0, -2)
     myRoot.CFrame = CFrame.new(behindPos.Position, targetHead.Position)
+    myRoot.Velocity = Vector3.new(0, 0, 0)
+    myRoot.AssemblyLinearVelocity = Vector3.new(0, 0, 0)
 
-    RunService.RenderStepped:Wait()
-    RunService.RenderStepped:Wait()
-
+    -- Fire immediately — no aim wait
     for i = 1, shots do
         if not targetHead.Parent then return true end
+
+        -- Re-aim every shot
+        local currentHead = target.Character and target.Character:FindFirstChild("Head")
+        if currentHead then
+            myRoot.CFrame = CFrame.new(myRoot.Position, currentHead.Position)
+        end
+
         if myTool and myTool.Parent then
-            myRoot.CFrame = CFrame.new(myRoot.Position, targetHead.Position)
             myTool:Activate()
         end
+
+        -- Minimal wait — every frame
         RunService.RenderStepped:Wait()
     end
 
@@ -726,7 +735,8 @@ local function KarmaOnHealthChanged(health)
     if damage > 0 then
         Combat.KarmaTriggered = true
 
-        task.delay(0.05, function()
+        -- INSTANT — no delay
+        task.spawn(function()
             local shooter = KarmaIdentifyShooter()
             if shooter then
                 KarmaKillTarget(shooter)
