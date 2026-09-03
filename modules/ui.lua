@@ -97,6 +97,10 @@ function UI.SetMovement(movement)
     UI.Movement = movement
 end
 
+function UI.SetVisuals(visuals)
+    UI.Visuals = visuals
+end
+
 
 function UI.UpdateHotkeyDisplay()
     local Config = UI.Config
@@ -1065,13 +1069,13 @@ function UI.Build()
         Position = UDim2.fromOffset(10, 72),
         BackgroundTransparency = 1,
         BorderSizePixel = 0,
-        ScrollBarThickness = 3,
-        ScrollBarImageColor3 = Color3.fromRGB(100, 70, 150),
+        ScrollBarThickness = 5,
+        ScrollBarImageColor3 = Color3.fromRGB(145, 75, 255),
         CanvasSize = UDim2.new(0, 0, 0, 0),
         ZIndex = 14,
     }, CombatPage)
-    local CombatCard = CreateCard(CombatScroll, UDim2.fromOffset(0, 0), UDim2.new(1, 0, 0, 640))
-    CombatScroll.CanvasSize = UDim2.new(0, 0, 0, 660)
+    local CombatCard = CreateCard(CombatScroll, UDim2.fromOffset(0, 0), UDim2.new(1, 0, 0, 700))
+    CombatScroll.CanvasSize = UDim2.new(0, 0, 0, 720)
 
     New("TextLabel", {
         Size = UDim2.new(1, -20, 0, 20),
@@ -1153,13 +1157,13 @@ function UI.Build()
         Position = UDim2.fromOffset(10, 72),
         BackgroundTransparency = 1,
         BorderSizePixel = 0,
-        ScrollBarThickness = 3,
-        ScrollBarImageColor3 = Color3.fromRGB(100, 70, 150),
+        ScrollBarThickness = 5,
+        ScrollBarImageColor3 = Color3.fromRGB(145, 75, 255),
         CanvasSize = UDim2.new(0, 0, 0, 0),
         ZIndex = 14,
     }, VisualsPage)
-    local VisualsCard = CreateCard(VisualsScroll, UDim2.fromOffset(0, 0), UDim2.new(1, 0, 0, 950))
-    VisualsScroll.CanvasSize = UDim2.new(0, 0, 0, 970)
+    local VisualsCard = CreateCard(VisualsScroll, UDim2.fromOffset(0, 0), UDim2.new(1, 0, 0, 1000))
+    VisualsScroll.CanvasSize = UDim2.new(0, 0, 0, 1020)
 
     CreateToggle(VisualsCard, 14, "FOV Circle", Config.FOV_Enabled, "FOV_Enabled", false, function(v)
         Config.FOV_Enabled = v
@@ -1280,8 +1284,8 @@ function UI.Build()
         BackgroundColor3 = Color3.fromRGB(12, 8, 18),
         BackgroundTransparency = 0.3,
         BorderSizePixel = 0,
-        ScrollBarThickness = 3,
-        ScrollBarImageColor3 = Color3.fromRGB(100, 70, 150),
+        ScrollBarThickness = 5,
+        ScrollBarImageColor3 = Color3.fromRGB(145, 75, 255),
         CanvasSize = UDim2.new(0, 0, 0, 0),
         ZIndex = 16,
     }, TargetCard)
@@ -1291,7 +1295,7 @@ function UI.Build()
     -- FARM PAGE
     local FarmPage = Pages.Farm
     PageTitle(FarmPage, "Farm", "Pull selected target to your crosshair aim point.")
-    local FarmCard = CreateCard(FarmPage, UDim2.fromOffset(10, 72), UDim2.new(1, -20, 0, 400))
+    local FarmCard = CreateCard(FarmPage, UDim2.fromOffset(10, 72), UDim2.new(1, -20, 0, 450))
     CreateToggle(FarmCard, 14, "Enable Farm", Config.FarmEnabled, "FarmEnabled", true, function(v)
         Config.FarmEnabled = v
         if UI.Farm then
@@ -1343,12 +1347,12 @@ function UI.Build()
         Position = UDim2.fromOffset(10, 72),
         BackgroundTransparency = 1,
         BorderSizePixel = 0,
-        ScrollBarThickness = 3,
-        ScrollBarImageColor3 = Color3.fromRGB(100, 70, 150),
-        CanvasSize = UDim2.new(0, 0, 0, 760),
+        ScrollBarThickness = 5,
+        ScrollBarImageColor3 = Color3.fromRGB(145, 75, 255),
+        CanvasSize = UDim2.new(0, 0, 0, 820),
         ZIndex = 14,
     }, MiscPage)
-    local MiscCard = CreateCard(MiscScroll, UDim2.fromOffset(0, 0), UDim2.new(1, 0, 0, 750))
+    local MiscCard = CreateCard(MiscScroll, UDim2.fromOffset(0, 0), UDim2.new(1, 0, 0, 800))
 
     -- AntiStomp Section
     CreateToggle(MiscCard, 14, "AntiStomp", Config.AntiStomp, "AntiStomp", true, function(v)
@@ -1454,6 +1458,14 @@ function UI.Build()
     CreateSlider(MiscCard, 660, "Cooldown", 1, 30, Config.AutoArmorCooldown or 5, function(v)
         Config.AutoArmorCooldown = v
     end)
+
+    -- Bottom padding
+    New("Frame", {
+        Size = UDim2.new(1, 0, 0, 40),
+        Position = UDim2.fromOffset(0, 720),
+        BackgroundTransparency = 1,
+        ZIndex = 16,
+    }, MiscCard)
 -- SPECTATE PANEL
     local SpectatePanel = New("Frame", {
         Size = UDim2.fromOffset(200, 320),
@@ -1505,8 +1517,8 @@ function UI.Build()
         BackgroundColor3 = Color3.fromRGB(12, 8, 18),
         BackgroundTransparency = 0.3,
         BorderSizePixel = 0,
-        ScrollBarThickness = 3,
-        ScrollBarImageColor3 = Color3.fromRGB(100, 70, 150),
+        ScrollBarThickness = 5,
+        ScrollBarImageColor3 = Color3.fromRGB(145, 75, 255),
         CanvasSize = UDim2.new(0, 0, 0, 0),
         ZIndex = 61,
     }, SpectatePanel)
@@ -1554,13 +1566,13 @@ function UI.Build()
         Position = UDim2.fromOffset(10, 72),
         BackgroundTransparency = 1,
         BorderSizePixel = 0,
-        ScrollBarThickness = 3,
-        ScrollBarImageColor3 = Color3.fromRGB(100, 70, 150),
+        ScrollBarThickness = 5,
+        ScrollBarImageColor3 = Color3.fromRGB(145, 75, 255),
         CanvasSize = UDim2.new(0, 0, 0, 0),
         ZIndex = 14,
     }, WorldPage)
-    local WorldCard = CreateCard(WorldScroll, UDim2.fromOffset(0, 0), UDim2.new(1, 0, 0, 560))
-    WorldScroll.CanvasSize = UDim2.new(0, 0, 0, 580)
+    local WorldCard = CreateCard(WorldScroll, UDim2.fromOffset(0, 0), UDim2.new(1, 0, 0, 620))
+    WorldScroll.CanvasSize = UDim2.new(0, 0, 0, 640)
 
     CreateToggle(WorldCard, 14, "Full Bright", Config.World_Fullbright, "World_Fullbright", false, function(v)
         Config.World_Fullbright = v
@@ -1603,12 +1615,12 @@ function UI.Build()
         Position = UDim2.fromOffset(10, 72),
         BackgroundTransparency = 1,
         BorderSizePixel = 0,
-        ScrollBarThickness = 3,
-        ScrollBarImageColor3 = Color3.fromRGB(100, 70, 150),
-        CanvasSize = UDim2.new(0, 0, 0, 480),
+        ScrollBarThickness = 5,
+        ScrollBarImageColor3 = Color3.fromRGB(145, 75, 255),
+        CanvasSize = UDim2.new(0, 0, 0, 540),
         ZIndex = 14,
     }, MovementPage)
-    local MovementCard = CreateCard(MovementScroll, UDim2.fromOffset(0, 0), UDim2.new(1, 0, 0, 470))
+    local MovementCard = CreateCard(MovementScroll, UDim2.fromOffset(0, 0), UDim2.new(1, 0, 0, 520))
 
     -- Movement Section
     CreateToggle(MovementCard, 14, "Speed", Config.Move_SpeedEnabled, "Move_SpeedEnabled", true, function(v)
@@ -1750,10 +1762,18 @@ function UI.Build()
         TextXAlignment = Enum.TextXAlignment.Left,
         ZIndex = 16,
     }, MovementCard)
+
+    -- Bottom padding
+    New("Frame", {
+        Size = UDim2.new(1, 0, 0, 40),
+        Position = UDim2.fromOffset(0, 490),
+        BackgroundTransparency = 1,
+        ZIndex = 16,
+    }, MovementCard)
 -- SETTINGS PAGE
     local SettingsPage = Pages.Settings
     PageTitle(SettingsPage, "Settings", "Interface customization and hotkey display.")
-    local SettingsCard = CreateCard(SettingsPage, UDim2.fromOffset(10, 72), UDim2.new(1, -20, 0, 200))
+    local SettingsCard = CreateCard(SettingsPage, UDim2.fromOffset(10, 72), UDim2.new(1, -20, 0, 250))
     New("TextLabel", {
         Size = UDim2.new(1, -140, 0, 25),
         Position = UDim2.fromOffset(15, 14),
