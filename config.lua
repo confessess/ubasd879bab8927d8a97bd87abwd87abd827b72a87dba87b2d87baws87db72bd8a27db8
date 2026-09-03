@@ -3,9 +3,9 @@ return {
     AutoValidate = false,
 
     -- Combat
-    FrameTP = true,
+    FrameTP = false,
     OneFrameDelay = false,
-    RapidFire = true,
+    RapidFire = false,
 
     -- Aimbot
     Aimbot_Enabled = false,
@@ -13,7 +13,7 @@ return {
     Aimbot_StickyTarget = false,
     Aimbot_Smoothness = 15,
     Aimbot_FOV = 60,
-    Aimbot_ShowFOV = true,
+    Aimbot_ShowFOV = false,
     Aimbot_FOVColor = Color3.fromRGB(255, 105, 180),
     Aimbot_TargetPart = "Head",
     Aimbot_Priority = "Closest to Mouse",
@@ -21,13 +21,13 @@ return {
     Aimbot_WallCheck = false,
 
     -- Visuals
-    FOV_Enabled = true,
+    FOV_Enabled = false,
     FOV_Radius = 250,
     FOV_Color = Color3.fromRGB(255, 80, 80),
-    Tracers = true,
+    Tracers = false,
     Tracer_Color = Color3.fromRGB(255, 60, 60),
-    Hitmarkers = true,
-    Highlights = true,
+    Hitmarkers = false,
+    Highlights = false,
     ESP_Enabled = false,
     ESP_Boxes = false,
     ESP_Box3D = false,
@@ -115,7 +115,7 @@ return {
 
     -- UI
     ToggleKey = Enum.KeyCode.RightShift,
-    ShowHotkeys = true,
+    ShowHotkeys = false,
 
     -- Keybinds
     FrameTPKey = nil,
