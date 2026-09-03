@@ -1516,8 +1516,8 @@ function UI.Build()
         CanvasSize = UDim2.new(0, 0, 0, 0),
         ZIndex = 14,
     }, WorldPage)
-    local WorldCard = CreateCard(WorldScroll, UDim2.fromOffset(0, 0), UDim2.new(1, 0, 0, 520))
-    WorldScroll.CanvasSize = UDim2.new(0, 0, 0, 540)
+    local WorldCard = CreateCard(WorldScroll, UDim2.fromOffset(0, 0), UDim2.new(1, 0, 0, 560))
+    WorldScroll.CanvasSize = UDim2.new(0, 0, 0, 580)
 
     CreateToggle(WorldCard, 14, "Full Bright", Config.World_Fullbright, "World_Fullbright", false, function(v)
         Config.World_Fullbright = v
@@ -1549,6 +1549,9 @@ function UI.Build()
     CreateSlider(WorldCard, 348, "Brightness", 1, 20, Config.World_Brightness, function(v)
         Config.World_Brightness = v
     end)
+    local skyThemeDropdown = BuildDropdown(WorldCard, 394, "Sky Theme", Config.World_SkyTheme or "Default",
+        {"Default", "Night", "Sunset", "BloodMoon", "Galaxy", "PurpleNebula", "Vaporwave", "DeepSpace"},
+        function(v) Config.World_SkyTheme = v end)
 
     --// MOVEMENT PAGE
     local MovementPage = Pages.Movement
@@ -1786,6 +1789,7 @@ function UI.Build()
         if aimbotPartDropdown and aimbotPartDropdown.IsOpen() then aimbotPartDropdown.Close() end
         if aimbotPriorityDropdown and aimbotPriorityDropdown.IsOpen() then aimbotPriorityDropdown.Close() end
         if flyMethodDropdown and flyMethodDropdown.IsOpen() then flyMethodDropdown.Close() end
+        if skyThemeDropdown and skyThemeDropdown.IsOpen() then skyThemeDropdown.Close() end
         if antiStompDropdown and antiStompDropdown.IsOpen() then antiStompDropdown.Close() end
         if spamRangeDropdown and spamRangeDropdown.IsOpen() then spamRangeDropdown.Close() end
     end

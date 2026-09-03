@@ -98,6 +98,7 @@ return {
     World_NoSunRays = false,
     World_NoColorCorrection = false,
     World_LowGFX = false,
+    World_SkyTheme = "Default",
 
     -- Movement
     Move_SpeedEnabled = false,

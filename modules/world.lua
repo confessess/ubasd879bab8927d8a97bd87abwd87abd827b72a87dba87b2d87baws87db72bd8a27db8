@@ -6,6 +6,7 @@ local World = {
     Config = nil,
     Connection = nil,
     OriginalValues = {},
+    ActiveSky = nil,
 }
 
 function World.SetConfig(config)
@@ -187,7 +188,6 @@ local function ApplyLowGFX()
     local Config = World.Config
     local level = Config.World_LowGFXLevel or 1
 
-    -- Disable shadows on all parts
     for _, part in pairs(Workspace:GetDescendants()) do
         if part:IsA("BasePart") then
             if not part:GetAttribute("ZeeHoodOldCastShadow") then
@@ -197,7 +197,6 @@ local function ApplyLowGFX()
         end
     end
 
-    -- Reduce particle emitters
     for _, emitter in pairs(Workspace:GetDescendants()) do
         if emitter:IsA("ParticleEmitter") or emitter:IsA("Trail") then
             if not emitter:GetAttribute("ZeeHoodOldEnabled") then
@@ -207,7 +206,6 @@ local function ApplyLowGFX()
         end
     end
 
-    -- Disable beams
     for _, beam in pairs(Workspace:GetDescendants()) do
         if beam:IsA("Beam") then
             if not beam:GetAttribute("ZeeHoodOldEnabled") then
@@ -217,7 +215,6 @@ local function ApplyLowGFX()
         end
     end
 
-    -- Lower lighting quality
     if level >= 2 then
         settings().Rendering.QualityLevel = Enum.QualityLevel.Level01
     end
@@ -247,6 +244,114 @@ local function RemoveLowGFX()
 end
 
 -- ═════════════════════════════════════════════════════════════════════════════
+-- SKYBOX / THEMES
+-- ═════════════════════════════════════════════════════════════════════════════
+
+local SkyThemes = {
+    Default = nil,
+    Night = {
+        SkyboxBk = "rbxassetid://159454299",
+        SkyboxDn = "rbxassetid://159454296",
+        SkyboxFt = "rbxassetid://159454293",
+        SkyboxLf = "rbxassetid://159454286",
+        SkyboxRt = "rbxassetid://159454300",
+        SkyboxUp = "rbxassetid://159454288",
+        StarCount = 3000,
+        SunAngularSize = 0,
+    },
+    Sunset = {
+        SkyboxBk = "rbxassetid://150335524",
+        SkyboxDn = "rbxassetid://150335525",
+        SkyboxFt = "rbxassetid://150335527",
+        SkyboxLf = "rbxassetid://150335528",
+        SkyboxRt = "rbxassetid://150335529",
+        SkyboxUp = "rbxassetid://150335530",
+        SunAngularSize = 21,
+    },
+    BloodMoon = {
+        SkyboxBk = "rbxassetid://5098640313",
+        SkyboxDn = "rbxassetid://5098640313",
+        SkyboxFt = "rbxassetid://5098640313",
+        SkyboxLf = "rbxassetid://5098640313",
+        SkyboxRt = "rbxassetid://5098640313",
+        SkyboxUp = "rbxassetid://5098640313",
+        SunAngularSize = 0,
+    },
+    Galaxy = {
+        SkyboxBk = "rbxassetid://159248188",
+        SkyboxDn = "rbxassetid://159248183",
+        SkyboxFt = "rbxassetid://159248187",
+        SkyboxLf = "rbxassetid://159248173",
+        SkyboxRt = "rbxassetid://159248192",
+        SkyboxUp = "rbxassetid://159248176",
+        StarCount = 5000,
+        SunAngularSize = 0,
+    },
+    PurpleNebula = {
+        SkyboxBk = "rbxassetid://5084575798",
+        SkyboxDn = "rbxassetid://5084575807",
+        SkyboxFt = "rbxassetid://5084575791",
+        SkyboxLf = "rbxassetid://5084575795",
+        SkyboxRt = "rbxassetid://5084575787",
+        SkyboxUp = "rbxassetid://5084575802",
+        SunAngularSize = 0,
+    },
+    Vaporwave = {
+        SkyboxBk = "rbxassetid://1417494403",
+        SkyboxDn = "rbxassetid://1417494146",
+        SkyboxFt = "rbxassetid://1417494253",
+        SkyboxLf = "rbxassetid://1417494499",
+        SkyboxRt = "rbxassetid://1417494643",
+        SkyboxUp = "rbxassetid://1417494300",
+        SunAngularSize = 0,
+    },
+    DeepSpace = {
+        SkyboxBk = "rbxassetid://159454288",
+        SkyboxDn = "rbxassetid://159454288",
+        SkyboxFt = "rbxassetid://159454288",
+        SkyboxLf = "rbxassetid://159454288",
+        SkyboxRt = "rbxassetid://159454288",
+        SkyboxUp = "rbxassetid://159454288",
+        StarCount = 0,
+        SunAngularSize = 0,
+    },
+}
+
+local function RemoveCustomSky()
+    if World.ActiveSky then
+        World.ActiveSky:Destroy()
+        World.ActiveSky = nil
+    end
+end
+
+local function ApplyCustomSky()
+    local Config = World.Config
+    local themeName = Config.World_SkyTheme or "Default"
+    if themeName == "Default" then
+        RemoveCustomSky()
+        return
+    end
+
+    local theme = SkyThemes[themeName]
+    if not theme then return end
+
+    RemoveCustomSky()
+
+    local sky = Instance.new("Sky")
+    sky.Name = "ZeeHoodSky"
+    sky.SkyboxBk = theme.SkyboxBk
+    sky.SkyboxDn = theme.SkyboxDn
+    sky.SkyboxFt = theme.SkyboxFt
+    sky.SkyboxLf = theme.SkyboxLf
+    sky.SkyboxRt = theme.SkyboxRt
+    sky.SkyboxUp = theme.SkyboxUp
+    if theme.StarCount then sky.StarCount = theme.StarCount end
+    if theme.SunAngularSize then sky.SunAngularSize = theme.SunAngularSize end
+    sky.Parent = Lighting
+    World.ActiveSky = sky
+end
+
+-- ═════════════════════════════════════════════════════════════════════════════
 -- RENDER LOOP
 -- ═════════════════════════════════════════════════════════════════════════════
 
@@ -262,6 +367,7 @@ local function OnRender()
     if Config.World_NoSunRays then ApplyNoSunRays() else RemoveNoSunRays() end
     if Config.World_NoColorCorrection then ApplyNoColorCorrection() else RemoveNoColorCorrection() end
     if Config.World_LowGFX then ApplyLowGFX() else RemoveLowGFX() end
+    ApplyCustomSky()
 end
 
 -- ═════════════════════════════════════════════════════════════════════════════
@@ -278,6 +384,7 @@ function World.Cleanup()
         World.Connection:Disconnect()
         World.Connection = nil
     end
+    RemoveCustomSky()
     RemoveFullbright()
     RemoveNoFog()
     RemoveCustomTime()
