@@ -129,7 +129,6 @@ function UI.UpdateHotkeyDisplay()
             addLine(name .. "  •  " .. FormatKeyName(key))
         end
     end
-    -- Aimbot aim key (not in ToggleCallbacks since it controls aiming, not enabled state)
     local aimKey = Config.Aimbot_EnabledKey
     if aimKey then
         addLine("AIMBOT  •  " .. FormatKeyName(aimKey))
@@ -560,8 +559,7 @@ function UI.Build()
             ZIndex = 17,
         }, container)
         Corner(header, 8)
-        -- Parent list to same card so it scrolls with the page and stays self-contained
-        local list = New("Frame", {
+        local list = New("ScrollingFrame", {
             Size = UDim2.new(1, -20, 0, 0),
             Position = UDim2.new(0, 10, 0, y + 24 + 32 + 2),
             BackgroundColor3 = Color3.fromRGB(18, 11, 27),
@@ -570,9 +568,26 @@ function UI.Build()
             ZIndex = 100,
             ClipsDescendants = true,
             Visible = false,
+            ScrollBarThickness = 3,
+            ScrollBarImageColor3 = Color3.fromRGB(100, 70, 150),
+            CanvasSize = UDim2.new(0, 0, 0, 0),
+            ScrollingDirection = Enum.ScrollingDirection.Y,
+            AutomaticCanvasSize = Enum.AutomaticSize.Y,
         }, parent)
         Corner(list, 8)
         Stroke(list, 0.9, 1, Color3.fromRGB(140, 90, 200))
+        New("UIListLayout", {
+            Padding = UDim.new(0, 2),
+            SortOrder = Enum.SortOrder.LayoutOrder,
+            Parent = list,
+        })
+        New("UIPadding", {
+            PaddingTop = UDim.new(0, 4),
+            PaddingBottom = UDim.new(0, 4),
+            PaddingLeft = UDim.new(0, 4),
+            PaddingRight = UDim.new(0, 4),
+            Parent = list,
+        })
         local open = false
         local itemHeight = 26
         local itemGap = 2
@@ -582,7 +597,6 @@ function UI.Build()
         for i, optText in ipairs(options) do
             local btn = New("TextButton", {
                 Size = UDim2.new(1, -padding * 2, 0, itemHeight),
-                Position = UDim2.fromOffset(padding, padding + (i - 1) * (itemHeight + itemGap)),
                 BackgroundColor3 = Color3.fromRGB(30, 20, 42),
                 BackgroundTransparency = 1,
                 BorderSizePixel = 0,
@@ -592,6 +606,7 @@ function UI.Build()
                 Font = Enum.Font.GothamMedium,
                 AutoButtonColor = false,
                 ZIndex = 101,
+                LayoutOrder = i,
             }, list)
             Corner(btn, 4)
             btn.MouseEnter:Connect(function()
@@ -616,7 +631,7 @@ function UI.Build()
             if open then
                 list.Visible = true
                 header.Text = "  " .. currentValue .. "  ▲"
-                Tween(list, {Size = UDim2.new(1, -20, 0, math.min(140, totalHeight))}, 0.2):Play()
+                Tween(list, {Size = UDim2.new(1, -20, 0, math.min(200, totalHeight))}, 0.2):Play()
             else
                 header.Text = "  " .. currentValue .. "  ▼"
                 Tween(list, {Size = UDim2.new(1, -20, 0, 0)}, 0.2):Play()
@@ -644,9 +659,7 @@ function UI.Build()
             end,
         }
     end
-    -- ═════════════════════════════════════════════════════════════════════════════
-    -- COLOR PICKER (Centered Popup — Pouncing.exe style)
-    -- ═════════════════════════════════════════════════════════════════════════════
+    -- COLOR PICKER (Centered Popup)
     local ActiveColorPicker = nil
 
     local ColorPickerFrame = New("Frame", {
@@ -662,7 +675,7 @@ function UI.Build()
     Corner(ColorPickerFrame, 16)
     Stroke(ColorPickerFrame, 0.85, 1.5, Color3.fromRGB(140, 90, 200))
 
-    local CPGlass = New("Frame", {
+    New("Frame", {
         Size = UDim2.fromScale(1, 1),
         BackgroundColor3 = Color3.fromRGB(255, 255, 255),
         BackgroundTransparency = 0.92,
@@ -727,7 +740,7 @@ function UI.Build()
     end
 
     local function CPMakeSlider(y, labelText)
-        local label = New("TextLabel", {
+        New("TextLabel", {
             Size = UDim2.fromOffset(100, 16),
             Position = UDim2.fromOffset(18, y),
             BackgroundTransparency = 1,
@@ -759,7 +772,7 @@ function UI.Build()
         }, track)
         Corner(knob, 7)
 
-        local knobS = New("UIStroke", {
+        New("UIStroke", {
             Color = PURPLE,
             Thickness = 2.5,
         }, knob)
@@ -786,7 +799,7 @@ function UI.Build()
     CPUI.SatGrad = satGrad
     CPUI.ValGrad = valGrad
 
-    local previewLabel = New("TextLabel", {
+    New("TextLabel", {
         Size = UDim2.fromOffset(60, 16),
         Position = UDim2.fromOffset(18, 174),
         BackgroundTransparency = 1,
@@ -808,7 +821,7 @@ function UI.Build()
     Stroke(previewBox, 0.2, 1, Color3.fromRGB(140, 90, 200))
     CPUI.Preview = previewBox
 
-    local hexLabel = New("TextLabel", {
+    New("TextLabel", {
         Size = UDim2.fromOffset(60, 16),
         Position = UDim2.fromOffset(88, 174),
         BackgroundTransparency = 1,
@@ -1016,8 +1029,7 @@ function UI.Build()
 
         return circle
     end
-
-    --// COMBAT PAGE
+    -- COMBAT PAGE
     local CombatPage = Pages.Combat
     PageTitle(CombatPage, "Combat", "Aimbot, frame teleport shoot, rapid fire, and hotkeys.")
     local CombatScroll = New("ScrollingFrame", {
@@ -1033,7 +1045,6 @@ function UI.Build()
     local CombatCard = CreateCard(CombatScroll, UDim2.fromOffset(0, 0), UDim2.new(1, 0, 0, 600))
     CombatScroll.CanvasSize = UDim2.new(0, 0, 0, 620)
 
-    -- Aimbot Section
     New("TextLabel", {
         Size = UDim2.new(1, -20, 0, 20),
         Position = UDim2.fromOffset(10, 10),
@@ -1045,10 +1056,9 @@ function UI.Build()
         TextXAlignment = Enum.TextXAlignment.Left,
         ZIndex = 16,
     }, CombatCard)
-    local aimbotSetState = CreateToggle(CombatCard, 34, "Enable Aimbot", Config.Aimbot_Enabled, "Aimbot_Enabled", true, function(v)
+    CreateToggle(CombatCard, 34, "Enable Aimbot", Config.Aimbot_Enabled, "Aimbot_Enabled", true, function(v)
         Config.Aimbot_Enabled = v
     end)
-    -- Remove from toggle callbacks so the hotkey controls aiming, not the enabled state
     UI.ToggleCallbacks["Aimbot_Enabled"] = nil
     CreateToggle(CombatCard, 70, "Toggle Mode", Config.Aimbot_ToggleMode, "Aimbot_ToggleMode", false, function(v)
         Config.Aimbot_ToggleMode = v
@@ -1078,7 +1088,6 @@ function UI.Build()
         {"Closest to Mouse", "Closest to Player", "Lowest HP", "Highest HP"},
         function(v) Config.Aimbot_Priority = v end)
 
-    -- Divider
     New("Frame", {
         Size = UDim2.new(1, -20, 0, 1),
         Position = UDim2.fromOffset(10, 456),
@@ -1109,7 +1118,7 @@ function UI.Build()
         Config.RapidFire = v
     end)
 
-    --// VISUALS PAGE (with ESP integrated + scrolling + color pickers)
+    -- VISUALS PAGE
     local VisualsPage = Pages.Visuals
     PageTitle(VisualsPage, "Visuals", "FOV, ESP suite, tracers, hitmarkers, and target highlighting.")
     local VisualsScroll = New("ScrollingFrame", {
@@ -1125,7 +1134,6 @@ function UI.Build()
     local VisualsCard = CreateCard(VisualsScroll, UDim2.fromOffset(0, 0), UDim2.new(1, 0, 0, 950))
     VisualsScroll.CanvasSize = UDim2.new(0, 0, 0, 970)
 
-    -- Legacy Visuals
     CreateToggle(VisualsCard, 14, "FOV Circle", Config.FOV_Enabled, "FOV_Enabled", false, function(v)
         Config.FOV_Enabled = v
     end)
@@ -1142,7 +1150,6 @@ function UI.Build()
         Config.Hitmarkers = v
     end)
 
-    -- Divider
     New("Frame", {
         Size = UDim2.new(1, -20, 0, 1),
         Position = UDim2.fromOffset(10, 226),
@@ -1163,7 +1170,6 @@ function UI.Build()
         ZIndex = 16,
     }, VisualsCard)
 
-    -- ESP toggles with color buttons
     CreateToggle(VisualsCard, 264, "ESP Master", Config.ESP_Enabled, "ESP_Enabled", false, function(v)
         Config.ESP_Enabled = v
     end)
@@ -1219,8 +1225,7 @@ function UI.Build()
     CreateSlider(VisualsCard, 844, "Head Dot Size", 1, 30, math.floor(Config.ESP_HeadDotSize * 10), function(v)
         Config.ESP_HeadDotSize = v / 10
     end)
-
-    --// TARGET PAGE
+    -- TARGET PAGE
     local TargetPage = Pages.Target
     PageTitle(TargetPage, "Target", "Player selection, part targeting, and spectate.")
     local TargetCard = CreateCard(TargetPage, UDim2.fromOffset(10, 72), UDim2.new(1, -20, 0, 310))
@@ -1232,7 +1237,7 @@ function UI.Build()
             UI.Targeting.TeleportToTarget()
         end
     end)
-    local mainSpectateSetState = CreateToggle(TargetCard, 114, "Spectate Target", Config.Spectate, "Spectate", true, function(v)
+    CreateToggle(TargetCard, 114, "Spectate Target", Config.Spectate, "Spectate", true, function(v)
         Config.Spectate = v
         if not v then
             UI.Targeting.StopSpectate()
@@ -1263,7 +1268,7 @@ function UI.Build()
     Corner(PlayerList, 8)
     New("UIListLayout", {Padding = UDim.new(0, 2), Parent = PlayerList})
 
-    --// FARM PAGE
+    -- FARM PAGE
     local FarmPage = Pages.Farm
     PageTitle(FarmPage, "Farm", "Pull selected target to your crosshair aim point.")
     local FarmCard = CreateCard(FarmPage, UDim2.fromOffset(10, 72), UDim2.new(1, -20, 0, 280))
@@ -1295,7 +1300,7 @@ function UI.Build()
         ZIndex = 16,
     }, FarmCard)
 
-    --// MISC PAGE
+    -- MISC PAGE
     local MiscPage = Pages.Misc
     PageTitle(MiscPage, "Misc", "AntiStomp, teleport spam, auto armor, and utility features.")
     local MiscScroll = New("ScrollingFrame", {
@@ -1410,8 +1415,7 @@ function UI.Build()
     CreateSlider(MiscCard, 644, "Cooldown", 1, 30, Config.AutoArmorCooldown or 5, function(v)
         Config.AutoArmorCooldown = v
     end)
-
-    --// SPECTATE PANEL
+    -- SPECTATE PANEL
     local SpectatePanel = New("Frame", {
         Size = UDim2.fromOffset(200, 320),
         Position = UDim2.new(1, -220, 0.5, -160),
@@ -1434,7 +1438,7 @@ function UI.Build()
         TextXAlignment = Enum.TextXAlignment.Left,
         ZIndex = 61,
     }, SpectatePanel)
-    local panelSpectateSetState = CreateToggle(SpectatePanel, 42, "Spectate Target", Config.Spectate, "SpectatePanel", false, function(v)
+    CreateToggle(SpectatePanel, 42, "Spectate Target", Config.Spectate, "SpectatePanel", false, function(v)
         Config.Spectate = v
         if not v then
             UI.Targeting.StopSpectate()
@@ -1503,7 +1507,7 @@ function UI.Build()
         end
     end
 
-    --// WORLD PAGE
+    -- WORLD PAGE
     local WorldPage = Pages.World
     PageTitle(WorldPage, "World", "Lighting, atmosphere, and visual modifiers.")
     local WorldScroll = New("ScrollingFrame", {
@@ -1550,10 +1554,9 @@ function UI.Build()
         Config.World_Brightness = v
     end)
     local skyThemeDropdown = BuildDropdown(WorldCard, 394, "Sky Theme", Config.World_SkyTheme or "Default",
-        {"Default", "Night", "Sunset", "BloodMoon", "Galaxy", "PurpleNebula", "Vaporwave", "DeepSpace"},
+        {"Default", "Night", "Sunset", "BloodMoon", "Galaxy", "PurpleNebula", "Vaporwave", "DeepSpace", "GoldenHour", "Storm", "Arctic", "Inferno", "NeonCity"},
         function(v) Config.World_SkyTheme = v end)
-
-    --// MOVEMENT PAGE
+    -- MOVEMENT PAGE
     local MovementPage = Pages.Movement
     PageTitle(MovementPage, "Movement", "Speed, fly, jump, and collision modifiers.")
     local MovementScroll = New("ScrollingFrame", {
@@ -1618,7 +1621,6 @@ function UI.Build()
         {"Tween", "Velocity", "CFrame"},
         function(v) Config.Move_FlyMethod = v end)
 
-    -- Fly Speed row: label + slider + input box
     New("TextLabel", {
         Size = UDim2.new(1, -140, 0, 20),
         Position = UDim2.fromOffset(10, 418),
@@ -1708,7 +1710,7 @@ function UI.Build()
         ZIndex = 16,
     }, MovementCard)
 
-    --// SETTINGS PAGE
+    -- SETTINGS PAGE
     local SettingsPage = Pages.Settings
     PageTitle(SettingsPage, "Settings", "Interface customization and hotkey display.")
     local SettingsCard = CreateCard(SettingsPage, UDim2.fromOffset(10, 72), UDim2.new(1, -20, 0, 200))
@@ -1754,7 +1756,7 @@ function UI.Build()
         UI.UpdateHotkeyDisplay()
     end)
 
-    --// Hotkey Display
+    -- Hotkey Display
     local HotkeyDisplay = New("Frame", {
         Name = "HotkeyDisplay",
         Size = UDim2.fromOffset(155, 36),
@@ -1770,7 +1772,7 @@ function UI.Build()
     Stroke(HotkeyDisplay, 0.88, 1)
     UI.HotkeyDisplay = HotkeyDisplay
 
-    --// Tab System
+    -- Tab System
     local ActiveTab = nil
     local function SelectTab(name)
         ActiveTab = name
@@ -1808,7 +1810,7 @@ function UI.Build()
     end
     SelectTab("Combat")
 
-    --// Keybind Changing
+    -- Keybind Changing
     UI.ListeningKey = nil
     KeybindButton.MouseButton1Click:Connect(function()
         if UI.ListeningKey then return end
@@ -1817,7 +1819,7 @@ function UI.Build()
         Tween(KeybindButton, {BackgroundTransparency = 0}, 0.2):Play()
     end)
 
-    --// GUI Toggle
+    -- GUI Toggle
     local function SetGUIVisible(visible)
         UI.GUIVisible = visible
         if visible then
@@ -1845,7 +1847,7 @@ function UI.Build()
     end
     UI.SetGUIVisible = SetGUIVisible
 
-    --// Input Handler
+    -- Input Handler
     UserInputService.InputBegan:Connect(function(input, gameProcessed)
         if gameProcessed then return end
 
@@ -1866,7 +1868,6 @@ function UI.Build()
             if captured then
                 if captured == "clear" then
                     if UI.ListeningKey == "Toggle" then
-                        -- cannot unbind menu toggle
                     else
                         Config[UI.ListeningKey .. "Key"] = nil
                         local btn = UI.KeybindButtons[UI.ListeningKey]
@@ -1902,8 +1903,6 @@ function UI.Build()
                 return
             end
         end
-        -- Aimbot hotkey is handled by combat.lua (controls aiming, not enabled state)
-        -- Close color picker on click outside
         if input.UserInputType == Enum.UserInputType.MouseButton1 then
             local mousePos = UserInputService:GetMouseLocation()
             if CPState.IsOpen and ColorPickerFrame.Visible then

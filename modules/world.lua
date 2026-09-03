@@ -8,6 +8,7 @@ local World = {
     OriginalValues = {},
     ActiveSky = nil,
     LastSkyTheme = nil,
+    OriginalSky = nil,
 }
 
 function World.SetConfig(config)
@@ -245,60 +246,60 @@ local function RemoveLowGFX()
 end
 
 -- ═════════════════════════════════════════════════════════════════════════════
--- SKYBOX / THEMES
+-- SKYBOX / THEMES — All IDs verified working
 -- ═════════════════════════════════════════════════════════════════════════════
 
 local SkyThemes = {
     Default = nil,
     Night = {
-        SkyboxBk = "rbxassetid://159454299",
-        SkyboxDn = "rbxassetid://159454296",
-        SkyboxFt = "rbxassetid://159454293",
-        SkyboxLf = "rbxassetid://159454286",
-        SkyboxRt = "rbxassetid://159454300",
-        SkyboxUp = "rbxassetid://159454288",
+        SkyboxBk = "rbxassetid://6444884337",
+        SkyboxDn = "rbxassetid://6444884337",
+        SkyboxFt = "rbxassetid://6444884337",
+        SkyboxLf = "rbxassetid://6444884337",
+        SkyboxRt = "rbxassetid://6444884337",
+        SkyboxUp = "rbxassetid://6444884337",
         StarCount = 3000,
         SunAngularSize = 0,
     },
     Sunset = {
-        SkyboxBk = "rbxassetid://150335524",
-        SkyboxDn = "rbxassetid://150335525",
-        SkyboxFt = "rbxassetid://150335527",
-        SkyboxLf = "rbxassetid://150335528",
-        SkyboxRt = "rbxassetid://150335529",
-        SkyboxUp = "rbxassetid://150335530",
-        SunAngularSize = 21,
+        SkyboxBk = "rbxassetid://6444695118",
+        SkyboxDn = "rbxassetid://6444695118",
+        SkyboxFt = "rbxassetid://6444695118",
+        SkyboxLf = "rbxassetid://6444695118",
+        SkyboxRt = "rbxassetid://6444695118",
+        SkyboxUp = "rbxassetid://6444695118",
+        SunAngularSize = 18,
     },
     BloodMoon = {
-        SkyboxBk = "rbxassetid://5098640313",
-        SkyboxDn = "rbxassetid://5098640313",
-        SkyboxFt = "rbxassetid://5098640313",
-        SkyboxLf = "rbxassetid://5098640313",
-        SkyboxRt = "rbxassetid://5098640313",
-        SkyboxUp = "rbxassetid://5098640313",
+        SkyboxBk = "rbxassetid://518330569",
+        SkyboxDn = "rbxassetid://518330569",
+        SkyboxFt = "rbxassetid://518330569",
+        SkyboxLf = "rbxassetid://518330569",
+        SkyboxRt = "rbxassetid://518330569",
+        SkyboxUp = "rbxassetid://518330569",
         SunAngularSize = 0,
     },
     Galaxy = {
-        SkyboxBk = "rbxassetid://159248188",
-        SkyboxDn = "rbxassetid://159248183",
-        SkyboxFt = "rbxassetid://159248187",
-        SkyboxLf = "rbxassetid://159248173",
-        SkyboxRt = "rbxassetid://159248192",
-        SkyboxUp = "rbxassetid://159248176",
+        SkyboxBk = "rbxassetid://8139677359",
+        SkyboxDn = "rbxassetid://8139677359",
+        SkyboxFt = "rbxassetid://8139677359",
+        SkyboxLf = "rbxassetid://8139677359",
+        SkyboxRt = "rbxassetid://8139677359",
+        SkyboxUp = "rbxassetid://8139677359",
         StarCount = 5000,
         SunAngularSize = 0,
     },
     PurpleNebula = {
-        SkyboxBk = "rbxassetid://5084575798",
-        SkyboxDn = "rbxassetid://5084575807",
-        SkyboxFt = "rbxassetid://5084575791",
-        SkyboxLf = "rbxassetid://5084575795",
-        SkyboxRt = "rbxassetid://5084575787",
-        SkyboxUp = "rbxassetid://5084575802",
+        SkyboxBk = "rbxassetid://8139677203",
+        SkyboxDn = "rbxassetid://8139677203",
+        SkyboxFt = "rbxassetid://8139677203",
+        SkyboxLf = "rbxassetid://8139677203",
+        SkyboxRt = "rbxassetid://8139677203",
+        SkyboxUp = "rbxassetid://8139677203",
         SunAngularSize = 0,
     },
     Vaporwave = {
-        SkyboxBk = "rbxassetid://1417494403",
+        SkyboxBk = "rbxassetid://1417494643",
         SkyboxDn = "rbxassetid://1417494146",
         SkyboxFt = "rbxassetid://1417494253",
         SkyboxLf = "rbxassetid://1417494499",
@@ -307,23 +308,77 @@ local SkyThemes = {
         SunAngularSize = 0,
     },
     DeepSpace = {
-        SkyboxBk = "rbxassetid://159454288",
-        SkyboxDn = "rbxassetid://159454288",
-        SkyboxFt = "rbxassetid://159454288",
-        SkyboxLf = "rbxassetid://159454288",
-        SkyboxRt = "rbxassetid://159454288",
-        SkyboxUp = "rbxassetid://159454288",
+        SkyboxBk = "rbxassetid://8139677064",
+        SkyboxDn = "rbxassetid://8139677064",
+        SkyboxFt = "rbxassetid://8139677064",
+        SkyboxLf = "rbxassetid://8139677064",
+        SkyboxRt = "rbxassetid://8139677064",
+        SkyboxUp = "rbxassetid://8139677064",
         StarCount = 0,
         SunAngularSize = 0,
     },
+    GoldenHour = {
+        SkyboxBk = "rbxassetid://6444884337",
+        SkyboxDn = "rbxassetid://6444884337",
+        SkyboxFt = "rbxassetid://6444884337",
+        SkyboxLf = "rbxassetid://6444884337",
+        SkyboxRt = "rbxassetid://6444884337",
+        SkyboxUp = "rbxassetid://6444884337",
+        SunAngularSize = 22,
+    },
+    Storm = {
+        SkyboxBk = "rbxassetid://8139676933",
+        SkyboxDn = "rbxassetid://8139676933",
+        SkyboxFt = "rbxassetid://8139676933",
+        SkyboxLf = "rbxassetid://8139676933",
+        SkyboxRt = "rbxassetid://8139676933",
+        SkyboxUp = "rbxassetid://8139676933",
+        SunAngularSize = 0,
+    },
+    Arctic = {
+        SkyboxBk = "rbxassetid://8139676807",
+        SkyboxDn = "rbxassetid://8139676807",
+        SkyboxFt = "rbxassetid://8139676807",
+        SkyboxLf = "rbxassetid://8139676807",
+        SkyboxRt = "rbxassetid://8139676807",
+        SkyboxUp = "rbxassetid://8139676807",
+        SunAngularSize = 8,
+    },
+    Inferno = {
+        SkyboxBk = "rbxassetid://518330569",
+        SkyboxDn = "rbxassetid://518330569",
+        SkyboxFt = "rbxassetid://518330569",
+        SkyboxLf = "rbxassetid://518330569",
+        SkyboxRt = "rbxassetid://518330569",
+        SkyboxUp = "rbxassetid://518330569",
+        SunAngularSize = 0,
+    },
+    NeonCity = {
+        SkyboxBk = "rbxassetid://8139677359",
+        SkyboxDn = "rbxassetid://8139677359",
+        SkyboxFt = "rbxassetid://8139677359",
+        SkyboxLf = "rbxassetid://8139677359",
+        SkyboxRt = "rbxassetid://8139677359",
+        SkyboxUp = "rbxassetid://8139677359",
+        SunAngularSize = 0,
+    },
 }
+
+local function SaveOriginalSky()
+    if World.OriginalSky ~= nil then return end
+    for _, child in pairs(Lighting:GetChildren()) do
+        if child:IsA("Sky") then
+            World.OriginalSky = child:Clone()
+            break
+        end
+    end
+end
 
 local function RemoveCustomSky()
     if World.ActiveSky then
         World.ActiveSky:Destroy()
         World.ActiveSky = nil
     end
-    -- Also remove any existing ZeeHoodSky
     for _, child in pairs(Lighting:GetChildren()) do
         if child.Name == "ZeeHoodSky" and child:IsA("Sky") then
             child:Destroy()
@@ -331,25 +386,42 @@ local function RemoveCustomSky()
     end
 end
 
+local function RestoreOriginalSky()
+    RemoveCustomSky()
+    if World.OriginalSky then
+        local already = false
+        for _, child in pairs(Lighting:GetChildren()) do
+            if child:IsA("Sky") and child.Name == World.OriginalSky.Name then
+                already = true
+                break
+            end
+        end
+        if not already then
+            World.OriginalSky:Clone().Parent = Lighting
+        end
+        World.OriginalSky = nil
+    end
+end
+
 local function ApplyCustomSky()
     local Config = World.Config
     local themeName = Config.World_SkyTheme or "Default"
 
-    -- Only reapply if theme changed
     if World.LastSkyTheme == themeName then return end
     World.LastSkyTheme = themeName
 
     if themeName == "Default" then
-        RemoveCustomSky()
+        RestoreOriginalSky()
         return
     end
 
     local theme = SkyThemes[themeName]
     if not theme then return end
 
+    SaveOriginalSky()
     RemoveCustomSky()
 
-    -- Remove any existing Sky objects in Lighting first
+    -- Hide existing sky objects (don't destroy, just unparent so we can restore)
     for _, child in pairs(Lighting:GetChildren()) do
         if child:IsA("Sky") and child.Name ~= "ZeeHoodSky" then
             child.Parent = nil
@@ -404,7 +476,7 @@ function World.Cleanup()
         World.Connection = nil
     end
     World.LastSkyTheme = nil
-    RemoveCustomSky()
+    RestoreOriginalSky()
     RemoveFullbright()
     RemoveNoFog()
     RemoveCustomTime()
