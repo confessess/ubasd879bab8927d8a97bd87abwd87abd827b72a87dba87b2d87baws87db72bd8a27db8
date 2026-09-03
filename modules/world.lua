@@ -7,6 +7,7 @@ local World = {
     Connection = nil,
     OriginalValues = {},
     ActiveSky = nil,
+    LastSkyTheme = nil,
 }
 
 function World.SetConfig(config)
@@ -322,11 +323,22 @@ local function RemoveCustomSky()
         World.ActiveSky:Destroy()
         World.ActiveSky = nil
     end
+    -- Also remove any existing ZeeHoodSky
+    for _, child in pairs(Lighting:GetChildren()) do
+        if child.Name == "ZeeHoodSky" and child:IsA("Sky") then
+            child:Destroy()
+        end
+    end
 end
 
 local function ApplyCustomSky()
     local Config = World.Config
     local themeName = Config.World_SkyTheme or "Default"
+
+    -- Only reapply if theme changed
+    if World.LastSkyTheme == themeName then return end
+    World.LastSkyTheme = themeName
+
     if themeName == "Default" then
         RemoveCustomSky()
         return
@@ -336,6 +348,13 @@ local function ApplyCustomSky()
     if not theme then return end
 
     RemoveCustomSky()
+
+    -- Remove any existing Sky objects in Lighting first
+    for _, child in pairs(Lighting:GetChildren()) do
+        if child:IsA("Sky") and child.Name ~= "ZeeHoodSky" then
+            child.Parent = nil
+        end
+    end
 
     local sky = Instance.new("Sky")
     sky.Name = "ZeeHoodSky"
@@ -384,6 +403,7 @@ function World.Cleanup()
         World.Connection:Disconnect()
         World.Connection = nil
     end
+    World.LastSkyTheme = nil
     RemoveCustomSky()
     RemoveFullbright()
     RemoveNoFog()
