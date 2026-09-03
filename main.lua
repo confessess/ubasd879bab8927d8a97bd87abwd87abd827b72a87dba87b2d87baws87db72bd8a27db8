@@ -10,13 +10,47 @@ local function loadModule(path)
 end
 
 -- ═════════════════════════════════════════════════════════════════════════════
+-- PERSISTENCE HELPERS
+-- ═════════════════════════════════════════════════════════════════════════════
+local SAVE_PATH = "zee-hvh/auth.key"
+
+local function saveKey(key)
+    pcall(function()
+        if makefolder then makefolder("zee-hvh") end
+        if writefile then writefile(SAVE_PATH, key) end
+    end)
+end
+
+local function loadKey()
+    local ok, key = pcall(function()
+        if isfile and readfile and isfile(SAVE_PATH) then
+            return readfile(SAVE_PATH)
+        end
+        return nil
+    end)
+    if ok and key then
+        key = key:gsub("^%s+", ""):gsub("%s+$", "")
+        if #key > 0 then return key end
+    end
+    return nil
+end
+
+local function clearKey()
+    pcall(function()
+        if isfile and delfile and isfile(SAVE_PATH) then
+            delfile(SAVE_PATH)
+        end
+    end)
+end
+
+-- ═════════════════════════════════════════════════════════════════════════════
 -- INLINED AUTH MODULE
 -- ═════════════════════════════════════════════════════════════════════════════
 local Auth = {
     Validated = false,
     Key = nil,
     HWID = nil,
-    AuthURL = "http://localhost:3000/api/validate",
+    AuthURL = "http://10.177.177.224:3000/api/validate",
     FallbackKeys = {},
 }
 
@@ -54,7 +88,6 @@ function Auth.GenerateHWID()
             local version = game:HttpGet("https://setup.rbxcdn.com/version", true)
             if version then fingerprint = fingerprint .. version:sub(1, 20) end
         end)
-        -- Use bit32 for Luau compatibility (Lua 5.1 / Roblox)
         local hash = 0
         for i = 1, #fingerprint do
             hash = bit32.bor(bit32.lshift(hash, 5), bit32.band(bit32.arshift(hash, 27), 0x1F))
@@ -68,19 +101,15 @@ end
 
 function Auth.ValidateKey(inputKey)
     local hwid = Auth.GenerateHWID()
-    
     if Auth.FallbackKeys[inputKey] then
         Auth.Validated = true
         Auth.Key = inputKey
         return true, "fallback"
     end
-    
     local payload = HttpService:JSONEncode({ key = inputKey, hwid = hwid })
     local url = Auth.AuthURL
     local response = nil
     local usedMethod = "none"
-    
-    -- Try every known executor request method
     local methods = {
         function()
             usedMethod = "game:HttpPost"
@@ -142,7 +171,6 @@ function Auth.ValidateKey(inputKey)
             return game:HttpGet(getUrl, true)
         end,
     }
-    
     for i, method in ipairs(methods) do
         local success, result = pcall(method)
         if success and result and #result > 0 then
@@ -153,21 +181,17 @@ function Auth.ValidateKey(inputKey)
             print("[ZeeAuth] Method " .. i .. " (" .. usedMethod .. ") failed: " .. tostring(result))
         end
     end
-    
     if not response then
         return false, "connection_failed"
     end
-    
     local parseOk, parsed = pcall(function()
         return HttpService:JSONDecode(response)
     end)
-    
     if not parseOk then
         print("[ZeeAuth] JSON parse failed: " .. tostring(parsed))
         print("[ZeeAuth] Raw response: " .. response:sub(1, 200))
         return false, "bad_response"
     end
-    
     if parsed and parsed.valid then
         Auth.Validated = true
         Auth.Key = inputKey
@@ -428,6 +452,7 @@ function KeyGate.Build(authModule, onSuccessCallback)
             if valid then
                 StatusLabel.Text = "Authenticated!"
                 StatusLabel.TextColor3 = Color3.fromRGB(100, 255, 140)
+                saveKey(key)
                 Tween(Main, {BackgroundTransparency = 1}, 0.4):Play()
                 Tween(Background, {BackgroundTransparency = 1}, 0.5):Play()
                 task.wait(0.5)
@@ -444,6 +469,7 @@ function KeyGate.Build(authModule, onSuccessCallback)
                     no_uses_left = "No uses remaining.",
                     hwid_limit_reached = "Device limit reached for this key.",
                     connection_failed = "Failed to reach auth server.",
+                    bad_response = "Server returned bad data.",
                 }
                 StatusLabel.Text = reasonMap[source] or ("Error: " .. tostring(source))
                 StatusLabel.TextColor3 = Color3.fromRGB(255, 80, 80)
@@ -461,10 +487,9 @@ function KeyGate.Build(authModule, onSuccessCallback)
 end
 
 -- ═════════════════════════════════════════════════════════════════════════════
--- MAIN ENTRY
+-- LOADER CALLBACK (shared by silent auth and gate auth)
 -- ═════════════════════════════════════════════════════════════════════════════
-
-KeyGate.Build(Auth, function(key, source)
+local function onAuthSuccess(key, source)
     print("[ZeeHood] Key validated: " .. key .. " (" .. source .. ")")
 
     local Config = loadModule("config.lua")
@@ -563,4 +588,28 @@ KeyGate.Build(Auth, function(key, source)
 
     print("[ZeeHood] Stars.cc loaded")
     print("[ZeeHood] Toggle UI with " .. Config.ToggleKey.Name)
-end)
+end
+
+-- ═════════════════════════════════════════════════════════════════════════════
+-- MAIN ENTRY — Try silent auth first, fall back to gate
+-- ═════════════════════════════════════════════════════════════════════════════
+local storedKey = loadKey()
+local silentWorked = false
+
+if storedKey then
+    print("[ZeeHood] Found stored key, attempting silent auth...")
+    local valid, source = Auth.ValidateKey(storedKey)
+    if valid then
+        silentWorked = true
+        print("[ZeeHood] Silent auth succeeded via " .. source)
+        onAuthSuccess(storedKey, source)
+    else
+        print("[ZeeHood] Silent auth failed (" .. tostring(source) .. "), clearing stored key")
+        clearKey()
+    end
+end
+
+if not silentWorked then
+    print("[ZeeHood] Showing auth gate...")
+    KeyGate.Build(Auth, onAuthSuccess)
+end
