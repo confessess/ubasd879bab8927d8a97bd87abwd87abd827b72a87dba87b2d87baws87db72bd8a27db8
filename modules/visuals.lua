@@ -11,7 +11,7 @@ local Visuals = {
 }
 
 -- ═════════════════════════════════════════════════════════════════════════════
--- DRAWING LIFECYCLE (existing)
+-- DRAWING LIFECYCLE
 -- ═════════════════════════════════════════════════════════════════════════════
 local DrawingObjects = {}
 local function DrawingNew(type, props)
@@ -23,7 +23,6 @@ local function DrawingNew(type, props)
     return obj
 end
 
--- Legacy visuals
 local FOV_Circle = DrawingNew("Circle", {
     Visible = false, Thickness = 1.2, Color = Color3.fromRGB(255, 80, 80),
     Transparency = 0.6, Filled = false, NumSides = 64,
@@ -198,7 +197,7 @@ local function ClearPlayer(player)
     ESPDrawingObjects[player] = nil
     local char = player.Character
     if char then
-        local h = char:FindFirstChild("Pouncing_Highlight")
+        local h = char:FindFirstChild("Visuals_Chams")
         if h then h:Destroy() end
     end
 end
@@ -249,7 +248,7 @@ local function RefreshESPColors()
         end
         local char = player.Character
         if char then
-            local hl = char:FindFirstChild("Pouncing_Highlight")
+            local hl = char:FindFirstChild("Visuals_Chams")
             if hl then
                 hl.FillColor = ESP.Colors.ChamsFill
                 hl.OutlineColor = ESP.Colors.ChamsOutline
@@ -275,27 +274,80 @@ local function ShouldShowESP(player)
     return true
 end
 
+local function UpdateChams(player, char, ESP)
+    if not ESP.Chams then
+        local old = char:FindFirstChild("Visuals_Chams")
+        if old then old.Enabled = false end
+        return
+    end
+
+    local hl = char:FindFirstChild("Visuals_Chams")
+    if not hl then
+        hl = Instance.new("Highlight")
+        hl.Name = "Visuals_Chams"
+        hl.DepthMode = Enum.HighlightDepthMode.AlwaysOnTop
+        hl.Parent = char
+    end
+
+    hl.FillColor = ESP.Colors.ChamsFill
+    hl.OutlineColor = ESP.Colors.ChamsOutline
+    hl.FillTransparency = 0.5
+    hl.OutlineTransparency = 0
+    hl.Enabled = true
+end
+
 local function UpdateESPPlayer(player)
     local ESP = GetESPConfig()
     if not ESP then return end
     local o = ESPDrawingObjects[player]
     if not o then return end
-    if not ShouldShowESP(player) then HideAll(o) return end
+    if not ShouldShowESP(player) then 
+        HideAll(o) 
+        local char = player.Character
+        if char then
+            local hl = char:FindFirstChild("Visuals_Chams")
+            if hl then hl.Enabled = false end
+        end
+        return 
+    end
     local char = player.Character
     if not char then HideAll(o) return end
     local hum = char:FindFirstChildOfClass("Humanoid")
     local root = char:FindFirstChild("HumanoidRootPart") or char:FindFirstChild("Torso")
-    if not hum or not root or hum.Health <= 0 then HideAll(o) return end
+    if not hum or not root or hum.Health <= 0 then 
+        HideAll(o) 
+        local hl = char:FindFirstChild("Visuals_Chams")
+        if hl then hl.Enabled = false end
+        return 
+    end
     if ESP.TeamCheck then
         local isTeammate = false
         if LocalPlayer.Team and player.Team and LocalPlayer.Team == player.Team then isTeammate = true end
         if LocalPlayer.TeamColor and player.TeamColor and LocalPlayer.TeamColor == player.TeamColor then isTeammate = true end
-        if isTeammate then HideAll(o) return end
+        if isTeammate then 
+            HideAll(o) 
+            local hl = char:FindFirstChild("Visuals_Chams")
+            if hl then hl.Enabled = false end
+            return 
+        end
     end
     local dist = (root.Position - Camera.CFrame.Position).Magnitude
-    if ESP.DistanceToggle and dist > ESP.MaxDistance then HideAll(o) return end
+    if ESP.DistanceToggle and dist > ESP.MaxDistance then 
+        HideAll(o) 
+        local hl = char:FindFirstChild("Visuals_Chams")
+        if hl then hl.Enabled = false end
+        return 
+    end
+
+    -- Update Chams
+    UpdateChams(player, char, ESP)
+
     local box = GetBoxData(char)
-    if not box then HideAll(o) return end
+    if not box then 
+        HideAll(o) 
+        return 
+    end
+
     SetDrawing(o.Box, "Thickness", ESP.BoxThickness)
     if ESP.Boxes and not ESP.Box3D then
         SetDrawing(o.Box, "Size", box.Size)
@@ -455,23 +507,6 @@ local function UpdateESPPlayer(player)
     else
         SetDrawing(o.Weapon, "Visible", false)
     end
-    if ESP.Chams then
-        local hl = char:FindFirstChild("Pouncing_Highlight")
-        if not hl then
-            hl = Instance.new("Highlight")
-            hl.Name = "Pouncing_Highlight"
-            hl.DepthMode = Enum.HighlightDepthMode.AlwaysOnTop
-            hl.Parent = char
-        end
-        hl.FillColor = ESP.Colors.ChamsFill
-        hl.OutlineColor = ESP.Colors.ChamsOutline
-        hl.FillTransparency = 0.6
-        hl.OutlineTransparency = 0.2
-        hl.Enabled = true
-    else
-        local hl = char:FindFirstChild("Pouncing_Highlight")
-        if hl then hl.Enabled = false end
-    end
 end
 
 local function ESPUpdate()
@@ -480,7 +515,7 @@ local function ESPUpdate()
         for player, o in pairs(ESPDrawingObjects) do
             HideAll(o)
             local c = player.Character
-            if c then local h = c:FindFirstChild("Pouncing_Highlight"); if h then h.Enabled = false end end
+            if c then local h = c:FindFirstChild("Visuals_Chams"); if h then h.Enabled = false end end
         end
         return
     end
@@ -493,16 +528,6 @@ local function ESPInit()
     for _, p in pairs(Players:GetPlayers()) do InitPlayer(p) end
     ESPPlayerAddedConnection = Players.PlayerAdded:Connect(function(p)
         InitPlayer(p)
-        p.CharacterAdded:Connect(function()
-            task.wait(0.1)
-            local ESP = GetESPConfig()
-            if ESP and ESP.Chams then
-                local hl = Instance.new("Highlight")
-                hl.Name = "Pouncing_Highlight"
-                hl.DepthMode = Enum.HighlightDepthMode.AlwaysOnTop
-                hl.Parent = p.Character
-            end
-        end)
     end)
     ESPPlayerRemovingConnection = Players.PlayerRemoving:Connect(ClearPlayer)
 end
@@ -514,7 +539,7 @@ local function ESPDisable()
     for player, o in pairs(ESPDrawingObjects) do
         HideAll(o)
         local c = player.Character
-        if c then local h = c:FindFirstChild("Pouncing_Highlight"); if h then h.Enabled = false end end
+        if c then local h = c:FindFirstChild("Visuals_Chams"); if h then h.Enabled = false end end
     end
 end
 
@@ -576,7 +601,7 @@ function Visuals.Update()
         for player, o in pairs(ESPDrawingObjects) do
             HideAll(o)
             local c = player.Character
-            if c then local h = c:FindFirstChild("Pouncing_Highlight"); if h then h.Enabled = false end end
+            if c then local h = c:FindFirstChild("Visuals_Chams"); if h then h.Enabled = false end end
         end
     end
 end
@@ -591,7 +616,7 @@ function Visuals.Clear()
     for player, o in pairs(ESPDrawingObjects) do
         HideAll(o)
         local c = player.Character
-        if c then local h = c:FindFirstChild("Pouncing_Highlight"); if h then h.Enabled = false end end
+        if c then local h = c:FindFirstChild("Visuals_Chams"); if h then h.Enabled = false end end
     end
 end
 

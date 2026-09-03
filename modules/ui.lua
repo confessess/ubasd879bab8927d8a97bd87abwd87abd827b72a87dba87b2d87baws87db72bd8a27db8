@@ -1340,7 +1340,7 @@ function UI.Build()
         Size = UDim2.new(1, -20, 0, 40),
         Position = UDim2.fromOffset(10, 300),
         BackgroundTransparency = 1,
-        Text = "Select a target in the Target tab first. Their head will align to your crosshair when Farm is ON. Toggle OFF to restore them.",
+        Text = "Select a target in the Target tab first.",
         TextColor3 = Color3.fromRGB(140, 130, 155),
         TextSize = 10,
         Font = Enum.Font.GothamMedium,
@@ -1639,8 +1639,82 @@ function UI.Build()
             UI.Movement.SetSpeedEnabled(v)
         end
     end)
-    CreateSlider(MovementCard, 50, "Walk Speed", 16, 200, Config.Move_Speed, function(v)
-        Config.Move_Speed = v
+    -- Walk Speed with input box
+    New("TextLabel", {
+        Size = UDim2.new(1, -140, 0, 20),
+        Position = UDim2.fromOffset(10, 50),
+        BackgroundTransparency = 1,
+        Text = "Walk Speed",
+        TextColor3 = Color3.fromRGB(200, 190, 215),
+        TextSize = 12,
+        Font = Enum.Font.GothamMedium,
+        TextXAlignment = Enum.TextXAlignment.Left,
+        ZIndex = 16,
+    }, MovementCard)
+    local walkSpeedTrack = New("Frame", {
+        Size = UDim2.new(1, -160, 0, 5),
+        Position = UDim2.fromOffset(10, 80),
+        BackgroundColor3 = Color3.fromRGB(40, 40, 50),
+        BorderSizePixel = 0,
+        ZIndex = 16,
+    }, MovementCard)
+    Corner(walkSpeedTrack, 3)
+    local walkSpeedFill = New("Frame", {
+        Size = UDim2.new(math.clamp((Config.Move_Speed - 16) / 184, 0, 1), 0, 1, 0),
+        BackgroundColor3 = Color3.fromRGB(145, 75, 255),
+        BorderSizePixel = 0,
+        ZIndex = 17,
+    }, walkSpeedTrack)
+    Corner(walkSpeedFill, 3)
+    local walkSpeedInput = New("TextBox", {
+        Size = UDim2.fromOffset(60, 24),
+        Position = UDim2.new(1, -70, 0, 50),
+        BackgroundColor3 = Color3.fromRGB(30, 20, 42),
+        BackgroundTransparency = 0.25,
+        BorderSizePixel = 0,
+        Text = tostring(Config.Move_Speed or 50),
+        TextColor3 = Color3.fromRGB(245, 240, 250),
+        TextSize = 11,
+        Font = Enum.Font.Gotham,
+        ClearTextOnFocus = false,
+        ZIndex = 16,
+    }, MovementCard)
+    Corner(walkSpeedInput, 6)
+    Stroke(walkSpeedInput, 0.6, 1, Color3.fromRGB(80, 60, 100))
+
+    local walkSpeedDragging = false
+    local function setWalkSpeed(val)
+        val = math.clamp(math.floor(val), 16, 1000)
+        Config.Move_Speed = val
+        walkSpeedFill.Size = UDim2.new(math.clamp((val - 16) / 184, 0, 1), 0, 1, 0)
+        walkSpeedInput.Text = tostring(val)
+    end
+    walkSpeedTrack.InputBegan:Connect(function(input)
+        if input.UserInputType == Enum.UserInputType.MouseButton1 then
+            walkSpeedDragging = true
+            local pos = math.clamp((input.Position.X - walkSpeedTrack.AbsolutePosition.X) / walkSpeedTrack.AbsoluteSize.X, 0, 1)
+            setWalkSpeed(16 + pos * 184)
+        end
+    end)
+    UserInputService.InputChanged:Connect(function(input)
+        if walkSpeedDragging and input.UserInputType == Enum.UserInputType.MouseMovement then
+            local pos = math.clamp((input.Position.X - walkSpeedTrack.AbsolutePosition.X) / walkSpeedTrack.AbsoluteSize.X, 0, 1)
+            setWalkSpeed(16 + pos * 184)
+        end
+    end)
+    UserInputService.InputEnded:Connect(function(input)
+        if input.UserInputType == Enum.UserInputType.MouseButton1 then walkSpeedDragging = false end
+    end)
+    walkSpeedInput.FocusLost:Connect(function()
+        local num = tonumber(walkSpeedInput.Text)
+        if num then setWalkSpeed(num) end
+    end)
+    walkSpeedInput:GetPropertyChangedSignal("Text"):Connect(function()
+        local num = tonumber(walkSpeedInput.Text)
+        if num then
+            Config.Move_Speed = math.clamp(math.floor(num), 16, 1000)
+            walkSpeedFill.Size = UDim2.new(math.clamp((Config.Move_Speed - 16) / 184, 0, 1), 0, 1, 0)
+        end
     end)
     CreateToggle(MovementCard, 106, "High Jump", Config.Move_HighJumpEnabled, "Move_HighJumpEnabled", true, function(v)
         Config.Move_HighJumpEnabled = v
@@ -1648,8 +1722,82 @@ function UI.Build()
             UI.Movement.SetHighJumpEnabled(v)
         end
     end)
-    CreateSlider(MovementCard, 142, "Jump Power", 50, 300, Config.Move_JumpPower, function(v)
-        Config.Move_JumpPower = v
+    -- Jump Power with input box
+    New("TextLabel", {
+        Size = UDim2.new(1, -140, 0, 20),
+        Position = UDim2.fromOffset(10, 142),
+        BackgroundTransparency = 1,
+        Text = "Jump Power",
+        TextColor3 = Color3.fromRGB(200, 190, 215),
+        TextSize = 12,
+        Font = Enum.Font.GothamMedium,
+        TextXAlignment = Enum.TextXAlignment.Left,
+        ZIndex = 16,
+    }, MovementCard)
+    local jumpPowerTrack = New("Frame", {
+        Size = UDim2.new(1, -160, 0, 5),
+        Position = UDim2.fromOffset(10, 172),
+        BackgroundColor3 = Color3.fromRGB(40, 40, 50),
+        BorderSizePixel = 0,
+        ZIndex = 16,
+    }, MovementCard)
+    Corner(jumpPowerTrack, 3)
+    local jumpPowerFill = New("Frame", {
+        Size = UDim2.new(math.clamp((Config.Move_JumpPower - 50) / 250, 0, 1), 0, 1, 0),
+        BackgroundColor3 = Color3.fromRGB(145, 75, 255),
+        BorderSizePixel = 0,
+        ZIndex = 17,
+    }, jumpPowerTrack)
+    Corner(jumpPowerFill, 3)
+    local jumpPowerInput = New("TextBox", {
+        Size = UDim2.fromOffset(60, 24),
+        Position = UDim2.new(1, -70, 0, 142),
+        BackgroundColor3 = Color3.fromRGB(30, 20, 42),
+        BackgroundTransparency = 0.25,
+        BorderSizePixel = 0,
+        Text = tostring(Config.Move_JumpPower or 100),
+        TextColor3 = Color3.fromRGB(245, 240, 250),
+        TextSize = 11,
+        Font = Enum.Font.Gotham,
+        ClearTextOnFocus = false,
+        ZIndex = 16,
+    }, MovementCard)
+    Corner(jumpPowerInput, 6)
+    Stroke(jumpPowerInput, 0.6, 1, Color3.fromRGB(80, 60, 100))
+
+    local jumpPowerDragging = false
+    local function setJumpPower(val)
+        val = math.clamp(math.floor(val), 50, 1000)
+        Config.Move_JumpPower = val
+        jumpPowerFill.Size = UDim2.new(math.clamp((val - 50) / 250, 0, 1), 0, 1, 0)
+        jumpPowerInput.Text = tostring(val)
+    end
+    jumpPowerTrack.InputBegan:Connect(function(input)
+        if input.UserInputType == Enum.UserInputType.MouseButton1 then
+            jumpPowerDragging = true
+            local pos = math.clamp((input.Position.X - jumpPowerTrack.AbsolutePosition.X) / jumpPowerTrack.AbsoluteSize.X, 0, 1)
+            setJumpPower(50 + pos * 250)
+        end
+    end)
+    UserInputService.InputChanged:Connect(function(input)
+        if jumpPowerDragging and input.UserInputType == Enum.UserInputType.MouseMovement then
+            local pos = math.clamp((input.Position.X - jumpPowerTrack.AbsolutePosition.X) / jumpPowerTrack.AbsoluteSize.X, 0, 1)
+            setJumpPower(50 + pos * 250)
+        end
+    end)
+    UserInputService.InputEnded:Connect(function(input)
+        if input.UserInputType == Enum.UserInputType.MouseButton1 then jumpPowerDragging = false end
+    end)
+    jumpPowerInput.FocusLost:Connect(function()
+        local num = tonumber(jumpPowerInput.Text)
+        if num then setJumpPower(num) end
+    end)
+    jumpPowerInput:GetPropertyChangedSignal("Text"):Connect(function()
+        local num = tonumber(jumpPowerInput.Text)
+        if num then
+            Config.Move_JumpPower = math.clamp(math.floor(num), 50, 1000)
+            jumpPowerFill.Size = UDim2.new(math.clamp((Config.Move_JumpPower - 50) / 250, 0, 1), 0, 1, 0)
+        end
     end)
     CreateToggle(MovementCard, 198, "Bunny Hop", Config.Move_BunnyHop, "Move_BunnyHop", true, function(v)
         Config.Move_BunnyHop = v

@@ -91,17 +91,40 @@ end
 -- BUNNY HOP
 -- ═════════════════════════════════════════════════════════════════════════════
 
+local LastBhopJump = 0
+
 local function DoBunnyHop()
     local Config = Movement.Config
     if not Config.Move_BunnyHop then return end
     local char = LocalPlayer.Character
     if not char then return end
     local hum = char:FindFirstChildOfClass("Humanoid")
-    if not hum then return end
-    if UserInputService:IsKeyDown(Enum.KeyCode.Space) then
-        if hum.FloorMaterial ~= Enum.Material.Air then
+    local root = char:FindFirstChild("HumanoidRootPart")
+    if not hum or not root then return end
+    if hum.Health <= 0 then return end
+
+    -- Check if moving (WASD pressed)
+    local isMoving = UserInputService:IsKeyDown(Enum.KeyCode.W) 
+        or UserInputService:IsKeyDown(Enum.KeyCode.A)
+        or UserInputService:IsKeyDown(Enum.KeyCode.S)
+        or UserInputService:IsKeyDown(Enum.KeyCode.D)
+
+    if not isMoving then return end
+
+    -- Auto jump when on ground
+    if hum.FloorMaterial ~= Enum.Material.Air then
+        local now = tick()
+        if now - LastBhopJump > 0.05 then -- Small delay to prevent spam
             hum:ChangeState(Enum.HumanoidStateType.Jumping)
+            LastBhopJump = now
         end
+    end
+
+    -- Speed boost while bunny hopping
+    local currentSpeed = hum.WalkSpeed
+    local bhopSpeed = (Config.Move_Speed or 50) * 1.2 -- 20% faster than normal speed
+    if currentSpeed < bhopSpeed then
+        hum.WalkSpeed = bhopSpeed
     end
 end
 
