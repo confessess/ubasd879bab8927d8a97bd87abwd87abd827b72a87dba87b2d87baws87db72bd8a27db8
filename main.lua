@@ -50,7 +50,7 @@ local Auth = {
     Validated = false,
     Key = nil,
     HWID = nil,
-    AuthURL = "http://10.177.177.224:3000/api/validate",
+    AuthURL = "https://stars-stars.up.railway.app/api/validate",
     FallbackKeys = {},
 }
 
