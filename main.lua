@@ -2,11 +2,62 @@ local BASE_URL = "https://raw.githubusercontent.com/confessess/zee-hvh/main/"
 
 local function loadModule(path)
     local url = BASE_URL .. path
-    local src = game:HttpGet(url, true)
-    if not src or src == "" then
-        error("Failed to fetch: " .. url)
+    print("[ZeeAuth] loadModule(" .. path .. ")")
+    print("[ZeeAuth] URL: " .. url)
+
+    local getSuccess, src = pcall(function()
+        return game:HttpGet(url, true)
+    end)
+
+    if not getSuccess then
+        warn("[ZeeAuth] game:HttpGet CRASHED for " .. path .. ": " .. tostring(src))
+        error("HttpGet crash on " .. path)
     end
-    return loadstring(src)()
+
+    if src == nil then
+        warn("[ZeeAuth] game:HttpGet returned NIL for " .. path)
+        error("HttpGet nil on " .. path)
+    end
+
+    if src == "" then
+        warn("[ZeeAuth] game:HttpGet returned EMPTY for " .. path)
+        error("HttpGet empty on " .. path)
+    end
+
+    print("[ZeeAuth] Got " .. #src .. " bytes for " .. path)
+
+    local isHtml = src:sub(1, 15):lower():find("<!doctype") or src:sub(1, 6):lower() == "<html>"
+    if isHtml then
+        warn("[ZeeAuth] Got HTML for " .. path .. " — probably 404 or rate limit")
+        warn("[ZeeAuth] First 200 chars: " .. src:sub(1, 200):gsub("\n", " "))
+        error("HttpGet HTML on " .. path)
+    end
+
+    local lsSuccess, loaded = pcall(function()
+        return loadstring(src)
+    end)
+
+    if not lsSuccess then
+        warn("[ZeeAuth] loadstring FAILED for " .. path .. ": " .. tostring(loaded))
+        error("loadstring fail on " .. path)
+    end
+
+    if loaded == nil then
+        warn("[ZeeAuth] loadstring returned NIL for " .. path .. " — syntax error in file?")
+        error("loadstring nil on " .. path)
+    end
+
+    print("[ZeeAuth] loadstring OK for " .. path .. ", executing...")
+
+    local execSuccess, result = pcall(loaded)
+
+    if not execSuccess then
+        warn("[ZeeAuth] EXECUTION FAILED for " .. path .. ": " .. tostring(result))
+        error("execution fail on " .. path)
+    end
+
+    print("[ZeeAuth] loadModule(" .. path .. ") SUCCESS — result type: " .. type(result))
+    return result
 end
 
 -- ═════════════════════════════════════════════════════════════════════════════
@@ -26,7 +77,6 @@ local LocalPlayer = Players.LocalPlayer
 
 function Auth.GenerateHWID()
     local hwid = nil
-
     if syn and syn.get_hwid then hwid = syn.get_hwid()
     elseif krnl and krnl.get_hwid then hwid = krnl.get_hwid()
     elseif gethwid then hwid = gethwid()
@@ -49,43 +99,35 @@ function Auth.GenerateHWID()
             hwid = "POTASSIUM-" .. tostring(LocalPlayer.UserId) .. "-" .. name:gsub("%s+", "-")
         end
     end
-
     if not hwid or #hwid < 8 then
         local fingerprint = tostring(LocalPlayer.UserId)
         pcall(function()
             local version = game:HttpGet("https://setup.rbxcdn.com/version", true)
             if version then fingerprint = fingerprint .. version:sub(1, 20) end
         end)
-
         local hash = 0
         for i = 1, #fingerprint do
             hash = ((hash << 5) - hash) + string.byte(fingerprint, i)
             hash = hash & 0xFFFFFFFF
         end
-
         hwid = string.format("FALLBACK-%08X-%08X", hash & 0xFFFFFFFF, LocalPlayer.UserId)
     end
-
     Auth.HWID = hwid
     return hwid
 end
 
 function Auth.ValidateKey(inputKey)
     local hwid = Auth.GenerateHWID()
-
     if Auth.FallbackKeys[inputKey] then
         Auth.Validated = true
         Auth.Key = inputKey
         return true, "fallback"
     end
-
     local success, response = pcall(function()
         local payload = HttpService:JSONEncode({ key = inputKey, hwid = hwid })
-
         if game.HttpPost then
             return game:HttpPost(Auth.AuthURL, payload, false, "application/json")
         end
-
         if request then
             local res = request({
                 Url = Auth.AuthURL,
@@ -95,7 +137,6 @@ function Auth.ValidateKey(inputKey)
             })
             return res and res.Body
         end
-
         if syn and syn.request then
             local res = syn.request({
                 Url = Auth.AuthURL,
@@ -105,10 +146,8 @@ function Auth.ValidateKey(inputKey)
             })
             return res and res.Body
         end
-
-        error("No HTTP POST method available in this executor")
+        error("No HTTP POST method available")
     end)
-
     if success and response then
         local parsed = HttpService:JSONDecode(response)
         if parsed and parsed.valid then
@@ -119,7 +158,6 @@ function Auth.ValidateKey(inputKey)
             return false, parsed.reason or "unknown"
         end
     end
-
     return false, "connection_failed"
 end
 
@@ -167,10 +205,8 @@ end
 
 function KeyGate.Build(authModule, onSuccessCallback)
     KeyGate.OnSuccess = onSuccessCallback
-
     local oldGui = PlayerGui:FindFirstChild("ZeeHoodKeyGate")
     if oldGui then oldGui:Destroy() end
-
     local ScreenGui = New("ScreenGui", {
         Name = "ZeeHoodKeyGate",
         ResetOnSpawn = false,
@@ -178,7 +214,6 @@ function KeyGate.Build(authModule, onSuccessCallback)
         ZIndexBehavior = Enum.ZIndexBehavior.Sibling,
     }, PlayerGui)
     KeyGate.ScreenGui = ScreenGui
-
     local Background = New("Frame", {
         Size = UDim2.fromScale(1, 1),
         BackgroundColor3 = Color3.fromRGB(4, 3, 9),
@@ -186,7 +221,6 @@ function KeyGate.Build(authModule, onSuccessCallback)
         BorderSizePixel = 0,
         ZIndex = 1,
     }, ScreenGui)
-
     New("UIGradient", {
         Rotation = 35,
         Color = ColorSequence.new({
@@ -195,7 +229,6 @@ function KeyGate.Build(authModule, onSuccessCallback)
             ColorSequenceKeypoint.new(1, Color3.fromRGB(27, 7, 45)),
         }),
     }, Background)
-
     local StarContainer = New("Frame", {
         Name = "Stars",
         Size = UDim2.fromScale(1, 1),
@@ -203,7 +236,6 @@ function KeyGate.Build(authModule, onSuccessCallback)
         ClipsDescendants = true,
         ZIndex = 2,
     }, Background)
-
     for i = 1, 60 do
         local size = math.random(1, 3)
         local star = New("Frame", {
@@ -225,7 +257,6 @@ function KeyGate.Build(authModule, onSuccessCallback)
             end
         end)
     end
-
     local Main = New("Frame", {
         Size = UDim2.fromOffset(440, 340),
         Position = UDim2.fromScale(0.5, 0.5),
@@ -237,7 +268,6 @@ function KeyGate.Build(authModule, onSuccessCallback)
     }, ScreenGui)
     Corner(Main, 20)
     Stroke(Main, 0.72, 1)
-
     New("Frame", {
         Size = UDim2.new(1, -40, 0, 1),
         Position = UDim2.fromOffset(20, 1),
@@ -246,7 +276,6 @@ function KeyGate.Build(authModule, onSuccessCallback)
         BorderSizePixel = 0,
         ZIndex = 11,
     }, Main)
-
     New("TextLabel", {
         Size = UDim2.fromOffset(400, 32),
         Position = UDim2.fromOffset(20, 18),
@@ -258,7 +287,6 @@ function KeyGate.Build(authModule, onSuccessCallback)
         TextXAlignment = Enum.TextXAlignment.Left,
         ZIndex = 12,
     }, Main)
-
     New("TextLabel", {
         Size = UDim2.fromOffset(400, 20),
         Position = UDim2.fromOffset(21, 50),
@@ -270,10 +298,8 @@ function KeyGate.Build(authModule, onSuccessCallback)
         TextXAlignment = Enum.TextXAlignment.Left,
         ZIndex = 12,
     }, Main)
-
     local hwid = authModule.GetHWID and authModule.GetHWID() or "unknown"
     local shortHWID = #hwid > 24 and hwid:sub(1, 12) .. "..." .. hwid:sub(-8) or hwid
-
     New("TextLabel", {
         Size = UDim2.new(1, -40, 0, 16),
         Position = UDim2.fromOffset(20, 74),
@@ -285,7 +311,6 @@ function KeyGate.Build(authModule, onSuccessCallback)
         TextXAlignment = Enum.TextXAlignment.Left,
         ZIndex = 12,
     }, Main)
-
     local InputFrame = New("Frame", {
         Size = UDim2.new(1, -40, 0, 44),
         Position = UDim2.fromOffset(20, 100),
@@ -296,7 +321,6 @@ function KeyGate.Build(authModule, onSuccessCallback)
     }, Main)
     Corner(InputFrame, 12)
     Stroke(InputFrame, 0.85, 1, Color3.fromRGB(140, 90, 200))
-
     local InputBox = New("TextBox", {
         Size = UDim2.new(1, -20, 1, 0),
         Position = UDim2.fromOffset(10, 0),
@@ -311,7 +335,6 @@ function KeyGate.Build(authModule, onSuccessCallback)
         ClearTextOnFocus = false,
         ZIndex = 13,
     }, InputFrame)
-
     local StatusLabel = New("TextLabel", {
         Size = UDim2.new(1, -40, 0, 20),
         Position = UDim2.fromOffset(20, 152),
@@ -323,7 +346,6 @@ function KeyGate.Build(authModule, onSuccessCallback)
         TextXAlignment = Enum.TextXAlignment.Left,
         ZIndex = 12,
     }, Main)
-
     local SubmitBtn = New("TextButton", {
         Size = UDim2.new(1, -40, 0, 40),
         Position = UDim2.fromOffset(20, 185),
@@ -338,7 +360,6 @@ function KeyGate.Build(authModule, onSuccessCallback)
         ZIndex = 12,
     }, Main)
     Corner(SubmitBtn, 10)
-
     local InfoFrame = New("Frame", {
         Size = UDim2.new(1, -40, 0, 60),
         Position = UDim2.fromOffset(20, 238),
@@ -349,7 +370,6 @@ function KeyGate.Build(authModule, onSuccessCallback)
     }, Main)
     Corner(InfoFrame, 10)
     Stroke(InfoFrame, 0.9, 1, Color3.fromRGB(100, 70, 150))
-
     New("TextLabel", {
         Size = UDim2.new(1, -16, 1, -8),
         Position = UDim2.fromOffset(8, 4),
@@ -362,14 +382,12 @@ function KeyGate.Build(authModule, onSuccessCallback)
         TextXAlignment = Enum.TextXAlignment.Left,
         ZIndex = 13,
     }, InfoFrame)
-
     SubmitBtn.MouseEnter:Connect(function()
         Tween(SubmitBtn, {BackgroundTransparency = 0.05}, 0.15):Play()
     end)
     SubmitBtn.MouseLeave:Connect(function()
         Tween(SubmitBtn, {BackgroundTransparency = 0.18}, 0.15):Play()
     end)
-
     local function Shake()
         local originalPos = Main.Position
         for i = 1, 8 do
@@ -379,7 +397,6 @@ function KeyGate.Build(authModule, onSuccessCallback)
         end
         Main.Position = originalPos
     end
-
     local function TryAuth()
         local key = InputBox.Text:gsub("^%s+", ""):gsub("%s+$", "")
         if #key == 0 then
@@ -388,10 +405,8 @@ function KeyGate.Build(authModule, onSuccessCallback)
             Shake()
             return
         end
-
         StatusLabel.Text = "Validating..."
         StatusLabel.TextColor3 = Color3.fromRGB(180, 170, 200)
-
         task.spawn(function()
             local valid, source = authModule.ValidateKey(key)
             if valid then
@@ -420,21 +435,20 @@ function KeyGate.Build(authModule, onSuccessCallback)
             end
         end)
     end
-
     SubmitBtn.MouseButton1Click:Connect(TryAuth)
     InputBox.FocusLost:Connect(function(entered)
         if entered then TryAuth() end
     end)
-
     Main.Size = UDim2.fromOffset(440, 0)
     Tween(Main, {Size = UDim2.fromOffset(440, 340)}, 0.5, Enum.EasingStyle.Quint, Enum.EasingDirection.Out):Play()
-
     return ScreenGui
 end
 
 -- ═════════════════════════════════════════════════════════════════════════════
 -- MAIN ENTRY
 -- ═════════════════════════════════════════════════════════════════════════════
+
+print("[ZeeAuth] === Starting Zee Hood HvH with Auth ===")
 
 KeyGate.Build(Auth, function(key, source)
     print("[ZeeHood] Key validated: " .. key .. " (" .. source .. ")")
