@@ -1617,7 +1617,7 @@ function UI.Build()
     local skyThemeDropdown = BuildDropdown(WorldCard, 394, "Sky Theme", Config.World_SkyTheme or "Default",
         {"Default", "Night", "Light", "Blood", "Gray", "DarkNight", "Space", "Test", "Clouds", "Sunset2", "Galaxy2", "Nebula", "Storm2"},
         function(v) Config.World_SkyTheme = v end)
-        -- MOVEMENT PAGE
+            -- MOVEMENT PAGE
     local MovementPage = Pages.Movement
     PageTitle(MovementPage, "Movement", "Speed, fly, jump, and collision modifiers.")
     local MovementScroll = New("ScrollingFrame", {
@@ -1627,10 +1627,10 @@ function UI.Build()
         BorderSizePixel = 0,
         ScrollBarThickness = 5,
         ScrollBarImageColor3 = Color3.fromRGB(145, 75, 255),
-        CanvasSize = UDim2.new(0, 0, 0, 580),
+        CanvasSize = UDim2.new(0, 0, 0, 650),
         ZIndex = 14,
     }, MovementPage)
-    local MovementCard = CreateCard(MovementScroll, UDim2.fromOffset(0, 0), UDim2.new(1, 0, 0, 560))
+    local MovementCard = CreateCard(MovementScroll, UDim2.fromOffset(0, 0), UDim2.new(1, 0, 0, 640))
 
     -- Movement Section
     CreateToggle(MovementCard, 14, "Speed", Config.Move_SpeedEnabled, "Move_SpeedEnabled", true, function(v)
@@ -1639,7 +1639,8 @@ function UI.Build()
             UI.Movement.SetSpeedEnabled(v)
         end
     end)
-    -- Walk Speed with input box
+
+    -- Walk Speed with input
     New("TextLabel", {
         Size = UDim2.new(1, -140, 0, 20),
         Position = UDim2.fromOffset(10, 50),
@@ -1660,7 +1661,7 @@ function UI.Build()
     }, MovementCard)
     Corner(walkSpeedTrack, 3)
     local walkSpeedFill = New("Frame", {
-        Size = UDim2.new(math.clamp((Config.Move_Speed - 16) / 184, 0, 1), 0, 1, 0),
+        Size = UDim2.new(math.clamp((Config.Move_Speed - 16) / 10000, 0, 1), 0, 1, 0),
         BackgroundColor3 = Color3.fromRGB(145, 75, 255),
         BorderSizePixel = 0,
         ZIndex = 17,
@@ -1693,13 +1694,13 @@ function UI.Build()
         if input.UserInputType == Enum.UserInputType.MouseButton1 then
             walkSpeedDragging = true
             local pos = math.clamp((input.Position.X - walkSpeedTrack.AbsolutePosition.X) / walkSpeedTrack.AbsoluteSize.X, 0, 1)
-            setWalkSpeed(16 + pos * 184)
+            setWalkSpeed(16 + pos * 10000)
         end
     end)
     UserInputService.InputChanged:Connect(function(input)
         if walkSpeedDragging and input.UserInputType == Enum.UserInputType.MouseMovement then
             local pos = math.clamp((input.Position.X - walkSpeedTrack.AbsolutePosition.X) / walkSpeedTrack.AbsoluteSize.X, 0, 1)
-            setWalkSpeed(16 + pos * 184)
+            setWalkSpeed(16 + pos * 10000)
         end
     end)
     UserInputService.InputEnded:Connect(function(input)
@@ -1716,13 +1717,15 @@ function UI.Build()
             walkSpeedFill.Size = UDim2.new(math.clamp((Config.Move_Speed - 16) / 10000, 0, 1), 0, 1, 0)
         end
     end)
+
     CreateToggle(MovementCard, 106, "High Jump", Config.Move_HighJumpEnabled, "Move_HighJumpEnabled", true, function(v)
         Config.Move_HighJumpEnabled = v
         if UI.Movement then
             UI.Movement.SetHighJumpEnabled(v)
         end
     end)
-    -- Jump Power with input box
+
+    -- Jump Power with input
     New("TextLabel", {
         Size = UDim2.new(1, -140, 0, 20),
         Position = UDim2.fromOffset(10, 142),
@@ -1743,7 +1746,7 @@ function UI.Build()
     }, MovementCard)
     Corner(jumpPowerTrack, 3)
     local jumpPowerFill = New("Frame", {
-        Size = UDim2.new(math.clamp((Config.Move_JumpPower - 50) / 250, 0, 1), 0, 1, 0),
+        Size = UDim2.new(math.clamp((Config.Move_JumpPower - 50) / 10000, 0, 1), 0, 1, 0),
         BackgroundColor3 = Color3.fromRGB(145, 75, 255),
         BorderSizePixel = 0,
         ZIndex = 17,
@@ -1776,13 +1779,13 @@ function UI.Build()
         if input.UserInputType == Enum.UserInputType.MouseButton1 then
             jumpPowerDragging = true
             local pos = math.clamp((input.Position.X - jumpPowerTrack.AbsolutePosition.X) / jumpPowerTrack.AbsoluteSize.X, 0, 1)
-            setJumpPower(50 + pos * 250)
+            setJumpPower(50 + pos * 10000)
         end
     end)
     UserInputService.InputChanged:Connect(function(input)
         if jumpPowerDragging and input.UserInputType == Enum.UserInputType.MouseMovement then
             local pos = math.clamp((input.Position.X - jumpPowerTrack.AbsolutePosition.X) / jumpPowerTrack.AbsoluteSize.X, 0, 1)
-            setJumpPower(50 + pos * 250)
+            setJumpPower(50 + pos * 10000)
         end
     end)
     UserInputService.InputEnded:Connect(function(input)
@@ -1799,6 +1802,7 @@ function UI.Build()
             jumpPowerFill.Size = UDim2.new(math.clamp((Config.Move_JumpPower - 50) / 10000, 0, 1), 0, 1, 0)
         end
     end)
+
     CreateToggle(MovementCard, 198, "Bunny Hop", Config.Move_BunnyHop, "Move_BunnyHop", true, function(v)
         Config.Move_BunnyHop = v
         if UI.Movement then
@@ -1837,10 +1841,10 @@ function UI.Build()
         {"Tween", "Velocity", "CFrame"},
         function(v) Config.Move_FlyMethod = v end)
 
-    -- Fly Speed
+    -- Fly Speed with input — more space after dropdown
     New("TextLabel", {
         Size = UDim2.new(1, -140, 0, 20),
-        Position = UDim2.fromOffset(10, 456),
+        Position = UDim2.fromOffset(10, 470),
         BackgroundTransparency = 1,
         Text = "Fly Speed",
         TextColor3 = Color3.fromRGB(200, 190, 215),
@@ -1851,14 +1855,14 @@ function UI.Build()
     }, MovementCard)
     local flySpeedTrack = New("Frame", {
         Size = UDim2.new(1, -160, 0, 5),
-        Position = UDim2.fromOffset(10, 486),
+        Position = UDim2.fromOffset(10, 500),
         BackgroundColor3 = Color3.fromRGB(40, 40, 50),
         BorderSizePixel = 0,
         ZIndex = 16,
     }, MovementCard)
     Corner(flySpeedTrack, 3)
     local flySpeedFill = New("Frame", {
-        Size = UDim2.new(math.clamp((Config.Move_FlySpeed - 10) / 990, 0, 1), 0, 1, 0),
+        Size = UDim2.new(math.clamp((Config.Move_FlySpeed - 10) / 100000, 0, 1), 0, 1, 0),
         BackgroundColor3 = Color3.fromRGB(145, 75, 255),
         BorderSizePixel = 0,
         ZIndex = 17,
@@ -1866,7 +1870,7 @@ function UI.Build()
     Corner(flySpeedFill, 3)
     local flySpeedInput = New("TextBox", {
         Size = UDim2.fromOffset(60, 24),
-        Position = UDim2.new(1, -70, 0, 420),
+        Position = UDim2.new(1, -70, 0, 470),
         BackgroundColor3 = Color3.fromRGB(30, 20, 42),
         BackgroundTransparency = 0.25,
         BorderSizePixel = 0,
@@ -1891,13 +1895,13 @@ function UI.Build()
         if input.UserInputType == Enum.UserInputType.MouseButton1 then
             flySpeedDragging = true
             local pos = math.clamp((input.Position.X - flySpeedTrack.AbsolutePosition.X) / flySpeedTrack.AbsoluteSize.X, 0, 1)
-            setFlySpeed(10 + pos * 990)
+            setFlySpeed(10 + pos * 100000)
         end
     end)
     UserInputService.InputChanged:Connect(function(input)
         if flySpeedDragging and input.UserInputType == Enum.UserInputType.MouseMovement then
             local pos = math.clamp((input.Position.X - flySpeedTrack.AbsolutePosition.X) / flySpeedTrack.AbsoluteSize.X, 0, 1)
-            setFlySpeed(10 + pos * 990)
+            setFlySpeed(10 + pos * 100000)
         end
     end)
     UserInputService.InputEnded:Connect(function(input)
@@ -1917,7 +1921,7 @@ function UI.Build()
 
     New("TextLabel", {
         Size = UDim2.new(1, -20, 0, 16),
-        Position = UDim2.fromOffset(10, 496),
+        Position = UDim2.fromOffset(10, 520),
         BackgroundTransparency = 1,
         Text = "WASD to move, Space up, Shift down",
         TextColor3 = Color3.fromRGB(140, 130, 155),
@@ -1930,11 +1934,11 @@ function UI.Build()
     -- Bottom padding
     New("Frame", {
         Size = UDim2.new(1, 0, 0, 40),
-        Position = UDim2.fromOffset(0, 490),
+        Position = UDim2.fromOffset(0, 550),
         BackgroundTransparency = 1,
         ZIndex = 16,
     }, MovementCard)
-    -- SETTINGS PAGE
+-- SETTINGS PAGE
     local SettingsPage = Pages.Settings
     PageTitle(SettingsPage, "Settings", "Interface customization, config management, and safety options.")
     local SettingsScroll = New("ScrollingFrame", {

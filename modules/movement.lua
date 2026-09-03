@@ -93,25 +93,65 @@ end
 
 local LastBhopJump = 0
 
+local LastNoJumpCD = 0
+
 local function DoNoJumpCooldown()
     local Config = Movement.Config
     if not Config.Move_NoJumpCooldown then return end
     local char = LocalPlayer.Character
     if not char then return end
     local hum = char:FindFirstChildOfClass("Humanoid")
-    if not hum then return end
+    local root = char:FindFirstChild("HumanoidRootPart")
+    if not hum or not root then return end
     if hum.Health <= 0 then return end
 
-    -- Force humanoid to be in running state (removes jump cooldown)
-    if hum:GetState() == Enum.HumanoidStateType.Landed then
+    -- Method 1: Force Running state every frame (prevents Landed state)
+    local state = hum:GetState()
+    if state == Enum.HumanoidStateType.Landed or state == Enum.HumanoidStateType.Freefall then
         hum:ChangeState(Enum.HumanoidStateType.Running)
     end
 
-    -- Also try to remove any jump cooldown values
-    local jumpCooldown = hum:FindFirstChild("JumpCooldown") or hum:FindFirstChild("JumpCD")
-    if jumpCooldown and jumpCooldown:IsA("NumberValue") then
-        jumpCooldown.Value = 0
+    -- Method 2: Set JumpPower every frame (resets internal cooldown)
+    local currentJP = hum.JumpPower
+    hum.JumpPower = currentJP
+
+    -- Method 3: Look for and reset any cooldown values in character
+    for _, obj in pairs(char:GetDescendants()) do
+        if obj:IsA("NumberValue") then
+            local name = obj.Name:lower()
+            if name:find("jump") and name:find("cool") or name:find("cd") or name:find("delay") then
+                obj.Value = 0
+            end
+        end
     end
+
+    -- Method 4: Look in Humanoid for cooldown
+    for _, obj in pairs(hum:GetDescendants()) do
+        if obj:IsA("NumberValue") then
+            local name = obj.Name:lower()
+            if name:find("jump") or name:find("cool") or name:find("cd") then
+                obj.Value = 0
+            end
+        end
+    end
+end
+
+local function ForceJump()
+    local char = LocalPlayer.Character
+    if not char then return end
+    local hum = char:FindFirstChildOfClass("Humanoid")
+    local root = char:FindFirstChild("HumanoidRootPart")
+    if not hum or not root then return end
+    if hum.Health <= 0 then return end
+
+    -- Check if on ground
+    if hum.FloorMaterial == Enum.Material.Air then return end
+
+    -- Method 1: Direct velocity impulse (always works)
+    root.AssemblyLinearVelocity = Vector3.new(root.AssemblyLinearVelocity.X, hum.JumpPower, root.AssemblyLinearVelocity.Z)
+
+    -- Method 2: Also try state change as backup
+    hum:ChangeState(Enum.HumanoidStateType.Jumping)
 end
 
 local function DoBunnyHop()
@@ -132,14 +172,11 @@ local function DoBunnyHop()
 
     if not isMoving then return end
 
-    -- Auto jump when on ground — bypass cooldown
+    -- Auto jump when on ground — use velocity impulse (bypasses cooldown)
     if hum.FloorMaterial ~= Enum.Material.Air then
         local now = tick()
-        if now - LastBhopJump > 0.01 then -- Minimal delay
-            -- Force running state first (bypasses cooldown)
-            hum:ChangeState(Enum.HumanoidStateType.Running)
-            task.wait()
-            hum:ChangeState(Enum.HumanoidStateType.Jumping)
+        if now - LastBhopJump > 0.05 then
+            ForceJump()
             LastBhopJump = now
         end
     end
