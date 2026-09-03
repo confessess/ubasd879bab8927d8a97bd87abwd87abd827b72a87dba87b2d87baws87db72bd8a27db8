@@ -141,22 +141,28 @@ end
 -- NOCLIP
 -- ═════════════════════════════════════════════════════════════════════════════
 
+local NoClipModifiedParts = {}
+
 local function DoNoClip()
     local Config = Movement.Config
     if not Config.Move_NoClip then return end
     local char = LocalPlayer.Character
     if not char then return end
     for _, part in pairs(char:GetDescendants()) do
-        if part:IsA("BasePart") then part.CanCollide = false end
+        if part:IsA("BasePart") and not NoClipModifiedParts[part] then
+            NoClipModifiedParts[part] = part.CanCollide
+            part.CanCollide = false
+        end
     end
 end
 
 local function ResetNoClip()
-    local char = LocalPlayer.Character
-    if not char then return end
-    for _, part in pairs(char:GetDescendants()) do
-        if part:IsA("BasePart") then part.CanCollide = true end
+    for part, originalCanCollide in pairs(NoClipModifiedParts) do
+        if part and part.Parent then
+            part.CanCollide = originalCanCollide
+        end
     end
+    NoClipModifiedParts = {}
 end
 
 function Movement.SetNoClip(enabled)
@@ -376,10 +382,8 @@ local function OnRender()
 
     if Config.Move_NoClip then
         DoNoClip()
-        Movement.State.NoClipping = true
-    elseif Movement.State.NoClipping then
+    else
         ResetNoClip()
-        Movement.State.NoClipping = false
     end
 end
 
