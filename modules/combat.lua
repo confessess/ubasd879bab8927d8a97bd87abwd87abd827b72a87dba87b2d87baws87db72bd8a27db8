@@ -106,8 +106,6 @@ local function IsTargetValidSticky(target)
     if Config.Aimbot_TeamCheck and IsTeammate(target.Player) then return false end
     local part = target.Character:FindFirstChild(target.Part.Name)
     if not part then return false end
-    local dist = GetDistance(part.Position)
-    if dist > (Config.Aimbot_MaxDistance or 1000) then return false end
     return true
 end
 
@@ -154,7 +152,6 @@ local function GetBestTarget()
     local bestTarget = nil
     local bestScore = math.huge
     local targetPartName = Config.Aimbot_TargetPart or "Head"
-    local maxDist = Config.Aimbot_MaxDistance or 1000
     local priority = Config.Aimbot_Priority or "Closest to Mouse"
 
     for _, player in pairs(Players:GetPlayers()) do
@@ -168,9 +165,6 @@ local function GetBestTarget()
         if not targetPart then continue end
 
         local targetPos = targetPart.Position
-        local dist = GetDistance(targetPos)
-        if dist > maxDist then continue end
-
         local inFOV, fovDist = IsInFOV(targetPos)
         if not inFOV then continue end
 

@@ -290,7 +290,7 @@ function UI.Build()
         ClipsDescendants = true,
         ZIndex = 13,
     }, Body)
-    local TabNames = {"Combat", "Visuals", "Target", "Farm", "Misc", "Settings"}
+    local TabNames = {"Combat", "Visuals", "Target", "Farm", "Misc", "World", "Movement", "Settings"}
     local TabButtons = {}
     local Pages = {}
     for index, name in ipairs(TabNames) do
@@ -1030,8 +1030,8 @@ function UI.Build()
         CanvasSize = UDim2.new(0, 0, 0, 0),
         ZIndex = 14,
     }, CombatPage)
-    local CombatCard = CreateCard(CombatScroll, UDim2.fromOffset(0, 0), UDim2.new(1, 0, 0, 640))
-    CombatScroll.CanvasSize = UDim2.new(0, 0, 0, 660)
+    local CombatCard = CreateCard(CombatScroll, UDim2.fromOffset(0, 0), UDim2.new(1, 0, 0, 600))
+    CombatScroll.CanvasSize = UDim2.new(0, 0, 0, 620)
 
     -- Aimbot Section
     New("TextLabel", {
@@ -1071,20 +1071,17 @@ function UI.Build()
     CreateSlider(CombatCard, 296, "FOV", 10, 300, Config.Aimbot_FOV, function(v)
         Config.Aimbot_FOV = v
     end)
-    CreateSlider(CombatCard, 342, "Max Distance", 50, 5000, Config.Aimbot_MaxDistance, function(v)
-        Config.Aimbot_MaxDistance = v
-    end)
-    local aimbotPartDropdown = BuildDropdown(CombatCard, 388, "Target Part", Config.Aimbot_TargetPart or "Head",
+    local aimbotPartDropdown = BuildDropdown(CombatCard, 342, "Target Part", Config.Aimbot_TargetPart or "Head",
         {"Head", "HumanoidRootPart", "Torso", "UpperTorso", "LowerTorso", "LeftLeg", "RightLeg"},
         function(v) Config.Aimbot_TargetPart = v end)
-    local aimbotPriorityDropdown = BuildDropdown(CombatCard, 446, "Priority", Config.Aimbot_Priority or "Closest to Mouse",
+    local aimbotPriorityDropdown = BuildDropdown(CombatCard, 400, "Priority", Config.Aimbot_Priority or "Closest to Mouse",
         {"Closest to Mouse", "Closest to Player", "Lowest HP", "Highest HP"},
         function(v) Config.Aimbot_Priority = v end)
 
     -- Divider
     New("Frame", {
         Size = UDim2.new(1, -20, 0, 1),
-        Position = UDim2.fromOffset(10, 502),
+        Position = UDim2.fromOffset(10, 456),
         BackgroundColor3 = Color3.fromRGB(60, 40, 80),
         BackgroundTransparency = 0.5,
         BorderSizePixel = 0,
@@ -1092,7 +1089,7 @@ function UI.Build()
     }, CombatCard)
     New("TextLabel", {
         Size = UDim2.new(1, -20, 0, 20),
-        Position = UDim2.fromOffset(10, 512),
+        Position = UDim2.fromOffset(10, 466),
         BackgroundTransparency = 1,
         Text = "Combat",
         TextColor3 = Color3.fromRGB(245, 220, 255),
@@ -1102,13 +1099,13 @@ function UI.Build()
         ZIndex = 16,
     }, CombatCard)
 
-    CreateToggle(CombatCard, 536, "Frame TP Shoot", Config.FrameTP, "FrameTP", true, function(v)
+    CreateToggle(CombatCard, 490, "Frame TP Shoot", Config.FrameTP, "FrameTP", true, function(v)
         Config.FrameTP = v
     end)
-    CreateToggle(CombatCard, 572, "One-Frame Delay", Config.OneFrameDelay, "OneFrameDelay", true, function(v)
+    CreateToggle(CombatCard, 526, "One-Frame Delay", Config.OneFrameDelay, "OneFrameDelay", true, function(v)
         Config.OneFrameDelay = v
     end)
-    CreateToggle(CombatCard, 608, "Rapid Fire", Config.RapidFire, "RapidFire", true, function(v)
+    CreateToggle(CombatCard, 562, "Rapid Fire", Config.RapidFire, "RapidFire", true, function(v)
         Config.RapidFire = v
     end)
 
@@ -1506,6 +1503,132 @@ function UI.Build()
         end
     end
 
+    --// WORLD PAGE
+    local WorldPage = Pages.World
+    PageTitle(WorldPage, "World", "Lighting, atmosphere, and visual modifiers.")
+    local WorldScroll = New("ScrollingFrame", {
+        Size = UDim2.new(1, -20, 1, -72),
+        Position = UDim2.fromOffset(10, 72),
+        BackgroundTransparency = 1,
+        BorderSizePixel = 0,
+        ScrollBarThickness = 3,
+        ScrollBarImageColor3 = Color3.fromRGB(100, 70, 150),
+        CanvasSize = UDim2.new(0, 0, 0, 0),
+        ZIndex = 14,
+    }, WorldPage)
+    local WorldCard = CreateCard(WorldScroll, UDim2.fromOffset(0, 0), UDim2.new(1, 0, 0, 520))
+    WorldScroll.CanvasSize = UDim2.new(0, 0, 0, 540)
+
+    CreateToggle(WorldCard, 14, "Full Bright", Config.World_Fullbright, "World_Fullbright", false, function(v)
+        Config.World_Fullbright = v
+    end)
+    CreateToggle(WorldCard, 50, "No Fog", Config.World_NoFog, "World_NoFog", false, function(v)
+        Config.World_NoFog = v
+    end)
+    CreateToggle(WorldCard, 86, "No Shadows", Config.World_NoShadows, "World_NoShadows", false, function(v)
+        Config.World_NoShadows = v
+    end)
+    CreateToggle(WorldCard, 122, "No Atmosphere", Config.World_NoAtmosphere, "World_NoAtmosphere", false, function(v)
+        Config.World_NoAtmosphere = v
+    end)
+    CreateToggle(WorldCard, 158, "No Sun Rays", Config.World_NoSunRays, "World_NoSunRays", false, function(v)
+        Config.World_NoSunRays = v
+    end)
+    CreateToggle(WorldCard, 194, "No Color Correction", Config.World_NoColorCorrection, "World_NoColorCorrection", false, function(v)
+        Config.World_NoColorCorrection = v
+    end)
+    CreateToggle(WorldCard, 230, "Low GFX", Config.World_LowGFX, "World_LowGFX", false, function(v)
+        Config.World_LowGFX = v
+    end)
+    CreateToggle(WorldCard, 266, "Custom Time", Config.World_CustomTime, "World_CustomTime", false, function(v)
+        Config.World_CustomTime = v
+    end)
+    CreateSlider(WorldCard, 302, "Time of Day", 0, 24, Config.World_TimeOfDay, function(v)
+        Config.World_TimeOfDay = v
+    end)
+    CreateSlider(WorldCard, 348, "Brightness", 1, 20, Config.World_Brightness, function(v)
+        Config.World_Brightness = v
+    end)
+
+    --// MOVEMENT PAGE
+    local MovementPage = Pages.Movement
+    PageTitle(MovementPage, "Movement", "Speed, fly, jump, and collision modifiers.")
+    local MovementScroll = New("ScrollingFrame", {
+        Size = UDim2.new(1, -20, 1, -72),
+        Position = UDim2.fromOffset(10, 72),
+        BackgroundTransparency = 1,
+        BorderSizePixel = 0,
+        ScrollBarThickness = 3,
+        ScrollBarImageColor3 = Color3.fromRGB(100, 70, 150),
+        CanvasSize = UDim2.new(0, 0, 0, 0),
+        ZIndex = 14,
+    }, MovementPage)
+    local MovementCard = CreateCard(MovementScroll, UDim2.fromOffset(0, 0), UDim2.new(1, 0, 0, 640))
+    MovementScroll.CanvasSize = UDim2.new(0, 0, 0, 660)
+
+    CreateToggle(MovementCard, 14, "Speed", Config.Move_SpeedEnabled, "Move_SpeedEnabled", false, function(v)
+        Config.Move_SpeedEnabled = v
+    end)
+    CreateSlider(MovementCard, 50, "Walk Speed", 16, 200, Config.Move_Speed, function(v)
+        Config.Move_Speed = v
+    end)
+    CreateToggle(MovementCard, 96, "High Jump", Config.Move_HighJumpEnabled, "Move_HighJumpEnabled", false, function(v)
+        Config.Move_HighJumpEnabled = v
+    end)
+    CreateSlider(MovementCard, 132, "Jump Power", 50, 300, Config.Move_JumpPower, function(v)
+        Config.Move_JumpPower = v
+    end)
+    CreateToggle(MovementCard, 178, "Bunny Hop", Config.Move_BunnyHop, "Move_BunnyHop", false, function(v)
+        Config.Move_BunnyHop = v
+    end)
+    CreateToggle(MovementCard, 214, "Infinite Jump", Config.Move_InfiniteJump, "Move_InfiniteJump", false, function(v)
+        Config.Move_InfiniteJump = v
+    end)
+    CreateToggle(MovementCard, 250, "NoClip", Config.Move_NoClip, "Move_NoClip", false, function(v)
+        Config.Move_NoClip = v
+    end)
+
+    New("Frame", {
+        Size = UDim2.new(1, -20, 0, 1),
+        Position = UDim2.fromOffset(10, 290),
+        BackgroundColor3 = Color3.fromRGB(60, 40, 80),
+        BackgroundTransparency = 0.5,
+        BorderSizePixel = 0,
+        ZIndex = 16,
+    }, MovementCard)
+    New("TextLabel", {
+        Size = UDim2.new(1, -20, 0, 20),
+        Position = UDim2.fromOffset(10, 300),
+        BackgroundTransparency = 1,
+        Text = "Fly",
+        TextColor3 = Color3.fromRGB(245, 220, 255),
+        TextSize = 14,
+        Font = Enum.Font.GothamBold,
+        TextXAlignment = Enum.TextXAlignment.Left,
+        ZIndex = 16,
+    }, MovementCard)
+
+    CreateToggle(MovementCard, 324, "Enable Fly", Config.Move_Fly, "Move_Fly", false, function(v)
+        Config.Move_Fly = v
+    end)
+    local flyMethodDropdown = BuildDropdown(MovementCard, 360, "Fly Method", Config.Move_FlyMethod or "Tween",
+        {"Tween", "Velocity", "CFrame"},
+        function(v) Config.Move_FlyMethod = v end)
+    CreateSlider(MovementCard, 418, "Fly Speed", 10, 200, Config.Move_FlySpeed, function(v)
+        Config.Move_FlySpeed = v
+    end)
+    New("TextLabel", {
+        Size = UDim2.new(1, -20, 0, 16),
+        Position = UDim2.fromOffset(10, 466),
+        BackgroundTransparency = 1,
+        Text = "Fly Key: F (press to toggle)",
+        TextColor3 = Color3.fromRGB(140, 130, 155),
+        TextSize = 10,
+        Font = Enum.Font.GothamMedium,
+        TextXAlignment = Enum.TextXAlignment.Left,
+        ZIndex = 16,
+    }, MovementCard)
+
     --// SETTINGS PAGE
     local SettingsPage = Pages.Settings
     PageTitle(SettingsPage, "Settings", "Interface customization and hotkey display.")
@@ -1586,6 +1709,7 @@ function UI.Build()
         if targetPartDropdown and targetPartDropdown.IsOpen() then targetPartDropdown.Close() end
         if aimbotPartDropdown and aimbotPartDropdown.IsOpen() then aimbotPartDropdown.Close() end
         if aimbotPriorityDropdown and aimbotPriorityDropdown.IsOpen() then aimbotPriorityDropdown.Close() end
+        if flyMethodDropdown and flyMethodDropdown.IsOpen() then flyMethodDropdown.Close() end
         if antiStompDropdown and antiStompDropdown.IsOpen() then antiStompDropdown.Close() end
         if spamRangeDropdown and spamRangeDropdown.IsOpen() then spamRangeDropdown.Close() end
     end
