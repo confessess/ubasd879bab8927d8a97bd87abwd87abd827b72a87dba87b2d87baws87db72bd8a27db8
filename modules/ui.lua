@@ -336,6 +336,7 @@ function UI.Build()
         Stroke(card, 0.91, 1)
         return card
     end
+
     local function CreateToggle(parent, y, text, default, toggleId, hasHotkey, callback)
         local frame = New("Frame", {
             Size = UDim2.new(1, -20, 0, 32),
@@ -492,6 +493,7 @@ function UI.Build()
         end)
         return btn
     end
+
     local function BuildDropdown(parent, y, labelText, currentValue, options, onSelect)
         New("TextLabel", {
             Size = UDim2.new(1, -20, 0, 20),
@@ -618,6 +620,172 @@ function UI.Build()
         }
     end
 
+    -- ═════════════════════════════════════════════════════════════════════════════
+    -- COLOR PICKER (NEW)
+    -- ═════════════════════════════════════════════════════════════════════════════
+    local ActiveColorPicker = nil
+    local function CreateColorButton(parent, y, colorKey, labelText)
+        local colorValue = Config.ESP_Colors[colorKey] or Color3.fromRGB(255, 255, 255)
+        local circle = New("TextButton", {
+            Size = UDim2.fromOffset(16, 16),
+            Position = UDim2.new(1, -72, 0, y + 8),
+            BackgroundColor3 = colorValue,
+            BorderSizePixel = 0,
+            Text = "",
+            AutoButtonColor = false,
+            ZIndex = 17,
+        }, parent)
+        Corner(circle, 8)
+        Stroke(circle, 0.3, 1.5, Color3.fromRGB(255, 255, 255))
+
+        local picker = New("Frame", {
+            Size = UDim2.fromOffset(0, 0),
+            Position = UDim2.fromOffset(0, 0),
+            BackgroundColor3 = Color3.fromRGB(14, 9, 22),
+            BackgroundTransparency = 0.05,
+            BorderSizePixel = 0,
+            ZIndex = 200,
+            ClipsDescendants = true,
+            Visible = false,
+        }, Main)
+        Corner(picker, 10)
+        Stroke(picker, 0.85, 1, Color3.fromRGB(140, 90, 200))
+
+        New("TextLabel", {
+            Size = UDim2.new(1, -12, 0, 18),
+            Position = UDim2.fromOffset(6, 6),
+            BackgroundTransparency = 1,
+            Text = labelText .. " Color",
+            TextColor3 = Color3.fromRGB(220, 215, 235),
+            TextSize = 11,
+            Font = Enum.Font.GothamBold,
+            TextXAlignment = Enum.TextXAlignment.Left,
+            ZIndex = 201,
+        }, picker)
+
+        local preview = New("Frame", {
+            Size = UDim2.fromOffset(28, 28),
+            Position = UDim2.new(1, -34, 0, 4),
+            BackgroundColor3 = colorValue,
+            BorderSizePixel = 0,
+            ZIndex = 201,
+        }, picker)
+        Corner(preview, 6)
+        Stroke(preview, 0.2, 1, Color3.fromRGB(255, 255, 255))
+
+        local closeBtn = New("TextButton", {
+            Size = UDim2.fromOffset(20, 20),
+            Position = UDim2.new(1, -26, 0, 6),
+            BackgroundTransparency = 1,
+            Text = "×",
+            TextColor3 = Color3.fromRGB(180, 170, 200),
+            TextSize = 14,
+            Font = Enum.Font.GothamBold,
+            AutoButtonColor = false,
+            ZIndex = 202,
+        }, picker)
+
+        local sliders = {}
+        local colors = {"R", "G", "B"}
+        local defaults = {math.floor(colorValue.R * 255), math.floor(colorValue.G * 255), math.floor(colorValue.B * 255)}
+        for i, cname in ipairs(colors) do
+            local sframe = New("Frame", {
+                Size = UDim2.new(1, -12, 0, 26),
+                Position = UDim2.fromOffset(6, 28 + (i - 1) * 28),
+                BackgroundTransparency = 1,
+                ZIndex = 201,
+            }, picker)
+            New("TextLabel", {
+                Size = UDim2.fromOffset(14, 16),
+                Position = UDim2.fromOffset(0, 2),
+                BackgroundTransparency = 1,
+                Text = cname,
+                TextColor3 = cname == "R" and Color3.fromRGB(255, 100, 100) or cname == "G" and Color3.fromRGB(100, 255, 100) or Color3.fromRGB(100, 100, 255),
+                TextSize = 10,
+                Font = Enum.Font.GothamBold,
+                ZIndex = 202,
+            }, sframe)
+            local strack = New("Frame", {
+                Size = UDim2.new(1, -20, 0, 4),
+                Position = UDim2.fromOffset(18, 10),
+                BackgroundColor3 = Color3.fromRGB(40, 40, 50),
+                BorderSizePixel = 0,
+                ZIndex = 202,
+            }, sframe)
+            Corner(strack, 2)
+            local sfill = New("Frame", {
+                Size = UDim2.new(defaults[i] / 255, 0, 1, 0),
+                BackgroundColor3 = cname == "R" and Color3.fromRGB(255, 80, 80) or cname == "G" and Color3.fromRGB(80, 255, 80) or Color3.fromRGB(80, 80, 255),
+                BorderSizePixel = 0,
+                ZIndex = 203,
+            }, strack)
+            Corner(sfill, 2)
+            local sdrag = false
+            local function sset(input)
+                local pos = math.clamp((input.Position.X - strack.AbsolutePosition.X) / strack.AbsoluteSize.X, 0, 1)
+                local val = math.floor(pos * 255)
+                sfill.Size = UDim2.new(pos, 0, 1, 0)
+                defaults[i] = val
+                local r, g, b = defaults[1], defaults[2], defaults[3]
+                local newColor = Color3.fromRGB(r, g, b)
+                Config.ESP_Colors[colorKey] = newColor
+                circle.BackgroundColor3 = newColor
+                preview.BackgroundColor3 = newColor
+            end
+            strack.InputBegan:Connect(function(input)
+                if input.UserInputType == Enum.UserInputType.MouseButton1 then
+                    sdrag = true
+                    sset(input)
+                end
+            end)
+            UserInputService.InputChanged:Connect(function(input)
+                if sdrag and input.UserInputType == Enum.UserInputType.MouseMovement then
+                    sset(input)
+                end
+            end)
+            UserInputService.InputEnded:Connect(function(input)
+                if input.UserInputType == Enum.UserInputType.MouseButton1 then
+                    sdrag = false
+                end
+            end)
+            table.insert(sliders, {track = strack, fill = sfill})
+        end
+
+        local open = false
+        local function closePicker()
+            open = false
+            Tween(picker, {Size = UDim2.fromOffset(0, 0)}, 0.2):Play()
+            task.delay(0.2, function()
+                if not open then picker.Visible = false end
+            end)
+            ActiveColorPicker = nil
+        end
+        closeBtn.MouseButton1Click:Connect(closePicker)
+
+        circle.MouseButton1Click:Connect(function()
+            if ActiveColorPicker and ActiveColorPicker ~= picker then
+                -- close other pickers
+                pcall(function()
+                    Tween(ActiveColorPicker, {Size = UDim2.fromOffset(0, 0)}, 0.15):Play()
+                    task.delay(0.15, function() ActiveColorPicker.Visible = false end)
+                end)
+            end
+            open = not open
+            if open then
+                local absPos = circle.AbsolutePosition
+                local absSize = circle.AbsoluteSize
+                picker.Position = UDim2.fromOffset(absPos.X + absSize.X + 6, absPos.Y - 10)
+                picker.Visible = true
+                Tween(picker, {Size = UDim2.fromOffset(180, 120)}, 0.2):Play()
+                ActiveColorPicker = picker
+            else
+                closePicker()
+            end
+        end)
+
+        return circle
+    end
+
     --// COMBAT PAGE
     local CombatPage = Pages.Combat
     PageTitle(CombatPage, "Combat", "Frame teleport shoot, rapid fire, and hotkeys.")
@@ -632,7 +800,7 @@ function UI.Build()
         Config.RapidFire = v
     end)
 
-    --// VISUALS PAGE (with ESP integrated + scrolling)
+    --// VISUALS PAGE (with ESP integrated + scrolling + color pickers)
     local VisualsPage = Pages.Visuals
     PageTitle(VisualsPage, "Visuals", "FOV, ESP suite, tracers, hitmarkers, and target highlighting.")
     local VisualsScroll = New("ScrollingFrame", {
@@ -645,7 +813,10 @@ function UI.Build()
         CanvasSize = UDim2.new(0, 0, 0, 0),
         ZIndex = 14,
     }, VisualsPage)
-    local VisualsCard = CreateCard(VisualsScroll, UDim2.fromOffset(0, 0), UDim2.new(1, 0, 0, 1100))
+    local VisualsCard = CreateCard(VisualsScroll, UDim2.fromOffset(0, 0), UDim2.new(1, 0, 0, 950))
+    VisualsScroll.CanvasSize = UDim2.new(0, 0, 0, 970)
+
+    -- Legacy Visuals
     CreateToggle(VisualsCard, 14, "FOV Circle", Config.FOV_Enabled, "FOV_Enabled", false, function(v)
         Config.FOV_Enabled = v
     end)
@@ -661,6 +832,8 @@ function UI.Build()
     CreateToggle(VisualsCard, 182, "Hitmarkers", Config.Hitmarkers, "Hitmarkers", false, function(v)
         Config.Hitmarkers = v
     end)
+
+    -- Divider
     New("Frame", {
         Size = UDim2.new(1, -20, 0, 1),
         Position = UDim2.fromOffset(10, 226),
@@ -680,33 +853,42 @@ function UI.Build()
         TextXAlignment = Enum.TextXAlignment.Left,
         ZIndex = 16,
     }, VisualsCard)
+
+    -- ESP toggles with color buttons
     CreateToggle(VisualsCard, 264, "ESP Master", Config.ESP_Enabled, "ESP_Enabled", false, function(v)
         Config.ESP_Enabled = v
     end)
     CreateToggle(VisualsCard, 300, "Boxes", Config.ESP_Boxes, "ESP_Boxes", false, function(v)
         Config.ESP_Boxes = v
     end)
+    CreateColorButton(VisualsCard, 300, "Box", "Box")
     CreateToggle(VisualsCard, 336, "3D Boxes", Config.ESP_Box3D, "ESP_Box3D", false, function(v)
         Config.ESP_Box3D = v
     end)
     CreateToggle(VisualsCard, 372, "Names", Config.ESP_Names, "ESP_Names", false, function(v)
         Config.ESP_Names = v
     end)
+    CreateColorButton(VisualsCard, 372, "Name", "Name")
     CreateToggle(VisualsCard, 408, "Distance Text", Config.ESP_Distance, "ESP_Distance", false, function(v)
         Config.ESP_Distance = v
     end)
+    CreateColorButton(VisualsCard, 408, "Distance", "Distance")
     CreateToggle(VisualsCard, 444, "Health Bar", Config.ESP_Health, "ESP_Health", false, function(v)
         Config.ESP_Health = v
     end)
+    CreateColorButton(VisualsCard, 444, "Health", "Health")
     CreateToggle(VisualsCard, 480, "Skeleton", Config.ESP_Skeleton, "ESP_Skeleton", false, function(v)
         Config.ESP_Skeleton = v
     end)
+    CreateColorButton(VisualsCard, 480, "Skeleton", "Skeleton")
     CreateToggle(VisualsCard, 516, "Chams", Config.ESP_Chams, "ESP_Chams", false, function(v)
         Config.ESP_Chams = v
     end)
+    CreateColorButton(VisualsCard, 516, "ChamsFill", "Chams")
     CreateToggle(VisualsCard, 552, "Head Dot", Config.ESP_HeadDot, "ESP_HeadDot", false, function(v)
         Config.ESP_HeadDot = v
     end)
+    CreateColorButton(VisualsCard, 552, "HeadDot", "Head Dot")
     CreateToggle(VisualsCard, 588, "Weapon Names", Config.ESP_WeaponNames, "ESP_WeaponNames", false, function(v)
         Config.ESP_WeaponNames = v
     end)
@@ -1145,7 +1327,7 @@ function UI.Build()
     end
     UI.SetGUIVisible = SetGUIVisible
 
-    --// Input Handler
+    --// Input Handler (with color picker close-on-outside)
     UserInputService.InputBegan:Connect(function(input, gameProcessed)
         if gameProcessed then return end
         if UI.ListeningKey then
@@ -1187,6 +1369,22 @@ function UI.Build()
                 if key and input.KeyCode == key then
                     callback(not Config[toggleId])
                     return
+                end
+            end
+        end
+        -- Close color pickers on any click outside
+        if input.UserInputType == Enum.UserInputType.MouseButton1 then
+            local mousePos = UserInputService:GetMouseLocation()
+            if ActiveColorPicker and ActiveColorPicker.Visible then
+                local absPos = ActiveColorPicker.AbsolutePosition
+                local absSize = ActiveColorPicker.AbsoluteSize
+                if mousePos.X < absPos.X or mousePos.X > absPos.X + absSize.X or
+                   mousePos.Y < absPos.Y or mousePos.Y > absPos.Y + absSize.Y then
+                    Tween(ActiveColorPicker, {Size = UDim2.fromOffset(0, 0)}, 0.15):Play()
+                    task.delay(0.15, function()
+                        if ActiveColorPicker then ActiveColorPicker.Visible = false end
+                    end)
+                    ActiveColorPicker = nil
                 end
             end
         end
