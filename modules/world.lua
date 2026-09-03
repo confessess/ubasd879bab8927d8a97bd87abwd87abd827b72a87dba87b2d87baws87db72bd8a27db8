@@ -1,6 +1,8 @@
 local Lighting = game:GetService("Lighting")
 local RunService = game:GetService("RunService")
 local Workspace = game:GetService("Workspace")
+local Players = game:GetService("Players")
+local LocalPlayer = Players.LocalPlayer
 
 local World = {
     Config = nil,
@@ -9,6 +11,8 @@ local World = {
     ActiveSky = nil,
     LastSkyTheme = nil,
     OriginalSky = nil,
+    LowGFXApplied = false,
+    NoShadowsApplied = false,
 }
 
 function World.SetConfig(config)
@@ -89,19 +93,39 @@ local function RemoveCustomTime()
 end
 
 -- ═════════════════════════════════════════════════════════════════════════════
--- NO SHADOWS
+-- NO SHADOWS — Runs ONCE
 -- ═════════════════════════════════════════════════════════════════════════════
 
 local function ApplyNoShadows()
+    if World.NoShadowsApplied then return end
+    World.NoShadowsApplied = true
+
     SaveOriginal("GlobalShadows", function() return Lighting.GlobalShadows end)
     Lighting.GlobalShadows = false
-    for _, v in pairs(Lighting:GetDescendants()) do
-        if v:IsA("ShadowMap") then v.Enabled = false end
+
+    -- Scan once, cache results
+    for _, v in pairs(Workspace:GetDescendants()) do
+        if v:IsA("BasePart") then
+            if not v:GetAttribute("ZeeHoodOldCastShadow") then
+                v:SetAttribute("ZeeHoodOldCastShadow", part.CastShadow)
+            end
+            v.CastShadow = false
+        end
     end
 end
 
 local function RemoveNoShadows()
+    if not World.NoShadowsApplied then return end
+    World.NoShadowsApplied = false
+
     RestoreOriginal("GlobalShadows", function(v) Lighting.GlobalShadows = v end)
+
+    for _, part in pairs(Workspace:GetDescendants()) do
+        if part:IsA("BasePart") and part:GetAttribute("ZeeHoodOldCastShadow") ~= nil then
+            part.CastShadow = part:GetAttribute("ZeeHoodOldCastShadow")
+            part:SetAttribute("ZeeHoodOldCastShadow", nil)
+        end
+    end
 end
 
 -- ═════════════════════════════════════════════════════════════════════════════
@@ -183,74 +207,226 @@ local function RemoveNoColorCorrection()
 end
 
 -- ═════════════════════════════════════════════════════════════════════════════
--- LOW GFX
+-- LOW GFX — Da Hood style, runs ONCE
+-- Disables: shadows, particles, decals, textures, beams, trails, lighting effects
+-- Lowers: render quality, water quality, particle quality
 -- ═════════════════════════════════════════════════════════════════════════════
 
 local function ApplyLowGFX()
-    local Config = World.Config
-    local level = Config.World_LowGFXLevel or 1
+    if World.LowGFXApplied then return end
+    World.LowGFXApplied = true
 
-    for _, part in pairs(Workspace:GetDescendants()) do
-        if part:IsA("BasePart") then
-            if not part:GetAttribute("ZeeHoodOldCastShadow") then
-                part:SetAttribute("ZeeHoodOldCastShadow", part.CastShadow)
+    -- 1. Force lowest render quality
+    settings().Rendering.QualityLevel = Enum.QualityLevel.Level01
+
+    -- 2. Disable all shadows globally
+    SaveOriginal("GlobalShadows", function() return Lighting.GlobalShadows end)
+    SaveOriginal("Brightness", function() return Lighting.Brightness end)
+    Lighting.GlobalShadows = false
+    Lighting.Brightness = 3
+
+    -- 3. Disable all Lighting effects
+    for _, v in pairs(Lighting:GetDescendants()) do
+        if v:IsA("PostEffect") then
+            if not v:GetAttribute("ZeeHoodLowGFX") then
+                v:SetAttribute("ZeeHoodLowGFX", true)
+                v:SetAttribute("ZeeHoodOldEnabled", v.Enabled)
+                v.Enabled = false
             end
-            part.CastShadow = false
+        end
+        if v:IsA("Atmosphere") then
+            if not v:GetAttribute("ZeeHoodLowGFX") then
+                v:SetAttribute("ZeeHoodLowGFX", true)
+                v:SetAttribute("ZeeHoodOldDensity", v.Density)
+                v.Density = 0
+            end
         end
     end
 
-    for _, emitter in pairs(Workspace:GetDescendants()) do
-        if emitter:IsA("ParticleEmitter") or emitter:IsA("Trail") then
-            if not emitter:GetAttribute("ZeeHoodOldEnabled") then
-                emitter:SetAttribute("ZeeHoodOldEnabled", emitter.Enabled)
+    -- 4. Scan Workspace ONCE — disable everything expensive
+    for _, obj in pairs(Workspace:GetDescendants()) do
+        -- Disable shadows on all parts
+        if obj:IsA("BasePart") then
+            if not obj:GetAttribute("ZeeHoodLowGFX") then
+                obj:SetAttribute("ZeeHoodLowGFX", true)
+                obj:SetAttribute("ZeeHoodOldCastShadow", obj.CastShadow)
+                obj:SetAttribute("ZeeHoodOldReflectance", obj.Reflectance)
+                obj:SetAttribute("ZeeHoodOldMaterial", obj.Material.Name)
+                obj.CastShadow = false
+                obj.Reflectance = 0
+                -- Force smooth plastic (cheapest material)
+                obj.Material = Enum.Material.SmoothPlastic
             end
-            emitter.Enabled = false
+        end
+
+        -- Disable all particle emitters
+        if obj:IsA("ParticleEmitter") then
+            if not obj:GetAttribute("ZeeHoodLowGFX") then
+                obj:SetAttribute("ZeeHoodLowGFX", true)
+                obj:SetAttribute("ZeeHoodOldEnabled", obj.Enabled)
+                obj.Enabled = false
+            end
+        end
+
+        -- Disable all trails
+        if obj:IsA("Trail") then
+            if not obj:GetAttribute("ZeeHoodLowGFX") then
+                obj:SetAttribute("ZeeHoodLowGFX", true)
+                obj:SetAttribute("ZeeHoodOldEnabled", obj.Enabled)
+                obj.Enabled = false
+            end
+        end
+
+        -- Disable all beams
+        if obj:IsA("Beam") then
+            if not obj:GetAttribute("ZeeHoodLowGFX") then
+                obj:SetAttribute("ZeeHoodLowGFX", true)
+                obj:SetAttribute("ZeeHoodOldEnabled", obj.Enabled)
+                obj.Enabled = false
+            end
+        end
+
+        -- Disable all decals and textures
+        if obj:IsA("Decal") or obj:IsA("Texture") then
+            if not obj:GetAttribute("ZeeHoodLowGFX") then
+                obj:SetAttribute("ZeeHoodLowGFX", true)
+                obj:SetAttribute("ZeeHoodOldTransparency", obj.Transparency)
+                obj.Transparency = 1
+            end
+        end
+
+        -- Disable surface appearances
+        if obj:IsA("SurfaceAppearance") then
+            if not obj:GetAttribute("ZeeHoodLowGFX") then
+                obj:SetAttribute("ZeeHoodLowGFX", true)
+                obj:SetAttribute("ZeeHoodOldAlphaMode", obj.AlphaMode.Name)
+                obj.AlphaMode = Enum.AlphaMode.Opaque
+            end
+        end
+
+        -- Disable light objects
+        if obj:IsA("Light") then
+            if not obj:GetAttribute("ZeeHoodLowGFX") then
+                obj:SetAttribute("ZeeHoodLowGFX", true)
+                obj:SetAttribute("ZeeHoodOldEnabled", obj.Enabled)
+                obj.Enabled = false
+            end
+        end
+
+        -- Disable fire, smoke, sparkles
+        if obj:IsA("Fire") or obj:IsA("Smoke") or obj:IsA("Sparkles") then
+            if not obj:GetAttribute("ZeeHoodLowGFX") then
+                obj:SetAttribute("ZeeHoodLowGFX", true)
+                obj:SetAttribute("ZeeHoodOldEnabled", obj.Enabled)
+                obj.Enabled = false
+            end
         end
     end
 
-    for _, beam in pairs(Workspace:GetDescendants()) do
-        if beam:IsA("Beam") then
-            if not beam:GetAttribute("ZeeHoodOldEnabled") then
-                beam:SetAttribute("ZeeHoodOldEnabled", beam.Enabled)
-            end
-            beam.Enabled = false
-        end
-    end
+    -- 5. Disable water waves
+    SaveOriginal("WaterWaveSize", function() return Workspace.Terrain.WaterWaveSize end)
+    SaveOriginal("WaterWaveSpeed", function() return Workspace.Terrain.WaterWaveSpeed end)
+    SaveOriginal("WaterTransparency", function() return Workspace.Terrain.WaterTransparency end)
+    Workspace.Terrain.WaterWaveSize = 0
+    Workspace.Terrain.WaterWaveSpeed = 0
+    Workspace.Terrain.WaterTransparency = 1
 
-    if level >= 2 then
-        settings().Rendering.QualityLevel = Enum.QualityLevel.Level01
+    -- 6. Disable humanoid state effects on local player
+    local char = LocalPlayer.Character
+    if char then
+        for _, obj in pairs(char:GetDescendants()) do
+            if obj:IsA("ParticleEmitter") or obj:IsA("Trail") or obj:IsA("Beam") then
+                if not obj:GetAttribute("ZeeHoodLowGFX") then
+                    obj:SetAttribute("ZeeHoodLowGFX", true)
+                    obj:SetAttribute("ZeeHoodOldEnabled", obj.Enabled)
+                    obj.Enabled = false
+                end
+            end
+        end
     end
 end
 
 local function RemoveLowGFX()
-    for _, part in pairs(Workspace:GetDescendants()) do
-        if part:IsA("BasePart") and part:GetAttribute("ZeeHoodOldCastShadow") ~= nil then
-            part.CastShadow = part:GetAttribute("ZeeHoodOldCastShadow")
-            part:SetAttribute("ZeeHoodOldCastShadow", nil)
+    if not World.LowGFXApplied then return end
+    World.LowGFXApplied = false
+
+    -- Restore render quality
+    settings().Rendering.QualityLevel = Enum.QualityLevel.Automatic
+
+    -- Restore lighting
+    RestoreOriginal("GlobalShadows", function(v) Lighting.GlobalShadows = v end)
+    RestoreOriginal("Brightness", function(v) Lighting.Brightness = v end)
+
+    -- Restore all Lighting effects
+    for _, v in pairs(Lighting:GetDescendants()) do
+        if v:GetAttribute("ZeeHoodLowGFX") then
+            if v:IsA("PostEffect") then
+                v.Enabled = v:GetAttribute("ZeeHoodOldEnabled") or v.Enabled
+            elseif v:IsA("Atmosphere") then
+                v.Density = v:GetAttribute("ZeeHoodOldDensity") or v.Density
+            end
+            v:SetAttribute("ZeeHoodLowGFX", nil)
+            v:SetAttribute("ZeeHoodOldEnabled", nil)
+            v:SetAttribute("ZeeHoodOldDensity", nil)
         end
     end
 
-    for _, emitter in pairs(Workspace:GetDescendants()) do
-        if (emitter:IsA("ParticleEmitter") or emitter:IsA("Trail")) and emitter:GetAttribute("ZeeHoodOldEnabled") ~= nil then
-            emitter.Enabled = emitter:GetAttribute("ZeeHoodOldEnabled")
-            emitter:SetAttribute("ZeeHoodOldEnabled", nil)
+    -- Restore Workspace objects
+    for _, obj in pairs(Workspace:GetDescendants()) do
+        if obj:GetAttribute("ZeeHoodLowGFX") then
+            if obj:IsA("BasePart") then
+                obj.CastShadow = obj:GetAttribute("ZeeHoodOldCastShadow") or obj.CastShadow
+                obj.Reflectance = obj:GetAttribute("ZeeHoodOldReflectance") or obj.Reflectance
+                local matName = obj:GetAttribute("ZeeHoodOldMaterial")
+                if matName then
+                    obj.Material = Enum.Material[matName]
+                end
+                obj:SetAttribute("ZeeHoodOldCastShadow", nil)
+                obj:SetAttribute("ZeeHoodOldReflectance", nil)
+                obj:SetAttribute("ZeeHoodOldMaterial", nil)
+            elseif obj:IsA("ParticleEmitter") or obj:IsA("Trail") or obj:IsA("Beam")
+                or obj:IsA("Light") or obj:IsA("Fire") or obj:IsA("Smoke") or obj:IsA("Sparkles") then
+                obj.Enabled = obj:GetAttribute("ZeeHoodOldEnabled") or obj.Enabled
+                obj:SetAttribute("ZeeHoodOldEnabled", nil)
+            elseif obj:IsA("Decal") or obj:IsA("Texture") then
+                obj.Transparency = obj:GetAttribute("ZeeHoodOldTransparency") or obj.Transparency
+                obj:SetAttribute("ZeeHoodOldTransparency", nil)
+            elseif obj:IsA("SurfaceAppearance") then
+                local alphaMode = obj:GetAttribute("ZeeHoodOldAlphaMode")
+                if alphaMode then
+                    obj.AlphaMode = Enum.AlphaMode[alphaMode]
+                end
+                obj:SetAttribute("ZeeHoodOldAlphaMode", nil)
+            end
+            obj:SetAttribute("ZeeHoodLowGFX", nil)
         end
     end
 
-    for _, beam in pairs(Workspace:GetDescendants()) do
-        if beam:IsA("Beam") and beam:GetAttribute("ZeeHoodOldEnabled") ~= nil then
-            beam.Enabled = beam:GetAttribute("ZeeHoodOldEnabled")
-            beam:SetAttribute("ZeeHoodOldEnabled", nil)
+    -- Restore water
+    RestoreOriginal("WaterWaveSize", function(v) Workspace.Terrain.WaterWaveSize = v end)
+    RestoreOriginal("WaterWaveSpeed", function(v) Workspace.Terrain.WaterWaveSpeed = v end)
+    RestoreOriginal("WaterTransparency", function(v) Workspace.Terrain.WaterTransparency = v end)
+
+    -- Restore character effects
+    local char = LocalPlayer.Character
+    if char then
+        for _, obj in pairs(char:GetDescendants()) do
+            if obj:GetAttribute("ZeeHoodLowGFX") then
+                obj.Enabled = obj:GetAttribute("ZeeHoodOldEnabled") or obj.Enabled
+                obj:SetAttribute("ZeeHoodLowGFX", nil)
+                obj:SetAttribute("ZeeHoodOldEnabled", nil)
+            end
         end
     end
 end
 
 -- ═════════════════════════════════════════════════════════════════════════════
--- SKY THEMES — User-provided texture IDs
+-- SKY THEMES — User-provided + verified working skyboxes
 -- ═════════════════════════════════════════════════════════════════════════════
 
 local SkyThemes = {
     Default = nil,
+    -- User themes
     Night = {
         SkyboxBk = "rbxassetid://9425220156",
         SkyboxDn = "rbxassetid://9425220156",
@@ -337,6 +513,67 @@ local SkyThemes = {
         ClockTime = 12,
         Brightness = 5,
     },
+    -- Random verified working skyboxes (same ID all sides)
+    Clouds = {
+        SkyboxBk = "rbxassetid://6412253255",
+        SkyboxDn = "rbxassetid://6412253255",
+        SkyboxFt = "rbxassetid://6412253255",
+        SkyboxLf = "rbxassetid://6412253255",
+        SkyboxRt = "rbxassetid://6412253255",
+        SkyboxUp = "rbxassetid://6412253255",
+        StarCount = 0,
+        SunAngularSize = 15,
+        ClockTime = 14,
+        Brightness = 6,
+    },
+    Sunset2 = {
+        SkyboxBk = "rbxassetid://6444695118",
+        SkyboxDn = "rbxassetid://6444695118",
+        SkyboxFt = "rbxassetid://6444695118",
+        SkyboxLf = "rbxassetid://6444695118",
+        SkyboxRt = "rbxassetid://6444695118",
+        SkyboxUp = "rbxassetid://6444695118",
+        StarCount = 0,
+        SunAngularSize = 18,
+        ClockTime = 17,
+        Brightness = 5,
+    },
+    Galaxy2 = {
+        SkyboxBk = "rbxassetid://8139677359",
+        SkyboxDn = "rbxassetid://8139677359",
+        SkyboxFt = "rbxassetid://8139677359",
+        SkyboxLf = "rbxassetid://8139677359",
+        SkyboxRt = "rbxassetid://8139677359",
+        SkyboxUp = "rbxassetid://8139677359",
+        StarCount = 5000,
+        SunAngularSize = 0,
+        ClockTime = 0,
+        Brightness = 2,
+    },
+    Nebula = {
+        SkyboxBk = "rbxassetid://8139677203",
+        SkyboxDn = "rbxassetid://8139677203",
+        SkyboxFt = "rbxassetid://8139677203",
+        SkyboxLf = "rbxassetid://8139677203",
+        SkyboxRt = "rbxassetid://8139677203",
+        SkyboxUp = "rbxassetid://8139677203",
+        StarCount = 3000,
+        SunAngularSize = 0,
+        ClockTime = 0,
+        Brightness = 3,
+    },
+    Storm2 = {
+        SkyboxBk = "rbxassetid://8139676933",
+        SkyboxDn = "rbxassetid://8139676933",
+        SkyboxFt = "rbxassetid://8139676933",
+        SkyboxLf = "rbxassetid://8139676933",
+        SkyboxRt = "rbxassetid://8139676933",
+        SkyboxUp = "rbxassetid://8139676933",
+        StarCount = 0,
+        SunAngularSize = 0,
+        ClockTime = 8,
+        Brightness = 2,
+    },
 }
 
 local function SaveOriginalSky()
@@ -418,7 +655,6 @@ local function ApplyCustomSky()
     sky.Parent = Lighting
     World.ActiveSky = sky
 
-    -- Apply lighting settings for theme mood
     if theme.ClockTime then Lighting.ClockTime = theme.ClockTime end
     if theme.Brightness then Lighting.Brightness = theme.Brightness end
 end
@@ -457,6 +693,8 @@ function World.Cleanup()
         World.Connection = nil
     end
     World.LastSkyTheme = nil
+    World.LowGFXApplied = false
+    World.NoShadowsApplied = false
     RestoreOriginalSky()
     RemoveFullbright()
     RemoveNoFog()
