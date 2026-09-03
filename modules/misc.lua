@@ -2,6 +2,7 @@ local Players = game:GetService("Players")
 local RunService = game:GetService("RunService")
 local LocalPlayer = Players.LocalPlayer
 local Workspace = game:GetService("Workspace")
+local ReplicatedStorage = game:GetService("ReplicatedStorage")
 
 math.randomseed(tick())
 
@@ -20,6 +21,9 @@ local Misc = {
     CachedPrompt = nil,
     CachedTouchPart = nil,
     NotificationGui = nil,
+    AutoStompConnection = nil,
+    AutoStompLastStomp = {},
+    AutoStompMainRemote = nil,
 }
 
 --// ==================== NOTIFICATIONS ====================
@@ -196,8 +200,6 @@ function Misc.TriggerAntiStomp()
         pcall(function() LocalPlayer:LoadCharacter() end)
 
     elseif Misc.Config.AntiStompMode == "Force Reset" then
-        --// Force-kill first (same as Void but without the teleport)
-        --// This ensures LoadCharacter() actually respawns us even when knocked
         if hrp then
             hrp.Velocity = Vector3.new(0, 0, 0)
             hrp.AssemblyLinearVelocity = Vector3.new(0, 0, 0)
@@ -262,7 +264,6 @@ function Misc.AutoArmorFast()
 
     Misc.LastArmorTime = now
 
-    --// Pause spam
     local wasSpamming = Misc.Config.SpamEnabled
     if wasSpamming then
         Misc.StopSpam()
@@ -274,27 +275,21 @@ function Misc.AutoArmorFast()
     local origCam = cam.CFrame
 
     task.spawn(function()
-        --// Refresh cache each time in case armor stand wasn't loaded initially
         Misc.CacheArmorDetector()
 
-        --// Teleport slightly above the armor position so we fall onto it
         hrp.CFrame = CFrame.new(armorPos + Vector3.new(0, 4, 0))
         hrp.Velocity = Vector3.new(0, 0, 0)
         hrp.AssemblyLinearVelocity = Vector3.new(0, 0, 0)
 
-        --// Look at the armor
         cam.CFrame = CFrame.new(armorPos + Vector3.new(0, 6, 5), armorPos)
 
-        --// Wait for server to register position (10 heartbeats for stability)
         for i = 1, 10 do
             RunService.Heartbeat:Wait()
         end
 
         local success = false
 
-        --// Method 1: ProximityPrompt (most common in Hood games)
         if not success then
-            -- Try cached prompt first
             if Misc.CachedPrompt then
                 pcall(function()
                     if fireproximityprompt then
@@ -309,7 +304,6 @@ function Misc.AutoArmorFast()
                 end)
             end
 
-            -- Fallback: scan for any prompt near armor pos
             if not success then
                 for _, obj in pairs(workspace:GetDescendants()) do
                     if obj:IsA("ProximityPrompt") then
@@ -334,7 +328,6 @@ function Misc.AutoArmorFast()
             end
         end
 
-        --// Method 2: ClickDetector
         if not success then
             if Misc.CachedClickDetector then
                 pcall(function()
@@ -347,7 +340,6 @@ function Misc.AutoArmorFast()
                 end)
             end
 
-            -- Fallback: scan for any clickdetector near armor pos
             if not success then
                 for _, obj in pairs(workspace:GetDescendants()) do
                     if obj:IsA("ClickDetector") then
@@ -370,7 +362,6 @@ function Misc.AutoArmorFast()
             end
         end
 
-        --// Method 3: TouchInterest
         if not success and Misc.CachedTouchPart then
             pcall(function()
                 local touchPart = Misc.CachedTouchPart
@@ -381,12 +372,10 @@ function Misc.AutoArmorFast()
             end)
         end
 
-        --// Method 4: VirtualInputManager (last resort - simulates E key and click)
         if not success then
             local vim = game:GetService("VirtualInputManager")
             local screenSize = cam.ViewportSize
 
-            -- Simulate E key (common for prompts)
             for i = 1, 3 do
                 pcall(function()
                     vim:SendKeyEvent(true, Enum.KeyCode.E, false, game)
@@ -396,7 +385,6 @@ function Misc.AutoArmorFast()
                 RunService.Heartbeat:Wait()
             end
 
-            -- Simulate mouse click at center of screen
             for i = 1, 3 do
                 pcall(function()
                     vim:SendMouseButtonEvent(screenSize.X/2, screenSize.Y/2, 0, true, game, 1)
@@ -408,16 +396,13 @@ function Misc.AutoArmorFast()
             success = true
         end
 
-        --// Wait for server to process and armor to apply
         for i = 1, 8 do
             RunService.Heartbeat:Wait()
         end
 
-        --// Check if armor was actually obtained
         local char = LocalPlayer.Character
         local gotArmor = false
         if char then
-            -- Common armor value locations in Hood games
             local armorVal = char:FindFirstChild("Armor") or char:FindFirstChild("BodyArmor") or char:FindFirstChild("BulletProof")
             if not armorVal and humanoid then
                 armorVal = humanoid:FindFirstChild("Armor") or humanoid:FindFirstChild("BodyArmor")
@@ -429,14 +414,12 @@ function Misc.AutoArmorFast()
                     gotArmor = true
                 end
             end
-            -- Some games use a BoolValue for armor
             local armorBool = char:FindFirstChild("HasArmor") or char:FindFirstChild("WearingArmor")
             if armorBool and armorBool:IsA("BoolValue") and armorBool.Value then
                 gotArmor = true
             end
         end
 
-        --// Notification
         if gotArmor then
             Misc.Notify("Armor grabbed!", Color3.fromRGB(100, 200, 150))
         elseif success then
@@ -445,12 +428,10 @@ function Misc.AutoArmorFast()
             Misc.Notify("Failed to grab armor - set position closer to stand", Color3.fromRGB(200, 60, 60))
         end
 
-        --// Snap back
         hrp.CFrame = origCF
         hrp.Velocity = Vector3.new(0, 0, 0)
         cam.CFrame = origCam
 
-        --// Resume spam only if still enabled
         if Misc.Config.SpamEnabled then
             Misc.StartSpam()
         end
@@ -508,6 +489,104 @@ function Misc.ToggleSpam(enabled)
     end
 end
 
+
+--// ==================== AUTO STOMP ====================
+
+local function AutoStompFindRemote()
+    local possible = {
+        ReplicatedStorage:FindFirstChild("GameRemotes") and ReplicatedStorage.GameRemotes:FindFirstChild("MainGameEvent"),
+        ReplicatedStorage:FindFirstChild("MainRemotes") and ReplicatedStorage.MainRemotes:FindFirstChild("MainRemoteEvent"),
+        ReplicatedStorage:FindFirstChild("MainGameEvent", true),
+        ReplicatedStorage:FindFirstChild("MainRemoteEvent", true),
+    }
+
+    for _, rem in pairs(possible) do
+        if rem and rem:IsA("RemoteEvent") then
+            return rem
+        end
+    end
+
+    for _, v in pairs(ReplicatedStorage:GetDescendants()) do
+        if v:IsA("RemoteEvent") and (v.Name:lower():find("main") or v.Name:lower():find("game") or v.Name:lower():find("shoot")) then
+            return v
+        end
+    end
+    return nil
+end
+
+local function AutoStompIsKnocked(plr)
+    local char = plr and plr.Character
+    if not char then return false end
+    local be = char:FindFirstChild("BodyEffects")
+    if not be then return false end
+    local ko = be:FindFirstChild("K.O") or be:FindFirstChild("Knocked")
+    return ko and ko.Value == true
+end
+
+local function AutoStompTryStomp()
+    if not Misc.Config or not Misc.Config.AutoStompEnabled then return end
+    if not Misc.AutoStompMainRemote then return end
+
+    local myChar = LocalPlayer.Character
+    if not myChar then return end
+
+    local myHRP = myChar:FindFirstChild("HumanoidRootPart")
+    if not myHRP then return end
+
+    local now = tick()
+    local myPos = myHRP.Position
+
+    for _, plr in ipairs(Players:GetPlayers()) do
+        if plr ~= LocalPlayer and plr.Character then
+            local targetHRP = plr.Character:FindFirstChild("HumanoidRootPart")
+            if targetHRP then
+                local distance = (myPos - targetHRP.Position).Magnitude
+
+                if AutoStompIsKnocked(plr) then
+                    if Misc.AutoStompLastStomp[plr] and now - Misc.AutoStompLastStomp[plr] < 0.32 then
+                        continue
+                    end
+                    Misc.AutoStompLastStomp[plr] = now
+
+                    pcall(function()
+                        if Misc.AutoStompMainRemote then
+                            Misc.AutoStompMainRemote:FireServer("Stomp")
+                            Misc.AutoStompMainRemote:FireServer("StompPlayer", plr.Character)
+                            Misc.AutoStompMainRemote:FireServer("Stomp", plr.Character)
+                        end
+                    end)
+
+                    break
+                end
+            end
+        end
+    end
+end
+
+function Misc.StartAutoStomp()
+    if Misc.AutoStompConnection then return end
+    Misc.AutoStompMainRemote = AutoStompFindRemote()
+    Misc.AutoStompConnection = RunService.Heartbeat:Connect(AutoStompTryStomp)
+end
+
+function Misc.StopAutoStomp()
+    if Misc.AutoStompConnection then
+        Misc.AutoStompConnection:Disconnect()
+        Misc.AutoStompConnection = nil
+    end
+    Misc.AutoStompLastStomp = {}
+end
+
+function Misc.SetAutoStompEnabled(enabled)
+    if not Misc.Config then return end
+    Misc.Config.AutoStompEnabled = enabled
+    if enabled then
+        Misc.StartAutoStomp()
+    else
+        Misc.StopAutoStomp()
+    end
+end
+
 --// ==================== CONNECTION MANAGEMENT ====================
 function Misc.EvaluateHeartbeat()
     local needHeartbeat = false
@@ -560,15 +639,22 @@ function Misc.Start()
     if Misc.Config and Misc.Config.SpamEnabled then
         Misc.StartSpam()
     end
+    if Misc.Config and Misc.Config.AutoStompEnabled then
+        Misc.StartAutoStomp()
+    end
 end
 
 function Misc.Reset()
     Misc.StopSpam()
+    Misc.StopAutoStomp()
     Misc.AntiStompTriggered = false
     Misc.LastHealth = 100
     Misc.RefreshCharacter()
     if Misc.Config and Misc.Config.SpamEnabled then
         Misc.StartSpam()
+    end
+    if Misc.Config and Misc.Config.AutoStompEnabled then
+        Misc.StartAutoStomp()
     end
 end
 
