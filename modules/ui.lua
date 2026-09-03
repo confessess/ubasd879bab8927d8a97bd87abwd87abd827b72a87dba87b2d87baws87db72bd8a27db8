@@ -1566,25 +1566,25 @@ function UI.Build()
     local MovementCard = CreateCard(MovementScroll, UDim2.fromOffset(0, 0), UDim2.new(1, 0, 0, 510))
     MovementScroll.CanvasSize = UDim2.new(0, 0, 0, 530)
 
-    CreateToggle(MovementCard, 14, "Speed", Config.Move_SpeedEnabled, "Move_SpeedEnabled", false, function(v)
+    CreateToggle(MovementCard, 14, "Speed", Config.Move_SpeedEnabled, "Move_SpeedEnabled", true, function(v)
         Config.Move_SpeedEnabled = v
     end)
     CreateSlider(MovementCard, 50, "Walk Speed", 16, 200, Config.Move_Speed, function(v)
         Config.Move_Speed = v
     end)
-    CreateToggle(MovementCard, 96, "High Jump", Config.Move_HighJumpEnabled, "Move_HighJumpEnabled", false, function(v)
+    CreateToggle(MovementCard, 96, "High Jump", Config.Move_HighJumpEnabled, "Move_HighJumpEnabled", true, function(v)
         Config.Move_HighJumpEnabled = v
     end)
     CreateSlider(MovementCard, 132, "Jump Power", 50, 300, Config.Move_JumpPower, function(v)
         Config.Move_JumpPower = v
     end)
-    CreateToggle(MovementCard, 178, "Bunny Hop", Config.Move_BunnyHop, "Move_BunnyHop", false, function(v)
+    CreateToggle(MovementCard, 178, "Bunny Hop", Config.Move_BunnyHop, "Move_BunnyHop", true, function(v)
         Config.Move_BunnyHop = v
     end)
-    CreateToggle(MovementCard, 214, "Infinite Jump", Config.Move_InfiniteJump, "Move_InfiniteJump", false, function(v)
+    CreateToggle(MovementCard, 214, "Infinite Jump", Config.Move_InfiniteJump, "Move_InfiniteJump", true, function(v)
         Config.Move_InfiniteJump = v
     end)
-    CreateToggle(MovementCard, 250, "NoClip", Config.Move_NoClip, "Move_NoClip", false, function(v)
+    CreateToggle(MovementCard, 250, "NoClip", Config.Move_NoClip, "Move_NoClip", true, function(v)
         Config.Move_NoClip = v
     end)
 
