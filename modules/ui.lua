@@ -1549,7 +1549,7 @@ function UI.Build()
         Config.World_Brightness = v
     end)
     local skyThemeDropdown = BuildDropdown(WorldCard, 394, "Sky Theme", Config.World_SkyTheme or "Default",
-        {"Default", "Night", "Light", "Blood", "Gray"},
+        {"Default", "Night", "Light", "Blood", "Gray", "DarkNight", "Space", "Test"},
         function(v) Config.World_SkyTheme = v end)
     -- MOVEMENT PAGE
     local MovementPage = Pages.Movement
