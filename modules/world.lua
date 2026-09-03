@@ -7,8 +7,10 @@ local World = {
     Connection = nil,
     OriginalValues = {},
     ActiveSky = nil,
+    ActiveAtmosphere = nil,
     LastSkyTheme = nil,
     OriginalSky = nil,
+    OriginalAtmosphere = nil,
 }
 
 function World.SetConfig(config)
@@ -246,121 +248,215 @@ local function RemoveLowGFX()
 end
 
 -- ═════════════════════════════════════════════════════════════════════════════
--- SKYBOX / THEMES — All IDs verified working
+-- SKY THEMES — Color-based, no image IDs needed
+-- Uses Lighting properties + custom Atmosphere for unique looks
 -- ═════════════════════════════════════════════════════════════════════════════
 
 local SkyThemes = {
     Default = nil,
     Night = {
-        SkyboxBk = "rbxassetid://6444884337",
-        SkyboxDn = "rbxassetid://6444884337",
-        SkyboxFt = "rbxassetid://6444884337",
-        SkyboxLf = "rbxassetid://6444884337",
-        SkyboxRt = "rbxassetid://6444884337",
-        SkyboxUp = "rbxassetid://6444884337",
-        StarCount = 3000,
-        SunAngularSize = 0,
+        ClockTime = 0,
+        Ambient = Color3.fromRGB(30, 30, 60),
+        OutdoorAmbient = Color3.fromRGB(20, 20, 50),
+        FogColor = Color3.fromRGB(10, 10, 30),
+        FogStart = 200,
+        FogEnd = 2000,
+        Brightness = 2,
+        Atmosphere = {
+            Density = 0.3,
+            Offset = 0.1,
+            Color = Color3.fromRGB(40, 40, 80),
+            Decay = Color3.fromRGB(20, 20, 50),
+            Glare = 0.2,
+            Haze = 2,
+        },
     },
     Sunset = {
-        SkyboxBk = "rbxassetid://6444695118",
-        SkyboxDn = "rbxassetid://6444695118",
-        SkyboxFt = "rbxassetid://6444695118",
-        SkyboxLf = "rbxassetid://6444695118",
-        SkyboxRt = "rbxassetid://6444695118",
-        SkyboxUp = "rbxassetid://6444695118",
-        SunAngularSize = 18,
+        ClockTime = 17.5,
+        Ambient = Color3.fromRGB(180, 120, 80),
+        OutdoorAmbient = Color3.fromRGB(200, 140, 90),
+        FogColor = Color3.fromRGB(255, 150, 80),
+        FogStart = 100,
+        FogEnd = 3000,
+        Brightness = 5,
+        Atmosphere = {
+            Density = 0.35,
+            Offset = 0.2,
+            Color = Color3.fromRGB(255, 180, 100),
+            Decay = Color3.fromRGB(255, 100, 50),
+            Glare = 0.8,
+            Haze = 5,
+        },
     },
     BloodMoon = {
-        SkyboxBk = "rbxassetid://518330569",
-        SkyboxDn = "rbxassetid://518330569",
-        SkyboxFt = "rbxassetid://518330569",
-        SkyboxLf = "rbxassetid://518330569",
-        SkyboxRt = "rbxassetid://518330569",
-        SkyboxUp = "rbxassetid://518330569",
-        SunAngularSize = 0,
+        ClockTime = 0,
+        Ambient = Color3.fromRGB(80, 20, 20),
+        OutdoorAmbient = Color3.fromRGB(100, 30, 30),
+        FogColor = Color3.fromRGB(60, 10, 10),
+        FogStart = 50,
+        FogEnd = 1500,
+        Brightness = 3,
+        Atmosphere = {
+            Density = 0.4,
+            Offset = 0.15,
+            Color = Color3.fromRGB(150, 30, 30),
+            Decay = Color3.fromRGB(80, 10, 10),
+            Glare = 0.5,
+            Haze = 4,
+        },
     },
     Galaxy = {
-        SkyboxBk = "rbxassetid://8139677359",
-        SkyboxDn = "rbxassetid://8139677359",
-        SkyboxFt = "rbxassetid://8139677359",
-        SkyboxLf = "rbxassetid://8139677359",
-        SkyboxRt = "rbxassetid://8139677359",
-        SkyboxUp = "rbxassetid://8139677359",
-        StarCount = 5000,
-        SunAngularSize = 0,
+        ClockTime = 0,
+        Ambient = Color3.fromRGB(60, 30, 100),
+        OutdoorAmbient = Color3.fromRGB(40, 20, 80),
+        FogColor = Color3.fromRGB(20, 10, 50),
+        FogStart = 500,
+        FogEnd = 5000,
+        Brightness = 3,
+        Atmosphere = {
+            Density = 0.25,
+            Offset = 0.05,
+            Color = Color3.fromRGB(100, 50, 180),
+            Decay = Color3.fromRGB(50, 20, 100),
+            Glare = 0.3,
+            Haze = 1.5,
+        },
     },
     PurpleNebula = {
-        SkyboxBk = "rbxassetid://8139677203",
-        SkyboxDn = "rbxassetid://8139677203",
-        SkyboxFt = "rbxassetid://8139677203",
-        SkyboxLf = "rbxassetid://8139677203",
-        SkyboxRt = "rbxassetid://8139677203",
-        SkyboxUp = "rbxassetid://8139677203",
-        SunAngularSize = 0,
+        ClockTime = 0,
+        Ambient = Color3.fromRGB(80, 40, 120),
+        OutdoorAmbient = Color3.fromRGB(60, 30, 100),
+        FogColor = Color3.fromRGB(40, 20, 80),
+        FogStart = 200,
+        FogEnd = 3000,
+        Brightness = 4,
+        Atmosphere = {
+            Density = 0.35,
+            Offset = 0.1,
+            Color = Color3.fromRGB(150, 80, 220),
+            Decay = Color3.fromRGB(80, 40, 150),
+            Glare = 0.4,
+            Haze = 3,
+        },
     },
     Vaporwave = {
-        SkyboxBk = "rbxassetid://1417494643",
-        SkyboxDn = "rbxassetid://1417494146",
-        SkyboxFt = "rbxassetid://1417494253",
-        SkyboxLf = "rbxassetid://1417494499",
-        SkyboxRt = "rbxassetid://1417494643",
-        SkyboxUp = "rbxassetid://1417494300",
-        SunAngularSize = 0,
+        ClockTime = 18,
+        Ambient = Color3.fromRGB(255, 100, 200),
+        OutdoorAmbient = Color3.fromRGB(255, 120, 220),
+        FogColor = Color3.fromRGB(255, 80, 180),
+        FogStart = 50,
+        FogEnd = 2000,
+        Brightness = 6,
+        Atmosphere = {
+            Density = 0.4,
+            Offset = 0.25,
+            Color = Color3.fromRGB(255, 100, 200),
+            Decay = Color3.fromRGB(200, 50, 150),
+            Glare = 1,
+            Haze = 6,
+        },
     },
     DeepSpace = {
-        SkyboxBk = "rbxassetid://8139677064",
-        SkyboxDn = "rbxassetid://8139677064",
-        SkyboxFt = "rbxassetid://8139677064",
-        SkyboxLf = "rbxassetid://8139677064",
-        SkyboxRt = "rbxassetid://8139677064",
-        SkyboxUp = "rbxassetid://8139677064",
-        StarCount = 0,
-        SunAngularSize = 0,
+        ClockTime = 0,
+        Ambient = Color3.fromRGB(5, 5, 15),
+        OutdoorAmbient = Color3.fromRGB(3, 3, 10),
+        FogColor = Color3.fromRGB(0, 0, 5),
+        FogStart = 1000,
+        FogEnd = 10000,
+        Brightness = 1,
+        Atmosphere = {
+            Density = 0.1,
+            Offset = 0,
+            Color = Color3.fromRGB(10, 10, 30),
+            Decay = Color3.fromRGB(5, 5, 15),
+            Glare = 0,
+            Haze = 0.5,
+        },
     },
     GoldenHour = {
-        SkyboxBk = "rbxassetid://6444884337",
-        SkyboxDn = "rbxassetid://6444884337",
-        SkyboxFt = "rbxassetid://6444884337",
-        SkyboxLf = "rbxassetid://6444884337",
-        SkyboxRt = "rbxassetid://6444884337",
-        SkyboxUp = "rbxassetid://6444884337",
-        SunAngularSize = 22,
+        ClockTime = 16.5,
+        Ambient = Color3.fromRGB(220, 180, 120),
+        OutdoorAmbient = Color3.fromRGB(240, 200, 140),
+        FogColor = Color3.fromRGB(255, 200, 120),
+        FogStart = 200,
+        FogEnd = 4000,
+        Brightness = 6,
+        Atmosphere = {
+            Density = 0.3,
+            Offset = 0.15,
+            Color = Color3.fromRGB(255, 200, 120),
+            Decay = Color3.fromRGB(220, 150, 80),
+            Glare = 0.7,
+            Haze = 4,
+        },
     },
     Storm = {
-        SkyboxBk = "rbxassetid://8139676933",
-        SkyboxDn = "rbxassetid://8139676933",
-        SkyboxFt = "rbxassetid://8139676933",
-        SkyboxLf = "rbxassetid://8139676933",
-        SkyboxRt = "rbxassetid://8139676933",
-        SkyboxUp = "rbxassetid://8139676933",
-        SunAngularSize = 0,
+        ClockTime = 8,
+        Ambient = Color3.fromRGB(60, 60, 70),
+        OutdoorAmbient = Color3.fromRGB(50, 50, 60),
+        FogColor = Color3.fromRGB(40, 40, 50),
+        FogStart = 30,
+        FogEnd = 800,
+        Brightness = 2,
+        Atmosphere = {
+            Density = 0.6,
+            Offset = 0.3,
+            Color = Color3.fromRGB(80, 80, 100),
+            Decay = Color3.fromRGB(50, 50, 60),
+            Glare = 0.1,
+            Haze = 8,
+        },
     },
     Arctic = {
-        SkyboxBk = "rbxassetid://8139676807",
-        SkyboxDn = "rbxassetid://8139676807",
-        SkyboxFt = "rbxassetid://8139676807",
-        SkyboxLf = "rbxassetid://8139676807",
-        SkyboxRt = "rbxassetid://8139676807",
-        SkyboxUp = "rbxassetid://8139676807",
-        SunAngularSize = 8,
+        ClockTime = 10,
+        Ambient = Color3.fromRGB(180, 200, 220),
+        OutdoorAmbient = Color3.fromRGB(200, 220, 240),
+        FogColor = Color3.fromRGB(200, 220, 240),
+        FogStart = 100,
+        FogEnd = 2500,
+        Brightness = 7,
+        Atmosphere = {
+            Density = 0.35,
+            Offset = 0.2,
+            Color = Color3.fromRGB(180, 200, 230),
+            Decay = Color3.fromRGB(150, 180, 210),
+            Glare = 0.4,
+            Haze = 5,
+        },
     },
     Inferno = {
-        SkyboxBk = "rbxassetid://518330569",
-        SkyboxDn = "rbxassetid://518330569",
-        SkyboxFt = "rbxassetid://518330569",
-        SkyboxLf = "rbxassetid://518330569",
-        SkyboxRt = "rbxassetid://518330569",
-        SkyboxUp = "rbxassetid://518330569",
-        SunAngularSize = 0,
+        ClockTime = 14,
+        Ambient = Color3.fromRGB(200, 80, 20),
+        OutdoorAmbient = Color3.fromRGB(220, 100, 30),
+        FogColor = Color3.fromRGB(180, 60, 10),
+        FogStart = 50,
+        FogEnd = 1500,
+        Brightness = 5,
+        Atmosphere = {
+            Density = 0.45,
+            Offset = 0.2,
+            Color = Color3.fromRGB(255, 120, 30),
+            Decay = Color3.fromRGB(200, 60, 10),
+            Glare = 0.9,
+            Haze = 6,
+        },
     },
     NeonCity = {
-        SkyboxBk = "rbxassetid://8139677359",
-        SkyboxDn = "rbxassetid://8139677359",
-        SkyboxFt = "rbxassetid://8139677359",
-        SkyboxLf = "rbxassetid://8139677359",
-        SkyboxRt = "rbxassetid://8139677359",
-        SkyboxUp = "rbxassetid://8139677359",
-        SunAngularSize = 0,
+        ClockTime = 20,
+        Ambient = Color3.fromRGB(100, 50, 200),
+        OutdoorAmbient = Color3.fromRGB(80, 40, 180),
+        FogColor = Color3.fromRGB(60, 20, 120),
+        FogStart = 80,
+        FogEnd = 2000,
+        Brightness = 5,
+        Atmosphere = {
+            Density = 0.4,
+            Offset = 0.15,
+            Color = Color3.fromRGB(150, 80, 255),
+            Decay = Color3.fromRGB(100, 40, 200),
+            Glare = 0.6,
+            Haze = 5,
+        },
     },
 }
 
@@ -374,13 +470,30 @@ local function SaveOriginalSky()
     end
 end
 
+local function SaveOriginalAtmosphere()
+    if World.OriginalAtmosphere ~= nil then return end
+    for _, child in pairs(Lighting:GetChildren()) do
+        if child:IsA("Atmosphere") then
+            World.OriginalAtmosphere = child:Clone()
+            break
+        end
+    end
+end
+
 local function RemoveCustomSky()
     if World.ActiveSky then
         World.ActiveSky:Destroy()
         World.ActiveSky = nil
     end
+    if World.ActiveAtmosphere then
+        World.ActiveAtmosphere:Destroy()
+        World.ActiveAtmosphere = nil
+    end
     for _, child in pairs(Lighting:GetChildren()) do
         if child.Name == "ZeeHoodSky" and child:IsA("Sky") then
+            child:Destroy()
+        end
+        if child.Name == "ZeeHoodAtmosphere" and child:IsA("Atmosphere") then
             child:Destroy()
         end
     end
@@ -401,6 +514,19 @@ local function RestoreOriginalSky()
         end
         World.OriginalSky = nil
     end
+    if World.OriginalAtmosphere then
+        local already = false
+        for _, child in pairs(Lighting:GetChildren()) do
+            if child:IsA("Atmosphere") and child.Name == World.OriginalAtmosphere.Name then
+                already = true
+                break
+            end
+        end
+        if not already then
+            World.OriginalAtmosphere:Clone().Parent = Lighting
+        end
+        World.OriginalAtmosphere = nil
+    end
 end
 
 local function ApplyCustomSky()
@@ -419,27 +545,53 @@ local function ApplyCustomSky()
     if not theme then return end
 
     SaveOriginalSky()
+    SaveOriginalAtmosphere()
     RemoveCustomSky()
 
-    -- Hide existing sky objects (don't destroy, just unparent so we can restore)
+    -- Hide existing sky objects
     for _, child in pairs(Lighting:GetChildren()) do
-        if child:IsA("Sky") and child.Name ~= "ZeeHoodSky" then
+        if (child:IsA("Sky") or child:IsA("Atmosphere")) and child.Name ~= "ZeeHoodSky" and child.Name ~= "ZeeHoodAtmosphere" then
             child.Parent = nil
         end
     end
 
+    -- Create a plain dark sky as base
     local sky = Instance.new("Sky")
     sky.Name = "ZeeHoodSky"
-    sky.SkyboxBk = theme.SkyboxBk
-    sky.SkyboxDn = theme.SkyboxDn
-    sky.SkyboxFt = theme.SkyboxFt
-    sky.SkyboxLf = theme.SkyboxLf
-    sky.SkyboxRt = theme.SkyboxRt
-    sky.SkyboxUp = theme.SkyboxUp
-    if theme.StarCount then sky.StarCount = theme.StarCount end
-    if theme.SunAngularSize then sky.SunAngularSize = theme.SunAngularSize end
+    sky.SkyboxBk = "rbxasset://textures/sky/sky512_bk.tex"
+    sky.SkyboxDn = "rbxasset://textures/sky/sky512_dn.tex"
+    sky.SkyboxFt = "rbxasset://textures/sky/sky512_ft.tex"
+    sky.SkyboxLf = "rbxasset://textures/sky/sky512_lf.tex"
+    sky.SkyboxRt = "rbxasset://textures/sky/sky512_rt.tex"
+    sky.SkyboxUp = "rbxasset://textures/sky/sky512_up.tex"
+    sky.StarCount = 0
+    sky.SunAngularSize = 0
+    sky.MoonAngularSize = 0
     sky.Parent = Lighting
     World.ActiveSky = sky
+
+    -- Apply atmosphere for the theme color
+    if theme.Atmosphere then
+        local atm = Instance.new("Atmosphere")
+        atm.Name = "ZeeHoodAtmosphere"
+        atm.Density = theme.Atmosphere.Density
+        atm.Offset = theme.Atmosphere.Offset
+        atm.Color = theme.Atmosphere.Color
+        atm.Decay = theme.Atmosphere.Decay
+        atm.Glare = theme.Atmosphere.Glare
+        atm.Haze = theme.Atmosphere.Haze
+        atm.Parent = Lighting
+        World.ActiveAtmosphere = atm
+    end
+
+    -- Apply lighting properties
+    if theme.ClockTime then Lighting.ClockTime = theme.ClockTime end
+    if theme.Ambient then Lighting.Ambient = theme.Ambient end
+    if theme.OutdoorAmbient then Lighting.OutdoorAmbient = theme.OutdoorAmbient end
+    if theme.FogColor then Lighting.FogColor = theme.FogColor end
+    if theme.FogStart then Lighting.FogStart = theme.FogStart end
+    if theme.FogEnd then Lighting.FogEnd = theme.FogEnd end
+    if theme.Brightness then Lighting.Brightness = theme.Brightness end
 end
 
 -- ═════════════════════════════════════════════════════════════════════════════
