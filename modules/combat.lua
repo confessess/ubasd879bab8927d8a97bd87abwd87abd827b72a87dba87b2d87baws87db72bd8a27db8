@@ -18,6 +18,7 @@ local Combat = {
     TargetCircle = nil,
     Aiming = false,
     CurrentTarget = nil,
+    StickyLostTime = 0,
 }
 
 function Combat.SetConfig(config)
@@ -97,9 +98,58 @@ local function CanSee(targetPos, targetCharacter)
     return hitModel and hitModel == targetCharacter
 end
 
+local function IsTargetValidSticky(target)
+    if not target then return false end
+    if not target.Player or not target.Character then return false end
+    if not IsAlive(target.Character) then return false end
+    local Config = Combat.Config
+    if Config.Aimbot_TeamCheck and IsTeammate(target.Player) then return false end
+    local part = target.Character:FindFirstChild(target.Part.Name)
+    if not part then return false end
+    local dist = GetDistance(part.Position)
+    if dist > (Config.Aimbot_MaxDistance or 1000) then return false end
+    return true
+end
+
+local function IsTargetValidStrict(target)
+    if not IsTargetValidSticky(target) then return false end
+    local part = target.Character:FindFirstChild(target.Part.Name)
+    if not part then return false end
+    local inFOV = IsInFOV(part.Position)
+    if not inFOV then return false end
+    if not CanSee(part.Position, target.Character) then return false end
+    return true
+end
+
 local function GetBestTarget()
     local Config = Combat.Config
     if not Config.Aimbot_Enabled then return nil end
+
+    -- Sticky target: keep following current target briefly if they go out of FOV
+    if Config.Aimbot_StickyTarget and Combat.CurrentTarget and Combat.Aiming then
+        if IsTargetValidSticky(Combat.CurrentTarget) then
+            local part = Combat.CurrentTarget.Character:FindFirstChild(Combat.CurrentTarget.Part.Name)
+            if part then
+                if IsTargetValidStrict(Combat.CurrentTarget) then
+                    Combat.StickyLostTime = 0
+                    Combat.CurrentTarget.Part = part
+                    Combat.CurrentTarget.Position = part.Position
+                    return Combat.CurrentTarget
+                else
+                    -- Briefly out of FOV/distance, grace period
+                    if Combat.StickyLostTime == 0 then
+                        Combat.StickyLostTime = tick()
+                    elseif tick() - Combat.StickyLostTime < 0.6 then
+                        Combat.CurrentTarget.Part = part
+                        Combat.CurrentTarget.Position = part.Position
+                        return Combat.CurrentTarget
+                    end
+                end
+            end
+        end
+        Combat.CurrentTarget = nil
+        Combat.StickyLostTime = 0
+    end
 
     local bestTarget = nil
     local bestScore = math.huge
@@ -203,6 +253,7 @@ local function OnAimbotRender()
     local Config = Combat.Config
     if not Config.Aimbot_Enabled then
         Combat.CurrentTarget = nil
+        Combat.StickyLostTime = 0
         if Combat.FOVCircle then Combat.FOVCircle.Visible = false end
         if Combat.TargetCircle then Combat.TargetCircle.Visible = false end
         return
@@ -244,6 +295,7 @@ end
 local function StopAimbot()
     Combat.Aiming = false
     Combat.CurrentTarget = nil
+    Combat.StickyLostTime = 0
     if Combat.AimbotConnection then
         Combat.AimbotConnection:Disconnect()
         Combat.AimbotConnection = nil
@@ -260,13 +312,19 @@ local function StopAimbot()
     end
 end
 
--- Input handling for aimbot
+-- Input handling for aimbot — supports both keyboard keys and mouse buttons
 UserInputService.InputBegan:Connect(function(input, gp)
     if gp then return end
     local Config = Combat.Config
     if not Config or not Config.Aimbot_Enabled then return end
     local aimKey = Config.Aimbot_AimKey or Enum.KeyCode.Q
-    if input.UserInputType == aimKey or input.KeyCode == aimKey then
+
+    local matched = (input.KeyCode == aimKey) or (input.UserInputType == aimKey)
+    if not matched then return end
+
+    if Config.Aimbot_ToggleMode then
+        Combat.Aiming = not Combat.Aiming
+    else
         Combat.Aiming = true
     end
 end)
@@ -275,10 +333,13 @@ UserInputService.InputEnded:Connect(function(input, gp)
     if gp then return end
     local Config = Combat.Config
     if not Config or not Config.Aimbot_Enabled then return end
+    if Config.Aimbot_ToggleMode then return end -- toggle mode ignores release
+
     local aimKey = Config.Aimbot_AimKey or Enum.KeyCode.Q
-    if input.UserInputType == aimKey or input.KeyCode == aimKey then
-        Combat.Aiming = false
-    end
+    local matched = (input.KeyCode == aimKey) or (input.UserInputType == aimKey)
+    if not matched then return end
+
+    Combat.Aiming = false
 end)
 
 -- ═════════════════════════════════════════════════════════════════════════════

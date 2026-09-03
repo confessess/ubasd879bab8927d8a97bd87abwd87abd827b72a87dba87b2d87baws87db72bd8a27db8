@@ -48,6 +48,31 @@ local function Tween(object, properties, duration, style, direction)
     return TweenService:Create(object, info, properties)
 end
 
+local function FormatKeyName(key)
+    if not key then return "—" end
+    if typeof(key) == "EnumItem" then
+        if key.EnumType == Enum.KeyCode then
+            return key.Name
+        elseif key.EnumType == Enum.UserInputType then
+            if key == Enum.UserInputType.MouseButton1 then return "MB1"
+            elseif key == Enum.UserInputType.MouseButton2 then return "MB2"
+            elseif key == Enum.UserInputType.MouseButton3 then return "MB3"
+            else return key.Name end
+        end
+    end
+    return tostring(key)
+end
+
+local function IsSameKey(input, storedKey)
+    if not storedKey then return false end
+    if typeof(storedKey) == "EnumItem" and storedKey.EnumType == Enum.KeyCode then
+        return input.KeyCode == storedKey
+    elseif typeof(storedKey) == "EnumItem" and storedKey.EnumType == Enum.UserInputType then
+        return input.UserInputType == storedKey
+    end
+    return false
+end
+
 function UI.SetConfig(config)
     UI.Config = config
 end
@@ -101,7 +126,7 @@ function UI.UpdateHotkeyDisplay()
             local name = toggleId:gsub("([A-Z])", " %1")
             name = name:gsub("^%s", "")
             name = string.upper(name):sub(1, 12)
-            addLine(name .. "  •  " .. key.Name)
+            addLine(name .. "  •  " .. FormatKeyName(key))
         end
     end
     UI.HotkeyDisplay.Size = UDim2.fromOffset(155, math.max(36, y + 4))
@@ -363,7 +388,7 @@ function UI.Build()
                 BackgroundColor3 = Color3.fromRGB(45, 65, 110),
                 BackgroundTransparency = 0.2,
                 BorderSizePixel = 0,
-                Text = keybindKey and keybindKey.Name or "—",
+                Text = keybindKey and FormatKeyName(keybindKey) or "—",
                 TextColor3 = Color3.fromRGB(180, 180, 200),
                 TextSize = 10,
                 Font = Enum.Font.GothamBold,
@@ -530,16 +555,17 @@ function UI.Build()
             ZIndex = 17,
         }, container)
         Corner(header, 8)
+        -- Parent list to same card so it scrolls with the page and stays self-contained
         local list = New("Frame", {
-            Size = UDim2.fromOffset(0, 0),
-            Position = UDim2.fromOffset(0, 0),
+            Size = UDim2.new(1, -20, 0, 0),
+            Position = UDim2.new(0, 10, 0, y + 24 + 32 + 2),
             BackgroundColor3 = Color3.fromRGB(18, 11, 27),
             BackgroundTransparency = 0.05,
             BorderSizePixel = 0,
             ZIndex = 100,
             ClipsDescendants = true,
             Visible = false,
-        }, Main)
+        }, parent)
         Corner(list, 8)
         Stroke(list, 0.9, 1, Color3.fromRGB(140, 90, 200))
         local open = false
@@ -573,28 +599,22 @@ function UI.Build()
                 onSelect(optText)
                 header.Text = "  " .. optText .. "  ▼"
                 open = false
-                Tween(list, {Size = UDim2.fromOffset(container.AbsoluteSize.X, 0)}, 0.2):Play()
+                Tween(list, {Size = UDim2.new(1, -20, 0, 0)}, 0.2):Play()
                 task.delay(0.2, function()
                     if not open then list.Visible = false end
                 end)
             end)
             optionButtons[i] = btn
         end
-        local function updatePosition()
-            local absPos = container.AbsolutePosition
-            local absSize = container.AbsoluteSize
-            list.Position = UDim2.fromOffset(absPos.X, absPos.Y + absSize.Y + 2)
-        end
         header.MouseButton1Click:Connect(function()
             open = not open
             if open then
-                updatePosition()
                 list.Visible = true
                 header.Text = "  " .. currentValue .. "  ▲"
-                Tween(list, {Size = UDim2.fromOffset(container.AbsoluteSize.X, math.min(140, totalHeight))}, 0.2):Play()
+                Tween(list, {Size = UDim2.new(1, -20, 0, math.min(140, totalHeight))}, 0.2):Play()
             else
                 header.Text = "  " .. currentValue .. "  ▼"
-                Tween(list, {Size = UDim2.fromOffset(container.AbsoluteSize.X, 0)}, 0.2):Play()
+                Tween(list, {Size = UDim2.new(1, -20, 0, 0)}, 0.2):Play()
                 task.delay(0.2, function()
                     if not open then list.Visible = false end
                 end)
@@ -608,7 +628,7 @@ function UI.Build()
             Close = function()
                 open = false
                 header.Text = "  " .. currentValue .. "  ▼"
-                Tween(list, {Size = UDim2.fromOffset(container.AbsoluteSize.X, 0)}, 0.2):Play()
+                Tween(list, {Size = UDim2.new(1, -20, 0, 0)}, 0.2):Play()
                 task.delay(0.2, function()
                     if not open then list.Visible = false end
                 end)
@@ -1005,8 +1025,8 @@ function UI.Build()
         CanvasSize = UDim2.new(0, 0, 0, 0),
         ZIndex = 14,
     }, CombatPage)
-    local CombatCard = CreateCard(CombatScroll, UDim2.fromOffset(0, 0), UDim2.new(1, 0, 0, 500))
-    CombatScroll.CanvasSize = UDim2.new(0, 0, 0, 520)
+    local CombatCard = CreateCard(CombatScroll, UDim2.fromOffset(0, 0), UDim2.new(1, 0, 0, 640))
+    CombatScroll.CanvasSize = UDim2.new(0, 0, 0, 660)
 
     -- Aimbot Section
     New("TextLabel", {
@@ -1023,35 +1043,41 @@ function UI.Build()
     CreateToggle(CombatCard, 34, "Enable Aimbot", Config.Aimbot_Enabled, "Aimbot_Enabled", true, function(v)
         Config.Aimbot_Enabled = v
     end)
-    CreateToggle(CombatCard, 70, "Team Check", Config.Aimbot_TeamCheck, "Aimbot_TeamCheck", false, function(v)
+    CreateToggle(CombatCard, 70, "Toggle Mode", Config.Aimbot_ToggleMode, "Aimbot_ToggleMode", false, function(v)
+        Config.Aimbot_ToggleMode = v
+    end)
+    CreateToggle(CombatCard, 106, "Sticky Target", Config.Aimbot_StickyTarget, "Aimbot_StickyTarget", false, function(v)
+        Config.Aimbot_StickyTarget = v
+    end)
+    CreateToggle(CombatCard, 142, "Team Check", Config.Aimbot_TeamCheck, "Aimbot_TeamCheck", false, function(v)
         Config.Aimbot_TeamCheck = v
     end)
-    CreateToggle(CombatCard, 106, "Wall Check", Config.Aimbot_WallCheck, "Aimbot_WallCheck", false, function(v)
+    CreateToggle(CombatCard, 178, "Wall Check", Config.Aimbot_WallCheck, "Aimbot_WallCheck", false, function(v)
         Config.Aimbot_WallCheck = v
     end)
-    CreateToggle(CombatCard, 142, "Show FOV", Config.Aimbot_ShowFOV, "Aimbot_ShowFOV", false, function(v)
+    CreateToggle(CombatCard, 214, "Show FOV", Config.Aimbot_ShowFOV, "Aimbot_ShowFOV", false, function(v)
         Config.Aimbot_ShowFOV = v
     end)
-    CreateSlider(CombatCard, 178, "Smoothness", 0, 100, Config.Aimbot_Smoothness, function(v)
+    CreateSlider(CombatCard, 250, "Smoothness", 0, 100, Config.Aimbot_Smoothness, function(v)
         Config.Aimbot_Smoothness = v
     end)
-    CreateSlider(CombatCard, 224, "FOV", 10, 300, Config.Aimbot_FOV, function(v)
+    CreateSlider(CombatCard, 296, "FOV", 10, 300, Config.Aimbot_FOV, function(v)
         Config.Aimbot_FOV = v
     end)
-    CreateSlider(CombatCard, 270, "Max Distance", 50, 5000, Config.Aimbot_MaxDistance, function(v)
+    CreateSlider(CombatCard, 342, "Max Distance", 50, 5000, Config.Aimbot_MaxDistance, function(v)
         Config.Aimbot_MaxDistance = v
     end)
-    local aimbotPartDropdown = BuildDropdown(CombatCard, 316, "Target Part", Config.Aimbot_TargetPart or "Head",
+    local aimbotPartDropdown = BuildDropdown(CombatCard, 388, "Target Part", Config.Aimbot_TargetPart or "Head",
         {"Head", "HumanoidRootPart", "Torso", "UpperTorso", "LowerTorso", "LeftLeg", "RightLeg"},
         function(v) Config.Aimbot_TargetPart = v end)
-    local aimbotPriorityDropdown = BuildDropdown(CombatCard, 374, "Priority", Config.Aimbot_Priority or "Closest to Mouse",
+    local aimbotPriorityDropdown = BuildDropdown(CombatCard, 446, "Priority", Config.Aimbot_Priority or "Closest to Mouse",
         {"Closest to Mouse", "Closest to Player", "Lowest HP", "Highest HP"},
         function(v) Config.Aimbot_Priority = v end)
 
     -- Divider
     New("Frame", {
         Size = UDim2.new(1, -20, 0, 1),
-        Position = UDim2.fromOffset(10, 430),
+        Position = UDim2.fromOffset(10, 502),
         BackgroundColor3 = Color3.fromRGB(60, 40, 80),
         BackgroundTransparency = 0.5,
         BorderSizePixel = 0,
@@ -1059,7 +1085,7 @@ function UI.Build()
     }, CombatCard)
     New("TextLabel", {
         Size = UDim2.new(1, -20, 0, 20),
-        Position = UDim2.fromOffset(10, 440),
+        Position = UDim2.fromOffset(10, 512),
         BackgroundTransparency = 1,
         Text = "Combat",
         TextColor3 = Color3.fromRGB(245, 220, 255),
@@ -1069,13 +1095,13 @@ function UI.Build()
         ZIndex = 16,
     }, CombatCard)
 
-    CreateToggle(CombatCard, 464, "Frame TP Shoot", Config.FrameTP, "FrameTP", true, function(v)
+    CreateToggle(CombatCard, 536, "Frame TP Shoot", Config.FrameTP, "FrameTP", true, function(v)
         Config.FrameTP = v
     end)
-    CreateToggle(CombatCard, 500, "One-Frame Delay", Config.OneFrameDelay, "OneFrameDelay", true, function(v)
+    CreateToggle(CombatCard, 572, "One-Frame Delay", Config.OneFrameDelay, "OneFrameDelay", true, function(v)
         Config.OneFrameDelay = v
     end)
-    CreateToggle(CombatCard, 536, "Rapid Fire", Config.RapidFire, "RapidFire", true, function(v)
+    CreateToggle(CombatCard, 608, "Rapid Fire", Config.RapidFire, "RapidFire", true, function(v)
         Config.RapidFire = v
     end)
 
@@ -1506,7 +1532,7 @@ function UI.Build()
         BackgroundColor3 = PURPLE,
         BackgroundTransparency = 0.18,
         BorderSizePixel = 0,
-        Text = Config.ToggleKey.Name,
+        Text = FormatKeyName(Config.ToggleKey),
         TextColor3 = Color3.fromRGB(255, 250, 255),
         TextSize = 11,
         Font = Enum.Font.GothamBold,
@@ -1611,9 +1637,23 @@ function UI.Build()
     --// Input Handler
     UserInputService.InputBegan:Connect(function(input, gameProcessed)
         if gameProcessed then return end
+
         if UI.ListeningKey then
+            local captured = nil
             if input.UserInputType == Enum.UserInputType.Keyboard and input.KeyCode ~= Enum.KeyCode.Unknown then
                 if input.KeyCode == Enum.KeyCode.Delete or input.KeyCode == Enum.KeyCode.Backspace then
+                    captured = "clear"
+                else
+                    captured = input.KeyCode
+                end
+            elseif input.UserInputType == Enum.UserInputType.MouseButton1
+                or input.UserInputType == Enum.UserInputType.MouseButton2
+                or input.UserInputType == Enum.UserInputType.MouseButton3 then
+                captured = input.UserInputType
+            end
+
+            if captured then
+                if captured == "clear" then
                     if UI.ListeningKey == "Toggle" then
                         -- cannot unbind menu toggle
                     else
@@ -1623,12 +1663,12 @@ function UI.Build()
                     end
                 else
                     if UI.ListeningKey == "Toggle" then
-                        Config.ToggleKey = input.KeyCode
-                        KeybindButton.Text = Config.ToggleKey.Name
+                        Config.ToggleKey = captured
+                        KeybindButton.Text = FormatKeyName(captured)
                     elseif UI.ToggleCallbacks[UI.ListeningKey] then
-                        Config[UI.ListeningKey .. "Key"] = input.KeyCode
+                        Config[UI.ListeningKey .. "Key"] = captured
                         local btn = UI.KeybindButtons[UI.ListeningKey]
-                        if btn then btn.Text = input.KeyCode.Name end
+                        if btn then btn.Text = FormatKeyName(captured) end
                     end
                 end
                 UI.ListeningKey = nil
@@ -1640,17 +1680,15 @@ function UI.Build()
             end
             return
         end
-        if input.UserInputType == Enum.UserInputType.Keyboard then
-            if input.KeyCode == Config.ToggleKey then
-                SetGUIVisible(not UI.GUIVisible)
+        if IsSameKey(input, Config.ToggleKey) then
+            SetGUIVisible(not UI.GUIVisible)
+            return
+        end
+        for toggleId, callback in pairs(UI.ToggleCallbacks) do
+            local key = Config[toggleId .. "Key"]
+            if key and IsSameKey(input, key) then
+                callback(not Config[toggleId])
                 return
-            end
-            for toggleId, callback in pairs(UI.ToggleCallbacks) do
-                local key = Config[toggleId .. "Key"]
-                if key and input.KeyCode == key then
-                    callback(not Config[toggleId])
-                    return
-                end
             end
         end
         -- Close color picker on click outside

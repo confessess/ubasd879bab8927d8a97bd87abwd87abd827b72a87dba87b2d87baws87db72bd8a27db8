@@ -10,6 +10,8 @@ return {
     -- Aimbot
     Aimbot_Enabled = false,
     Aimbot_AimKey = Enum.KeyCode.Q,
+    Aimbot_ToggleMode = false,
+    Aimbot_StickyTarget = false,
     Aimbot_Smoothness = 15,
     Aimbot_FOV = 60,
     Aimbot_ShowFOV = true,
