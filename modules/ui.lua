@@ -358,6 +358,17 @@ function UI.Build()
             ZIndex = 15,
         }, page)
     end
+    local function CreateSeparator(parent, y)
+        New("Frame", {
+            Size = UDim2.new(1, -20, 0, 1),
+            Position = UDim2.fromOffset(10, y),
+            BackgroundColor3 = Color3.fromRGB(60, 40, 80),
+            BackgroundTransparency = 0.5,
+            BorderSizePixel = 0,
+            ZIndex = 16,
+        }, parent)
+    end
+
     local function CreateCard(page, position, size)
         local card = New("Frame", {
             Size = size,
@@ -1105,14 +1116,7 @@ function UI.Build()
         {"Closest to Mouse", "Closest to Player", "Lowest HP", "Highest HP"},
         function(v) Config.Aimbot_Priority = v end)
 
-    New("Frame", {
-        Size = UDim2.new(1, -20, 0, 1),
-        Position = UDim2.fromOffset(10, 456),
-        BackgroundColor3 = Color3.fromRGB(60, 40, 80),
-        BackgroundTransparency = 0.5,
-        BorderSizePixel = 0,
-        ZIndex = 16,
-    }, CombatCard)
+    CreateSeparator(CombatCard, 456)
     New("TextLabel", {
         Size = UDim2.new(1, -20, 0, 20),
         Position = UDim2.fromOffset(10, 466),
@@ -1173,14 +1177,7 @@ function UI.Build()
         Config.Hitmarkers = v
     end)
 
-    New("Frame", {
-        Size = UDim2.new(1, -20, 0, 1),
-        Position = UDim2.fromOffset(10, 226),
-        BackgroundColor3 = Color3.fromRGB(60, 40, 80),
-        BackgroundTransparency = 0.5,
-        BorderSizePixel = 0,
-        ZIndex = 16,
-    }, VisualsCard)
+    CreateSeparator(VisualsCard, 226)
     New("TextLabel", {
         Size = UDim2.new(1, -20, 0, 20),
         Position = UDim2.fromOffset(10, 236),
@@ -1294,7 +1291,7 @@ function UI.Build()
     -- FARM PAGE
     local FarmPage = Pages.Farm
     PageTitle(FarmPage, "Farm", "Pull selected target to your crosshair aim point.")
-    local FarmCard = CreateCard(FarmPage, UDim2.fromOffset(10, 72), UDim2.new(1, -20, 0, 380))
+    local FarmCard = CreateCard(FarmPage, UDim2.fromOffset(10, 72), UDim2.new(1, -20, 0, 400))
     CreateToggle(FarmCard, 14, "Enable Farm", Config.FarmEnabled, "FarmEnabled", true, function(v)
         Config.FarmEnabled = v
         if UI.Farm then
@@ -1310,13 +1307,14 @@ function UI.Build()
     CreateSlider(FarmCard, 142, "Pull Speed", 1, 20, Config.FarmPullSpeed or 1, function(v)
         Config.FarmPullSpeed = v
     end)
-    CreateToggle(FarmCard, 188, "Ragebot", Config.RagebotEnabled, "RagebotEnabled", true, function(v)
+    CreateSeparator(FarmCard, 184)
+    CreateToggle(FarmCard, 196, "Ragebot", Config.RagebotEnabled, "RagebotEnabled", true, function(v)
         Config.RagebotEnabled = v
         if UI.Farm then
             UI.Farm.SetRagebotEnabled(v)
         end
     end)
-    local ragebotMethodDropdown = BuildDropdown(FarmCard, 224, "Ragebot Method", Config.RagebotMethod or "FarmVoid",
+    local ragebotMethodDropdown = BuildDropdown(FarmCard, 232, "Ragebot Method", Config.RagebotMethod or "FarmVoid",
         {"FarmVoid", "FrameTPStomp"},
         function(v) 
             Config.RagebotMethod = v
@@ -1326,7 +1324,7 @@ function UI.Build()
         end)
     New("TextLabel", {
         Size = UDim2.new(1, -20, 0, 40),
-        Position = UDim2.fromOffset(10, 290),
+        Position = UDim2.fromOffset(10, 300),
         BackgroundTransparency = 1,
         Text = "Select a target in the Target tab first. Their head will align to your crosshair when Farm is ON. Toggle OFF to restore them.",
         TextColor3 = Color3.fromRGB(140, 130, 155),
@@ -1347,10 +1345,10 @@ function UI.Build()
         BorderSizePixel = 0,
         ScrollBarThickness = 3,
         ScrollBarImageColor3 = Color3.fromRGB(100, 70, 150),
-        CanvasSize = UDim2.new(0, 0, 0, 730),
+        CanvasSize = UDim2.new(0, 0, 0, 750),
         ZIndex = 14,
     }, MiscPage)
-    local MiscCard = CreateCard(MiscScroll, UDim2.fromOffset(0, 0), UDim2.new(1, 0, 0, 720))
+    local MiscCard = CreateCard(MiscScroll, UDim2.fromOffset(0, 0), UDim2.new(1, 0, 0, 740))
     CreateToggle(MiscCard, 14, "AntiStomp", Config.AntiStomp, "AntiStomp", true, function(v)
         Config.AntiStomp = v
         if UI.Misc then
@@ -1380,19 +1378,19 @@ function UI.Build()
             UI.Misc.ToggleSpam(v)
         end
     end)
-    local spamRangeDropdown = BuildDropdown(MiscCard, 184, "Spam Range", Config.SpamRange or "Close",
+    local spamRangeDropdown = BuildDropdown(MiscCard, 200, "Spam Range", Config.SpamRange or "Close",
         {"Close", "Far"},
         function(v) Config.SpamRange = v end)
-    CreateSlider(MiscCard, 256, "Close Height", 50, 1000, Config.SpamCloseHeight or 350, function(v)
+    CreateSlider(MiscCard, 272, "Close Height", 50, 1000, Config.SpamCloseHeight or 350, function(v)
         Config.SpamCloseHeight = v
     end)
-    CreateSlider(MiscCard, 312, "Close Radius", 50, 1000, Config.SpamCloseRadius or 250, function(v)
+    CreateSlider(MiscCard, 328, "Close Radius", 50, 1000, Config.SpamCloseRadius or 250, function(v)
         Config.SpamCloseRadius = v
     end)
-    CreateSlider(MiscCard, 368, "Far Jitter", 0, 50000, Config.SpamFarJitter or 5000, function(v)
+    CreateSlider(MiscCard, 384, "Far Jitter", 0, 50000, Config.SpamFarJitter or 5000, function(v)
         Config.SpamFarJitter = v
     end)
-    CreateSlider(MiscCard, 424, "Spam Speed", 1, 10, Config.SpamSpeed or 1, function(v)
+    CreateSlider(MiscCard, 440, "Spam Speed", 1, 10, Config.SpamSpeed or 1, function(v)
         Config.SpamSpeed = v
     end)
     New("Frame", {
@@ -1403,13 +1401,14 @@ function UI.Build()
         BorderSizePixel = 0,
         ZIndex = 16,
     }, MiscCard)
-    CreateToggle(MiscCard, 500, "Auto Armor", Config.AutoArmor, "AutoArmor", true, function(v)
+    CreateSeparator(MiscCard, 496)
+    CreateToggle(MiscCard, 508, "Auto Armor", Config.AutoArmor, "AutoArmor", true, function(v)
         Config.AutoArmor = v
         if UI.Misc then
             UI.Misc.SetAutoArmor(v)
         end
     end)
-    CreateToggle(MiscCard, 540, "Armor On Any Damage", Config.AutoArmorOnDamage, "AutoArmorOnDamage", true, function(v)
+    CreateToggle(MiscCard, 548, "Armor On Any Damage", Config.AutoArmorOnDamage, "AutoArmorOnDamage", true, function(v)
         Config.AutoArmorOnDamage = v
         if UI.Misc then
             UI.Misc.EvaluateHealthHook()
@@ -1418,7 +1417,7 @@ function UI.Build()
     local armorPos = Config.AutoArmorPos or Vector3.new(0, 0, 0)
     local ArmorPosLabel = Instance.new("TextLabel")
     ArmorPosLabel.Size = UDim2.new(0.6, 0, 0, 16)
-    ArmorPosLabel.Position = UDim2.new(0.05, 0, 0, 574)
+    ArmorPosLabel.Position = UDim2.new(0.05, 0, 0, 582)
     ArmorPosLabel.BackgroundTransparency = 1
     ArmorPosLabel.Text = string.format("Pos: %.0f, %.0f, %.0f", armorPos.X, armorPos.Y, armorPos.Z)
     ArmorPosLabel.TextColor3 = Color3.fromRGB(130, 130, 150)
@@ -1428,7 +1427,7 @@ function UI.Build()
     ArmorPosLabel.Parent = MiscCard
     local SetPosBtn = Instance.new("TextButton")
     SetPosBtn.Size = UDim2.new(0.3, 0, 0, 20)
-    SetPosBtn.Position = UDim2.new(0.65, 0, 0, 572)
+    SetPosBtn.Position = UDim2.new(0.65, 0, 0, 580)
     SetPosBtn.BackgroundColor3 = Color3.fromRGB(80, 60, 120)
     SetPosBtn.Text = "Set Pos"
     SetPosBtn.TextColor3 = Color3.fromRGB(255, 255, 255)
@@ -1452,10 +1451,10 @@ function UI.Build()
             end
         end
     end)
-    CreateSlider(MiscCard, 600, "Trigger Health", 1, 100, Config.AutoArmorTriggerHealth or 50, function(v)
+    CreateSlider(MiscCard, 608, "Trigger Health", 1, 100, Config.AutoArmorTriggerHealth or 50, function(v)
         Config.AutoArmorTriggerHealth = v
     end)
-    CreateSlider(MiscCard, 656, "Cooldown", 1, 30, Config.AutoArmorCooldown or 5, function(v)
+    CreateSlider(MiscCard, 664, "Cooldown", 1, 30, Config.AutoArmorCooldown or 5, function(v)
         Config.AutoArmorCooldown = v
     end)
     -- SPECTATE PANEL
@@ -1654,7 +1653,7 @@ function UI.Build()
 
     New("Frame", {
         Size = UDim2.new(1, -20, 0, 1),
-        Position = UDim2.fromOffset(10, 290),
+        Position = UDim2.fromOffset(10, 300),
         BackgroundColor3 = Color3.fromRGB(60, 40, 80),
         BackgroundTransparency = 0.5,
         BorderSizePixel = 0,
