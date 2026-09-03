@@ -1364,14 +1364,7 @@ function UI.Build()
             UI.Misc.SetAutoStompEnabled(v)
         end
     end)
-    New("Frame", {
-        Size = UDim2.new(1, -20, 0, 1),
-        Position = UDim2.fromOffset(10, 154),
-        BackgroundColor3 = Color3.fromRGB(60, 40, 80),
-        BackgroundTransparency = 0.5,
-        BorderSizePixel = 0,
-        ZIndex = 16,
-    }, MiscCard)
+    CreateSeparator(MiscCard, 100)
     CreateToggle(MiscCard, 144, "Teleport Spam", Config.SpamEnabled, "SpamEnabled", true, function(v)
         Config.SpamEnabled = v
         if UI.Misc then
@@ -1393,14 +1386,7 @@ function UI.Build()
     CreateSlider(MiscCard, 440, "Spam Speed", 1, 10, Config.SpamSpeed or 1, function(v)
         Config.SpamSpeed = v
     end)
-    New("Frame", {
-        Size = UDim2.new(1, -20, 0, 1),
-        Position = UDim2.fromOffset(10, 486),
-        BackgroundColor3 = Color3.fromRGB(60, 40, 80),
-        BackgroundTransparency = 0.5,
-        BorderSizePixel = 0,
-        ZIndex = 16,
-    }, MiscCard)
+
     CreateSeparator(MiscCard, 496)
     CreateToggle(MiscCard, 508, "Auto Armor", Config.AutoArmor, "AutoArmor", true, function(v)
         Config.AutoArmor = v
@@ -1611,8 +1597,8 @@ function UI.Build()
         CanvasSize = UDim2.new(0, 0, 0, 0),
         ZIndex = 14,
     }, MovementPage)
-    local MovementCard = CreateCard(MovementScroll, UDim2.fromOffset(0, 0), UDim2.new(1, 0, 0, 510))
-    MovementScroll.CanvasSize = UDim2.new(0, 0, 0, 530)
+    local MovementCard = CreateCard(MovementScroll, UDim2.fromOffset(0, 0), UDim2.new(1, 0, 0, 430))
+    MovementScroll.CanvasSize = UDim2.new(0, 0, 0, 450)
 
     CreateToggle(MovementCard, 14, "Speed", Config.Move_SpeedEnabled, "Move_SpeedEnabled", true, function(v)
         Config.Move_SpeedEnabled = v
@@ -1677,13 +1663,13 @@ function UI.Build()
             UI.Movement.SetFly(v)
         end
     end)
-    local flyMethodDropdown = BuildDropdown(MovementCard, 360, "Fly Method", Config.Move_FlyMethod or "Tween",
+    local flyMethodDropdown = BuildDropdown(MovementCard, 270, "Fly Method", Config.Move_FlyMethod or "Tween",
         {"Tween", "Velocity", "CFrame"},
         function(v) Config.Move_FlyMethod = v end)
 
     New("TextLabel", {
         Size = UDim2.new(1, -140, 0, 20),
-        Position = UDim2.fromOffset(10, 418),
+        Position = UDim2.fromOffset(10, 326),
         BackgroundTransparency = 1,
         Text = "Fly Speed",
         TextColor3 = Color3.fromRGB(200, 190, 215),
@@ -1694,7 +1680,7 @@ function UI.Build()
     }, MovementCard)
     local flySpeedTrack = New("Frame", {
         Size = UDim2.new(1, -160, 0, 5),
-        Position = UDim2.fromOffset(10, 448),
+        Position = UDim2.fromOffset(10, 356),
         BackgroundColor3 = Color3.fromRGB(40, 40, 50),
         BorderSizePixel = 0,
         ZIndex = 16,
@@ -1760,7 +1746,7 @@ function UI.Build()
 
     New("TextLabel", {
         Size = UDim2.new(1, -20, 0, 16),
-        Position = UDim2.fromOffset(10, 476),
+        Position = UDim2.fromOffset(10, 384),
         BackgroundTransparency = 1,
         Text = "WASD to move, Space up, Shift down",
         TextColor3 = Color3.fromRGB(140, 130, 155),
@@ -1894,6 +1880,10 @@ function UI.Build()
             Body.Visible = true
             Sidebar.Visible = true
             Content.Visible = true
+            -- Restore active tab
+            if ActiveTab then
+                SelectTab(ActiveTab)
+            end
             Tween(Main, {
                 Size = UDim2.fromOffset(GUI_WIDTH, GUI_HEIGHT),
                 BackgroundTransparency = 0.04,
