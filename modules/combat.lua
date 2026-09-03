@@ -610,6 +610,81 @@ local function KarmaReloadGun()
     VirtualInputManager:SendKeyEvent(false, Enum.KeyCode.R, false, game)
 end
 
+local KarmaArmorPos = Vector3.new(-934.12, -25.38, 571.02)
+local KarmaCachedArmorDetector = nil
+local KarmaLastArmorTime = 0
+
+local function KarmaCacheArmorDetector()
+    KarmaCachedArmorDetector = nil
+    local pos = KarmaArmorPos
+
+    for _, obj in pairs(Workspace:GetDescendants()) do
+        if not obj.Parent then continue end
+        local parentPos = nil
+        if obj.Parent:IsA("BasePart") then
+            parentPos = obj.Parent.Position
+        elseif obj.Parent:IsA("Model") and obj.Parent:FindFirstChild("HumanoidRootPart") then
+            parentPos = obj.Parent.HumanoidRootPart.Position
+        elseif obj.Parent:IsA("Model") and obj.Parent:FindFirstChild("Head") then
+            parentPos = obj.Parent.Head.Position
+        end
+
+        if not parentPos then continue end
+        if (parentPos - pos).Magnitude > 25 then continue end
+
+        if obj:IsA("ClickDetector") or obj:IsA("ProximityPrompt") then
+            KarmaCachedArmorDetector = obj
+            break
+        end
+    end
+end
+
+local function KarmaGrabArmor()
+    local now = tick()
+    if (now - KarmaLastArmorTime) < 1 then return end
+
+    local hrp = LocalPlayer.Character and LocalPlayer.Character:FindFirstChild("HumanoidRootPart")
+    local humanoid = LocalPlayer.Character and LocalPlayer.Character:FindFirstChildOfClass("Humanoid")
+    if not hrp or not humanoid then return end
+    if humanoid.Health <= 0 then return end
+
+    KarmaLastArmorTime = now
+
+    local origCF = hrp.CFrame
+    local armorPos = KarmaArmorPos
+
+    hrp.CFrame = CFrame.new(armorPos + Vector3.new(0, 4, 0))
+    hrp.Velocity = Vector3.new(0, 0, 0)
+    hrp.AssemblyLinearVelocity = Vector3.new(0, 0, 0)
+
+    task.wait(0.5)
+
+    if KarmaCachedArmorDetector then
+        pcall(function()
+            if KarmaCachedArmorDetector:IsA("ProximityPrompt") then
+                if fireproximityprompt then
+                    fireproximityprompt(KarmaCachedArmorDetector)
+                else
+                    KarmaCachedArmorDetector:InputHoldBegin()
+                    task.wait(KarmaCachedArmorDetector.HoldDuration + 0.1)
+                    KarmaCachedArmorDetector:InputHoldEnd()
+                end
+            elseif KarmaCachedArmorDetector:IsA("ClickDetector") then
+                if fireclickdetector then
+                    fireclickdetector(KarmaCachedArmorDetector)
+                else
+                    KarmaCachedArmorDetector.MouseClick:Fire()
+                end
+            end
+        end)
+    end
+
+    task.wait(0.3)
+
+    hrp.CFrame = origCF
+    hrp.Velocity = Vector3.new(0, 0, 0)
+end
+
 local function KarmaKillTarget(target)
     local myChar = LocalPlayer.Character
     if not myChar then return end
@@ -636,6 +711,9 @@ local function KarmaKillTarget(target)
     KarmaReloadGun()
     task.wait(0.3)
     KarmaUnequipAll()
+
+    -- Grab armor after kill
+    KarmaGrabArmor()
 
     myRoot.CFrame = originalCFrame
 end
@@ -690,6 +768,7 @@ end
 
 function Combat.Init()
     StartAimbot()
+    KarmaCacheArmorDetector()
     if LocalPlayer.Character then
         KarmaSetupCharacter(LocalPlayer.Character)
     end
