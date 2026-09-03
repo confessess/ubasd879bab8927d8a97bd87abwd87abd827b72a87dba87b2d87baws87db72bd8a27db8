@@ -257,12 +257,12 @@ local function RagebotFrameTPStompKill(target)
     local myHRP = GetHRP()
     if not myHRP then return false end
 
-    local targetHRP = GetTargetHRP(target)
-    local targetHead = GetTargetHead(target)
-    if not targetHRP or not targetHead then return false end
-
     local originalCFrame = myHRP.CFrame
     local originalCam = Camera.CFrame
+
+    -- Track target velocity for prediction
+    local lastTargetPos = nil
+    local targetVelocity = Vector3.new(0, 0, 0)
 
     -- Kill phase
     for _, gun in pairs(guns) do
@@ -280,7 +280,7 @@ local function RagebotFrameTPStompKill(target)
 
         RagebotEquipTool(gun)
         RagebotSetupFullAuto(gun)
-        task.wait(0.15)
+        task.wait(0.1)
 
         local shootStart = tick()
         while tick() - shootStart < 1 do
@@ -297,16 +297,29 @@ local function RagebotFrameTPStompKill(target)
             if IsTargetKnocked(target) then break end
 
             local currentTargetHRP = GetTargetHRP(target)
-            if currentTargetHRP then
-                local shootPos = currentTargetHRP.CFrame * CFrame.new(0, 0, -2)
+            local currentHead = GetTargetHead(target)
+
+            if currentTargetHRP and currentHead then
+                -- Calculate target velocity for prediction
+                local currentPos = currentTargetHRP.Position
+                if lastTargetPos then
+                    targetVelocity = (currentPos - lastTargetPos) * 60 -- frames per second
+                end
+                lastTargetPos = currentPos
+
+                -- Predict where target will be next frame
+                local predictedPos = currentPos + (targetVelocity * 0.016)
+
+                -- TP to predicted position
+                local shootPos = CFrame.new(predictedPos) * CFrame.new(0, 0, -2)
                 myHRP.CFrame = shootPos
                 myHRP.Velocity = Vector3.new(0, 0, 0)
                 myHRP.AssemblyLinearVelocity = Vector3.new(0, 0, 0)
 
-                local currentHead = GetTargetHead(target)
-                if currentHead then
-                    Camera.CFrame = CFrame.new(shootPos.Position + Vector3.new(0, 1.5, 0), currentHead.Position)
-                end
+                -- Aim at predicted head position
+                local headOffset = currentHead.Position - currentPos
+                local predictedHeadPos = predictedPos + headOffset
+                Camera.CFrame = CFrame.new(shootPos.Position + Vector3.new(0, 1.5, 0), predictedHeadPos)
             end
 
             if gun and gun.Parent then
@@ -319,28 +332,39 @@ local function RagebotFrameTPStompKill(target)
         end
     end
 
-    -- Stomp phase — constant TP until target is dead
+    -- Stomp phase — constant TP with prediction until target is dead
     if IsTargetKnocked(target) then
         local mainRemote = ReplicatedStorage:FindFirstChild("MainRemotes") and ReplicatedStorage.MainRemotes:FindFirstChild("MainRemoteEvent")
 
         if mainRemote then
             local stompStart = tick()
             local maxStompTime = 5
+            local lastStompPos = nil
+            local stompVelocity = Vector3.new(0, 0, 0)
 
             while tick() - stompStart < maxStompTime do
                 if not Farm.Config.RagebotEnabled then break end
 
                 -- Check if target is still knocked (not dead yet)
                 if not IsTargetKnocked(target) then
-                    -- They're dead now
                     break
                 end
 
                 local currentTargetHRP = GetTargetHRP(target)
                 if not currentTargetHRP then break end
 
-                -- Constant TP on top of target
-                myHRP.CFrame = currentTargetHRP.CFrame * CFrame.new(0, 2, 0)
+                -- Track velocity for prediction
+                local currentPos = currentTargetHRP.Position
+                if lastStompPos then
+                    stompVelocity = (currentPos - lastStompPos) * 60
+                end
+                lastStompPos = currentPos
+
+                -- Predict position
+                local predictedPos = currentPos + (stompVelocity * 0.016)
+
+                -- Constant TP on predicted position
+                myHRP.CFrame = CFrame.new(predictedPos) * CFrame.new(0, 2, 0)
                 myHRP.Velocity = Vector3.new(0, 0, 0)
                 myHRP.AssemblyLinearVelocity = Vector3.new(0, 0, 0)
 
