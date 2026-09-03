@@ -1335,7 +1335,7 @@ function UI.Build()
         ZIndex = 16,
     }, FarmCard)
 
-    -- MISC PAGE
+        -- MISC PAGE
     local MiscPage = Pages.Misc
     PageTitle(MiscPage, "Misc", "AntiStomp, teleport spam, auto armor, and utility features.")
     local MiscScroll = New("ScrollingFrame", {
@@ -1345,10 +1345,12 @@ function UI.Build()
         BorderSizePixel = 0,
         ScrollBarThickness = 3,
         ScrollBarImageColor3 = Color3.fromRGB(100, 70, 150),
-        CanvasSize = UDim2.new(0, 0, 0, 750),
+        CanvasSize = UDim2.new(0, 0, 0, 760),
         ZIndex = 14,
     }, MiscPage)
-    local MiscCard = CreateCard(MiscScroll, UDim2.fromOffset(0, 0), UDim2.new(1, 0, 0, 740))
+    local MiscCard = CreateCard(MiscScroll, UDim2.fromOffset(0, 0), UDim2.new(1, 0, 0, 750))
+
+    -- AntiStomp Section
     CreateToggle(MiscCard, 14, "AntiStomp", Config.AntiStomp, "AntiStomp", true, function(v)
         Config.AntiStomp = v
         if UI.Misc then
@@ -1358,43 +1360,52 @@ function UI.Build()
     local antiStompDropdown = BuildDropdown(MiscCard, 50, "AntiStomp Mode", Config.AntiStompMode or "Void",
         {"Void", "Force Reset"},
         function(v) Config.AntiStompMode = v end)
-    CreateToggle(MiscCard, 108, "Auto Stomp", Config.AutoStompEnabled, "AutoStompEnabled", true, function(v)
+
+    CreateSeparator(MiscCard, 100)
+
+    -- Auto Stomp Section
+    CreateToggle(MiscCard, 112, "Auto Stomp", Config.AutoStompEnabled, "AutoStompEnabled", true, function(v)
         Config.AutoStompEnabled = v
         if UI.Misc then
             UI.Misc.SetAutoStompEnabled(v)
         end
     end)
-    CreateSeparator(MiscCard, 100)
-    CreateToggle(MiscCard, 144, "Teleport Spam", Config.SpamEnabled, "SpamEnabled", true, function(v)
+
+    CreateSeparator(MiscCard, 152)
+
+    -- Teleport Spam Section
+    CreateToggle(MiscCard, 164, "Teleport Spam", Config.SpamEnabled, "SpamEnabled", true, function(v)
         Config.SpamEnabled = v
         if UI.Misc then
             UI.Misc.ToggleSpam(v)
         end
     end)
-    local spamRangeDropdown = BuildDropdown(MiscCard, 200, "Spam Range", Config.SpamRange or "Close",
+    local spamRangeDropdown = BuildDropdown(MiscCard, 204, "Spam Range", Config.SpamRange or "Close",
         {"Close", "Far"},
         function(v) Config.SpamRange = v end)
-    CreateSlider(MiscCard, 272, "Close Height", 50, 1000, Config.SpamCloseHeight or 350, function(v)
+    CreateSlider(MiscCard, 268, "Close Height", 50, 1000, Config.SpamCloseHeight or 350, function(v)
         Config.SpamCloseHeight = v
     end)
-    CreateSlider(MiscCard, 328, "Close Radius", 50, 1000, Config.SpamCloseRadius or 250, function(v)
+    CreateSlider(MiscCard, 324, "Close Radius", 50, 1000, Config.SpamCloseRadius or 250, function(v)
         Config.SpamCloseRadius = v
     end)
-    CreateSlider(MiscCard, 384, "Far Jitter", 0, 50000, Config.SpamFarJitter or 5000, function(v)
+    CreateSlider(MiscCard, 380, "Far Jitter", 0, 50000, Config.SpamFarJitter or 5000, function(v)
         Config.SpamFarJitter = v
     end)
-    CreateSlider(MiscCard, 440, "Spam Speed", 1, 10, Config.SpamSpeed or 1, function(v)
+    CreateSlider(MiscCard, 436, "Spam Speed", 1, 10, Config.SpamSpeed or 1, function(v)
         Config.SpamSpeed = v
     end)
 
-    CreateSeparator(MiscCard, 496)
-    CreateToggle(MiscCard, 508, "Auto Armor", Config.AutoArmor, "AutoArmor", true, function(v)
+    CreateSeparator(MiscCard, 492)
+
+    -- Auto Armor Section
+    CreateToggle(MiscCard, 504, "Auto Armor", Config.AutoArmor, "AutoArmor", true, function(v)
         Config.AutoArmor = v
         if UI.Misc then
             UI.Misc.SetAutoArmor(v)
         end
     end)
-    CreateToggle(MiscCard, 548, "Armor On Any Damage", Config.AutoArmorOnDamage, "AutoArmorOnDamage", true, function(v)
+    CreateToggle(MiscCard, 544, "Armor On Any Damage", Config.AutoArmorOnDamage, "AutoArmorOnDamage", true, function(v)
         Config.AutoArmorOnDamage = v
         if UI.Misc then
             UI.Misc.EvaluateHealthHook()
@@ -1403,7 +1414,7 @@ function UI.Build()
     local armorPos = Config.AutoArmorPos or Vector3.new(0, 0, 0)
     local ArmorPosLabel = Instance.new("TextLabel")
     ArmorPosLabel.Size = UDim2.new(0.6, 0, 0, 16)
-    ArmorPosLabel.Position = UDim2.new(0.05, 0, 0, 582)
+    ArmorPosLabel.Position = UDim2.new(0.05, 0, 0, 578)
     ArmorPosLabel.BackgroundTransparency = 1
     ArmorPosLabel.Text = string.format("Pos: %.0f, %.0f, %.0f", armorPos.X, armorPos.Y, armorPos.Z)
     ArmorPosLabel.TextColor3 = Color3.fromRGB(130, 130, 150)
@@ -1413,7 +1424,7 @@ function UI.Build()
     ArmorPosLabel.Parent = MiscCard
     local SetPosBtn = Instance.new("TextButton")
     SetPosBtn.Size = UDim2.new(0.3, 0, 0, 20)
-    SetPosBtn.Position = UDim2.new(0.65, 0, 0, 580)
+    SetPosBtn.Position = UDim2.new(0.65, 0, 0, 576)
     SetPosBtn.BackgroundColor3 = Color3.fromRGB(80, 60, 120)
     SetPosBtn.Text = "Set Pos"
     SetPosBtn.TextColor3 = Color3.fromRGB(255, 255, 255)
@@ -1437,13 +1448,13 @@ function UI.Build()
             end
         end
     end)
-    CreateSlider(MiscCard, 608, "Trigger Health", 1, 100, Config.AutoArmorTriggerHealth or 50, function(v)
+    CreateSlider(MiscCard, 604, "Trigger Health", 1, 100, Config.AutoArmorTriggerHealth or 50, function(v)
         Config.AutoArmorTriggerHealth = v
     end)
-    CreateSlider(MiscCard, 664, "Cooldown", 1, 30, Config.AutoArmorCooldown or 5, function(v)
+    CreateSlider(MiscCard, 660, "Cooldown", 1, 30, Config.AutoArmorCooldown or 5, function(v)
         Config.AutoArmorCooldown = v
     end)
-    -- SPECTATE PANEL
+-- SPECTATE PANEL
     local SpectatePanel = New("Frame", {
         Size = UDim2.fromOffset(200, 320),
         Position = UDim2.new(1, -220, 0.5, -160),
@@ -1584,7 +1595,7 @@ function UI.Build()
     local skyThemeDropdown = BuildDropdown(WorldCard, 394, "Sky Theme", Config.World_SkyTheme or "Default",
         {"Default", "Night", "Light", "Blood", "Gray", "DarkNight", "Space", "Test", "Clouds", "Sunset2", "Galaxy2", "Nebula", "Storm2"},
         function(v) Config.World_SkyTheme = v end)
-    -- MOVEMENT PAGE
+        -- MOVEMENT PAGE
     local MovementPage = Pages.Movement
     PageTitle(MovementPage, "Movement", "Speed, fly, jump, and collision modifiers.")
     local MovementScroll = New("ScrollingFrame", {
@@ -1594,12 +1605,12 @@ function UI.Build()
         BorderSizePixel = 0,
         ScrollBarThickness = 3,
         ScrollBarImageColor3 = Color3.fromRGB(100, 70, 150),
-        CanvasSize = UDim2.new(0, 0, 0, 0),
+        CanvasSize = UDim2.new(0, 0, 0, 480),
         ZIndex = 14,
     }, MovementPage)
-    local MovementCard = CreateCard(MovementScroll, UDim2.fromOffset(0, 0), UDim2.new(1, 0, 0, 430))
-    MovementScroll.CanvasSize = UDim2.new(0, 0, 0, 450)
+    local MovementCard = CreateCard(MovementScroll, UDim2.fromOffset(0, 0), UDim2.new(1, 0, 0, 470))
 
+    -- Movement Section
     CreateToggle(MovementCard, 14, "Speed", Config.Move_SpeedEnabled, "Move_SpeedEnabled", true, function(v)
         Config.Move_SpeedEnabled = v
         if UI.Movement then
@@ -1609,67 +1620,51 @@ function UI.Build()
     CreateSlider(MovementCard, 50, "Walk Speed", 16, 200, Config.Move_Speed, function(v)
         Config.Move_Speed = v
     end)
-    CreateToggle(MovementCard, 96, "High Jump", Config.Move_HighJumpEnabled, "Move_HighJumpEnabled", true, function(v)
+    CreateToggle(MovementCard, 106, "High Jump", Config.Move_HighJumpEnabled, "Move_HighJumpEnabled", true, function(v)
         Config.Move_HighJumpEnabled = v
         if UI.Movement then
             UI.Movement.SetHighJumpEnabled(v)
         end
     end)
-    CreateSlider(MovementCard, 132, "Jump Power", 50, 300, Config.Move_JumpPower, function(v)
+    CreateSlider(MovementCard, 142, "Jump Power", 50, 300, Config.Move_JumpPower, function(v)
         Config.Move_JumpPower = v
     end)
-    CreateToggle(MovementCard, 178, "Bunny Hop", Config.Move_BunnyHop, "Move_BunnyHop", true, function(v)
+    CreateToggle(MovementCard, 198, "Bunny Hop", Config.Move_BunnyHop, "Move_BunnyHop", true, function(v)
         Config.Move_BunnyHop = v
         if UI.Movement then
             UI.Movement.SetBunnyHop(v)
         end
     end)
-    CreateToggle(MovementCard, 214, "Infinite Jump", Config.Move_InfiniteJump, "Move_InfiniteJump", true, function(v)
+    CreateToggle(MovementCard, 234, "Infinite Jump", Config.Move_InfiniteJump, "Move_InfiniteJump", true, function(v)
         Config.Move_InfiniteJump = v
         if UI.Movement then
             UI.Movement.SetInfiniteJump(v)
         end
     end)
-    CreateToggle(MovementCard, 250, "NoClip", Config.Move_NoClip, "Move_NoClip", true, function(v)
+    CreateToggle(MovementCard, 270, "NoClip", Config.Move_NoClip, "Move_NoClip", true, function(v)
         Config.Move_NoClip = v
         if UI.Movement then
             UI.Movement.SetNoClip(v)
         end
     end)
 
-    New("Frame", {
-        Size = UDim2.new(1, -20, 0, 1),
-        Position = UDim2.fromOffset(10, 300),
-        BackgroundColor3 = Color3.fromRGB(60, 40, 80),
-        BackgroundTransparency = 0.5,
-        BorderSizePixel = 0,
-        ZIndex = 16,
-    }, MovementCard)
-    New("TextLabel", {
-        Size = UDim2.new(1, -20, 0, 20),
-        Position = UDim2.fromOffset(10, 300),
-        BackgroundTransparency = 1,
-        Text = "Fly",
-        TextColor3 = Color3.fromRGB(245, 220, 255),
-        TextSize = 14,
-        Font = Enum.Font.GothamBold,
-        TextXAlignment = Enum.TextXAlignment.Left,
-        ZIndex = 16,
-    }, MovementCard)
+    CreateSeparator(MovementCard, 314)
 
-    CreateToggle(MovementCard, 324, "Enable Fly", Config.Move_Fly, "Move_Fly", true, function(v)
+    -- Fly Section
+    CreateToggle(MovementCard, 326, "Enable Fly", Config.Move_Fly, "Move_Fly", true, function(v)
         Config.Move_Fly = v
         if UI.Movement then
             UI.Movement.SetFly(v)
         end
     end)
-    local flyMethodDropdown = BuildDropdown(MovementCard, 270, "Fly Method", Config.Move_FlyMethod or "Tween",
+    local flyMethodDropdown = BuildDropdown(MovementCard, 362, "Fly Method", Config.Move_FlyMethod or "Tween",
         {"Tween", "Velocity", "CFrame"},
         function(v) Config.Move_FlyMethod = v end)
 
+    -- Fly Speed
     New("TextLabel", {
         Size = UDim2.new(1, -140, 0, 20),
-        Position = UDim2.fromOffset(10, 326),
+        Position = UDim2.fromOffset(10, 420),
         BackgroundTransparency = 1,
         Text = "Fly Speed",
         TextColor3 = Color3.fromRGB(200, 190, 215),
@@ -1680,7 +1675,7 @@ function UI.Build()
     }, MovementCard)
     local flySpeedTrack = New("Frame", {
         Size = UDim2.new(1, -160, 0, 5),
-        Position = UDim2.fromOffset(10, 356),
+        Position = UDim2.fromOffset(10, 450),
         BackgroundColor3 = Color3.fromRGB(40, 40, 50),
         BorderSizePixel = 0,
         ZIndex = 16,
@@ -1695,7 +1690,7 @@ function UI.Build()
     Corner(flySpeedFill, 3)
     local flySpeedInput = New("TextBox", {
         Size = UDim2.fromOffset(60, 24),
-        Position = UDim2.new(1, -70, 0, 418),
+        Position = UDim2.new(1, -70, 0, 420),
         BackgroundColor3 = Color3.fromRGB(30, 20, 42),
         BackgroundTransparency = 0.25,
         BorderSizePixel = 0,
@@ -1746,7 +1741,7 @@ function UI.Build()
 
     New("TextLabel", {
         Size = UDim2.new(1, -20, 0, 16),
-        Position = UDim2.fromOffset(10, 384),
+        Position = UDim2.fromOffset(10, 460),
         BackgroundTransparency = 1,
         Text = "WASD to move, Space up, Shift down",
         TextColor3 = Color3.fromRGB(140, 130, 155),
@@ -1755,8 +1750,7 @@ function UI.Build()
         TextXAlignment = Enum.TextXAlignment.Left,
         ZIndex = 16,
     }, MovementCard)
-
-    -- SETTINGS PAGE
+-- SETTINGS PAGE
     local SettingsPage = Pages.Settings
     PageTitle(SettingsPage, "Settings", "Interface customization and hotkey display.")
     local SettingsCard = CreateCard(SettingsPage, UDim2.fromOffset(10, 72), UDim2.new(1, -20, 0, 200))
