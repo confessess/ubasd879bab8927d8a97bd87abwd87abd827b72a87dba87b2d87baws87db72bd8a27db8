@@ -125,4 +125,9 @@ return {
     SpamEnabledKey = nil,
     FarmEnabledKey = nil,
     Aimbot_EnabledKey = nil,
+    Move_SpeedEnabledKey = nil,
+    Move_HighJumpEnabledKey = nil,
+    Move_BunnyHopKey = nil,
+    Move_InfiniteJumpKey = nil,
+    Move_NoClipKey = nil,
 }
