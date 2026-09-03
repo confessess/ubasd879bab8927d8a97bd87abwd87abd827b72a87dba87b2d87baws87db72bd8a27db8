@@ -248,6 +248,123 @@ function Farm.PullTarget()
     targetHRP.RotVelocity = Vector3.new(0, 0, 0)
 end
 
+--// ==================== RAGEBOT FRAMETP METHOD ====================
+
+local function RagebotFrameTPStompKill(target)
+    local guns = RagebotGetAllGuns()
+    if #guns == 0 then return false end
+
+    local myHRP = GetHRP()
+    if not myHRP then return false end
+
+    local targetHRP = GetTargetHRP(target)
+    local targetHead = GetTargetHead(target)
+    if not targetHRP or not targetHead then return false end
+
+    local originalCFrame = myHRP.CFrame
+    local originalCam = Camera.CFrame
+
+    -- Kill phase
+    for _, gun in pairs(guns) do
+        if not Farm.Config.RagebotEnabled then 
+            myHRP.CFrame = originalCFrame
+            return false 
+        end
+
+        local targetHum = GetTargetHumanoid(target)
+        if not targetHum or targetHum.Health <= 0 then 
+            myHRP.CFrame = originalCFrame
+            return true 
+        end
+        if IsTargetKnocked(target) then break end
+
+        RagebotEquipTool(gun)
+        RagebotSetupFullAuto(gun)
+        task.wait(0.15)
+
+        local shootStart = tick()
+        while tick() - shootStart < 1 do
+            if not Farm.Config.RagebotEnabled then 
+                myHRP.CFrame = originalCFrame
+                return false 
+            end
+
+            targetHum = GetTargetHumanoid(target)
+            if not targetHum or targetHum.Health <= 0 then 
+                myHRP.CFrame = originalCFrame
+                return true 
+            end
+            if IsTargetKnocked(target) then break end
+
+            local currentTargetHRP = GetTargetHRP(target)
+            if currentTargetHRP then
+                local shootPos = currentTargetHRP.CFrame * CFrame.new(0, 0, -2)
+                myHRP.CFrame = shootPos
+                myHRP.Velocity = Vector3.new(0, 0, 0)
+                myHRP.AssemblyLinearVelocity = Vector3.new(0, 0, 0)
+
+                local currentHead = GetTargetHead(target)
+                if currentHead then
+                    Camera.CFrame = CFrame.new(shootPos.Position + Vector3.new(0, 1.5, 0), currentHead.Position)
+                end
+            end
+
+            if gun and gun.Parent then
+                gun:Activate()
+            end
+
+            RunService.RenderStepped:Wait()
+
+            myHRP.CFrame = originalCFrame
+        end
+    end
+
+    -- Stomp phase — constant TP until target is dead
+    if IsTargetKnocked(target) then
+        local mainRemote = ReplicatedStorage:FindFirstChild("MainRemotes") and ReplicatedStorage.MainRemotes:FindFirstChild("MainRemoteEvent")
+
+        if mainRemote then
+            local stompStart = tick()
+            local maxStompTime = 5
+
+            while tick() - stompStart < maxStompTime do
+                if not Farm.Config.RagebotEnabled then break end
+
+                -- Check if target is still knocked (not dead yet)
+                if not IsTargetKnocked(target) then
+                    -- They're dead now
+                    break
+                end
+
+                local currentTargetHRP = GetTargetHRP(target)
+                if not currentTargetHRP then break end
+
+                -- Constant TP on top of target
+                myHRP.CFrame = currentTargetHRP.CFrame * CFrame.new(0, 2, 0)
+                myHRP.Velocity = Vector3.new(0, 0, 0)
+                myHRP.AssemblyLinearVelocity = Vector3.new(0, 0, 0)
+
+                -- Stomp every frame
+                pcall(function()
+                    mainRemote:FireServer("Stomp")
+                end)
+
+                RunService.Heartbeat:Wait()
+            end
+        end
+
+        myHRP.CFrame = originalCFrame
+
+        Farm.RagebotKillCount = Farm.RagebotKillCount + 1
+        Farm.Notify("Ragebot kill #" .. Farm.RagebotKillCount, Color3.fromRGB(200, 50, 50))
+
+        return true
+    end
+
+    myHRP.CFrame = originalCFrame
+    return false
+end
+
 --// ==================== RAGEBOT ====================
 
 local function RagebotDebug(msg)
@@ -538,123 +655,6 @@ function Farm.SetRagebotEnabled(enabled)
     else
         Farm.StopRagebot()
     end
-end
-
---// ==================== RAGEBOT FRAMETP METHOD ====================
-
-local function RagebotFrameTPStompKill(target)
-    local guns = RagebotGetAllGuns()
-    if #guns == 0 then return false end
-
-    local myHRP = GetHRP()
-    if not myHRP then return false end
-
-    local targetHRP = GetTargetHRP(target)
-    local targetHead = GetTargetHead(target)
-    if not targetHRP or not targetHead then return false end
-
-    local originalCFrame = myHRP.CFrame
-    local originalCam = Camera.CFrame
-
-    -- Kill phase
-    for _, gun in pairs(guns) do
-        if not Farm.Config.RagebotEnabled then 
-            myHRP.CFrame = originalCFrame
-            return false 
-        end
-
-        local targetHum = GetTargetHumanoid(target)
-        if not targetHum or targetHum.Health <= 0 then 
-            myHRP.CFrame = originalCFrame
-            return true 
-        end
-        if IsTargetKnocked(target) then break end
-
-        RagebotEquipTool(gun)
-        RagebotSetupFullAuto(gun)
-        task.wait(0.15)
-
-        local shootStart = tick()
-        while tick() - shootStart < 1 do
-            if not Farm.Config.RagebotEnabled then 
-                myHRP.CFrame = originalCFrame
-                return false 
-            end
-
-            targetHum = GetTargetHumanoid(target)
-            if not targetHum or targetHum.Health <= 0 then 
-                myHRP.CFrame = originalCFrame
-                return true 
-            end
-            if IsTargetKnocked(target) then break end
-
-            local currentTargetHRP = GetTargetHRP(target)
-            if currentTargetHRP then
-                local shootPos = currentTargetHRP.CFrame * CFrame.new(0, 0, -2)
-                myHRP.CFrame = shootPos
-                myHRP.Velocity = Vector3.new(0, 0, 0)
-                myHRP.AssemblyLinearVelocity = Vector3.new(0, 0, 0)
-
-                local currentHead = GetTargetHead(target)
-                if currentHead then
-                    Camera.CFrame = CFrame.new(shootPos.Position + Vector3.new(0, 1.5, 0), currentHead.Position)
-                end
-            end
-
-            if gun and gun.Parent then
-                gun:Activate()
-            end
-
-            RunService.RenderStepped:Wait()
-
-            myHRP.CFrame = originalCFrame
-        end
-    end
-
-    -- Stomp phase — constant TP until target is dead
-    if IsTargetKnocked(target) then
-        local mainRemote = ReplicatedStorage:FindFirstChild("MainRemotes") and ReplicatedStorage.MainRemotes:FindFirstChild("MainRemoteEvent")
-
-        if mainRemote then
-            local stompStart = tick()
-            local maxStompTime = 5
-
-            while tick() - stompStart < maxStompTime do
-                if not Farm.Config.RagebotEnabled then break end
-
-                -- Check if target is still knocked (not dead yet)
-                if not IsTargetKnocked(target) then
-                    -- They're dead now
-                    break
-                end
-
-                local currentTargetHRP = GetTargetHRP(target)
-                if not currentTargetHRP then break end
-
-                -- Constant TP on top of target
-                myHRP.CFrame = currentTargetHRP.CFrame * CFrame.new(0, 2, 0)
-                myHRP.Velocity = Vector3.new(0, 0, 0)
-                myHRP.AssemblyLinearVelocity = Vector3.new(0, 0, 0)
-
-                -- Stomp every frame
-                pcall(function()
-                    mainRemote:FireServer("Stomp")
-                end)
-
-                RunService.Heartbeat:Wait()
-            end
-        end
-
-        myHRP.CFrame = originalCFrame
-
-        Farm.RagebotKillCount = Farm.RagebotKillCount + 1
-        Farm.Notify("Ragebot kill #" .. Farm.RagebotKillCount, Color3.fromRGB(200, 50, 50))
-
-        return true
-    end
-
-    myHRP.CFrame = originalCFrame
-    return false
 end
 
 --// ==================== CONTROL ====================
