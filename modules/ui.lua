@@ -573,6 +573,7 @@ function UI.Build()
             CanvasSize = UDim2.new(0, 0, 0, 0),
             ScrollingDirection = Enum.ScrollingDirection.Y,
             AutomaticCanvasSize = Enum.AutomaticSize.Y,
+            Active = true,
         }, parent)
         Corner(list, 8)
         Stroke(list, 0.9, 1, Color3.fromRGB(140, 90, 200))
@@ -582,10 +583,10 @@ function UI.Build()
             Parent = list,
         })
         New("UIPadding", {
-            PaddingTop = UDim.new(0, 4),
-            PaddingBottom = UDim.new(0, 4),
-            PaddingLeft = UDim.new(0, 4),
-            PaddingRight = UDim.new(0, 4),
+            PaddingTop = UDim.new(0, padding),
+            PaddingBottom = UDim.new(0, padding),
+            PaddingLeft = UDim.new(0, padding),
+            PaddingRight = UDim.new(0, padding),
             Parent = list,
         })
         local open = false
@@ -596,7 +597,7 @@ function UI.Build()
         local optionButtons = {}
         for i, optText in ipairs(options) do
             local btn = New("TextButton", {
-                Size = UDim2.new(1, -padding * 2, 0, itemHeight),
+                Size = UDim2.new(1, 0, 0, itemHeight),
                 BackgroundColor3 = Color3.fromRGB(30, 20, 42),
                 BackgroundTransparency = 1,
                 BorderSizePixel = 0,
