@@ -1672,7 +1672,7 @@ function UI.Build()
                     if UI.ListeningKey == "Toggle" then
                         Config.ToggleKey = captured
                         KeybindButton.Text = FormatKeyName(captured)
-                    elseif UI.ToggleCallbacks[UI.ListeningKey] then
+                    elseif UI.ToggleCallbacks[UI.ListeningKey] or UI.KeybindButtons[UI.ListeningKey] then
                         Config[UI.ListeningKey .. "Key"] = captured
                         local btn = UI.KeybindButtons[UI.ListeningKey]
                         if btn then btn.Text = FormatKeyName(captured) end
