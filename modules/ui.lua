@@ -619,16 +619,353 @@ function UI.Build()
             end,
         }
     end
-
     -- ═════════════════════════════════════════════════════════════════════════════
-    -- COLOR PICKER (NEW)
+    -- COLOR PICKER (Centered Popup — Pouncing.exe style)
     -- ═════════════════════════════════════════════════════════════════════════════
     local ActiveColorPicker = nil
+
+    local ColorPickerFrame = New("Frame", {
+        Name = "ColorPicker",
+        Size = UDim2.fromOffset(300, 300),
+        Position = UDim2.new(0.5, -150, 0.5, -150),
+        BackgroundColor3 = Color3.fromRGB(14, 9, 22),
+        BackgroundTransparency = 0.03,
+        BorderSizePixel = 0,
+        Visible = false,
+        ZIndex = 200,
+    }, ScreenGui)
+    Corner(ColorPickerFrame, 16)
+    Stroke(ColorPickerFrame, 0.85, 1.5, Color3.fromRGB(140, 90, 200))
+
+    local CPGlass = New("Frame", {
+        Size = UDim2.fromScale(1, 1),
+        BackgroundColor3 = Color3.fromRGB(255, 255, 255),
+        BackgroundTransparency = 0.92,
+        BorderSizePixel = 0,
+        ZIndex = 0,
+    }, ColorPickerFrame)
+
+    local CPTitle = New("TextLabel", {
+        Size = UDim2.new(1, -48, 0, 30),
+        Position = UDim2.fromOffset(18, 10),
+        BackgroundTransparency = 1,
+        Text = "Color",
+        TextColor3 = Color3.fromRGB(245, 240, 250),
+        TextSize = 14,
+        Font = Enum.Font.GothamBold,
+        TextXAlignment = Enum.TextXAlignment.Left,
+        ZIndex = 201,
+    }, ColorPickerFrame)
+
+    local CPClose = New("TextButton", {
+        Size = UDim2.fromOffset(30, 30),
+        Position = UDim2.new(1, -38, 0, 10),
+        BackgroundTransparency = 1,
+        Text = "×",
+        TextColor3 = Color3.fromRGB(180, 170, 200),
+        TextSize = 24,
+        Font = Enum.Font.GothamBold,
+        ZIndex = 201,
+    }, ColorPickerFrame)
+
+    local CPState = {
+        Hue = 0, Sat = 1, Val = 1,
+        Callback = nil, IsOpen = false, JustOpened = false, Dragging = nil,
+    }
+    local CPUpdatingHex = false
+    local CPUI = {}
+
+    local function CPUpdateColor(skipCallback)
+        local color = Color3.fromHSV(CPState.Hue, CPState.Sat, CPState.Val)
+        if CPUI.Preview then CPUI.Preview.BackgroundColor3 = color end
+        if CPUI.HexBox and not CPUpdatingHex then
+            CPUpdatingHex = true
+            local r = math.floor(color.R * 255 + 0.5)
+            local g = math.floor(color.G * 255 + 0.5)
+            local b = math.floor(color.B * 255 + 0.5)
+            CPUI.HexBox.Text = string.format("#%02X%02X%02X", r, g, b)
+            CPUpdatingHex = false
+        end
+        if CPUI.SatGrad then
+            CPUI.SatGrad.Color = ColorSequence.new({
+                ColorSequenceKeypoint.new(0, Color3.fromHSV(CPState.Hue, 0, CPState.Val)),
+                ColorSequenceKeypoint.new(1, Color3.fromHSV(CPState.Hue, 1, CPState.Val))
+            })
+        end
+        if CPUI.ValGrad then
+            CPUI.ValGrad.Color = ColorSequence.new({
+                ColorSequenceKeypoint.new(0, Color3.fromHSV(CPState.Hue, CPState.Sat, 0)),
+                ColorSequenceKeypoint.new(1, Color3.fromHSV(CPState.Hue, CPState.Sat, 1))
+            })
+        end
+        if not skipCallback and CPState.Callback then CPState.Callback(color) end
+    end
+
+    local function CPMakeSlider(y, labelText)
+        local label = New("TextLabel", {
+            Size = UDim2.fromOffset(100, 16),
+            Position = UDim2.fromOffset(18, y),
+            BackgroundTransparency = 1,
+            Text = labelText,
+            TextColor3 = Color3.fromRGB(160, 150, 175),
+            TextSize = 11,
+            Font = Enum.Font.Gotham,
+            ZIndex = 201,
+        }, ColorPickerFrame)
+
+        local track = New("Frame", {
+            Size = UDim2.new(1, -36, 0, 6),
+            Position = UDim2.fromOffset(18, y + 18),
+            BackgroundColor3 = Color3.fromRGB(40, 40, 50),
+            BackgroundTransparency = 0.4,
+            BorderSizePixel = 0,
+            ZIndex = 201,
+        }, ColorPickerFrame)
+        Corner(track, 3)
+
+        local gradient = New("UIGradient", {}, track)
+
+        local knob = New("Frame", {
+            Size = UDim2.fromOffset(14, 14),
+            Position = UDim2.new(0, -7, 0.5, -7),
+            BackgroundColor3 = Color3.fromRGB(255, 255, 255),
+            BorderSizePixel = 0,
+            ZIndex = 203,
+        }, track)
+        Corner(knob, 7)
+
+        local knobS = New("UIStroke", {
+            Color = PURPLE,
+            Thickness = 2.5,
+        }, knob)
+
+        local function SetKnobPos(v)
+            knob.Position = UDim2.new(math.clamp(v, 0, 1), -7, 0.5, -7)
+        end
+        return gradient, SetKnobPos, track
+    end
+
+    local hueGrad, SetHuePos, hueTrack = CPMakeSlider(46, "Hue")
+    hueGrad.Color = ColorSequence.new({
+        ColorSequenceKeypoint.new(0, Color3.fromRGB(255, 0, 0)),
+        ColorSequenceKeypoint.new(0.1667, Color3.fromRGB(255, 255, 0)),
+        ColorSequenceKeypoint.new(0.3333, Color3.fromRGB(0, 255, 0)),
+        ColorSequenceKeypoint.new(0.5, Color3.fromRGB(0, 255, 255)),
+        ColorSequenceKeypoint.new(0.6667, Color3.fromRGB(0, 0, 255)),
+        ColorSequenceKeypoint.new(0.8333, Color3.fromRGB(255, 0, 255)),
+        ColorSequenceKeypoint.new(1, Color3.fromRGB(255, 0, 0))
+    })
+
+    local satGrad, SetSatPos, satTrack = CPMakeSlider(88, "Saturation")
+    local valGrad, SetValPos, valTrack = CPMakeSlider(130, "Brightness")
+    CPUI.SatGrad = satGrad
+    CPUI.ValGrad = valGrad
+
+    local previewLabel = New("TextLabel", {
+        Size = UDim2.fromOffset(60, 16),
+        Position = UDim2.fromOffset(18, 174),
+        BackgroundTransparency = 1,
+        Text = "Preview",
+        TextColor3 = Color3.fromRGB(160, 150, 175),
+        TextSize = 11,
+        Font = Enum.Font.Gotham,
+        ZIndex = 201,
+    }, ColorPickerFrame)
+
+    local previewBox = New("Frame", {
+        Size = UDim2.fromOffset(56, 28),
+        Position = UDim2.fromOffset(18, 192),
+        BackgroundColor3 = Color3.fromHSV(0, 1, 1),
+        BorderSizePixel = 0,
+        ZIndex = 201,
+    }, ColorPickerFrame)
+    Corner(previewBox, 8)
+    Stroke(previewBox, 0.2, 1, Color3.fromRGB(140, 90, 200))
+    CPUI.Preview = previewBox
+
+    local hexLabel = New("TextLabel", {
+        Size = UDim2.fromOffset(60, 16),
+        Position = UDim2.fromOffset(88, 174),
+        BackgroundTransparency = 1,
+        Text = "Hex",
+        TextColor3 = Color3.fromRGB(160, 150, 175),
+        TextSize = 11,
+        Font = Enum.Font.Gotham,
+        ZIndex = 201,
+    }, ColorPickerFrame)
+
+    local hexBox = New("TextBox", {
+        Size = UDim2.fromOffset(130, 28),
+        Position = UDim2.fromOffset(88, 192),
+        BackgroundColor3 = Color3.fromRGB(30, 20, 42),
+        BackgroundTransparency = 0.25,
+        BorderSizePixel = 0,
+        Text = "#FF69B4",
+        TextColor3 = Color3.fromRGB(245, 240, 250),
+        TextSize = 12,
+        Font = Enum.Font.Gotham,
+        ClearTextOnFocus = false,
+        ZIndex = 201,
+    }, ColorPickerFrame)
+    Corner(hexBox, 8)
+    Stroke(hexBox, 0.6, 1, Color3.fromRGB(80, 60, 100))
+    CPUI.HexBox = hexBox
+
+    local function CPGetSliderPos(track)
+        local size = track.AbsoluteSize.X
+        if size <= 0 then return nil end
+        local mousePos = UserInputService:GetMouseLocation()
+        return math.clamp((mousePos.X - track.AbsolutePosition.X) / size, 0, 1)
+    end
+
+    local function CPEnsureVisibleColor()
+        if CPState.Sat < 0.05 then
+            CPState.Sat = 0.5
+            SetSatPos(0.5)
+        end
+    end
+
+    local cpDragConn = nil
+    local function CPStartDrag(which)
+        CPState.Dragging = which
+        if cpDragConn then cpDragConn:Disconnect() end
+        cpDragConn = game:GetService("RunService").RenderStepped:Connect(function()
+            if CPState.Dragging == "hue" then
+                local pos = CPGetSliderPos(hueTrack)
+                if pos then CPState.Hue = pos; SetHuePos(pos); CPEnsureVisibleColor(); CPUpdateColor() end
+            elseif CPState.Dragging == "sat" then
+                local pos = CPGetSliderPos(satTrack)
+                if pos then CPState.Sat = pos; SetSatPos(pos); CPUpdateColor() end
+            elseif CPState.Dragging == "val" then
+                local pos = CPGetSliderPos(valTrack)
+                if pos then CPState.Val = pos; SetValPos(pos); CPUpdateColor() end
+            end
+        end)
+    end
+
+    local function CPEndDrag()
+        CPState.Dragging = nil
+        if cpDragConn then cpDragConn:Disconnect() cpDragConn = nil end
+    end
+
+    hueTrack.InputBegan:Connect(function(input)
+        if input.UserInputType == Enum.UserInputType.MouseButton1 then CPStartDrag("hue") end
+    end)
+    satTrack.InputBegan:Connect(function(input)
+        if input.UserInputType == Enum.UserInputType.MouseButton1 then CPStartDrag("sat") end
+    end)
+    valTrack.InputBegan:Connect(function(input)
+        if input.UserInputType == Enum.UserInputType.MouseButton1 then CPStartDrag("val") end
+    end)
+    UserInputService.InputEnded:Connect(function(input)
+        if input.UserInputType == Enum.UserInputType.MouseButton1 then CPEndDrag() end
+    end)
+
+    local function CPParseHex()
+        local text = hexBox.Text:gsub("#", ""):upper()
+        if #text == 3 then
+            text = text:sub(1,1):rep(2) .. text:sub(2,2):rep(2) .. text:sub(3,3):rep(2)
+        end
+        if #text ~= 6 then return nil end
+        local r = tonumber(text:sub(1,2), 16)
+        local g = tonumber(text:sub(3,4), 16)
+        local b = tonumber(text:sub(5,6), 16)
+        if not r or not g or not b then return nil end
+        return Color3.fromRGB(r, g, b)
+    end
+
+    local function CPApplyHexColor()
+        local color = CPParseHex()
+        if not color then
+            hexBox:FindFirstChildOfClass("UIStroke").Color = Color3.fromRGB(255, 80, 80)
+            task.delay(0.3, function()
+                local s = hexBox:FindFirstChildOfClass("UIStroke")
+                if s then s.Color = Color3.fromRGB(80, 60, 100) end
+            end)
+            return
+        end
+        local h, s, v = Color3.toHSV(color)
+        CPState.Hue, CPState.Sat, CPState.Val = h, s, v
+        SetHuePos(h)
+        SetSatPos(s)
+        SetValPos(v)
+        CPUpdateColor()
+        hexBox:FindFirstChildOfClass("UIStroke").Color = Color3.fromRGB(80, 255, 80)
+        task.delay(0.3, function()
+            local st = hexBox:FindFirstChildOfClass("UIStroke")
+            if st then st.Color = Color3.fromRGB(80, 60, 100) end
+        end)
+    end
+
+    hexBox.FocusLost:Connect(CPApplyHexColor)
+
+    local hexTypingConn = nil
+    hexBox:GetPropertyChangedSignal("Text"):Connect(function()
+        if CPUpdatingHex then return end
+        if hexTypingConn then hexTypingConn:Disconnect() end
+        hexTypingConn = task.delay(0.5, function()
+            hexTypingConn = nil
+            CPApplyHexColor()
+        end)
+    end)
+
+    CPClose.MouseButton1Click:Connect(function()
+        ColorPickerFrame.Visible = false
+        CPState.IsOpen = false
+        CPEndDrag()
+        ActiveColorPicker = nil
+    end)
+
+    UserInputService.InputBegan:Connect(function(input, gp)
+        if gp then return end
+        if CPState.JustOpened then return end
+        if input.UserInputType == Enum.UserInputType.MouseButton1 and CPState.IsOpen then
+            local mousePos = UserInputService:GetMouseLocation()
+            local framePos = ColorPickerFrame.AbsolutePosition
+            local frameSize = ColorPickerFrame.AbsoluteSize
+            if mousePos.X < framePos.X or mousePos.X > framePos.X + frameSize.X or
+               mousePos.Y < framePos.Y or mousePos.Y > framePos.Y + frameSize.Y then
+                ColorPickerFrame.Visible = false
+                CPState.IsOpen = false
+                CPEndDrag()
+                ActiveColorPicker = nil
+            end
+        end
+    end)
+
+    UserInputService.InputBegan:Connect(function(input, gp)
+        if gp then return end
+        if input.KeyCode == Enum.KeyCode.Escape and CPState.IsOpen then
+            ColorPickerFrame.Visible = false
+            CPState.IsOpen = false
+            CPEndDrag()
+            ActiveColorPicker = nil
+        end
+    end)
+
+    local function OpenColorPicker(setCallback, setDefaultColor, setTitle)
+        CPState.Callback = setCallback
+        CPTitle.Text = setTitle or "Color"
+        if setDefaultColor then
+            local h, s, v = Color3.toHSV(setDefaultColor)
+            CPState.Hue, CPState.Sat, CPState.Val = h, s, v
+        end
+        SetHuePos(CPState.Hue)
+        SetSatPos(CPState.Sat)
+        SetValPos(CPState.Val)
+        CPUpdateColor(true)
+        ColorPickerFrame.Visible = true
+        CPState.IsOpen = true
+        CPState.JustOpened = true
+        ActiveColorPicker = ColorPickerFrame
+        task.delay(0.2, function() CPState.JustOpened = false end)
+    end
+
     local function CreateColorButton(parent, y, colorKey, labelText)
         local colorValue = Config.ESP_Colors[colorKey] or Color3.fromRGB(255, 255, 255)
         local circle = New("TextButton", {
             Size = UDim2.fromOffset(16, 16),
-            Position = UDim2.new(1, -72, 0, y + 8),
+            Position = UDim2.new(1, -90, 0, y + 8),
             BackgroundColor3 = colorValue,
             BorderSizePixel = 0,
             Text = "",
@@ -638,148 +975,17 @@ function UI.Build()
         Corner(circle, 8)
         Stroke(circle, 0.3, 1.5, Color3.fromRGB(255, 255, 255))
 
-        local picker = New("Frame", {
-            Size = UDim2.fromOffset(0, 0),
-            Position = UDim2.fromOffset(0, 0),
-            BackgroundColor3 = Color3.fromRGB(14, 9, 22),
-            BackgroundTransparency = 0.05,
-            BorderSizePixel = 0,
-            ZIndex = 200,
-            ClipsDescendants = true,
-            Visible = false,
-        }, Main)
-        Corner(picker, 10)
-        Stroke(picker, 0.85, 1, Color3.fromRGB(140, 90, 200))
-
-        New("TextLabel", {
-            Size = UDim2.new(1, -12, 0, 18),
-            Position = UDim2.fromOffset(6, 6),
-            BackgroundTransparency = 1,
-            Text = labelText .. " Color",
-            TextColor3 = Color3.fromRGB(220, 215, 235),
-            TextSize = 11,
-            Font = Enum.Font.GothamBold,
-            TextXAlignment = Enum.TextXAlignment.Left,
-            ZIndex = 201,
-        }, picker)
-
-        local preview = New("Frame", {
-            Size = UDim2.fromOffset(28, 28),
-            Position = UDim2.new(1, -34, 0, 4),
-            BackgroundColor3 = colorValue,
-            BorderSizePixel = 0,
-            ZIndex = 201,
-        }, picker)
-        Corner(preview, 6)
-        Stroke(preview, 0.2, 1, Color3.fromRGB(255, 255, 255))
-
-        local closeBtn = New("TextButton", {
-            Size = UDim2.fromOffset(20, 20),
-            Position = UDim2.new(1, -26, 0, 6),
-            BackgroundTransparency = 1,
-            Text = "×",
-            TextColor3 = Color3.fromRGB(180, 170, 200),
-            TextSize = 14,
-            Font = Enum.Font.GothamBold,
-            AutoButtonColor = false,
-            ZIndex = 202,
-        }, picker)
-
-        local sliders = {}
-        local colors = {"R", "G", "B"}
-        local defaults = {math.floor(colorValue.R * 255), math.floor(colorValue.G * 255), math.floor(colorValue.B * 255)}
-        for i, cname in ipairs(colors) do
-            local sframe = New("Frame", {
-                Size = UDim2.new(1, -12, 0, 26),
-                Position = UDim2.fromOffset(6, 28 + (i - 1) * 28),
-                BackgroundTransparency = 1,
-                ZIndex = 201,
-            }, picker)
-            New("TextLabel", {
-                Size = UDim2.fromOffset(14, 16),
-                Position = UDim2.fromOffset(0, 2),
-                BackgroundTransparency = 1,
-                Text = cname,
-                TextColor3 = cname == "R" and Color3.fromRGB(255, 100, 100) or cname == "G" and Color3.fromRGB(100, 255, 100) or Color3.fromRGB(100, 100, 255),
-                TextSize = 10,
-                Font = Enum.Font.GothamBold,
-                ZIndex = 202,
-            }, sframe)
-            local strack = New("Frame", {
-                Size = UDim2.new(1, -20, 0, 4),
-                Position = UDim2.fromOffset(18, 10),
-                BackgroundColor3 = Color3.fromRGB(40, 40, 50),
-                BorderSizePixel = 0,
-                ZIndex = 202,
-            }, sframe)
-            Corner(strack, 2)
-            local sfill = New("Frame", {
-                Size = UDim2.new(defaults[i] / 255, 0, 1, 0),
-                BackgroundColor3 = cname == "R" and Color3.fromRGB(255, 80, 80) or cname == "G" and Color3.fromRGB(80, 255, 80) or Color3.fromRGB(80, 80, 255),
-                BorderSizePixel = 0,
-                ZIndex = 203,
-            }, strack)
-            Corner(sfill, 2)
-            local sdrag = false
-            local function sset(input)
-                local pos = math.clamp((input.Position.X - strack.AbsolutePosition.X) / strack.AbsoluteSize.X, 0, 1)
-                local val = math.floor(pos * 255)
-                sfill.Size = UDim2.new(pos, 0, 1, 0)
-                defaults[i] = val
-                local r, g, b = defaults[1], defaults[2], defaults[3]
-                local newColor = Color3.fromRGB(r, g, b)
-                Config.ESP_Colors[colorKey] = newColor
-                circle.BackgroundColor3 = newColor
-                preview.BackgroundColor3 = newColor
-            end
-            strack.InputBegan:Connect(function(input)
-                if input.UserInputType == Enum.UserInputType.MouseButton1 then
-                    sdrag = true
-                    sset(input)
-                end
-            end)
-            UserInputService.InputChanged:Connect(function(input)
-                if sdrag and input.UserInputType == Enum.UserInputType.MouseMovement then
-                    sset(input)
-                end
-            end)
-            UserInputService.InputEnded:Connect(function(input)
-                if input.UserInputType == Enum.UserInputType.MouseButton1 then
-                    sdrag = false
-                end
-            end)
-            table.insert(sliders, {track = strack, fill = sfill})
-        end
-
-        local open = false
-        local function closePicker()
-            open = false
-            Tween(picker, {Size = UDim2.fromOffset(0, 0)}, 0.2):Play()
-            task.delay(0.2, function()
-                if not open then picker.Visible = false end
-            end)
-            ActiveColorPicker = nil
-        end
-        closeBtn.MouseButton1Click:Connect(closePicker)
-
         circle.MouseButton1Click:Connect(function()
-            if ActiveColorPicker and ActiveColorPicker ~= picker then
-                -- close other pickers
-                pcall(function()
-                    Tween(ActiveColorPicker, {Size = UDim2.fromOffset(0, 0)}, 0.15):Play()
-                    task.delay(0.15, function() ActiveColorPicker.Visible = false end)
-                end)
-            end
-            open = not open
-            if open then
-                local absPos = circle.AbsolutePosition
-                local absSize = circle.AbsoluteSize
-                picker.Position = UDim2.fromOffset(absPos.X + absSize.X + 6, absPos.Y - 10)
-                picker.Visible = true
-                Tween(picker, {Size = UDim2.fromOffset(180, 120)}, 0.2):Play()
-                ActiveColorPicker = picker
+            if CPState.IsOpen and ActiveColorPicker == ColorPickerFrame then
+                ColorPickerFrame.Visible = false
+                CPState.IsOpen = false
+                CPEndDrag()
+                ActiveColorPicker = nil
             else
-                closePicker()
+                OpenColorPicker(function(c)
+                    Config.ESP_Colors[colorKey] = c
+                    circle.BackgroundColor3 = c
+                end, circle.BackgroundColor3, labelText .. " Color")
             end
         end)
 
@@ -1327,7 +1533,7 @@ function UI.Build()
     end
     UI.SetGUIVisible = SetGUIVisible
 
-    --// Input Handler (with color picker close-on-outside)
+    --// Input Handler
     UserInputService.InputBegan:Connect(function(input, gameProcessed)
         if gameProcessed then return end
         if UI.ListeningKey then
@@ -1372,18 +1578,17 @@ function UI.Build()
                 end
             end
         end
-        -- Close color pickers on any click outside
+        -- Close color picker on click outside
         if input.UserInputType == Enum.UserInputType.MouseButton1 then
             local mousePos = UserInputService:GetMouseLocation()
-            if ActiveColorPicker and ActiveColorPicker.Visible then
-                local absPos = ActiveColorPicker.AbsolutePosition
-                local absSize = ActiveColorPicker.AbsoluteSize
-                if mousePos.X < absPos.X or mousePos.X > absPos.X + absSize.X or
-                   mousePos.Y < absPos.Y or mousePos.Y > absPos.Y + absSize.Y then
-                    Tween(ActiveColorPicker, {Size = UDim2.fromOffset(0, 0)}, 0.15):Play()
-                    task.delay(0.15, function()
-                        if ActiveColorPicker then ActiveColorPicker.Visible = false end
-                    end)
+            if CPState.IsOpen and ColorPickerFrame.Visible then
+                local framePos = ColorPickerFrame.AbsolutePosition
+                local frameSize = ColorPickerFrame.AbsoluteSize
+                if mousePos.X < framePos.X or mousePos.X > framePos.X + frameSize.X or
+                   mousePos.Y < framePos.Y or mousePos.Y > framePos.Y + frameSize.Y then
+                    ColorPickerFrame.Visible = false
+                    CPState.IsOpen = false
+                    CPEndDrag()
                     ActiveColorPicker = nil
                 end
             end
