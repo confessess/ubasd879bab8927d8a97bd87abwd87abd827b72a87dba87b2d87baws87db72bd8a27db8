@@ -565,16 +565,17 @@ function UI.Build()
         local maxVisible = 8
         local listHeight = math.min(#options, maxVisible) * itemHeight
 
+        -- Parent list to ScreenGui so it renders above everything, no clipping
         local list = New("Frame", {
-            Size = UDim2.new(1, -20, 0, 0),
-            Position = UDim2.fromOffset(10, y + 24 + 32 + 2),
+            Size = UDim2.fromOffset(200, 0),
+            Position = UDim2.fromOffset(0, 0),
             BackgroundColor3 = Color3.fromRGB(18, 11, 27),
             BackgroundTransparency = 0.02,
             BorderSizePixel = 0,
-            ZIndex = 100,
+            ZIndex = 500,
             ClipsDescendants = true,
             Visible = false,
-        }, parent)
+        }, ScreenGui)
         Corner(list, 8)
         Stroke(list, 0.85, 1, Color3.fromRGB(140, 90, 200))
 
@@ -592,7 +593,7 @@ function UI.Build()
                 Font = Enum.Font.GothamMedium,
                 TextXAlignment = Enum.TextXAlignment.Left,
                 AutoButtonColor = false,
-                ZIndex = 101,
+                ZIndex = 501,
             }, list)
             Corner(btn, 4)
             btn.MouseEnter:Connect(function()
@@ -605,7 +606,7 @@ function UI.Build()
                 onSelect(optText)
                 header.Text = "  " .. optText .. "  ▼"
                 open = false
-                Tween(list, {Size = UDim2.new(1, -20, 0, 0)}, 0.2):Play()
+                Tween(list, {Size = UDim2.fromOffset(200, 0)}, 0.2):Play()
                 task.delay(0.2, function()
                     if not open then list.Visible = false end
                 end)
@@ -616,12 +617,17 @@ function UI.Build()
         header.MouseButton1Click:Connect(function()
             open = not open
             if open then
+                -- Position list at header's screen position
+                local absPos = header.AbsolutePosition
+                local absSize = header.AbsoluteSize
+                list.Position = UDim2.fromOffset(absPos.X, absPos.Y + absSize.Y + 2)
+                list.Size = UDim2.fromOffset(absSize.X, 0)
                 list.Visible = true
                 header.Text = "  " .. currentValue .. "  ▲"
-                Tween(list, {Size = UDim2.new(1, -20, 0, listHeight)}, 0.2):Play()
+                Tween(list, {Size = UDim2.fromOffset(absSize.X, listHeight)}, 0.2):Play()
             else
                 header.Text = "  " .. currentValue .. "  ▼"
-                Tween(list, {Size = UDim2.new(1, -20, 0, 0)}, 0.2):Play()
+                Tween(list, {Size = UDim2.fromOffset(list.AbsoluteSize.X, 0)}, 0.2):Play()
                 task.delay(0.2, function()
                     if not open then list.Visible = false end
                 end)
@@ -636,7 +642,7 @@ function UI.Build()
             Close = function()
                 open = false
                 header.Text = "  " .. currentValue .. "  ▼"
-                Tween(list, {Size = UDim2.new(1, -20, 0, 0)}, 0.2):Play()
+                Tween(list, {Size = UDim2.fromOffset(list.AbsoluteSize.X, 0)}, 0.2):Play()
                 task.delay(0.2, function()
                     if not open then list.Visible = false end
                 end)
