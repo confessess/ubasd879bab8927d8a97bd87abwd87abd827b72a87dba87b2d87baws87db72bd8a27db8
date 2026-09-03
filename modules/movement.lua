@@ -327,7 +327,11 @@ local function OnRender()
 
     DoBunnyHop()
     DoInfiniteJump()
-    DoFly()
+    if Config.Move_Fly then
+        DoFly()
+    elseif Movement.State.Flying then
+        StopFly()
+    end
 
     if Config.Move_NoClip then
         DoNoClip()
