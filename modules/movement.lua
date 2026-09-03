@@ -163,9 +163,6 @@ local function DoFly_Tween()
         local targetPos = root.Position + move * 0.016
         root.CFrame = CFrame.new(root.Position:Lerp(targetPos, 0.3))
     end
-    -- Only zero velocity while actively moving to stay afloat
-    root.Velocity = Vector3.new(0, 0.1, 0)
-    root.RotVelocity = Vector3.new(0, 0, 0)
 end
 
 -- ── Method 2: Velocity (physics-based) ──
@@ -178,10 +175,8 @@ local function DoFly_Velocity()
     local move = GetFlyInput()
     if move.Magnitude > 0 then
         root.AssemblyLinearVelocity = move
-        root.RotVelocity = Vector3.new(0, 0, 0)
     else
         root.AssemblyLinearVelocity = Vector3.new(0, 0.1, 0)
-        root.RotVelocity = Vector3.new(0, 0, 0)
     end
 end
 
@@ -196,8 +191,6 @@ local function DoFly_CFrame()
     if move.Magnitude > 0 then
         root.CFrame = root.CFrame + move * 0.016
     end
-    root.Velocity = Vector3.new(0, 0.1, 0)
-    root.RotVelocity = Vector3.new(0, 0, 0)
 end
 
 -- ═════════════════════════════════════════════════════════════════════════════
@@ -210,7 +203,6 @@ local function StartFly()
     if not char then return end
     local hum = char:FindFirstChildOfClass("Humanoid")
     if hum then
-        hum.PlatformStand = true
         hum.AutoRotate = false
     end
     Movement.State.Flying = true
@@ -232,14 +224,8 @@ local function StopFly()
     if char then
         local hum = char:FindFirstChildOfClass("Humanoid")
         if hum then
-            hum.PlatformStand = false
             hum.AutoRotate = true
-            hum:ChangeState(Enum.HumanoidStateType.GettingUp)
-        end
-        local root = char:FindFirstChild("HumanoidRootPart")
-        if root then
-            -- Give a tiny upward nudge so the humanoid state machine wakes up
-            root.Velocity = Vector3.new(root.Velocity.X, math.max(root.Velocity.Y, 2), root.Velocity.Z)
+            hum:ChangeState(Enum.HumanoidStateType.Freefall)
         end
     end
     Movement.State.Flying = false
