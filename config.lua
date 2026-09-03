@@ -7,6 +7,12 @@ return {
     OneFrameDelay = false,
     RapidFire = false,
 
+    -- Karma
+    Karma_Enabled = false,
+    Karma_EnabledKey = nil,
+    Karma_KillDistance = 500,
+    Karma_MaxGuns = 10,
+
     -- Aimbot
     Aimbot_Enabled = false,
     Aimbot_ToggleMode = false,

@@ -2,6 +2,7 @@ local Players = game:GetService("Players")
 local RunService = game:GetService("RunService")
 local Workspace = game:GetService("Workspace")
 local UserInputService = game:GetService("UserInputService")
+local VirtualInputManager = game:GetService("VirtualInputManager")
 
 local LocalPlayer = Players.LocalPlayer
 local Camera = Workspace.CurrentCamera
@@ -19,6 +20,10 @@ local Combat = {
     Aiming = false,
     CurrentTarget = nil,
     StickyLostTime = 0,
+
+    -- Karma state
+    KarmaTriggered = false,
+    KarmaLastHealth = 100,
 }
 
 function Combat.SetConfig(config)
@@ -123,7 +128,6 @@ local function GetBestTarget()
     local Config = Combat.Config
     if not Config.Aimbot_Enabled then return nil end
 
-    -- Sticky target: keep following current target briefly if they go out of FOV
     if Config.Aimbot_StickyTarget and Combat.CurrentTarget and Combat.Aiming then
         if IsTargetValidSticky(Combat.CurrentTarget) then
             local part = Combat.CurrentTarget.Character:FindFirstChild(Combat.CurrentTarget.Part.Name)
@@ -134,7 +138,6 @@ local function GetBestTarget()
                     Combat.CurrentTarget.Position = part.Position
                     return Combat.CurrentTarget
                 else
-                    -- Briefly out of FOV/distance, grace period
                     if Combat.StickyLostTime == 0 then
                         Combat.StickyLostTime = tick()
                     elseif tick() - Combat.StickyLostTime < 0.6 then
@@ -306,7 +309,6 @@ local function StopAimbot()
     end
 end
 
--- Input handling for aimbot — supports both keyboard keys and mouse buttons
 UserInputService.InputBegan:Connect(function(input, gp)
     if gp then return end
     local Config = Combat.Config
@@ -327,7 +329,7 @@ UserInputService.InputEnded:Connect(function(input, gp)
     if gp then return end
     local Config = Combat.Config
     if not Config or not Config.Aimbot_Enabled then return end
-    if Config.Aimbot_ToggleMode then return end -- toggle mode ignores release
+    if Config.Aimbot_ToggleMode then return end
 
     local aimKey = Config.Aimbot_EnabledKey
     local matched = (input.KeyCode == aimKey) or (input.UserInputType == aimKey)
@@ -438,12 +440,252 @@ function Combat.Reset()
     Combat.ModifiedTools = {}
 end
 
+
+-- ═════════════════════════════════════════════════════════════════════════════
+-- KARMA — Auto-kill whoever shoots you
+-- ═════════════════════════════════════════════════════════════════════════════
+
+local function KarmaHasGun(character)
+    if not character then return false, nil end
+    local tool = character:FindFirstChildOfClass("Tool")
+    if tool and tool:FindFirstChild("GunScript") then
+        return true, tool
+    end
+    return false, nil
+end
+
+local function KarmaGetGunPlayers()
+    local gunPlayers = {}
+    for _, player in pairs(Players:GetPlayers()) do
+        if player ~= LocalPlayer and player.Character then
+            local hasGun, tool = KarmaHasGun(player.Character)
+            if hasGun then
+                table.insert(gunPlayers, {
+                    Player = player,
+                    Character = player.Character,
+                    Tool = tool,
+                    Humanoid = player.Character:FindFirstChildOfClass("Humanoid"),
+                    RootPart = player.Character:FindFirstChild("HumanoidRootPart"),
+                    Head = player.Character:FindFirstChild("Head"),
+                })
+            end
+        end
+    end
+    return gunPlayers
+end
+
+local function KarmaHasLOS(fromPos, toPos)
+    local direction = (toPos - fromPos).Unit
+    local distance = (toPos - fromPos).Magnitude
+    local raycastParams = RaycastParams.new()
+    raycastParams.FilterDescendantsInstances = {LocalPlayer.Character}
+    raycastParams.FilterType = Enum.RaycastFilterType.Blacklist
+    local result = Workspace:Raycast(fromPos, direction * distance, raycastParams)
+    return result == nil
+end
+
+local function KarmaIdentifyShooter()
+    local myChar = LocalPlayer.Character
+    if not myChar then return nil end
+    local myRoot = myChar:FindFirstChild("HumanoidRootPart")
+    local myHead = myChar:FindFirstChild("Head")
+    if not myRoot or not myHead then return nil end
+
+    local myPos = myRoot.Position
+    local gunPlayers = KarmaGetGunPlayers()
+    local bestCandidate = nil
+    local bestScore = -1
+    local killDistance = (Combat.Config and Combat.Config.Karma_KillDistance) or 500
+
+    for _, candidate in pairs(gunPlayers) do
+        if candidate.RootPart and candidate.Humanoid and candidate.Humanoid.Health > 0 then
+            local theirPos = candidate.RootPart.Position
+            local distance = (theirPos - myPos).Magnitude
+
+            if distance <= killDistance then
+                local score = 0
+
+                if candidate.Head and KarmaHasLOS(candidate.Head.Position, myHead.Position) then
+                    score = score + 50
+                end
+
+                local theirLook = candidate.RootPart.CFrame.LookVector
+                local directionToMe = (myPos - theirPos).Unit
+                local dot = theirLook:Dot(directionToMe)
+                if dot > 0.5 then
+                    score = score + 30
+                end
+
+                score = score + (100 - math.min(distance, 100))
+
+                if score > bestScore then
+                    bestScore = score
+                    bestCandidate = candidate
+                end
+            end
+        end
+    end
+
+    return bestCandidate
+end
+
+local function KarmaGetAllGuns()
+    local guns = {}
+    local myChar = LocalPlayer.Character
+    local backpack = LocalPlayer:FindFirstChild("Backpack")
+    local maxGuns = (Combat.Config and Combat.Config.Karma_MaxGuns) or 10
+
+    if myChar then
+        local equipped = myChar:FindFirstChildOfClass("Tool")
+        if equipped and equipped:FindFirstChild("GunScript") then
+            table.insert(guns, equipped)
+        end
+    end
+
+    if backpack then
+        for _, item in pairs(backpack:GetChildren()) do
+            if #guns >= maxGuns then break end
+            if item:IsA("Tool") and item:FindFirstChild("GunScript") then
+                table.insert(guns, item)
+            end
+        end
+    end
+
+    return guns
+end
+
+local function KarmaEquipTool(tool)
+    local myChar = LocalPlayer.Character
+    if not myChar then return false end
+    local current = myChar:FindFirstChildOfClass("Tool")
+    if current then
+        current.Parent = LocalPlayer.Backpack
+    end
+    tool.Parent = myChar
+    return true
+end
+
+local function KarmaUnequipAll()
+    local myChar = LocalPlayer.Character
+    if not myChar then return end
+    local current = myChar:FindFirstChildOfClass("Tool")
+    if current then
+        current.Parent = LocalPlayer.Backpack
+    end
+end
+
+local function KarmaIsTargetDead(target)
+    if not target.Character then return true end
+    local humanoid = target.Character:FindFirstChildOfClass("Humanoid")
+    if not humanoid then return true end
+    return humanoid.Health <= 0
+end
+
+local function KarmaFireAtTarget(target, myTool, myRoot, shots)
+    local targetHead = target.Character and target.Character:FindFirstChild("Head")
+    local targetRoot = target.Character and target.Character:FindFirstChild("HumanoidRootPart")
+    if not targetHead or not targetRoot then return false end
+
+    local behindPos = targetRoot.CFrame * CFrame.new(0, 0, -3)
+    myRoot.CFrame = CFrame.new(behindPos.Position, targetHead.Position)
+
+    RunService.RenderStepped:Wait()
+    RunService.RenderStepped:Wait()
+
+    for i = 1, shots do
+        if not targetHead.Parent then return true end
+        if myTool and myTool.Parent then
+            myRoot.CFrame = CFrame.new(myRoot.Position, targetHead.Position)
+            myTool:Activate()
+        end
+        RunService.RenderStepped:Wait()
+    end
+
+    return KarmaIsTargetDead(target)
+end
+
+local function KarmaReloadGun()
+    VirtualInputManager:SendKeyEvent(true, Enum.KeyCode.R, false, game)
+    task.wait(0.05)
+    VirtualInputManager:SendKeyEvent(false, Enum.KeyCode.R, false, game)
+end
+
+local function KarmaKillTarget(target)
+    local myChar = LocalPlayer.Character
+    if not myChar then return end
+    local myRoot = myChar:FindFirstChild("HumanoidRootPart")
+    if not myRoot then return end
+
+    local originalCFrame = myRoot.CFrame
+    local guns = KarmaGetAllGuns()
+
+    if #guns == 0 then return end
+
+    for gunIndex, gun in pairs(guns) do
+        if KarmaIsTargetDead(target) then break end
+
+        KarmaEquipTool(gun)
+        Combat.SetupFullAuto(gun)
+        task.wait(0.1)
+
+        local killed = KarmaFireAtTarget(target, gun, myRoot, 20)
+
+        if killed then break end
+    end
+
+    KarmaReloadGun()
+    task.wait(0.3)
+    KarmaUnequipAll()
+
+    myRoot.CFrame = originalCFrame
+end
+
+local function KarmaOnHealthChanged(health)
+    if not Combat.Config or not Combat.Config.Karma_Enabled then return end
+    if Combat.KarmaTriggered then return end
+
+    local damage = Combat.KarmaLastHealth - health
+    if damage > 0 then
+        Combat.KarmaTriggered = true
+
+        task.delay(0.05, function()
+            local shooter = KarmaIdentifyShooter()
+            if shooter then
+                KarmaKillTarget(shooter)
+            end
+            Combat.KarmaTriggered = false
+        end)
+    end
+
+    Combat.KarmaLastHealth = health
+end
+
+local function KarmaSetupCharacter(character)
+    local humanoid = character:WaitForChild("Humanoid", 5)
+    if not humanoid then return end
+
+    Combat.KarmaLastHealth = humanoid.Health
+    Combat.KarmaTriggered = false
+
+    humanoid.HealthChanged:Connect(KarmaOnHealthChanged)
+end
+
+function Combat.SetKarmaEnabled(enabled)
+    if Combat.Config then
+        Combat.Config.Karma_Enabled = enabled
+    end
+end
+
 -- ═════════════════════════════════════════════════════════════════════════════
 -- LIFECYCLE
 -- ═════════════════════════════════════════════════════════════════════════════
 
 function Combat.Init()
     StartAimbot()
+    if LocalPlayer.Character then
+        KarmaSetupCharacter(LocalPlayer.Character)
+    end
+    LocalPlayer.CharacterAdded:Connect(KarmaSetupCharacter)
 end
 
 function Combat.Cleanup()

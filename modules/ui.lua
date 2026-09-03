@@ -93,6 +93,7 @@ function UI.SetFarm(farm)
     UI.Farm = farm
 end
 
+
 function UI.UpdateHotkeyDisplay()
     local Config = UI.Config
     if not Config or not UI.HotkeyDisplay then return end
@@ -1032,8 +1033,8 @@ function UI.Build()
         CanvasSize = UDim2.new(0, 0, 0, 0),
         ZIndex = 14,
     }, CombatPage)
-    local CombatCard = CreateCard(CombatScroll, UDim2.fromOffset(0, 0), UDim2.new(1, 0, 0, 600))
-    CombatScroll.CanvasSize = UDim2.new(0, 0, 0, 620)
+    local CombatCard = CreateCard(CombatScroll, UDim2.fromOffset(0, 0), UDim2.new(1, 0, 0, 640))
+    CombatScroll.CanvasSize = UDim2.new(0, 0, 0, 660)
 
     New("TextLabel", {
         Size = UDim2.new(1, -20, 0, 20),
@@ -1106,6 +1107,12 @@ function UI.Build()
     end)
     CreateToggle(CombatCard, 562, "Rapid Fire", Config.RapidFire, "RapidFire", true, function(v)
         Config.RapidFire = v
+    end)
+    CreateToggle(CombatCard, 598, "Karma", Config.Karma_Enabled, "Karma_Enabled", true, function(v)
+        Config.Karma_Enabled = v
+        if UI.Combat then
+            UI.Combat.SetKarmaEnabled(v)
+        end
     end)
 
     -- VISUALS PAGE
