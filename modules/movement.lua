@@ -14,6 +14,7 @@ local Movement = {
         Flying = false,
         NoClipping = false,
     },
+    FlyInstances = {},
 }
 
 function Movement.SetConfig(config)
@@ -151,7 +152,21 @@ local function GetFlyInput()
     return move
 end
 
--- ── Method 1: Tween (most server-undetected) ──
+-- ── Method 1: Tween ──
+local function StartFly_Tween()
+    if Movement.State.Flying then return end
+    local char = LocalPlayer.Character
+    if not char then return end
+    local root = char:FindFirstChild("HumanoidRootPart")
+    if not root then return end
+    local hum = char:FindFirstChildOfClass("Humanoid")
+    if hum then
+        hum.PlatformStand = true
+        hum.AutoRotate = false
+    end
+    Movement.State.Flying = true
+end
+
 local function DoFly_Tween()
     if not Movement.State.Flying then return end
     local char = LocalPlayer.Character
@@ -163,9 +178,36 @@ local function DoFly_Tween()
         local targetPos = root.Position + move * 0.016
         root.CFrame = CFrame.new(root.Position:Lerp(targetPos, 0.3))
     end
+    root.Velocity = Vector3.new(0, 0, 0)
+    root.RotVelocity = Vector3.new(0, 0, 0)
 end
 
--- ── Method 2: Velocity (physics-based) ──
+local function StopFly_Tween()
+    if not Movement.State.Flying then return end
+    local char = LocalPlayer.Character
+    if char then
+        local hum = char:FindFirstChildOfClass("Humanoid")
+        if hum then
+            hum.PlatformStand = false
+            hum.AutoRotate = true
+        end
+    end
+    Movement.State.Flying = false
+end
+
+-- ── Method 2: Velocity ──
+local function StartFly_Velocity()
+    if Movement.State.Flying then return end
+    local char = LocalPlayer.Character
+    if not char then return end
+    local hum = char:FindFirstChildOfClass("Humanoid")
+    if hum then
+        hum.PlatformStand = true
+        hum.AutoRotate = false
+    end
+    Movement.State.Flying = true
+end
+
 local function DoFly_Velocity()
     if not Movement.State.Flying then return end
     local char = LocalPlayer.Character
@@ -175,12 +217,41 @@ local function DoFly_Velocity()
     local move = GetFlyInput()
     if move.Magnitude > 0 then
         root.AssemblyLinearVelocity = move
+        root.RotVelocity = Vector3.new(0, 0, 0)
     else
         root.AssemblyLinearVelocity = Vector3.new(0, 0.1, 0)
+        root.RotVelocity = Vector3.new(0, 0, 0)
     end
 end
 
--- ── Method 3: CFrame (fastest) ──
+local function StopFly_Velocity()
+    if not Movement.State.Flying then return end
+    local char = LocalPlayer.Character
+    if char then
+        local hum = char:FindFirstChildOfClass("Humanoid")
+        if hum then
+            hum.PlatformStand = false
+            hum.AutoRotate = true
+        end
+        local root = char:FindFirstChild("HumanoidRootPart")
+        if root then root.AssemblyLinearVelocity = Vector3.new(0, 0, 0) end
+    end
+    Movement.State.Flying = false
+end
+
+-- ── Method 3: CFrame ──
+local function StartFly_CFrame()
+    if Movement.State.Flying then return end
+    local char = LocalPlayer.Character
+    if not char then return end
+    local hum = char:FindFirstChildOfClass("Humanoid")
+    if hum then
+        hum.PlatformStand = true
+        hum.AutoRotate = false
+    end
+    Movement.State.Flying = true
+end
+
 local function DoFly_CFrame()
     if not Movement.State.Flying then return end
     local char = LocalPlayer.Character
@@ -191,6 +262,21 @@ local function DoFly_CFrame()
     if move.Magnitude > 0 then
         root.CFrame = root.CFrame + move * 0.016
     end
+    root.Velocity = Vector3.new(0, 0, 0)
+    root.RotVelocity = Vector3.new(0, 0, 0)
+end
+
+local function StopFly_CFrame()
+    if not Movement.State.Flying then return end
+    local char = LocalPlayer.Character
+    if char then
+        local hum = char:FindFirstChildOfClass("Humanoid")
+        if hum then
+            hum.PlatformStand = false
+            hum.AutoRotate = true
+        end
+    end
+    Movement.State.Flying = false
 end
 
 -- ═════════════════════════════════════════════════════════════════════════════
@@ -198,37 +284,25 @@ end
 -- ═════════════════════════════════════════════════════════════════════════════
 
 local function StartFly()
-    if Movement.State.Flying then return end
-    local char = LocalPlayer.Character
-    if not char then return end
-    local hum = char:FindFirstChildOfClass("Humanoid")
-    if hum then
-        hum.AutoRotate = false
-    end
-    Movement.State.Flying = true
+    local Config = Movement.Config
+    if Config.Move_FlyMethod == "Tween" then StartFly_Tween()
+    elseif Config.Move_FlyMethod == "Velocity" then StartFly_Velocity()
+    elseif Config.Move_FlyMethod == "CFrame" then StartFly_CFrame() end
 end
 
 local function DoFly()
     local Config = Movement.Config
     if not Config.Move_Fly then return end
-    if not Movement.State.Flying then return end
-    local method = Config.Move_FlyMethod or "Tween"
-    if method == "Tween" then DoFly_Tween()
-    elseif method == "Velocity" then DoFly_Velocity()
-    elseif method == "CFrame" then DoFly_CFrame() end
+    if Config.Move_FlyMethod == "Tween" then DoFly_Tween()
+    elseif Config.Move_FlyMethod == "Velocity" then DoFly_Velocity()
+    elseif Config.Move_FlyMethod == "CFrame" then DoFly_CFrame() end
 end
 
 local function StopFly()
-    if not Movement.State.Flying then return end
-    local char = LocalPlayer.Character
-    if char then
-        local hum = char:FindFirstChildOfClass("Humanoid")
-        if hum then
-            hum.AutoRotate = true
-            hum:ChangeState(Enum.HumanoidStateType.Freefall)
-        end
-    end
-    Movement.State.Flying = false
+    local Config = Movement.Config
+    if Config.Move_FlyMethod == "Tween" then StopFly_Tween()
+    elseif Config.Move_FlyMethod == "Velocity" then StopFly_Velocity()
+    elseif Config.Move_FlyMethod == "CFrame" then StopFly_CFrame() end
 end
 
 -- ═════════════════════════════════════════════════════════════════════════════
