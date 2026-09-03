@@ -559,55 +559,40 @@ function UI.Build()
             ZIndex = 17,
         }, container)
         Corner(header, 8)
-        local list = New("ScrollingFrame", {
+
+        local open = false
+        local itemHeight = 28
+        local maxVisible = 8
+        local listHeight = math.min(#options, maxVisible) * itemHeight
+
+        local list = New("Frame", {
             Size = UDim2.new(1, -20, 0, 0),
-            Position = UDim2.new(0, 10, 0, y + 24 + 32 + 2),
+            Position = UDim2.fromOffset(10, y + 24 + 32 + 2),
             BackgroundColor3 = Color3.fromRGB(18, 11, 27),
-            BackgroundTransparency = 0.05,
+            BackgroundTransparency = 0.02,
             BorderSizePixel = 0,
             ZIndex = 100,
             ClipsDescendants = true,
             Visible = false,
-            ScrollBarThickness = 3,
-            ScrollBarImageColor3 = Color3.fromRGB(100, 70, 150),
-            CanvasSize = UDim2.new(0, 0, 0, 0),
-            ScrollingDirection = Enum.ScrollingDirection.Y,
-            AutomaticCanvasSize = Enum.AutomaticSize.Y,
-            Active = true,
         }, parent)
         Corner(list, 8)
-        Stroke(list, 0.9, 1, Color3.fromRGB(140, 90, 200))
-        New("UIListLayout", {
-            Padding = UDim.new(0, 2),
-            SortOrder = Enum.SortOrder.LayoutOrder,
-            Parent = list,
-        })
-        New("UIPadding", {
-            PaddingTop = UDim.new(0, padding),
-            PaddingBottom = UDim.new(0, padding),
-            PaddingLeft = UDim.new(0, padding),
-            PaddingRight = UDim.new(0, padding),
-            Parent = list,
-        })
-        local open = false
-        local itemHeight = 26
-        local itemGap = 2
-        local padding = 4
-        local totalHeight = #options * itemHeight + (#options - 1) * itemGap + padding * 2
+        Stroke(list, 0.85, 1, Color3.fromRGB(140, 90, 200))
+
         local optionButtons = {}
         for i, optText in ipairs(options) do
             local btn = New("TextButton", {
-                Size = UDim2.new(1, 0, 0, itemHeight),
+                Size = UDim2.new(1, -8, 0, itemHeight - 2),
+                Position = UDim2.fromOffset(4, 4 + (i - 1) * itemHeight),
                 BackgroundColor3 = Color3.fromRGB(30, 20, 42),
                 BackgroundTransparency = 1,
                 BorderSizePixel = 0,
-                Text = optText,
+                Text = "  " .. optText,
                 TextColor3 = Color3.fromRGB(180, 170, 200),
                 TextSize = 11,
                 Font = Enum.Font.GothamMedium,
+                TextXAlignment = Enum.TextXAlignment.Left,
                 AutoButtonColor = false,
                 ZIndex = 101,
-                LayoutOrder = i,
             }, list)
             Corner(btn, 4)
             btn.MouseEnter:Connect(function()
@@ -627,12 +612,13 @@ function UI.Build()
             end)
             optionButtons[i] = btn
         end
+
         header.MouseButton1Click:Connect(function()
             open = not open
             if open then
                 list.Visible = true
                 header.Text = "  " .. currentValue .. "  ▲"
-                Tween(list, {Size = UDim2.new(1, -20, 0, math.min(200, totalHeight))}, 0.2):Play()
+                Tween(list, {Size = UDim2.new(1, -20, 0, listHeight)}, 0.2):Play()
             else
                 header.Text = "  " .. currentValue .. "  ▼"
                 Tween(list, {Size = UDim2.new(1, -20, 0, 0)}, 0.2):Play()
@@ -641,6 +627,7 @@ function UI.Build()
                 end)
             end
         end)
+
         return {
             Container = container,
             Header = header,
@@ -660,6 +647,7 @@ function UI.Build()
             end,
         }
     end
+
     -- COLOR PICKER (Centered Popup)
     local ActiveColorPicker = nil
 
