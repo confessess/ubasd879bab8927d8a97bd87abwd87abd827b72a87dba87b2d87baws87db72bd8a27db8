@@ -117,6 +117,7 @@ return {
     Move_HighJumpEnabled = false,
     Move_JumpPower = 100,
     Move_BunnyHop = false,
+    Move_NoJumpCooldown = false,
     Move_InfiniteJump = false,
     Move_NoClip = false,
     Move_Fly = false,
@@ -127,6 +128,13 @@ return {
     -- UI
     ToggleKey = Enum.KeyCode.RightShift,
     ShowHotkeys = false,
+    GUIScale = 1.0,
+    GUITheme = Color3.fromRGB(145, 75, 255),
+    PanicKey = nil,
+    FPSCap = 0, -- 0 = uncapped
+    AutoHideOnScreenshot = false,
+    ShowNotifications = true,
+    NotificationDuration = 2.5,
 
     -- Keybinds
     FrameTPKey = nil,
@@ -141,6 +149,7 @@ return {
     Move_SpeedEnabledKey = nil,
     Move_HighJumpEnabledKey = nil,
     Move_BunnyHopKey = nil,
+    Move_NoJumpCooldownKey = nil,
     Move_InfiniteJumpKey = nil,
     Move_NoClipKey = nil,
 }

@@ -553,18 +553,18 @@ local function RagebotFrameTPStompKill(target)
         end
     end
 
-    -- Stomp phase — ultra-accurate tracking with position history
+    -- Stomp phase — ultra-fast accurate tracking for any movement
     if IsTargetKnocked(target) then
         local mainRemote = ReplicatedStorage:FindFirstChild("MainRemotes") and ReplicatedStorage.MainRemotes:FindFirstChild("MainRemoteEvent")
 
         if mainRemote then
             local stompStart = tick()
-            local maxStompTime = 10
+            local maxStompTime = 4 -- Reduced from 10 to 4 seconds
             local stompCount = 0
 
-            -- Position history for velocity calculation
-            local posHistory = {}
-            local maxHistory = 5
+            -- Multiple position samples for accurate velocity
+            local posSamples = {}
+            local maxSamples = 3
 
             while tick() - stompStart < maxStompTime do
                 if not Farm.Config.RagebotEnabled then break end
@@ -572,38 +572,44 @@ local function RagebotFrameTPStompKill(target)
                 -- Check if target is DEAD
                 local targetHum = GetTargetHumanoid(target)
                 if not targetHum then break end
-                if targetHum.Health <= 0 then 
-                    break 
-                end
+                if targetHum.Health <= 0 then break end
 
-                -- Get FRESH position
+                -- Get FRESH position EVERY frame
                 local currentTargetHRP = GetTargetHRP(target)
                 if not currentTargetHRP then break end
 
                 local currentPos = currentTargetHRP.Position
+                local currentVel = currentTargetHRP.AssemblyLinearVelocity or Vector3.new(0, 0, 0)
                 local currentTime = tick()
 
-                -- Add to position history
-                table.insert(posHistory, {pos = currentPos, time = currentTime})
-                if #posHistory > maxHistory then
-                    table.remove(posHistory, 1)
+                -- Add to samples
+                table.insert(posSamples, {pos = currentPos, vel = currentVel, time = currentTime})
+                if #posSamples > maxSamples then
+                    table.remove(posSamples, 1)
                 end
 
-                -- Calculate velocity from history
+                -- Calculate best prediction
                 local predictedPos = currentPos
-                if #posHistory >= 2 then
-                    local oldest = posHistory[1]
-                    local newest = posHistory[#posHistory]
-                    local timeDiff = newest.time - oldest.time
-                    if timeDiff > 0 then
-                        local velocity = (newest.pos - oldest.pos) / timeDiff
-                        -- Predict 2 frames ahead
-                        predictedPos = currentPos + (velocity * 0.033)
+
+                if #posSamples >= 2 then
+                    -- Use velocity directly if available
+                    if currentVel.Magnitude > 0.1 then
+                        -- Predict 1 frame ahead (16ms)
+                        predictedPos = currentPos + (currentVel * 0.016)
+                    else
+                        -- Calculate from position history
+                        local oldest = posSamples[1]
+                        local newest = posSamples[#posSamples]
+                        local timeDiff = newest.time - oldest.time
+                        if timeDiff > 0 then
+                            local calcVel = (newest.pos - oldest.pos) / timeDiff
+                            predictedPos = currentPos + (calcVel * 0.016)
+                        end
                     end
                 end
 
-                -- TP to predicted position with tight offset
-                myHRP.CFrame = CFrame.new(predictedPos + Vector3.new(0, 1.5, 0))
+                -- TP to predicted position — tight offset
+                myHRP.CFrame = CFrame.new(predictedPos + Vector3.new(0, 1.2, 0))
                 myHRP.Velocity = Vector3.new(0, 0, 0)
                 myHRP.AssemblyLinearVelocity = Vector3.new(0, 0, 0)
                 myHRP.RotVelocity = Vector3.new(0, 0, 0)
@@ -615,6 +621,7 @@ local function RagebotFrameTPStompKill(target)
                     mainRemote:FireServer("Stomp")
                 end)
 
+                -- No wait — run as fast as possible
                 RunService.RenderStepped:Wait()
             end
         end

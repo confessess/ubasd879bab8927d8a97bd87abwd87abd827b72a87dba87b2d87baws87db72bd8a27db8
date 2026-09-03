@@ -1340,7 +1340,7 @@ function UI.Build()
         Size = UDim2.new(1, -20, 0, 40),
         Position = UDim2.fromOffset(10, 300),
         BackgroundTransparency = 1,
-        Text = "Select a target in the Target tab first.",
+        Text = "Select a target in the Target tab first. Their head will align to your crosshair when Farm is ON. Toggle OFF to restore them.",
         TextColor3 = Color3.fromRGB(140, 130, 155),
         TextSize = 10,
         Font = Enum.Font.GothamMedium,
@@ -1627,10 +1627,10 @@ function UI.Build()
         BorderSizePixel = 0,
         ScrollBarThickness = 5,
         ScrollBarImageColor3 = Color3.fromRGB(145, 75, 255),
-        CanvasSize = UDim2.new(0, 0, 0, 540),
+        CanvasSize = UDim2.new(0, 0, 0, 580),
         ZIndex = 14,
     }, MovementPage)
-    local MovementCard = CreateCard(MovementScroll, UDim2.fromOffset(0, 0), UDim2.new(1, 0, 0, 520))
+    local MovementCard = CreateCard(MovementScroll, UDim2.fromOffset(0, 0), UDim2.new(1, 0, 0, 560))
 
     -- Movement Section
     CreateToggle(MovementCard, 14, "Speed", Config.Move_SpeedEnabled, "Move_SpeedEnabled", true, function(v)
@@ -1684,9 +1684,9 @@ function UI.Build()
 
     local walkSpeedDragging = false
     local function setWalkSpeed(val)
-        val = math.clamp(math.floor(val), 16, 1000)
+        val = math.max(math.floor(val), 16)
         Config.Move_Speed = val
-        walkSpeedFill.Size = UDim2.new(math.clamp((val - 16) / 184, 0, 1), 0, 1, 0)
+        walkSpeedFill.Size = UDim2.new(math.clamp((val - 16) / 10000, 0, 1), 0, 1, 0)
         walkSpeedInput.Text = tostring(val)
     end
     walkSpeedTrack.InputBegan:Connect(function(input)
@@ -1712,8 +1712,8 @@ function UI.Build()
     walkSpeedInput:GetPropertyChangedSignal("Text"):Connect(function()
         local num = tonumber(walkSpeedInput.Text)
         if num then
-            Config.Move_Speed = math.clamp(math.floor(num), 16, 1000)
-            walkSpeedFill.Size = UDim2.new(math.clamp((Config.Move_Speed - 16) / 184, 0, 1), 0, 1, 0)
+            Config.Move_Speed = math.max(math.floor(num), 16)
+            walkSpeedFill.Size = UDim2.new(math.clamp((Config.Move_Speed - 16) / 10000, 0, 1), 0, 1, 0)
         end
     end)
     CreateToggle(MovementCard, 106, "High Jump", Config.Move_HighJumpEnabled, "Move_HighJumpEnabled", true, function(v)
@@ -1767,9 +1767,9 @@ function UI.Build()
 
     local jumpPowerDragging = false
     local function setJumpPower(val)
-        val = math.clamp(math.floor(val), 50, 1000)
+        val = math.max(math.floor(val), 50)
         Config.Move_JumpPower = val
-        jumpPowerFill.Size = UDim2.new(math.clamp((val - 50) / 250, 0, 1), 0, 1, 0)
+        jumpPowerFill.Size = UDim2.new(math.clamp((val - 50) / 10000, 0, 1), 0, 1, 0)
         jumpPowerInput.Text = tostring(val)
     end
     jumpPowerTrack.InputBegan:Connect(function(input)
@@ -1795,8 +1795,8 @@ function UI.Build()
     jumpPowerInput:GetPropertyChangedSignal("Text"):Connect(function()
         local num = tonumber(jumpPowerInput.Text)
         if num then
-            Config.Move_JumpPower = math.clamp(math.floor(num), 50, 1000)
-            jumpPowerFill.Size = UDim2.new(math.clamp((Config.Move_JumpPower - 50) / 250, 0, 1), 0, 1, 0)
+            Config.Move_JumpPower = math.max(math.floor(num), 50)
+            jumpPowerFill.Size = UDim2.new(math.clamp((Config.Move_JumpPower - 50) / 10000, 0, 1), 0, 1, 0)
         end
     end)
     CreateToggle(MovementCard, 198, "Bunny Hop", Config.Move_BunnyHop, "Move_BunnyHop", true, function(v)
@@ -1805,36 +1805,42 @@ function UI.Build()
             UI.Movement.SetBunnyHop(v)
         end
     end)
-    CreateToggle(MovementCard, 234, "Infinite Jump", Config.Move_InfiniteJump, "Move_InfiniteJump", true, function(v)
+    CreateToggle(MovementCard, 234, "No Jump Cooldown", Config.Move_NoJumpCooldown, "Move_NoJumpCooldown", true, function(v)
+        Config.Move_NoJumpCooldown = v
+        if UI.Movement then
+            UI.Movement.SetNoJumpCooldown(v)
+        end
+    end)
+    CreateToggle(MovementCard, 270, "Infinite Jump", Config.Move_InfiniteJump, "Move_InfiniteJump", true, function(v)
         Config.Move_InfiniteJump = v
         if UI.Movement then
             UI.Movement.SetInfiniteJump(v)
         end
     end)
-    CreateToggle(MovementCard, 270, "NoClip", Config.Move_NoClip, "Move_NoClip", true, function(v)
+    CreateToggle(MovementCard, 306, "NoClip", Config.Move_NoClip, "Move_NoClip", true, function(v)
         Config.Move_NoClip = v
         if UI.Movement then
             UI.Movement.SetNoClip(v)
         end
     end)
 
-    CreateSeparator(MovementCard, 314)
+    CreateSeparator(MovementCard, 350)
 
     -- Fly Section
-    CreateToggle(MovementCard, 326, "Enable Fly", Config.Move_Fly, "Move_Fly", true, function(v)
+    CreateToggle(MovementCard, 362, "Enable Fly", Config.Move_Fly, "Move_Fly", true, function(v)
         Config.Move_Fly = v
         if UI.Movement then
             UI.Movement.SetFly(v)
         end
     end)
-    local flyMethodDropdown = BuildDropdown(MovementCard, 362, "Fly Method", Config.Move_FlyMethod or "Tween",
+    local flyMethodDropdown = BuildDropdown(MovementCard, 398, "Fly Method", Config.Move_FlyMethod or "Tween",
         {"Tween", "Velocity", "CFrame"},
         function(v) Config.Move_FlyMethod = v end)
 
     -- Fly Speed
     New("TextLabel", {
         Size = UDim2.new(1, -140, 0, 20),
-        Position = UDim2.fromOffset(10, 420),
+        Position = UDim2.fromOffset(10, 456),
         BackgroundTransparency = 1,
         Text = "Fly Speed",
         TextColor3 = Color3.fromRGB(200, 190, 215),
@@ -1845,7 +1851,7 @@ function UI.Build()
     }, MovementCard)
     local flySpeedTrack = New("Frame", {
         Size = UDim2.new(1, -160, 0, 5),
-        Position = UDim2.fromOffset(10, 450),
+        Position = UDim2.fromOffset(10, 486),
         BackgroundColor3 = Color3.fromRGB(40, 40, 50),
         BorderSizePixel = 0,
         ZIndex = 16,
@@ -1876,9 +1882,9 @@ function UI.Build()
 
     local flySpeedDragging = false
     local function setFlySpeed(val)
-        val = math.clamp(math.floor(val), 1, 10000)
+        val = math.max(math.floor(val), 1)
         Config.Move_FlySpeed = val
-        flySpeedFill.Size = UDim2.new(math.clamp((val - 10) / 990, 0, 1), 0, 1, 0)
+        flySpeedFill.Size = UDim2.new(math.clamp((val - 10) / 100000, 0, 1), 0, 1, 0)
         flySpeedInput.Text = tostring(val)
     end
     flySpeedTrack.InputBegan:Connect(function(input)
@@ -1904,14 +1910,14 @@ function UI.Build()
     flySpeedInput:GetPropertyChangedSignal("Text"):Connect(function()
         local num = tonumber(flySpeedInput.Text)
         if num then
-            Config.Move_FlySpeed = math.clamp(math.floor(num), 1, 10000)
-            flySpeedFill.Size = UDim2.new(math.clamp((Config.Move_FlySpeed - 10) / 990, 0, 1), 0, 1, 0)
+            Config.Move_FlySpeed = math.max(math.floor(num), 1)
+            flySpeedFill.Size = UDim2.new(math.clamp((Config.Move_FlySpeed - 10) / 100000, 0, 1), 0, 1, 0)
         end
     end)
 
     New("TextLabel", {
         Size = UDim2.new(1, -20, 0, 16),
-        Position = UDim2.fromOffset(10, 460),
+        Position = UDim2.fromOffset(10, 496),
         BackgroundTransparency = 1,
         Text = "WASD to move, Space up, Shift down",
         TextColor3 = Color3.fromRGB(140, 130, 155),
@@ -1928,36 +1934,49 @@ function UI.Build()
         BackgroundTransparency = 1,
         ZIndex = 16,
     }, MovementCard)
--- SETTINGS PAGE
+    -- SETTINGS PAGE
     local SettingsPage = Pages.Settings
-    PageTitle(SettingsPage, "Settings", "Interface customization and hotkey display.")
-    local SettingsCard = CreateCard(SettingsPage, UDim2.fromOffset(10, 72), UDim2.new(1, -20, 0, 250))
-    New("TextLabel", {
-        Size = UDim2.new(1, -140, 0, 25),
-        Position = UDim2.fromOffset(15, 14),
+    PageTitle(SettingsPage, "Settings", "Interface customization, config management, and safety options.")
+    local SettingsScroll = New("ScrollingFrame", {
+        Size = UDim2.new(1, -20, 1, -72),
+        Position = UDim2.fromOffset(10, 72),
         BackgroundTransparency = 1,
-        Text = "Menu Toggle Key",
-        TextColor3 = Color3.fromRGB(235, 220, 255),
+        BorderSizePixel = 0,
+        ScrollBarThickness = 5,
+        ScrollBarImageColor3 = Color3.fromRGB(145, 75, 255),
+        CanvasSize = UDim2.new(0, 0, 0, 800),
+        ZIndex = 14,
+    }, SettingsPage)
+    local SettingsCard = CreateCard(SettingsScroll, UDim2.fromOffset(0, 0), UDim2.new(1, 0, 0, 790))
+
+    -- Keybind Section
+    New("TextLabel", {
+        Size = UDim2.new(1, -20, 0, 20),
+        Position = UDim2.fromOffset(10, 10),
+        BackgroundTransparency = 1,
+        Text = "Keybinds",
+        TextColor3 = Color3.fromRGB(245, 220, 255),
         TextSize = 14,
         Font = Enum.Font.GothamBold,
         TextXAlignment = Enum.TextXAlignment.Left,
         ZIndex = 16,
     }, SettingsCard)
+
     New("TextLabel", {
-        Size = UDim2.new(1, -140, 0, 35),
-        Position = UDim2.fromOffset(15, 43),
+        Size = UDim2.new(1, -140, 0, 25),
+        Position = UDim2.fromOffset(15, 36),
         BackgroundTransparency = 1,
-        Text = "Press a key to rebind the menu toggle.",
-        TextColor3 = Color3.fromRGB(140, 125, 155),
-        TextSize = 10,
-        Font = Enum.Font.GothamMedium,
-        TextWrapped = true,
+        Text = "Menu Toggle Key",
+        TextColor3 = Color3.fromRGB(235, 220, 255),
+        TextSize = 12,
+        Font = Enum.Font.GothamBold,
         TextXAlignment = Enum.TextXAlignment.Left,
         ZIndex = 16,
     }, SettingsCard)
+
     local KeybindButton = New("TextButton", {
-        Size = UDim2.fromOffset(115, 38),
-        Position = UDim2.new(1, -130, 0, 14),
+        Size = UDim2.fromOffset(115, 30),
+        Position = UDim2.new(1, -130, 0, 34),
         BackgroundColor3 = PURPLE,
         BackgroundTransparency = 0.18,
         BorderSizePixel = 0,
@@ -1968,13 +1987,448 @@ function UI.Build()
         AutoButtonColor = false,
         ZIndex = 17,
     }, SettingsCard)
-    Corner(KeybindButton, 9)
-    CreateToggle(SettingsCard, 90, "Show Hotkeys", Config.ShowHotkeys, "ShowHotkeys", false, function(v)
+    Corner(KeybindButton, 8)
+
+    -- Panic Key
+    New("TextLabel", {
+        Size = UDim2.new(1, -140, 0, 25),
+        Position = UDim2.fromOffset(15, 72),
+        BackgroundTransparency = 1,
+        Text = "Panic Key (disable all)",
+        TextColor3 = Color3.fromRGB(235, 220, 255),
+        TextSize = 12,
+        Font = Enum.Font.GothamBold,
+        TextXAlignment = Enum.TextXAlignment.Left,
+        ZIndex = 16,
+    }, SettingsCard)
+
+    local PanicKeyButton = New("TextButton", {
+        Size = UDim2.fromOffset(115, 30),
+        Position = UDim2.new(1, -130, 0, 70),
+        BackgroundColor3 = Color3.fromRGB(200, 50, 50),
+        BackgroundTransparency = 0.18,
+        BorderSizePixel = 0,
+        Text = Config.PanicKey and FormatKeyName(Config.PanicKey) or "—",
+        TextColor3 = Color3.fromRGB(255, 250, 255),
+        TextSize = 11,
+        Font = Enum.Font.GothamBold,
+        AutoButtonColor = false,
+        ZIndex = 17,
+    }, SettingsCard)
+    Corner(PanicKeyButton, 8)
+
+    PanicKeyButton.MouseButton1Click:Connect(function()
+        if UI.ListeningKey then return end
+        UI.ListeningKey = "PanicKey"
+        PanicKeyButton.Text = "PRESS KEY"
+        Tween(PanicKeyButton, {BackgroundTransparency = 0}, 0.2):Play()
+    end)
+
+    CreateSeparator(SettingsCard, 110)
+
+    -- GUI Customization
+    New("TextLabel", {
+        Size = UDim2.new(1, -20, 0, 20),
+        Position = UDim2.fromOffset(10, 122),
+        BackgroundTransparency = 1,
+        Text = "GUI Customization",
+        TextColor3 = Color3.fromRGB(245, 220, 255),
+        TextSize = 14,
+        Font = Enum.Font.GothamBold,
+        TextXAlignment = Enum.TextXAlignment.Left,
+        ZIndex = 16,
+    }, SettingsCard)
+
+    -- GUI Scale
+    New("TextLabel", {
+        Size = UDim2.new(1, -140, 0, 20),
+        Position = UDim2.fromOffset(10, 148),
+        BackgroundTransparency = 1,
+        Text = "GUI Scale",
+        TextColor3 = Color3.fromRGB(200, 190, 215),
+        TextSize = 12,
+        Font = Enum.Font.GothamMedium,
+        TextXAlignment = Enum.TextXAlignment.Left,
+        ZIndex = 16,
+    }, SettingsCard)
+
+    local guiScaleTrack = New("Frame", {
+        Size = UDim2.new(1, -160, 0, 5),
+        Position = UDim2.fromOffset(10, 178),
+        BackgroundColor3 = Color3.fromRGB(40, 40, 50),
+        BorderSizePixel = 0,
+        ZIndex = 16,
+    }, SettingsCard)
+    Corner(guiScaleTrack, 3)
+
+    local guiScaleFill = New("Frame", {
+        Size = UDim2.new((Config.GUIScale - 0.5) / 1.5, 0, 1, 0),
+        BackgroundColor3 = PURPLE,
+        BorderSizePixel = 0,
+        ZIndex = 17,
+    }, guiScaleTrack)
+    Corner(guiScaleFill, 3)
+
+    local guiScaleInput = New("TextBox", {
+        Size = UDim2.fromOffset(60, 24),
+        Position = UDim2.new(1, -70, 0, 148),
+        BackgroundColor3 = Color3.fromRGB(30, 20, 42),
+        BackgroundTransparency = 0.25,
+        BorderSizePixel = 0,
+        Text = string.format("%.1f", Config.GUIScale or 1.0),
+        TextColor3 = Color3.fromRGB(245, 240, 250),
+        TextSize = 11,
+        Font = Enum.Font.Gotham,
+        ClearTextOnFocus = false,
+        ZIndex = 16,
+    }, SettingsCard)
+    Corner(guiScaleInput, 6)
+    Stroke(guiScaleInput, 0.6, 1, Color3.fromRGB(80, 60, 100))
+
+    local guiScaleDragging = false
+    local function setGUIScale(val)
+        val = math.clamp(val, 0.5, 2.0)
+        Config.GUIScale = val
+        guiScaleFill.Size = UDim2.new((val - 0.5) / 1.5, 0, 1, 0)
+        guiScaleInput.Text = string.format("%.1f", val)
+        -- Apply scale
+        if UI.Main then
+            UI.Main.Size = UDim2.fromOffset(760 * val, 540 * val)
+        end
+    end
+
+    guiScaleTrack.InputBegan:Connect(function(input)
+        if input.UserInputType == Enum.UserInputType.MouseButton1 then
+            guiScaleDragging = true
+            local pos = math.clamp((input.Position.X - guiScaleTrack.AbsolutePosition.X) / guiScaleTrack.AbsoluteSize.X, 0, 1)
+            setGUIScale(0.5 + pos * 1.5)
+        end
+    end)
+    UserInputService.InputChanged:Connect(function(input)
+        if guiScaleDragging and input.UserInputType == Enum.UserInputType.MouseMovement then
+            local pos = math.clamp((input.Position.X - guiScaleTrack.AbsolutePosition.X) / guiScaleTrack.AbsoluteSize.X, 0, 1)
+            setGUIScale(0.5 + pos * 1.5)
+        end
+    end)
+    UserInputService.InputEnded:Connect(function(input)
+        if input.UserInputType == Enum.UserInputType.MouseButton1 then guiScaleDragging = false end
+    end)
+    guiScaleInput.FocusLost:Connect(function()
+        local num = tonumber(guiScaleInput.Text)
+        if num then setGUIScale(num) end
+    end)
+
+    CreateToggle(SettingsCard, 196, "Show Hotkeys", Config.ShowHotkeys, "ShowHotkeys", false, function(v)
         Config.ShowHotkeys = v
         UI.UpdateHotkeyDisplay()
     end)
 
-    -- Hotkey Display
+    CreateToggle(SettingsCard, 232, "Auto-hide on Screenshot", Config.AutoHideOnScreenshot, "AutoHideOnScreenshot", false, function(v)
+        Config.AutoHideOnScreenshot = v
+    end)
+
+    CreateSeparator(SettingsCard, 276)
+
+    -- Performance
+    New("TextLabel", {
+        Size = UDim2.new(1, -20, 0, 20),
+        Position = UDim2.fromOffset(10, 288),
+        BackgroundTransparency = 1,
+        Text = "Performance",
+        TextColor3 = Color3.fromRGB(245, 220, 255),
+        TextSize = 14,
+        Font = Enum.Font.GothamBold,
+        TextXAlignment = Enum.TextXAlignment.Left,
+        ZIndex = 16,
+    }, SettingsCard)
+
+    -- FPS Cap
+    New("TextLabel", {
+        Size = UDim2.new(1, -140, 0, 20),
+        Position = UDim2.fromOffset(10, 314),
+        BackgroundTransparency = 1,
+        Text = "FPS Cap (0 = uncapped)",
+        TextColor3 = Color3.fromRGB(200, 190, 215),
+        TextSize = 12,
+        Font = Enum.Font.GothamMedium,
+        TextXAlignment = Enum.TextXAlignment.Left,
+        ZIndex = 16,
+    }, SettingsCard)
+
+    local fpsTrack = New("Frame", {
+        Size = UDim2.new(1, -160, 0, 5),
+        Position = UDim2.fromOffset(10, 344),
+        BackgroundColor3 = Color3.fromRGB(40, 40, 50),
+        BorderSizePixel = 0,
+        ZIndex = 16,
+    }, SettingsCard)
+    Corner(fpsTrack, 3)
+
+    local fpsFill = New("Frame", {
+        Size = UDim2.new(math.clamp((Config.FPSCap or 0) / 480, 0, 1), 0, 1, 0),
+        BackgroundColor3 = PURPLE,
+        BorderSizePixel = 0,
+        ZIndex = 17,
+    }, fpsTrack)
+    Corner(fpsFill, 3)
+
+    local fpsInput = New("TextBox", {
+        Size = UDim2.fromOffset(60, 24),
+        Position = UDim2.new(1, -70, 0, 314),
+        BackgroundColor3 = Color3.fromRGB(30, 20, 42),
+        BackgroundTransparency = 0.25,
+        BorderSizePixel = 0,
+        Text = tostring(Config.FPSCap or 0),
+        TextColor3 = Color3.fromRGB(245, 240, 250),
+        TextSize = 11,
+        Font = Enum.Font.Gotham,
+        ClearTextOnFocus = false,
+        ZIndex = 16,
+    }, SettingsCard)
+    Corner(fpsInput, 6)
+    Stroke(fpsInput, 0.6, 1, Color3.fromRGB(80, 60, 100))
+
+    local fpsDragging = false
+    local function setFPSCap(val)
+        val = math.clamp(math.floor(val), 0, 480)
+        Config.FPSCap = val
+        fpsFill.Size = UDim2.new(val / 480, 0, 1, 0)
+        fpsInput.Text = tostring(val)
+        -- Apply FPS cap
+        if setfpscap then
+            setfpscap(val > 0 and val or 480)
+        end
+    end
+
+    fpsTrack.InputBegan:Connect(function(input)
+        if input.UserInputType == Enum.UserInputType.MouseButton1 then
+            fpsDragging = true
+            local pos = math.clamp((input.Position.X - fpsTrack.AbsolutePosition.X) / fpsTrack.AbsoluteSize.X, 0, 1)
+            setFPSCap(pos * 480)
+        end
+    end)
+    UserInputService.InputChanged:Connect(function(input)
+        if fpsDragging and input.UserInputType == Enum.UserInputType.MouseMovement then
+            local pos = math.clamp((input.Position.X - fpsTrack.AbsolutePosition.X) / fpsTrack.AbsoluteSize.X, 0, 1)
+            setFPSCap(pos * 480)
+        end
+    end)
+    UserInputService.InputEnded:Connect(function(input)
+        if input.UserInputType == Enum.UserInputType.MouseButton1 then fpsDragging = false end
+    end)
+    fpsInput.FocusLost:Connect(function()
+        local num = tonumber(fpsInput.Text)
+        if num then setFPSCap(num) end
+    end)
+
+    CreateSeparator(SettingsCard, 362)
+
+    -- Notifications
+    New("TextLabel", {
+        Size = UDim2.new(1, -20, 0, 20),
+        Position = UDim2.fromOffset(10, 374),
+        BackgroundTransparency = 1,
+        Text = "Notifications",
+        TextColor3 = Color3.fromRGB(245, 220, 255),
+        TextSize = 14,
+        Font = Enum.Font.GothamBold,
+        TextXAlignment = Enum.TextXAlignment.Left,
+        ZIndex = 16,
+    }, SettingsCard)
+
+    CreateToggle(SettingsCard, 400, "Show Notifications", Config.ShowNotifications, "ShowNotifications", false, function(v)
+        Config.ShowNotifications = v
+    end)
+
+    -- Notification Duration
+    New("TextLabel", {
+        Size = UDim2.new(1, -140, 0, 20),
+        Position = UDim2.fromOffset(10, 436),
+        BackgroundTransparency = 1,
+        Text = "Notification Duration",
+        TextColor3 = Color3.fromRGB(200, 190, 215),
+        TextSize = 12,
+        Font = Enum.Font.GothamMedium,
+        TextXAlignment = Enum.TextXAlignment.Left,
+        ZIndex = 16,
+    }, SettingsCard)
+
+    local notifTrack = New("Frame", {
+        Size = UDim2.new(1, -160, 0, 5),
+        Position = UDim2.fromOffset(10, 466),
+        BackgroundColor3 = Color3.fromRGB(40, 40, 50),
+        BorderSizePixel = 0,
+        ZIndex = 16,
+    }, SettingsCard)
+    Corner(notifTrack, 3)
+
+    local notifFill = New("Frame", {
+        Size = UDim2.new(math.clamp((Config.NotificationDuration or 2.5) / 10, 0, 1), 0, 1, 0),
+        BackgroundColor3 = PURPLE,
+        BorderSizePixel = 0,
+        ZIndex = 17,
+    }, notifTrack)
+    Corner(notifFill, 3)
+
+    local notifInput = New("TextBox", {
+        Size = UDim2.fromOffset(60, 24),
+        Position = UDim2.new(1, -70, 0, 436),
+        BackgroundColor3 = Color3.fromRGB(30, 20, 42),
+        BackgroundTransparency = 0.25,
+        BorderSizePixel = 0,
+        Text = string.format("%.1f", Config.NotificationDuration or 2.5),
+        TextColor3 = Color3.fromRGB(245, 240, 250),
+        TextSize = 11,
+        Font = Enum.Font.Gotham,
+        ClearTextOnFocus = false,
+        ZIndex = 16,
+    }, SettingsCard)
+    Corner(notifInput, 6)
+    Stroke(notifInput, 0.6, 1, Color3.fromRGB(80, 60, 100))
+
+    local notifDragging = false
+    local function setNotifDuration(val)
+        val = math.clamp(val, 0.5, 10)
+        Config.NotificationDuration = val
+        notifFill.Size = UDim2.new(val / 10, 0, 1, 0)
+        notifInput.Text = string.format("%.1f", val)
+    end
+
+    notifTrack.InputBegan:Connect(function(input)
+        if input.UserInputType == Enum.UserInputType.MouseButton1 then
+            notifDragging = true
+            local pos = math.clamp((input.Position.X - notifTrack.AbsolutePosition.X) / notifTrack.AbsoluteSize.X, 0, 1)
+            setNotifDuration(0.5 + pos * 9.5)
+        end
+    end)
+    UserInputService.InputChanged:Connect(function(input)
+        if notifDragging and input.UserInputType == Enum.UserInputType.MouseMovement then
+            local pos = math.clamp((input.Position.X - notifTrack.AbsolutePosition.X) / notifTrack.AbsoluteSize.X, 0, 1)
+            setNotifDuration(0.5 + pos * 9.5)
+        end
+    end)
+    UserInputService.InputEnded:Connect(function(input)
+        if input.UserInputType == Enum.UserInputType.MouseButton1 then notifDragging = false end
+    end)
+    notifInput.FocusLost:Connect(function()
+        local num = tonumber(notifInput.Text)
+        if num then setNotifDuration(num) end
+    end)
+
+    CreateSeparator(SettingsCard, 484)
+
+    -- Config Management
+    New("TextLabel", {
+        Size = UDim2.new(1, -20, 0, 20),
+        Position = UDim2.fromOffset(10, 496),
+        BackgroundTransparency = 1,
+        Text = "Config Management",
+        TextColor3 = Color3.fromRGB(245, 220, 255),
+        TextSize = 14,
+        Font = Enum.Font.GothamBold,
+        TextXAlignment = Enum.TextXAlignment.Left,
+        ZIndex = 16,
+    }, SettingsCard)
+
+    CreateActionButton(SettingsCard, 522, "Save Config", function()
+        if writefile then
+            local configData = {}
+            for k, v in pairs(Config) do
+                if typeof(v) == "EnumItem" then
+                    configData[k] = {type = "Enum", value = v.Name}
+                elseif typeof(v) == "Color3" then
+                    configData[k] = {type = "Color3", r = v.R, g = v.G, b = v.B}
+                elseif typeof(v) == "Vector3" then
+                    configData[k] = {type = "Vector3", x = v.X, y = v.Y, z = v.Z}
+                else
+                    configData[k] = {type = typeof(v), value = v}
+                end
+            end
+            local success, err = pcall(function()
+                writefile("starscc_config.json", game:GetService("HttpService"):JSONEncode(configData))
+            end)
+            if success then
+                -- Show success notification
+                print("[Stars.cc] Config saved!")
+            else
+                print("[Stars.cc] Failed to save: " .. tostring(err))
+            end
+        else
+            print("[Stars.cc] writefile not supported")
+        end
+    end)
+
+    CreateActionButton(SettingsCard, 558, "Load Config", function()
+        if readfile then
+            local success, err = pcall(function()
+                local data = readfile("starscc_config.json")
+                local configData = game:GetService("HttpService"):JSONDecode(data)
+                for k, v in pairs(configData) do
+                    if v.type == "Enum" then
+                        Config[k] = Enum.KeyCode[v.value]
+                    elseif v.type == "Color3" then
+                        Config[k] = Color3.new(v.r, v.g, v.b)
+                    elseif v.type == "Vector3" then
+                        Config[k] = Vector3.new(v.x, v.y, v.z)
+                    else
+                        Config[k] = v.value
+                    end
+                end
+            end)
+            if success then
+                print("[Stars.cc] Config loaded! Restart script to apply.")
+            else
+                print("[Stars.cc] Failed to load: " .. tostring(err))
+            end
+        else
+            print("[Stars.cc] readfile not supported")
+        end
+    end)
+
+    CreateActionButton(SettingsCard, 594, "Reset to Defaults", function()
+        -- Reset all config values to defaults
+        for k, v in pairs(Config) do
+            if typeof(v) == "boolean" then
+                Config[k] = false
+            elseif typeof(v) == "number" then
+                if k == "Aimbot_FOV" then Config[k] = 60
+                elseif k == "Aimbot_Smoothness" then Config[k] = 15
+                elseif k == "FOV_Radius" then Config[k] = 250
+                elseif k == "ESP_MaxDistance" then Config[k] = 2000
+                elseif k == "Move_Speed" then Config[k] = 50
+                elseif k == "Move_JumpPower" then Config[k] = 100
+                elseif k == "Move_FlySpeed" then Config[k] = 50
+                elseif k == "FarmDistance" then Config[k] = 12
+                elseif k == "GUIScale" then Config[k] = 1.0
+                elseif k == "FPSCap" then Config[k] = 0
+                elseif k == "NotificationDuration" then Config[k] = 2.5
+                else Config[k] = 0 end
+            elseif typeof(v) == "string" then
+                if k == "Aimbot_TargetPart" then Config[k] = "Head"
+                elseif k == "Aimbot_Priority" then Config[k] = "Closest to Mouse"
+                elseif k == "TargetPart" then Config[k] = "Head"
+                elseif k == "AntiStompMode" then Config[k] = "Void"
+                elseif k == "SpamRange" then Config[k] = "Close"
+                elseif k == "Move_FlyMethod" then Config[k] = "Tween"
+                elseif k == "World_SkyTheme" then Config[k] = "Default"
+                elseif k == "RagebotMethod" then Config[k] = "FarmVoid"
+                else Config[k] = "" end
+            end
+        end
+        Config.ToggleKey = Enum.KeyCode.RightShift
+        Config.PanicKey = nil
+        print("[Stars.cc] Config reset to defaults! Restart script to apply.")
+    end)
+
+    -- Bottom padding
+    New("Frame", {
+        Size = UDim2.new(1, 0, 0, 40),
+        Position = UDim2.fromOffset(0, 640),
+        BackgroundTransparency = 1,
+        ZIndex = 16,
+    }, SettingsCard)
+
+-- Hotkey Display
     local HotkeyDisplay = New("Frame", {
         Name = "HotkeyDisplay",
         Size = UDim2.fromOffset(155, 36),
@@ -2098,6 +2552,9 @@ function UI.Build()
             if captured then
                 if captured == "clear" then
                     if UI.ListeningKey == "Toggle" then
+                    elseif UI.ListeningKey == "PanicKey" then
+                        Config.PanicKey = nil
+                        PanicKeyButton.Text = "—"
                     else
                         Config[UI.ListeningKey .. "Key"] = nil
                         local btn = UI.KeybindButtons[UI.ListeningKey]
@@ -2107,6 +2564,9 @@ function UI.Build()
                     if UI.ListeningKey == "Toggle" then
                         Config.ToggleKey = captured
                         KeybindButton.Text = FormatKeyName(captured)
+                    elseif UI.ListeningKey == "PanicKey" then
+                        Config.PanicKey = captured
+                        PanicKeyButton.Text = FormatKeyName(captured)
                     elseif UI.ToggleCallbacks[UI.ListeningKey] or UI.KeybindButtons[UI.ListeningKey] then
                         Config[UI.ListeningKey .. "Key"] = captured
                         local btn = UI.KeybindButtons[UI.ListeningKey]
@@ -2124,6 +2584,29 @@ function UI.Build()
         end
         if IsSameKey(input, Config.ToggleKey) then
             SetGUIVisible(not UI.GUIVisible)
+            return
+        end
+
+        -- Panic Key — disable everything
+        if Config.PanicKey and IsSameKey(input, Config.PanicKey) then
+            -- Disable all toggles
+            for toggleId, callback in pairs(UI.ToggleCallbacks) do
+                if Config[toggleId] then
+                    callback(false)
+                end
+            end
+            -- Hide GUI
+            SetGUIVisible(false)
+            print("[Stars.cc] PANIC — All features disabled!")
+            return
+        end
+
+        -- Screenshot detection (PrintScreen key)
+        if Config.AutoHideOnScreenshot and input.KeyCode == Enum.KeyCode.PrintScreen then
+            SetGUIVisible(false)
+            task.delay(0.1, function()
+                SetGUIVisible(true)
+            end)
             return
         end
         for toggleId, callback in pairs(UI.ToggleCallbacks) do

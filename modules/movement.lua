@@ -93,6 +93,27 @@ end
 
 local LastBhopJump = 0
 
+local function DoNoJumpCooldown()
+    local Config = Movement.Config
+    if not Config.Move_NoJumpCooldown then return end
+    local char = LocalPlayer.Character
+    if not char then return end
+    local hum = char:FindFirstChildOfClass("Humanoid")
+    if not hum then return end
+    if hum.Health <= 0 then return end
+
+    -- Force humanoid to be in running state (removes jump cooldown)
+    if hum:GetState() == Enum.HumanoidStateType.Landed then
+        hum:ChangeState(Enum.HumanoidStateType.Running)
+    end
+
+    -- Also try to remove any jump cooldown values
+    local jumpCooldown = hum:FindFirstChild("JumpCooldown") or hum:FindFirstChild("JumpCD")
+    if jumpCooldown and jumpCooldown:IsA("NumberValue") then
+        jumpCooldown.Value = 0
+    end
+end
+
 local function DoBunnyHop()
     local Config = Movement.Config
     if not Config.Move_BunnyHop then return end
@@ -111,10 +132,13 @@ local function DoBunnyHop()
 
     if not isMoving then return end
 
-    -- Auto jump when on ground
+    -- Auto jump when on ground — bypass cooldown
     if hum.FloorMaterial ~= Enum.Material.Air then
         local now = tick()
-        if now - LastBhopJump > 0.05 then -- Small delay to prevent spam
+        if now - LastBhopJump > 0.01 then -- Minimal delay
+            -- Force running state first (bypasses cooldown)
+            hum:ChangeState(Enum.HumanoidStateType.Running)
+            task.wait()
             hum:ChangeState(Enum.HumanoidStateType.Jumping)
             LastBhopJump = now
         end
@@ -125,6 +149,12 @@ local function DoBunnyHop()
     local bhopSpeed = (Config.Move_Speed or 50) * 1.2 -- 20% faster than normal speed
     if currentSpeed < bhopSpeed then
         hum.WalkSpeed = bhopSpeed
+    end
+end
+
+function Movement.SetNoJumpCooldown(enabled)
+    if Movement.Config then
+        Movement.Config.Move_NoJumpCooldown = enabled
     end
 end
 
@@ -396,6 +426,7 @@ local function OnRender()
     end
 
     DoBunnyHop()
+    DoNoJumpCooldown()
     DoInfiniteJump()
     if Config.Move_Fly then
         DoFly()
