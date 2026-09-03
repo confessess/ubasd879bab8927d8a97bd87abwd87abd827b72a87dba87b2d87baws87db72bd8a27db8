@@ -1891,14 +1891,24 @@ function UI.Build()
         if visible then
             Main.Visible = true
             Background.Visible = true
+            Body.Visible = true
+            Sidebar.Visible = true
+            Content.Visible = true
             Tween(Main, {
                 Size = UDim2.fromOffset(GUI_WIDTH, GUI_HEIGHT),
                 BackgroundTransparency = 0.04,
             }, 0.4):Play()
             Tween(Blur, {Size = 12}, 0.35):Play()
         else
+            -- Hide everything explicitly
             Main.Visible = false
             Background.Visible = false
+            Body.Visible = false
+            Sidebar.Visible = false
+            Content.Visible = false
+            for _, page in pairs(Pages) do
+                page.Visible = false
+            end
             Tween(Blur, {Size = 0}, 0.2):Play()
         end
         UI.UpdateHotkeyDisplay()
