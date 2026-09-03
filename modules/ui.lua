@@ -93,6 +93,10 @@ function UI.SetFarm(farm)
     UI.Farm = farm
 end
 
+function UI.SetMovement(movement)
+    UI.Movement = movement
+end
+
 
 function UI.UpdateHotkeyDisplay()
     local Config = UI.Config
@@ -408,6 +412,27 @@ function UI.Build()
                 Tween(keyBtn, {BackgroundTransparency = 0}, 0.2):Play()
             end)
             UI.KeybindButtons[toggleId] = keyBtn
+
+            -- Unbind button
+            local unbindBtn = New("TextButton", {
+                Size = UDim2.fromOffset(20, 20),
+                Position = UDim2.new(1, -126, 0.5, -10),
+                BackgroundColor3 = Color3.fromRGB(80, 80, 90),
+                BackgroundTransparency = 0.3,
+                BorderSizePixel = 0,
+                Text = "−",
+                TextColor3 = Color3.fromRGB(200, 200, 210),
+                TextSize = 14,
+                Font = Enum.Font.GothamBold,
+                AutoButtonColor = false,
+                ZIndex = 17,
+            }, frame)
+            Corner(unbindBtn, 5)
+            unbindBtn.MouseButton1Click:Connect(function()
+                Config[toggleId .. "Key"] = nil
+                keyBtn.Text = "—"
+                UI.UpdateHotkeyDisplay()
+            end)
         end
         local toggle = New("TextButton", {
             Size = UDim2.fromOffset(44, 22),
@@ -1591,24 +1616,39 @@ function UI.Build()
 
     CreateToggle(MovementCard, 14, "Speed", Config.Move_SpeedEnabled, "Move_SpeedEnabled", true, function(v)
         Config.Move_SpeedEnabled = v
+        if UI.Movement then
+            UI.Movement.SetSpeedEnabled(v)
+        end
     end)
     CreateSlider(MovementCard, 50, "Walk Speed", 16, 200, Config.Move_Speed, function(v)
         Config.Move_Speed = v
     end)
     CreateToggle(MovementCard, 96, "High Jump", Config.Move_HighJumpEnabled, "Move_HighJumpEnabled", true, function(v)
         Config.Move_HighJumpEnabled = v
+        if UI.Movement then
+            UI.Movement.SetHighJumpEnabled(v)
+        end
     end)
     CreateSlider(MovementCard, 132, "Jump Power", 50, 300, Config.Move_JumpPower, function(v)
         Config.Move_JumpPower = v
     end)
     CreateToggle(MovementCard, 178, "Bunny Hop", Config.Move_BunnyHop, "Move_BunnyHop", true, function(v)
         Config.Move_BunnyHop = v
+        if UI.Movement then
+            UI.Movement.SetBunnyHop(v)
+        end
     end)
     CreateToggle(MovementCard, 214, "Infinite Jump", Config.Move_InfiniteJump, "Move_InfiniteJump", true, function(v)
         Config.Move_InfiniteJump = v
+        if UI.Movement then
+            UI.Movement.SetInfiniteJump(v)
+        end
     end)
     CreateToggle(MovementCard, 250, "NoClip", Config.Move_NoClip, "Move_NoClip", true, function(v)
         Config.Move_NoClip = v
+        if UI.Movement then
+            UI.Movement.SetNoClip(v)
+        end
     end)
 
     New("Frame", {
@@ -1633,6 +1673,9 @@ function UI.Build()
 
     CreateToggle(MovementCard, 324, "Enable Fly", Config.Move_Fly, "Move_Fly", true, function(v)
         Config.Move_Fly = v
+        if UI.Movement then
+            UI.Movement.SetFly(v)
+        end
     end)
     local flyMethodDropdown = BuildDropdown(MovementCard, 360, "Fly Method", Config.Move_FlyMethod or "Tween",
         {"Tween", "Velocity", "CFrame"},

@@ -48,6 +48,12 @@ local function ResetSpeed()
     end
 end
 
+function Movement.SetSpeedEnabled(enabled)
+    if Movement.Config then
+        Movement.Config.Move_SpeedEnabled = enabled
+    end
+end
+
 -- ═════════════════════════════════════════════════════════════════════════════
 -- HIGH JUMP
 -- ═════════════════════════════════════════════════════════════════════════════
@@ -75,6 +81,12 @@ local function ResetHighJump()
     end
 end
 
+function Movement.SetHighJumpEnabled(enabled)
+    if Movement.Config then
+        Movement.Config.Move_HighJumpEnabled = enabled
+    end
+end
+
 -- ═════════════════════════════════════════════════════════════════════════════
 -- BUNNY HOP
 -- ═════════════════════════════════════════════════════════════════════════════
@@ -90,6 +102,12 @@ local function DoBunnyHop()
         if hum.FloorMaterial ~= Enum.Material.Air then
             hum:ChangeState(Enum.HumanoidStateType.Jumping)
         end
+    end
+end
+
+function Movement.SetBunnyHop(enabled)
+    if Movement.Config then
+        Movement.Config.Move_BunnyHop = enabled
     end
 end
 
@@ -113,6 +131,12 @@ local function DoInfiniteJump()
     end
 end
 
+function Movement.SetInfiniteJump(enabled)
+    if Movement.Config then
+        Movement.Config.Move_InfiniteJump = enabled
+    end
+end
+
 -- ═════════════════════════════════════════════════════════════════════════════
 -- NOCLIP
 -- ═════════════════════════════════════════════════════════════════════════════
@@ -132,6 +156,12 @@ local function ResetNoClip()
     if not char then return end
     for _, part in pairs(char:GetDescendants()) do
         if part:IsA("BasePart") then part.CanCollide = true end
+    end
+end
+
+function Movement.SetNoClip(enabled)
+    if Movement.Config then
+        Movement.Config.Move_NoClip = enabled
     end
 end
 
@@ -303,6 +333,17 @@ local function StopFly()
     if Config.Move_FlyMethod == "Tween" then StopFly_Tween()
     elseif Config.Move_FlyMethod == "Velocity" then StopFly_Velocity()
     elseif Config.Move_FlyMethod == "CFrame" then StopFly_CFrame() end
+end
+
+function Movement.SetFly(enabled)
+    if Movement.Config then
+        Movement.Config.Move_Fly = enabled
+        if enabled then
+            StartFly()
+        else
+            StopFly()
+        end
+    end
 end
 
 -- ═════════════════════════════════════════════════════════════════════════════
