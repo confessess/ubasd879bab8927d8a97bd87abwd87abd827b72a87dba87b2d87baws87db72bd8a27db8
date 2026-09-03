@@ -1295,7 +1295,17 @@ function UI.Build()
     -- FARM PAGE
     local FarmPage = Pages.Farm
     PageTitle(FarmPage, "Farm", "Pull selected target to your crosshair aim point.")
-    local FarmCard = CreateCard(FarmPage, UDim2.fromOffset(10, 72), UDim2.new(1, -20, 0, 450))
+    local FarmScroll = New("ScrollingFrame", {
+        Size = UDim2.new(1, -20, 1, -72),
+        Position = UDim2.fromOffset(10, 72),
+        BackgroundTransparency = 1,
+        BorderSizePixel = 0,
+        ScrollBarThickness = 5,
+        ScrollBarImageColor3 = Color3.fromRGB(145, 75, 255),
+        CanvasSize = UDim2.new(0, 0, 0, 470),
+        ZIndex = 14,
+    }, FarmPage)
+    local FarmCard = CreateCard(FarmScroll, UDim2.fromOffset(0, 0), UDim2.new(1, 0, 0, 450))
     CreateToggle(FarmCard, 14, "Enable Farm", Config.FarmEnabled, "FarmEnabled", true, function(v)
         Config.FarmEnabled = v
         if UI.Farm then
@@ -1349,10 +1359,10 @@ function UI.Build()
         BorderSizePixel = 0,
         ScrollBarThickness = 5,
         ScrollBarImageColor3 = Color3.fromRGB(145, 75, 255),
-        CanvasSize = UDim2.new(0, 0, 0, 820),
+        CanvasSize = UDim2.new(0, 0, 0, 900),
         ZIndex = 14,
     }, MiscPage)
-    local MiscCard = CreateCard(MiscScroll, UDim2.fromOffset(0, 0), UDim2.new(1, 0, 0, 800))
+    local MiscCard = CreateCard(MiscScroll, UDim2.fromOffset(0, 0), UDim2.new(1, 0, 0, 880))
 
     -- AntiStomp Section
     CreateToggle(MiscCard, 14, "AntiStomp", Config.AntiStomp, "AntiStomp", true, function(v)
@@ -1365,51 +1375,51 @@ function UI.Build()
         {"Void", "Force Reset"},
         function(v) Config.AntiStompMode = v end)
 
-    CreateSeparator(MiscCard, 100)
+    CreateSeparator(MiscCard, 122)
 
     -- Auto Stomp Section
-    CreateToggle(MiscCard, 112, "Auto Stomp", Config.AutoStompEnabled, "AutoStompEnabled", true, function(v)
+    CreateToggle(MiscCard, 134, "Auto Stomp", Config.AutoStompEnabled, "AutoStompEnabled", true, function(v)
         Config.AutoStompEnabled = v
         if UI.Misc then
             UI.Misc.SetAutoStompEnabled(v)
         end
     end)
 
-    CreateSeparator(MiscCard, 152)
+    CreateSeparator(MiscCard, 174)
 
     -- Teleport Spam Section
-    CreateToggle(MiscCard, 164, "Teleport Spam", Config.SpamEnabled, "SpamEnabled", true, function(v)
+    CreateToggle(MiscCard, 186, "Teleport Spam", Config.SpamEnabled, "SpamEnabled", true, function(v)
         Config.SpamEnabled = v
         if UI.Misc then
             UI.Misc.ToggleSpam(v)
         end
     end)
-    local spamRangeDropdown = BuildDropdown(MiscCard, 204, "Spam Range", Config.SpamRange or "Close",
+    local spamRangeDropdown = BuildDropdown(MiscCard, 226, "Spam Range", Config.SpamRange or "Close",
         {"Close", "Far"},
         function(v) Config.SpamRange = v end)
-    CreateSlider(MiscCard, 268, "Close Height", 50, 1000, Config.SpamCloseHeight or 350, function(v)
+    CreateSlider(MiscCard, 290, "Close Height", 50, 1000, Config.SpamCloseHeight or 350, function(v)
         Config.SpamCloseHeight = v
     end)
-    CreateSlider(MiscCard, 324, "Close Radius", 50, 1000, Config.SpamCloseRadius or 250, function(v)
+    CreateSlider(MiscCard, 346, "Close Radius", 50, 1000, Config.SpamCloseRadius or 250, function(v)
         Config.SpamCloseRadius = v
     end)
-    CreateSlider(MiscCard, 380, "Far Jitter", 0, 50000, Config.SpamFarJitter or 5000, function(v)
+    CreateSlider(MiscCard, 402, "Far Jitter", 0, 50000, Config.SpamFarJitter or 5000, function(v)
         Config.SpamFarJitter = v
     end)
-    CreateSlider(MiscCard, 436, "Spam Speed", 1, 10, Config.SpamSpeed or 1, function(v)
+    CreateSlider(MiscCard, 458, "Spam Speed", 1, 10, Config.SpamSpeed or 1, function(v)
         Config.SpamSpeed = v
     end)
 
-    CreateSeparator(MiscCard, 492)
+    CreateSeparator(MiscCard, 514)
 
     -- Auto Armor Section
-    CreateToggle(MiscCard, 504, "Auto Armor", Config.AutoArmor, "AutoArmor", true, function(v)
+    CreateToggle(MiscCard, 526, "Auto Armor", Config.AutoArmor, "AutoArmor", true, function(v)
         Config.AutoArmor = v
         if UI.Misc then
             UI.Misc.SetAutoArmor(v)
         end
     end)
-    CreateToggle(MiscCard, 544, "Armor On Any Damage", Config.AutoArmorOnDamage, "AutoArmorOnDamage", true, function(v)
+    CreateToggle(MiscCard, 566, "Armor On Any Damage", Config.AutoArmorOnDamage, "AutoArmorOnDamage", true, function(v)
         Config.AutoArmorOnDamage = v
         if UI.Misc then
             UI.Misc.EvaluateHealthHook()
@@ -1418,7 +1428,7 @@ function UI.Build()
     local armorPos = Config.AutoArmorPos or Vector3.new(0, 0, 0)
     local ArmorPosLabel = Instance.new("TextLabel")
     ArmorPosLabel.Size = UDim2.new(0.6, 0, 0, 16)
-    ArmorPosLabel.Position = UDim2.new(0.05, 0, 0, 578)
+    ArmorPosLabel.Position = UDim2.new(0.05, 0, 0, 600)
     ArmorPosLabel.BackgroundTransparency = 1
     ArmorPosLabel.Text = string.format("Pos: %.0f, %.0f, %.0f", armorPos.X, armorPos.Y, armorPos.Z)
     ArmorPosLabel.TextColor3 = Color3.fromRGB(130, 130, 150)
@@ -1428,7 +1438,7 @@ function UI.Build()
     ArmorPosLabel.Parent = MiscCard
     local SetPosBtn = Instance.new("TextButton")
     SetPosBtn.Size = UDim2.new(0.3, 0, 0, 20)
-    SetPosBtn.Position = UDim2.new(0.65, 0, 0, 576)
+    SetPosBtn.Position = UDim2.new(0.65, 0, 0, 598)
     SetPosBtn.BackgroundColor3 = Color3.fromRGB(80, 60, 120)
     SetPosBtn.Text = "Set Pos"
     SetPosBtn.TextColor3 = Color3.fromRGB(255, 255, 255)
@@ -1452,17 +1462,17 @@ function UI.Build()
             end
         end
     end)
-    CreateSlider(MiscCard, 604, "Trigger Health", 1, 100, Config.AutoArmorTriggerHealth or 50, function(v)
+    CreateSlider(MiscCard, 626, "Trigger Health", 1, 100, Config.AutoArmorTriggerHealth or 50, function(v)
         Config.AutoArmorTriggerHealth = v
     end)
-    CreateSlider(MiscCard, 660, "Cooldown", 1, 30, Config.AutoArmorCooldown or 5, function(v)
+    CreateSlider(MiscCard, 682, "Cooldown", 1, 30, Config.AutoArmorCooldown or 5, function(v)
         Config.AutoArmorCooldown = v
     end)
 
     -- Bottom padding
     New("Frame", {
         Size = UDim2.new(1, 0, 0, 40),
-        Position = UDim2.fromOffset(0, 720),
+        Position = UDim2.fromOffset(0, 740),
         BackgroundTransparency = 1,
         ZIndex = 16,
     }, MiscCard)
