@@ -106,6 +106,7 @@ function UI.UpdateHotkeyDisplay()
     end
     UI.HotkeyDisplay.Size = UDim2.fromOffset(155, math.max(36, y + 4))
 end
+
 function UI.Build()
     local Config = UI.Config
     if not Config then return end
@@ -194,7 +195,6 @@ function UI.Build()
         BorderSizePixel = 0,
         ZIndex = 11,
     }, Main)
-    Corner(Main, 1)
     local TopBar = New("Frame", {
         Size = UDim2.new(1, -30, 0, 62),
         Position = UDim2.fromOffset(15, 10),
@@ -492,7 +492,6 @@ function UI.Build()
         end)
         return btn
     end
-    --// Dropdown helper: returns {Container, Header, List, setText, isOpen}
     local function BuildDropdown(parent, y, labelText, currentValue, options, onSelect)
         New("TextLabel", {
             Size = UDim2.new(1, -20, 0, 20),
@@ -529,7 +528,6 @@ function UI.Build()
             ZIndex = 17,
         }, container)
         Corner(header, 8)
-        -- List is a Frame parented to Main, positioned absolutely over the container
         local list = New("Frame", {
             Size = UDim2.fromOffset(0, 0),
             Position = UDim2.fromOffset(0, 0),
@@ -619,6 +617,7 @@ function UI.Build()
             end,
         }
     end
+
     --// COMBAT PAGE
     local CombatPage = Pages.Combat
     PageTitle(CombatPage, "Combat", "Frame teleport shoot, rapid fire, and hotkeys.")
@@ -633,10 +632,20 @@ function UI.Build()
         Config.RapidFire = v
     end)
 
-    --// VISUALS PAGE
+    --// VISUALS PAGE (with ESP integrated + scrolling)
     local VisualsPage = Pages.Visuals
-    PageTitle(VisualsPage, "Visuals", "FOV, tracers, hitmarkers, and target highlighting.")
-    local VisualsCard = CreateCard(VisualsPage, UDim2.fromOffset(10, 72), UDim2.new(1, -20, 0, 236))
+    PageTitle(VisualsPage, "Visuals", "FOV, ESP suite, tracers, hitmarkers, and target highlighting.")
+    local VisualsScroll = New("ScrollingFrame", {
+        Size = UDim2.new(1, -20, 1, -72),
+        Position = UDim2.fromOffset(10, 72),
+        BackgroundTransparency = 1,
+        BorderSizePixel = 0,
+        ScrollBarThickness = 3,
+        ScrollBarImageColor3 = Color3.fromRGB(100, 70, 150),
+        CanvasSize = UDim2.new(0, 0, 0, 0),
+        ZIndex = 14,
+    }, VisualsPage)
+    local VisualsCard = CreateCard(VisualsScroll, UDim2.fromOffset(0, 0), UDim2.new(1, 0, 0, 1100))
     CreateToggle(VisualsCard, 14, "FOV Circle", Config.FOV_Enabled, "FOV_Enabled", false, function(v)
         Config.FOV_Enabled = v
     end)
@@ -651,6 +660,73 @@ function UI.Build()
     end)
     CreateToggle(VisualsCard, 182, "Hitmarkers", Config.Hitmarkers, "Hitmarkers", false, function(v)
         Config.Hitmarkers = v
+    end)
+    New("Frame", {
+        Size = UDim2.new(1, -20, 0, 1),
+        Position = UDim2.fromOffset(10, 226),
+        BackgroundColor3 = Color3.fromRGB(60, 40, 80),
+        BackgroundTransparency = 0.5,
+        BorderSizePixel = 0,
+        ZIndex = 16,
+    }, VisualsCard)
+    New("TextLabel", {
+        Size = UDim2.new(1, -20, 0, 20),
+        Position = UDim2.fromOffset(10, 236),
+        BackgroundTransparency = 1,
+        Text = "ESP Suite",
+        TextColor3 = Color3.fromRGB(245, 220, 255),
+        TextSize = 14,
+        Font = Enum.Font.GothamBold,
+        TextXAlignment = Enum.TextXAlignment.Left,
+        ZIndex = 16,
+    }, VisualsCard)
+    CreateToggle(VisualsCard, 264, "ESP Master", Config.ESP_Enabled, "ESP_Enabled", false, function(v)
+        Config.ESP_Enabled = v
+    end)
+    CreateToggle(VisualsCard, 300, "Boxes", Config.ESP_Boxes, "ESP_Boxes", false, function(v)
+        Config.ESP_Boxes = v
+    end)
+    CreateToggle(VisualsCard, 336, "3D Boxes", Config.ESP_Box3D, "ESP_Box3D", false, function(v)
+        Config.ESP_Box3D = v
+    end)
+    CreateToggle(VisualsCard, 372, "Names", Config.ESP_Names, "ESP_Names", false, function(v)
+        Config.ESP_Names = v
+    end)
+    CreateToggle(VisualsCard, 408, "Distance Text", Config.ESP_Distance, "ESP_Distance", false, function(v)
+        Config.ESP_Distance = v
+    end)
+    CreateToggle(VisualsCard, 444, "Health Bar", Config.ESP_Health, "ESP_Health", false, function(v)
+        Config.ESP_Health = v
+    end)
+    CreateToggle(VisualsCard, 480, "Skeleton", Config.ESP_Skeleton, "ESP_Skeleton", false, function(v)
+        Config.ESP_Skeleton = v
+    end)
+    CreateToggle(VisualsCard, 516, "Chams", Config.ESP_Chams, "ESP_Chams", false, function(v)
+        Config.ESP_Chams = v
+    end)
+    CreateToggle(VisualsCard, 552, "Head Dot", Config.ESP_HeadDot, "ESP_HeadDot", false, function(v)
+        Config.ESP_HeadDot = v
+    end)
+    CreateToggle(VisualsCard, 588, "Weapon Names", Config.ESP_WeaponNames, "ESP_WeaponNames", false, function(v)
+        Config.ESP_WeaponNames = v
+    end)
+    CreateToggle(VisualsCard, 624, "Team Check", Config.ESP_TeamCheck, "ESP_TeamCheck", false, function(v)
+        Config.ESP_TeamCheck = v
+    end)
+    CreateToggle(VisualsCard, 660, "Target Mode Only", Config.ESP_TargetMode, "ESP_TargetMode", false, function(v)
+        Config.ESP_TargetMode = v
+    end)
+    CreateToggle(VisualsCard, 696, "Distance Limit", Config.ESP_DistanceToggle, "ESP_DistanceToggle", false, function(v)
+        Config.ESP_DistanceToggle = v
+    end)
+    CreateSlider(VisualsCard, 732, "Max ESP Distance", 50, 5000, Config.ESP_MaxDistance, function(v)
+        Config.ESP_MaxDistance = v
+    end)
+    CreateSlider(VisualsCard, 788, "Box Thickness", 1, 5, Config.ESP_BoxThickness, function(v)
+        Config.ESP_BoxThickness = v
+    end)
+    CreateSlider(VisualsCard, 844, "Head Dot Size", 1, 30, math.floor(Config.ESP_HeadDotSize * 10), function(v)
+        Config.ESP_HeadDotSize = v / 10
     end)
 
     --// TARGET PAGE
@@ -695,30 +771,26 @@ function UI.Build()
     }, TargetCard)
     Corner(PlayerList, 8)
     New("UIListLayout", {Padding = UDim.new(0, 2), Parent = PlayerList})
-        --// FARM PAGE
+
+    --// FARM PAGE
     local FarmPage = Pages.Farm
     PageTitle(FarmPage, "Farm", "Pull selected target to your crosshair aim point.")
     local FarmCard = CreateCard(FarmPage, UDim2.fromOffset(10, 72), UDim2.new(1, -20, 0, 280))
-
     CreateToggle(FarmCard, 14, "Enable Farm", Config.FarmEnabled, "FarmEnabled", true, function(v)
         Config.FarmEnabled = v
         if UI.Farm then
             UI.Farm.SetEnabled(v)
         end
     end)
-
     CreateSlider(FarmCard, 50, "Distance (studs)", 3, 30, Config.FarmDistance or 12, function(v)
         Config.FarmDistance = v
     end)
-
     CreateSlider(FarmCard, 96, "Vertical Offset", -10, 10, Config.FarmVerticalOffset or 0, function(v)
         Config.FarmVerticalOffset = v
     end)
-
     CreateSlider(FarmCard, 142, "Pull Speed", 1, 20, Config.FarmPullSpeed or 1, function(v)
         Config.FarmPullSpeed = v
     end)
-
     New("TextLabel", {
         Size = UDim2.new(1, -20, 0, 40),
         Position = UDim2.fromOffset(10, 190),
@@ -745,10 +817,7 @@ function UI.Build()
         CanvasSize = UDim2.new(0, 0, 0, 710),
         ZIndex = 14,
     }, MiscPage)
-
     local MiscCard = CreateCard(MiscScroll, UDim2.fromOffset(0, 0), UDim2.new(1, 0, 0, 700))
-
-    --// AntiStomp
     CreateToggle(MiscCard, 14, "AntiStomp", Config.AntiStomp, "AntiStomp", true, function(v)
         Config.AntiStomp = v
         if UI.Misc then
@@ -758,8 +827,6 @@ function UI.Build()
     local antiStompDropdown = BuildDropdown(MiscCard, 54, "AntiStomp Mode", Config.AntiStompMode or "Void",
         {"Void", "Force Reset"},
         function(v) Config.AntiStompMode = v end)
-
-    --// Divider
     New("Frame", {
         Size = UDim2.new(1, -20, 0, 1),
         Position = UDim2.fromOffset(10, 118),
@@ -768,8 +835,6 @@ function UI.Build()
         BorderSizePixel = 0,
         ZIndex = 16,
     }, MiscCard)
-
-    --// Teleport Spam
     CreateToggle(MiscCard, 132, "Teleport Spam", Config.SpamEnabled, "SpamEnabled", true, function(v)
         Config.SpamEnabled = v
         if UI.Misc then
@@ -791,8 +856,6 @@ function UI.Build()
     CreateSlider(MiscCard, 412, "Spam Speed", 1, 10, Config.SpamSpeed or 1, function(v)
         Config.SpamSpeed = v
     end)
-
-    --// Divider
     New("Frame", {
         Size = UDim2.new(1, -20, 0, 1),
         Position = UDim2.fromOffset(10, 474),
@@ -801,8 +864,6 @@ function UI.Build()
         BorderSizePixel = 0,
         ZIndex = 16,
     }, MiscCard)
-
-        --// Auto Armor
     CreateToggle(MiscCard, 488, "Auto Armor", Config.AutoArmor, "AutoArmor", true, function(v)
         Config.AutoArmor = v
         if UI.Misc then
@@ -815,8 +876,6 @@ function UI.Build()
             UI.Misc.EvaluateHealthHook()
         end
     end)
-
-    --// Position display + set button
     local armorPos = Config.AutoArmorPos or Vector3.new(0, 0, 0)
     local ArmorPosLabel = Instance.new("TextLabel")
     ArmorPosLabel.Size = UDim2.new(0.6, 0, 0, 16)
@@ -828,7 +887,6 @@ function UI.Build()
     ArmorPosLabel.TextSize = 10
     ArmorPosLabel.TextXAlignment = Enum.TextXAlignment.Left
     ArmorPosLabel.Parent = MiscCard
-
     local SetPosBtn = Instance.new("TextButton")
     SetPosBtn.Size = UDim2.new(0.3, 0, 0, 20)
     SetPosBtn.Position = UDim2.new(0.65, 0, 0, 560)
@@ -838,11 +896,9 @@ function UI.Build()
     SetPosBtn.Font = Enum.Font.GothamBold
     SetPosBtn.TextSize = 10
     SetPosBtn.Parent = MiscCard
-
     local SetPosCorner = Instance.new("UICorner")
     SetPosCorner.CornerRadius = UDim.new(0, 6)
     SetPosCorner.Parent = SetPosBtn
-
     SetPosBtn.MouseButton1Click:Connect(function()
         local char = LocalPlayer.Character
         if char then
@@ -851,21 +907,20 @@ function UI.Build()
                 local pos = hrp.Position
                 Config.AutoArmorPos = pos
                 ArmorPosLabel.Text = string.format("Pos: %.0f, %.0f, %.0f", pos.X, pos.Y, pos.Z)
-                --// Also update the cached detector
                 if UI.Misc then
                     UI.Misc.CacheArmorDetector()
                 end
             end
         end
     end)
-
     CreateSlider(MiscCard, 588, "Trigger Health", 1, 100, Config.AutoArmorTriggerHealth or 50, function(v)
         Config.AutoArmorTriggerHealth = v
     end)
     CreateSlider(MiscCard, 644, "Cooldown", 1, 30, Config.AutoArmorCooldown or 5, function(v)
         Config.AutoArmorCooldown = v
     end)
-    --// SPECTATE PANEL (middle-right, shows when spectating)
+
+    --// SPECTATE PANEL
     local SpectatePanel = New("Frame", {
         Size = UDim2.fromOffset(200, 320),
         Position = UDim2.new(1, -220, 0.5, -160),
@@ -924,7 +979,6 @@ function UI.Build()
     Corner(PanelPlayerList, 8)
     New("UIListLayout", {Padding = UDim.new(0, 2), Parent = PanelPlayerList})
 
-    --// Shared refresh for both player lists
     local function refreshAllLists()
         UI.Targeting.RefreshPlayerList(PlayerList, refreshAllLists)
         UI.Targeting.RefreshPlayerList(PanelPlayerList, refreshAllLists)
@@ -933,7 +987,6 @@ function UI.Build()
     Players.PlayerAdded:Connect(refreshAllLists)
     Players.PlayerRemoving:Connect(refreshAllLists)
 
-    --// Spectate mode handler
     local function SetSpectateMode(enabled)
         Config.Spectate = enabled
         if enabled then
@@ -951,8 +1004,6 @@ function UI.Build()
             UI.ToggleCallbacks["SpectatePanel"](enabled)
         end
     end
-
-    --// Override main spectate callback to use SetSpectateMode
     local origSpectateCallback = UI.ToggleCallbacks["Spectate"]
     UI.ToggleCallbacks["Spectate"] = function(enabled)
         origSpectateCallback(enabled)
@@ -960,6 +1011,7 @@ function UI.Build()
             SetSpectateMode(enabled)
         end
     end
+
     --// SETTINGS PAGE
     local SettingsPage = Pages.Settings
     PageTitle(SettingsPage, "Settings", "Interface customization and hotkey display.")
@@ -1037,13 +1089,9 @@ function UI.Build()
         for pageName, page in pairs(Pages) do
             page.Visible = pageName == name
         end
-        -- close all dropdowns on tab switch
-        if targetPartDropdown and targetPartDropdown.IsOpen() then
-            targetPartDropdown.Close()
-        end
-        if antiStompDropdown and antiStompDropdown.IsOpen() then
-            antiStompDropdown.Close()
-        end
+        if targetPartDropdown and targetPartDropdown.IsOpen() then targetPartDropdown.Close() end
+        if antiStompDropdown and antiStompDropdown.IsOpen() then antiStompDropdown.Close() end
+        if spamRangeDropdown and spamRangeDropdown.IsOpen() then spamRangeDropdown.Close() end
     end
     for name, data in pairs(TabButtons) do
         data.Button.MouseButton1Click:Connect(function() SelectTab(name) end)

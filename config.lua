@@ -1,10 +1,6 @@
 return {
-    -- ... existing config ...
-
-    -- Auth
-    SavedKey = nil, -- set this to auto-fill the key box
-    AutoValidate = false, -- if true + SavedKey set, skips gate on rejoin
-
+    SavedKey = nil,
+    AutoValidate = false,
     FrameTP = true,
     OneFrameDelay = false,
     RapidFire = true,
@@ -15,19 +11,45 @@ return {
     Tracer_Color = Color3.fromRGB(255, 60, 60),
     Hitmarkers = true,
     Highlights = true,
+    ESP_Enabled = false,
+    ESP_Boxes = false,
+    ESP_Box3D = false,
+    ESP_Names = false,
+    ESP_Distance = false,
+    ESP_Health = false,
+    ESP_Skeleton = false,
+    ESP_Chams = false,
+    ESP_HeadDot = false,
+    ESP_WeaponNames = false,
+    ESP_TeamCheck = false,
+    ESP_DistanceToggle = false,
+    ESP_MaxDistance = 2000,
+    ESP_TargetMode = false,
+    ESP_BoxThickness = 1,
+    ESP_HeadDotThickness = 1,
+    ESP_HeadDotSize = 0.5,
+    ESP_Colors = {
+        Box = Color3.fromRGB(255, 105, 180),
+        Name = Color3.fromRGB(255, 255, 255),
+        Distance = Color3.fromRGB(200, 200, 200),
+        Health = Color3.fromRGB(0, 255, 100),
+        Skeleton = Color3.fromRGB(255, 255, 255),
+        ChamsFill = Color3.fromRGB(255, 105, 180),
+        ChamsOutline = Color3.fromRGB(255, 255, 255),
+        Tracers = Color3.fromRGB(255, 105, 180),
+        HeadDot = Color3.fromRGB(255, 255, 255),
+    },
     Spectate = false,
     TargetPart = "Head",
     TargetMode = "Closest",
     MaxTargetDistance = 5000000000000000,
-    ToggleKey = Enum.KeyCode.RightShift,
-    ShowHotkeys = true,
-
-    -- AntiStomp
+    FarmEnabled = false,
+    FarmDistance = 12,
+    FarmVerticalOffset = 0,
+    FarmPullSpeed = 1,
     AntiStomp = false,
     AntiStompMode = "Void",
     AntiStompThreshold = 50,
-
-    -- Teleport Spam
     SpamEnabled = false,
     SpamRange = "Close",
     SpamCloseHeight = 350,
@@ -36,26 +58,18 @@ return {
     SpamFarBase = Vector3.new(500000, 500000, 500000),
     SpamFarJitter = 5000,
     SpamSpeed = 1,
-    SpamEnabledKey = nil,
-
-    -- Auto Armor
     AutoArmor = false,
     AutoArmorOnDamage = false,
     AutoArmorPos = Vector3.new(-934.12, -25.38, 571.02),
     AutoArmorTriggerHealth = 50,
     AutoArmorCooldown = 1,
-
-    -- Farm
-    FarmEnabled = false,
-    FarmDistance = 12,
-    FarmVerticalOffset = 0,
-    FarmPullSpeed = 1,
-    FarmEnabledKey = nil,
-
-    -- Toggle hotkeys
+    ToggleKey = Enum.KeyCode.RightShift,
+    ShowHotkeys = true,
     FrameTPKey = nil,
     OneFrameDelayKey = nil,
     RapidFireKey = nil,
     SpectateKey = nil,
     AntiStompKey = nil,
+    SpamEnabledKey = nil,
+    FarmEnabledKey = nil,
 }
