@@ -16,7 +16,7 @@ local Auth = {
     Validated = false,
     Key = nil,
     HWID = nil,
-    AuthURL = "http://10.177.177.224:3000/api/validate",
+    AuthURL = "http://localhost:3000/api/validate",
     FallbackKeys = {},
 }
 
@@ -68,47 +68,113 @@ end
 
 function Auth.ValidateKey(inputKey)
     local hwid = Auth.GenerateHWID()
+    
     if Auth.FallbackKeys[inputKey] then
         Auth.Validated = true
         Auth.Key = inputKey
         return true, "fallback"
     end
-    local success, response = pcall(function()
-        local payload = HttpService:JSONEncode({ key = inputKey, hwid = hwid })
-        if game.HttpPost then
-            return game:HttpPost(Auth.AuthURL, payload, false, "application/json")
-        end
-        if request then
+    
+    local payload = HttpService:JSONEncode({ key = inputKey, hwid = hwid })
+    local url = Auth.AuthURL
+    local response = nil
+    local usedMethod = "none"
+    
+    -- Try every known executor request method
+    local methods = {
+        function()
+            usedMethod = "game:HttpPost"
+            return game:HttpPost(url, payload, false, "application/json")
+        end,
+        function()
+            usedMethod = "request()"
             local res = request({
-                Url = Auth.AuthURL,
+                Url = url,
                 Method = "POST",
                 Headers = { ["Content-Type"] = "application/json" },
                 Body = payload
             })
             return res and res.Body
-        end
-        if syn and syn.request then
+        end,
+        function()
+            usedMethod = "syn.request"
             local res = syn.request({
-                Url = Auth.AuthURL,
+                Url = url,
                 Method = "POST",
                 Headers = { ["Content-Type"] = "application/json" },
                 Body = payload
             })
             return res and res.Body
-        end
-        error("No HTTP POST method available")
-    end)
-    if success and response then
-        local parsed = HttpService:JSONDecode(response)
-        if parsed and parsed.valid then
-            Auth.Validated = true
-            Auth.Key = inputKey
-            return true, parsed.hwid_status or "remote"
+        end,
+        function()
+            usedMethod = "fluxus.request"
+            local res = fluxus.request({
+                Url = url,
+                Method = "POST",
+                Headers = { ["Content-Type"] = "application/json" },
+                Body = payload
+            })
+            return res and res.Body
+        end,
+        function()
+            usedMethod = "krnl.request"
+            local res = krnl.request({
+                Url = url,
+                Method = "POST",
+                Headers = { ["Content-Type"] = "application/json" },
+                Body = payload
+            })
+            return res and res.Body
+        end,
+        function()
+            usedMethod = "http.request"
+            local res = http.request({
+                Url = url,
+                Method = "POST",
+                Headers = { ["Content-Type"] = "application/json" },
+                Body = payload
+            })
+            return res and res.Body
+        end,
+        function()
+            usedMethod = "game:HttpGet with query (GET fallback)"
+            local getUrl = url .. "?key=" .. HttpService:UrlEncode(inputKey) .. "&hwid=" .. HttpService:UrlEncode(hwid)
+            return game:HttpGet(getUrl, true)
+        end,
+    }
+    
+    for i, method in ipairs(methods) do
+        local success, result = pcall(method)
+        if success and result and #result > 0 then
+            response = result
+            print("[ZeeAuth] Success via " .. usedMethod)
+            break
         else
-            return false, parsed.reason or "unknown"
+            print("[ZeeAuth] Method " .. i .. " (" .. usedMethod .. ") failed: " .. tostring(result))
         end
     end
-    return false, "connection_failed"
+    
+    if not response then
+        return false, "connection_failed"
+    end
+    
+    local parseOk, parsed = pcall(function()
+        return HttpService:JSONDecode(response)
+    end)
+    
+    if not parseOk then
+        print("[ZeeAuth] JSON parse failed: " .. tostring(parsed))
+        print("[ZeeAuth] Raw response: " .. response:sub(1, 200))
+        return false, "bad_response"
+    end
+    
+    if parsed and parsed.valid then
+        Auth.Validated = true
+        Auth.Key = inputKey
+        return true, parsed.hwid_status or "remote"
+    else
+        return false, parsed.reason or "unknown"
+    end
 end
 
 function Auth.IsValidated() return Auth.Validated end
