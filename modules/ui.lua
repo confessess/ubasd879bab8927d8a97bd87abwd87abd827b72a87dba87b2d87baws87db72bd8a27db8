@@ -1268,7 +1268,7 @@ function UI.Build()
     -- FARM PAGE
     local FarmPage = Pages.Farm
     PageTitle(FarmPage, "Farm", "Pull selected target to your crosshair aim point.")
-    local FarmCard = CreateCard(FarmPage, UDim2.fromOffset(10, 72), UDim2.new(1, -20, 0, 320))
+    local FarmCard = CreateCard(FarmPage, UDim2.fromOffset(10, 72), UDim2.new(1, -20, 0, 380))
     CreateToggle(FarmCard, 14, "Enable Farm", Config.FarmEnabled, "FarmEnabled", true, function(v)
         Config.FarmEnabled = v
         if UI.Farm then
@@ -1281,18 +1281,26 @@ function UI.Build()
             UI.Farm.SetRagebotEnabled(v)
         end
     end)
-    CreateSlider(FarmCard, 90, "Distance (studs)", 3, 30, Config.FarmDistance or 12, function(v)
+    local ragebotMethodDropdown = BuildDropdown(FarmCard, 90, "Ragebot Method", Config.RagebotMethod or "FarmVoid",
+        {"FarmVoid", "FrameTPStomp"},
+        function(v) 
+            Config.RagebotMethod = v
+            if UI.Farm then
+                UI.Farm.SetRagebotMethod(v)
+            end
+        end)
+    CreateSlider(FarmCard, 150, "Distance (studs)", 3, 30, Config.FarmDistance or 12, function(v)
         Config.FarmDistance = v
     end)
-    CreateSlider(FarmCard, 136, "Vertical Offset", -10, 10, Config.FarmVerticalOffset or 0, function(v)
+    CreateSlider(FarmCard, 196, "Vertical Offset", -10, 10, Config.FarmVerticalOffset or 0, function(v)
         Config.FarmVerticalOffset = v
     end)
-    CreateSlider(FarmCard, 182, "Pull Speed", 1, 20, Config.FarmPullSpeed or 1, function(v)
+    CreateSlider(FarmCard, 242, "Pull Speed", 1, 20, Config.FarmPullSpeed or 1, function(v)
         Config.FarmPullSpeed = v
     end)
     New("TextLabel", {
         Size = UDim2.new(1, -20, 0, 40),
-        Position = UDim2.fromOffset(10, 230),
+        Position = UDim2.fromOffset(10, 290),
         BackgroundTransparency = 1,
         Text = "Select a target in the Target tab first. Their head will align to your crosshair when Farm is ON. Toggle OFF to restore them.",
         TextColor3 = Color3.fromRGB(140, 130, 155),

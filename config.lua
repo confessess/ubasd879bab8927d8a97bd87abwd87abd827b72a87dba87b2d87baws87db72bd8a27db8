@@ -76,6 +76,8 @@ return {
     FarmPullSpeed = 1,
     RagebotEnabled = false,
     RagebotEnabledKey = nil,
+    RagebotMethod = "FarmVoid", -- "FarmVoid" or "FrameTPStomp"
+    RagebotSelfVoid = false,
 
     -- Misc
     AntiStomp = false,
