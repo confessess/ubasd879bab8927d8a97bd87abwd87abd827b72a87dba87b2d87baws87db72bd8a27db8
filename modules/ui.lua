@@ -129,6 +129,11 @@ function UI.UpdateHotkeyDisplay()
             addLine(name .. "  •  " .. FormatKeyName(key))
         end
     end
+    -- Aimbot aim key (not in ToggleCallbacks since it controls aiming, not enabled state)
+    local aimKey = Config.Aimbot_EnabledKey
+    if aimKey then
+        addLine("AIMBOT  •  " .. FormatKeyName(aimKey))
+    end
     UI.HotkeyDisplay.Size = UDim2.fromOffset(155, math.max(36, y + 4))
 end
 
@@ -1040,9 +1045,11 @@ function UI.Build()
         TextXAlignment = Enum.TextXAlignment.Left,
         ZIndex = 16,
     }, CombatCard)
-    CreateToggle(CombatCard, 34, "Enable Aimbot", Config.Aimbot_Enabled, "Aimbot_Enabled", true, function(v)
+    local aimbotSetState = CreateToggle(CombatCard, 34, "Enable Aimbot", Config.Aimbot_Enabled, "Aimbot_Enabled", true, function(v)
         Config.Aimbot_Enabled = v
     end)
+    -- Remove from toggle callbacks so the hotkey controls aiming, not the enabled state
+    UI.ToggleCallbacks["Aimbot_Enabled"] = nil
     CreateToggle(CombatCard, 70, "Toggle Mode", Config.Aimbot_ToggleMode, "Aimbot_ToggleMode", false, function(v)
         Config.Aimbot_ToggleMode = v
     end)
@@ -1691,6 +1698,7 @@ function UI.Build()
                 return
             end
         end
+        -- Aimbot hotkey is handled by combat.lua (controls aiming, not enabled state)
         -- Close color picker on click outside
         if input.UserInputType == Enum.UserInputType.MouseButton1 then
             local mousePos = UserInputService:GetMouseLocation()

@@ -317,7 +317,7 @@ UserInputService.InputBegan:Connect(function(input, gp)
     if gp then return end
     local Config = Combat.Config
     if not Config or not Config.Aimbot_Enabled then return end
-    local aimKey = Config.Aimbot_AimKey or Enum.KeyCode.Q
+    local aimKey = Config.Aimbot_EnabledKey
 
     local matched = (input.KeyCode == aimKey) or (input.UserInputType == aimKey)
     if not matched then return end
@@ -335,7 +335,7 @@ UserInputService.InputEnded:Connect(function(input, gp)
     if not Config or not Config.Aimbot_Enabled then return end
     if Config.Aimbot_ToggleMode then return end -- toggle mode ignores release
 
-    local aimKey = Config.Aimbot_AimKey or Enum.KeyCode.Q
+    local aimKey = Config.Aimbot_EnabledKey
     local matched = (input.KeyCode == aimKey) or (input.UserInputType == aimKey)
     if not matched then return end
 
