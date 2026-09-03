@@ -217,6 +217,7 @@ function UI.Build()
         BorderSizePixel = 0,
         ZIndex = 10,
         Visible = false,
+        ClipsDescendants = true,
     }, ScreenGui)
     UI.Main = Main
     Corner(Main, 20)
@@ -1897,17 +1898,9 @@ function UI.Build()
             }, 0.4):Play()
             Tween(Blur, {Size = 12}, 0.35):Play()
         else
-            Tween(Main, {
-                Size = UDim2.fromOffset(GUI_WIDTH, 0),
-                BackgroundTransparency = 1,
-            }, 0.3, Enum.EasingStyle.Quint, Enum.EasingDirection.In):Play()
-            Tween(Blur, {Size = 0}, 0.3):Play()
-            task.delay(0.3, function()
-                if not UI.GUIVisible then
-                    Main.Visible = false
-                    Background.Visible = false
-                end
-            end)
+            Main.Visible = false
+            Background.Visible = false
+            Tween(Blur, {Size = 0}, 0.2):Play()
         end
         UI.UpdateHotkeyDisplay()
     end
