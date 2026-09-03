@@ -673,6 +673,14 @@ end
 function Combat.SetKarmaEnabled(enabled)
     if Combat.Config then
         Combat.Config.Karma_Enabled = enabled
+        Combat.KarmaTriggered = false
+        -- Re-setup character connection if enabling
+        if enabled and LocalPlayer.Character then
+            local humanoid = LocalPlayer.Character:FindFirstChildOfClass("Humanoid")
+            if humanoid then
+                Combat.KarmaLastHealth = humanoid.Health
+            end
+        end
     end
 end
 
