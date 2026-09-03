@@ -994,15 +994,88 @@ function UI.Build()
 
     --// COMBAT PAGE
     local CombatPage = Pages.Combat
-    PageTitle(CombatPage, "Combat", "Frame teleport shoot, rapid fire, and hotkeys.")
-    local CombatCard = CreateCard(CombatPage, UDim2.fromOffset(10, 72), UDim2.new(1, -20, 0, 140))
-    CreateToggle(CombatCard, 14, "Frame TP Shoot", Config.FrameTP, "FrameTP", true, function(v)
+    PageTitle(CombatPage, "Combat", "Aimbot, frame teleport shoot, rapid fire, and hotkeys.")
+    local CombatScroll = New("ScrollingFrame", {
+        Size = UDim2.new(1, -20, 1, -72),
+        Position = UDim2.fromOffset(10, 72),
+        BackgroundTransparency = 1,
+        BorderSizePixel = 0,
+        ScrollBarThickness = 3,
+        ScrollBarImageColor3 = Color3.fromRGB(100, 70, 150),
+        CanvasSize = UDim2.new(0, 0, 0, 0),
+        ZIndex = 14,
+    }, CombatPage)
+    local CombatCard = CreateCard(CombatScroll, UDim2.fromOffset(0, 0), UDim2.new(1, 0, 0, 500))
+    CombatScroll.CanvasSize = UDim2.new(0, 0, 0, 520)
+
+    -- Aimbot Section
+    New("TextLabel", {
+        Size = UDim2.new(1, -20, 0, 20),
+        Position = UDim2.fromOffset(10, 10),
+        BackgroundTransparency = 1,
+        Text = "Aimbot",
+        TextColor3 = Color3.fromRGB(245, 220, 255),
+        TextSize = 14,
+        Font = Enum.Font.GothamBold,
+        TextXAlignment = Enum.TextXAlignment.Left,
+        ZIndex = 16,
+    }, CombatCard)
+    CreateToggle(CombatCard, 34, "Enable Aimbot", Config.Aimbot_Enabled, "Aimbot_Enabled", true, function(v)
+        Config.Aimbot_Enabled = v
+    end)
+    CreateToggle(CombatCard, 70, "Team Check", Config.Aimbot_TeamCheck, "Aimbot_TeamCheck", false, function(v)
+        Config.Aimbot_TeamCheck = v
+    end)
+    CreateToggle(CombatCard, 106, "Wall Check", Config.Aimbot_WallCheck, "Aimbot_WallCheck", false, function(v)
+        Config.Aimbot_WallCheck = v
+    end)
+    CreateToggle(CombatCard, 142, "Show FOV", Config.Aimbot_ShowFOV, "Aimbot_ShowFOV", false, function(v)
+        Config.Aimbot_ShowFOV = v
+    end)
+    CreateSlider(CombatCard, 178, "Smoothness", 0, 100, Config.Aimbot_Smoothness, function(v)
+        Config.Aimbot_Smoothness = v
+    end)
+    CreateSlider(CombatCard, 224, "FOV", 10, 300, Config.Aimbot_FOV, function(v)
+        Config.Aimbot_FOV = v
+    end)
+    CreateSlider(CombatCard, 270, "Max Distance", 50, 5000, Config.Aimbot_MaxDistance, function(v)
+        Config.Aimbot_MaxDistance = v
+    end)
+    local aimbotPartDropdown = BuildDropdown(CombatCard, 316, "Target Part", Config.Aimbot_TargetPart or "Head",
+        {"Head", "HumanoidRootPart", "Torso", "UpperTorso", "LowerTorso", "LeftLeg", "RightLeg"},
+        function(v) Config.Aimbot_TargetPart = v end)
+    local aimbotPriorityDropdown = BuildDropdown(CombatCard, 374, "Priority", Config.Aimbot_Priority or "Closest to Mouse",
+        {"Closest to Mouse", "Closest to Player", "Lowest HP", "Highest HP"},
+        function(v) Config.Aimbot_Priority = v end)
+
+    -- Divider
+    New("Frame", {
+        Size = UDim2.new(1, -20, 0, 1),
+        Position = UDim2.fromOffset(10, 430),
+        BackgroundColor3 = Color3.fromRGB(60, 40, 80),
+        BackgroundTransparency = 0.5,
+        BorderSizePixel = 0,
+        ZIndex = 16,
+    }, CombatCard)
+    New("TextLabel", {
+        Size = UDim2.new(1, -20, 0, 20),
+        Position = UDim2.fromOffset(10, 440),
+        BackgroundTransparency = 1,
+        Text = "Combat",
+        TextColor3 = Color3.fromRGB(245, 220, 255),
+        TextSize = 14,
+        Font = Enum.Font.GothamBold,
+        TextXAlignment = Enum.TextXAlignment.Left,
+        ZIndex = 16,
+    }, CombatCard)
+
+    CreateToggle(CombatCard, 464, "Frame TP Shoot", Config.FrameTP, "FrameTP", true, function(v)
         Config.FrameTP = v
     end)
-    CreateToggle(CombatCard, 50, "One-Frame Delay", Config.OneFrameDelay, "OneFrameDelay", true, function(v)
+    CreateToggle(CombatCard, 500, "One-Frame Delay", Config.OneFrameDelay, "OneFrameDelay", true, function(v)
         Config.OneFrameDelay = v
     end)
-    CreateToggle(CombatCard, 86, "Rapid Fire", Config.RapidFire, "RapidFire", true, function(v)
+    CreateToggle(CombatCard, 536, "Rapid Fire", Config.RapidFire, "RapidFire", true, function(v)
         Config.RapidFire = v
     end)
 
@@ -1478,6 +1551,8 @@ function UI.Build()
             page.Visible = pageName == name
         end
         if targetPartDropdown and targetPartDropdown.IsOpen() then targetPartDropdown.Close() end
+        if aimbotPartDropdown and aimbotPartDropdown.IsOpen() then aimbotPartDropdown.Close() end
+        if aimbotPriorityDropdown and aimbotPriorityDropdown.IsOpen() then aimbotPriorityDropdown.Close() end
         if antiStompDropdown and antiStompDropdown.IsOpen() then antiStompDropdown.Close() end
         if spamRangeDropdown and spamRangeDropdown.IsOpen() then spamRangeDropdown.Close() end
     end

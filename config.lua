@@ -1,9 +1,26 @@
 return {
     SavedKey = nil,
     AutoValidate = false,
+
+    -- Combat
     FrameTP = true,
     OneFrameDelay = false,
     RapidFire = true,
+
+    -- Aimbot
+    Aimbot_Enabled = false,
+    Aimbot_AimKey = Enum.KeyCode.Q,
+    Aimbot_Smoothness = 15,
+    Aimbot_FOV = 60,
+    Aimbot_ShowFOV = true,
+    Aimbot_FOVColor = Color3.fromRGB(255, 105, 180),
+    Aimbot_TargetPart = "Head",
+    Aimbot_Priority = "Closest to Mouse",
+    Aimbot_MaxDistance = 1000,
+    Aimbot_TeamCheck = false,
+    Aimbot_WallCheck = false,
+
+    -- Visuals
     FOV_Enabled = true,
     FOV_Radius = 250,
     FOV_Color = Color3.fromRGB(255, 80, 80),
@@ -39,14 +56,20 @@ return {
         Tracers = Color3.fromRGB(255, 105, 180),
         HeadDot = Color3.fromRGB(255, 255, 255),
     },
+
+    -- Target
     Spectate = false,
     TargetPart = "Head",
     TargetMode = "Closest",
     MaxTargetDistance = 5000000000000000,
+
+    -- Farm
     FarmEnabled = false,
     FarmDistance = 12,
     FarmVerticalOffset = 0,
     FarmPullSpeed = 1,
+
+    -- Misc
     AntiStomp = false,
     AntiStompMode = "Void",
     AntiStompThreshold = 50,
@@ -63,8 +86,12 @@ return {
     AutoArmorPos = Vector3.new(-934.12, -25.38, 571.02),
     AutoArmorTriggerHealth = 50,
     AutoArmorCooldown = 1,
+
+    -- UI
     ToggleKey = Enum.KeyCode.RightShift,
     ShowHotkeys = true,
+
+    -- Keybinds
     FrameTPKey = nil,
     OneFrameDelayKey = nil,
     RapidFireKey = nil,
@@ -72,4 +99,5 @@ return {
     AntiStompKey = nil,
     SpamEnabledKey = nil,
     FarmEnabledKey = nil,
+    Aimbot_EnabledKey = nil,
 }
