@@ -74,6 +74,8 @@ return {
     FarmDistance = 12,
     FarmVerticalOffset = 0,
     FarmPullSpeed = 1,
+    RagebotEnabled = false,
+    RagebotEnabledKey = nil,
 
     -- Misc
     AntiStomp = false,
