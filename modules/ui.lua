@@ -1563,8 +1563,8 @@ function UI.Build()
         CanvasSize = UDim2.new(0, 0, 0, 0),
         ZIndex = 14,
     }, MovementPage)
-    local MovementCard = CreateCard(MovementScroll, UDim2.fromOffset(0, 0), UDim2.new(1, 0, 0, 640))
-    MovementScroll.CanvasSize = UDim2.new(0, 0, 0, 660)
+    local MovementCard = CreateCard(MovementScroll, UDim2.fromOffset(0, 0), UDim2.new(1, 0, 0, 510))
+    MovementScroll.CanvasSize = UDim2.new(0, 0, 0, 530)
 
     CreateToggle(MovementCard, 14, "Speed", Config.Move_SpeedEnabled, "Move_SpeedEnabled", false, function(v)
         Config.Move_SpeedEnabled = v
@@ -1608,20 +1608,96 @@ function UI.Build()
         ZIndex = 16,
     }, MovementCard)
 
-    CreateToggle(MovementCard, 324, "Enable Fly", Config.Move_Fly, "Move_Fly", false, function(v)
+    CreateToggle(MovementCard, 324, "Enable Fly", Config.Move_Fly, "Move_Fly", true, function(v)
         Config.Move_Fly = v
     end)
     local flyMethodDropdown = BuildDropdown(MovementCard, 360, "Fly Method", Config.Move_FlyMethod or "Tween",
         {"Tween", "Velocity", "CFrame"},
         function(v) Config.Move_FlyMethod = v end)
-    CreateSlider(MovementCard, 418, "Fly Speed", 10, 200, Config.Move_FlySpeed, function(v)
-        Config.Move_FlySpeed = v
+
+    -- Fly Speed row: label + slider + input box
+    New("TextLabel", {
+        Size = UDim2.new(1, -140, 0, 20),
+        Position = UDim2.fromOffset(10, 418),
+        BackgroundTransparency = 1,
+        Text = "Fly Speed",
+        TextColor3 = Color3.fromRGB(200, 190, 215),
+        TextSize = 12,
+        Font = Enum.Font.GothamMedium,
+        TextXAlignment = Enum.TextXAlignment.Left,
+        ZIndex = 16,
+    }, MovementCard)
+    local flySpeedTrack = New("Frame", {
+        Size = UDim2.new(1, -160, 0, 5),
+        Position = UDim2.fromOffset(10, 448),
+        BackgroundColor3 = Color3.fromRGB(40, 40, 50),
+        BorderSizePixel = 0,
+        ZIndex = 16,
+    }, MovementCard)
+    Corner(flySpeedTrack, 3)
+    local flySpeedFill = New("Frame", {
+        Size = UDim2.new(math.clamp((Config.Move_FlySpeed - 10) / 990, 0, 1), 0, 1, 0),
+        BackgroundColor3 = Color3.fromRGB(145, 75, 255),
+        BorderSizePixel = 0,
+        ZIndex = 17,
+    }, flySpeedTrack)
+    Corner(flySpeedFill, 3)
+    local flySpeedInput = New("TextBox", {
+        Size = UDim2.fromOffset(60, 24),
+        Position = UDim2.new(1, -70, 0, 418),
+        BackgroundColor3 = Color3.fromRGB(30, 20, 42),
+        BackgroundTransparency = 0.25,
+        BorderSizePixel = 0,
+        Text = tostring(Config.Move_FlySpeed or 50),
+        TextColor3 = Color3.fromRGB(245, 240, 250),
+        TextSize = 11,
+        Font = Enum.Font.Gotham,
+        ClearTextOnFocus = false,
+        ZIndex = 16,
+    }, MovementCard)
+    Corner(flySpeedInput, 6)
+    Stroke(flySpeedInput, 0.6, 1, Color3.fromRGB(80, 60, 100))
+
+    local flySpeedDragging = false
+    local function setFlySpeed(val)
+        val = math.clamp(math.floor(val), 1, 10000)
+        Config.Move_FlySpeed = val
+        flySpeedFill.Size = UDim2.new(math.clamp((val - 10) / 990, 0, 1), 0, 1, 0)
+        flySpeedInput.Text = tostring(val)
+    end
+    flySpeedTrack.InputBegan:Connect(function(input)
+        if input.UserInputType == Enum.UserInputType.MouseButton1 then
+            flySpeedDragging = true
+            local pos = math.clamp((input.Position.X - flySpeedTrack.AbsolutePosition.X) / flySpeedTrack.AbsoluteSize.X, 0, 1)
+            setFlySpeed(10 + pos * 990)
+        end
     end)
+    UserInputService.InputChanged:Connect(function(input)
+        if flySpeedDragging and input.UserInputType == Enum.UserInputType.MouseMovement then
+            local pos = math.clamp((input.Position.X - flySpeedTrack.AbsolutePosition.X) / flySpeedTrack.AbsoluteSize.X, 0, 1)
+            setFlySpeed(10 + pos * 990)
+        end
+    end)
+    UserInputService.InputEnded:Connect(function(input)
+        if input.UserInputType == Enum.UserInputType.MouseButton1 then flySpeedDragging = false end
+    end)
+    flySpeedInput.FocusLost:Connect(function()
+        local num = tonumber(flySpeedInput.Text)
+        if num then setFlySpeed(num) end
+    end)
+    flySpeedInput:GetPropertyChangedSignal("Text"):Connect(function()
+        local num = tonumber(flySpeedInput.Text)
+        if num then
+            Config.Move_FlySpeed = math.clamp(math.floor(num), 1, 10000)
+            flySpeedFill.Size = UDim2.new(math.clamp((Config.Move_FlySpeed - 10) / 990, 0, 1), 0, 1, 0)
+        end
+    end)
+
     New("TextLabel", {
         Size = UDim2.new(1, -20, 0, 16),
-        Position = UDim2.fromOffset(10, 466),
+        Position = UDim2.fromOffset(10, 476),
         BackgroundTransparency = 1,
-        Text = "Fly Key: F (press to toggle)",
+        Text = "WASD to move, Space up, Shift down",
         TextColor3 = Color3.fromRGB(140, 130, 155),
         TextSize = 10,
         Font = Enum.Font.GothamMedium,

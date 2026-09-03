@@ -9,7 +9,6 @@ local Camera = Workspace.CurrentCamera
 local Movement = {
     Config = nil,
     Connection = nil,
-    FlyConnection = nil,
     OriginalValues = {},
     State = {
         Flying = false,
@@ -163,12 +162,9 @@ local function DoFly_Tween()
     if move.Magnitude > 0 then
         local targetPos = root.Position + move * 0.016
         root.CFrame = CFrame.new(root.Position:Lerp(targetPos, 0.3))
-        root.Velocity = Vector3.new(0, 0, 0)
-        root.RotVelocity = Vector3.new(0, 0, 0)
-    else
-        root.Velocity = Vector3.new(0, 0, 0)
-        root.RotVelocity = Vector3.new(0, 0, 0)
     end
+    root.Velocity = Vector3.new(0, 0, 0)
+    root.RotVelocity = Vector3.new(0, 0, 0)
 end
 
 -- ── Method 2: Velocity (physics-based) ──
@@ -198,12 +194,9 @@ local function DoFly_CFrame()
     local move = GetFlyInput()
     if move.Magnitude > 0 then
         root.CFrame = root.CFrame + move * 0.016
-        root.Velocity = Vector3.new(0, 0, 0)
-        root.RotVelocity = Vector3.new(0, 0, 0)
-    else
-        root.Velocity = Vector3.new(0, 0, 0)
-        root.RotVelocity = Vector3.new(0, 0, 0)
     end
+    root.Velocity = Vector3.new(0, 0, 0)
+    root.RotVelocity = Vector3.new(0, 0, 0)
 end
 
 -- ═════════════════════════════════════════════════════════════════════════════
@@ -242,7 +235,11 @@ local function StopFly()
             hum.AutoRotate = true
         end
         local root = char:FindFirstChild("HumanoidRootPart")
-        if root then root.AssemblyLinearVelocity = Vector3.new(0, 0, 0) end
+        if root then
+            root.Velocity = Vector3.new(0, 0, 0)
+            root.RotVelocity = Vector3.new(0, 0, 0)
+            root.AssemblyLinearVelocity = Vector3.new(0, 0, 0)
+        end
     end
     Movement.State.Flying = false
 end
@@ -255,8 +252,18 @@ local function OnRender()
     local Config = Movement.Config
     if not Config then return end
 
-    DoSpeed()
-    DoHighJump()
+    if Config.Move_SpeedEnabled then
+        DoSpeed()
+    else
+        ResetSpeed()
+    end
+
+    if Config.Move_HighJumpEnabled then
+        DoHighJump()
+    else
+        ResetHighJump()
+    end
+
     DoBunnyHop()
     DoInfiniteJump()
     DoFly()
@@ -279,10 +286,10 @@ UserInputService.InputBegan:Connect(function(input, gp)
     local Config = Movement.Config
     if not Config then return end
 
-    if input.KeyCode == (Config.Move_FlyKey or Enum.KeyCode.F) then
-        if Config.Move_Fly then
-            if Movement.State.Flying then StopFly() else StartFly() end
-        end
+    local flyKey = Config.Move_FlyKey or Enum.KeyCode.F
+    local matched = (input.KeyCode == flyKey) or (input.UserInputType == flyKey)
+    if matched and Config.Move_Fly then
+        if Movement.State.Flying then StopFly() else StartFly() end
     end
 end)
 
