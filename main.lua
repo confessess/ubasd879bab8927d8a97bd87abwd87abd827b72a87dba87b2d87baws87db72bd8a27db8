@@ -2,62 +2,11 @@ local BASE_URL = "https://raw.githubusercontent.com/confessess/zee-hvh/main/"
 
 local function loadModule(path)
     local url = BASE_URL .. path
-    print("[ZeeAuth] loadModule(" .. path .. ")")
-    print("[ZeeAuth] URL: " .. url)
-
-    local getSuccess, src = pcall(function()
-        return game:HttpGet(url, true)
-    end)
-
-    if not getSuccess then
-        warn("[ZeeAuth] game:HttpGet CRASHED for " .. path .. ": " .. tostring(src))
-        error("HttpGet crash on " .. path)
+    local src = game:HttpGet(url, true)
+    if not src or src == "" then
+        error("Failed to fetch: " .. url)
     end
-
-    if src == nil then
-        warn("[ZeeAuth] game:HttpGet returned NIL for " .. path)
-        error("HttpGet nil on " .. path)
-    end
-
-    if src == "" then
-        warn("[ZeeAuth] game:HttpGet returned EMPTY for " .. path)
-        error("HttpGet empty on " .. path)
-    end
-
-    print("[ZeeAuth] Got " .. #src .. " bytes for " .. path)
-
-    local isHtml = src:sub(1, 15):lower():find("<!doctype") or src:sub(1, 6):lower() == "<html>"
-    if isHtml then
-        warn("[ZeeAuth] Got HTML for " .. path .. " — probably 404 or rate limit")
-        warn("[ZeeAuth] First 200 chars: " .. src:sub(1, 200):gsub("\n", " "))
-        error("HttpGet HTML on " .. path)
-    end
-
-    local lsSuccess, loaded = pcall(function()
-        return loadstring(src)
-    end)
-
-    if not lsSuccess then
-        warn("[ZeeAuth] loadstring FAILED for " .. path .. ": " .. tostring(loaded))
-        error("loadstring fail on " .. path)
-    end
-
-    if loaded == nil then
-        warn("[ZeeAuth] loadstring returned NIL for " .. path .. " — syntax error in file?")
-        error("loadstring nil on " .. path)
-    end
-
-    print("[ZeeAuth] loadstring OK for " .. path .. ", executing...")
-
-    local execSuccess, result = pcall(loaded)
-
-    if not execSuccess then
-        warn("[ZeeAuth] EXECUTION FAILED for " .. path .. ": " .. tostring(result))
-        error("execution fail on " .. path)
-    end
-
-    print("[ZeeAuth] loadModule(" .. path .. ") SUCCESS — result type: " .. type(result))
-    return result
+    return loadstring(src)()
 end
 
 -- ═════════════════════════════════════════════════════════════════════════════
@@ -447,8 +396,6 @@ end
 -- ═════════════════════════════════════════════════════════════════════════════
 -- MAIN ENTRY
 -- ═════════════════════════════════════════════════════════════════════════════
-
-print("[ZeeAuth] === Starting Zee Hood HvH with Auth ===")
 
 KeyGate.Build(Auth, function(key, source)
     print("[ZeeHood] Key validated: " .. key .. " (" .. source .. ")")
