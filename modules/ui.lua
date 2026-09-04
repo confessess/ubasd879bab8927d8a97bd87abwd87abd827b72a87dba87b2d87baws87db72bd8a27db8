@@ -2249,10 +2249,10 @@ function UI.Build()
         BorderSizePixel = 0,
         ScrollBarThickness = 5,
         ScrollBarImageColor3 = Theme.Accent,
-        CanvasSize = UDim2.new(0, 0, 0, 910),
+        CanvasSize = UDim2.new(0, 0, 0, 1210),
         ZIndex = 14,
     }, SettingsPage)
-    local SettingsCard = CreateCard(SettingsScroll, UDim2.fromOffset(0, 0), UDim2.new(1, 0, 0, 900))
+    local SettingsCard = CreateCard(SettingsScroll, UDim2.fromOffset(0, 0), UDim2.new(1, 0, 0, 1200))
 
     -- Keybinds Section
     New("TextLabel", {
