@@ -310,7 +310,7 @@ local function RagebotPullTarget(target)
     if not targetHRP or not myHRP then return end
     local myPos = myHRP.Position
     local myLook = myHRP.CFrame.LookVector
-    local headTargetPos = myPos + (myLook * 3) + Vector3.new(0, 0, 0)
+    local headTargetPos = myPos + (myLook * 4) + Vector3.new(0, 0, 0)
 
     -- Camera looks directly at target
     local targetHead = GetTargetHead(target)
