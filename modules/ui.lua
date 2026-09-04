@@ -130,6 +130,15 @@ function Themes.Get(name)
     return Themes.Palettes[name] or Themes.Palettes.Purple
 end
 
+local BackgroundTextures = {
+    None = nil,
+    ["Catgirl Black"] = "rbxassetid://100444103656384",
+    ["Catgirl Pink"] = "rbxassetid://74265591038566",
+    ["2 Catgirls"] = "rbxassetid://135809148867647",
+}
+
+local BackgroundTextureNames = {"None", "Catgirl Black", "Catgirl Pink", "2 Catgirls"}
+
 local Theme = nil
 
 local function New(className, properties, parent)
@@ -480,6 +489,32 @@ function UI.Build()
         }, Content)
         Pages[name] = page
     end
+
+    local function ApplyBackgroundImage()
+        local textureName = Config.GUIBackgroundImage or "None"
+        local textureId = BackgroundTextures[textureName]
+        for name, page in pairs(Pages) do
+            local existing = page:FindFirstChild("BGImage")
+            if existing then
+                existing:Destroy()
+            end
+            if textureId then
+                New("ImageLabel", {
+                    Name = "BGImage",
+                    Size = UDim2.fromScale(1, 1),
+                    BackgroundTransparency = 1,
+                    Image = textureId,
+                    ImageTransparency = 0.85,
+                    ImageColor3 = Theme.Accent,
+                    ScaleType = Enum.ScaleType.Tile,
+                    TileSize = UDim2.fromOffset(64, 64),
+                    ZIndex = 1,
+                }, page)
+            end
+        end
+    end
+    UI.ApplyBackgroundImage = ApplyBackgroundImage
+
     local function PageTitle(page, title, description)
         New("TextLabel", {
             Size = UDim2.new(1, -20, 0, 28),
@@ -2215,7 +2250,7 @@ function UI.Build()
         CanvasSize = UDim2.new(0, 0, 0, 850),
         ZIndex = 14,
     }, SettingsPage)
-    local SettingsCard = CreateCard(SettingsScroll, UDim2.fromOffset(0, 0), UDim2.new(1, 0, 0, 940))
+    local SettingsCard = CreateCard(SettingsScroll, UDim2.fromOffset(0, 0), UDim2.new(1, 0, 0, 1020))
 
     -- Keybinds Section
     New("TextLabel", {
@@ -2732,10 +2767,31 @@ function UI.Build()
             UI.ApplyTheme(v)
         end)
 
+
+    -- Background Image Selector
+    CreateSeparator(SettingsCard, 778)
+    New("TextLabel", {
+        Size = UDim2.new(1, -20, 0, 20),
+        Position = UDim2.fromOffset(10, 790),
+        BackgroundTransparency = 1,
+        Text = "Background Image",
+        TextColor3 = Theme.TextSection,
+        TextSize = 14,
+        Font = Enum.Font.GothamBold,
+        TextXAlignment = Enum.TextXAlignment.Left,
+        ZIndex = 16,
+    }, SettingsCard)
+    local bgImageDropdown = BuildDropdown(SettingsCard, 814, "Texture", Config.GUIBackgroundImage or "None",
+        BackgroundTextureNames,
+        function(v)
+            Config.GUIBackgroundImage = v
+            ApplyBackgroundImage()
+        end)
+
     -- Bottom padding
     New("Frame", {
         Size = UDim2.new(1, 0, 0, 40),
-        Position = UDim2.fromOffset(0, 780),
+        Position = UDim2.fromOffset(0, 880),
         BackgroundTransparency = 1,
         ZIndex = 16,
     }, SettingsCard)
@@ -2969,6 +3025,7 @@ function UI.Build()
     Hover(CloseBtn, 0.2, 0.05)
     Hover(KeybindButton, 0.18, 0.05)
 
+    ApplyBackgroundImage()
     Main.Size = UDim2.fromOffset(GUI_WIDTH, 0)
     SetGUIVisible(true)
     return ScreenGui
