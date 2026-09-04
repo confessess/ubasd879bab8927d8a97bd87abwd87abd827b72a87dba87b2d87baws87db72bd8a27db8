@@ -68,29 +68,6 @@ local function W2S(position)
 end
 
 
-    end
-    -- Try GetBoundingBox first (most accurate)
-    local success, cframe, size = pcall(function()
-        return character:GetBoundingBox()
-    end)
-    if success and size then
-        return size.X, size.Y
-    end
-    -- Fallback: measure from body parts
-    local head = character:FindFirstChild("Head")
-    local root = character:FindFirstChild("HumanoidRootPart") or character:FindFirstChild("Torso")
-    local lfoot = character:FindFirstChild("LeftFoot") or character:FindFirstChild("Left Leg")
-    local rfoot = character:FindFirstChild("RightFoot") or character:FindFirstChild("Right Leg")
-    if head and root then
-        local height = math.abs(head.Position.Y - root.Position.Y) * 2.2
-        local width = height * 0.5
-        if lfoot and rfoot then
-            width = math.max(width, math.abs(lfoot.Position.X - rfoot.Position.X) * 1.5)
-        end
-        return width, height
-    end
-    return nil, nil
-end
 
 local function GetBoxData(character)
     local root = character:FindFirstChild("HumanoidRootPart") or character:FindFirstChild("Torso")
@@ -668,6 +645,32 @@ function Visuals.Clear()
 end
 
 function Visuals.PlayHitmarker()
+    if not Visuals.Config or not Visuals.Config.Hitmarkers then return end
+    Hitmarker.Position = UserInputService:GetMouseLocation() + Vector2.new(0, -15)
+    Hitmarker.Visible = true
+    Hitmarker.Color = Color3.fromRGB(255, 80, 80)
+    delay(0.2, function() Hitmarker.Visible = false end)
+end
+
+
+function Visuals.Init(config)
+    Visuals.Config = config
+    if config.ESP_Enabled then
+        ESPInit()
+    end
+end
+
+function Visuals.Cleanup()
+    ESPCleanup()
+    for _, conn in pairs(Visuals.Connections or {}) do
+        if conn and conn.Connected then
+            conn:Disconnect()
+        end
+    end
+    Visuals.Connections = {}
+end
+
+function Visuals.ShowHitmarker()
     if not Visuals.Config or not Visuals.Config.Hitmarkers then return end
     Hitmarker.Position = UserInputService:GetMouseLocation() + Vector2.new(0, -15)
     Hitmarker.Visible = true
