@@ -310,7 +310,13 @@ local function RagebotPullTarget(target)
     if not targetHRP or not myHRP then return end
     local myPos = myHRP.Position
     local myLook = myHRP.CFrame.LookVector
-    local headTargetPos = myPos + (myLook * 2) + Vector3.new(0, 0, 0)
+    local headTargetPos = myPos + (myLook * 3) + Vector3.new(0, 0, 0)
+
+    -- Camera looks directly at target
+    local targetHead = GetTargetHead(target)
+    if targetHead then
+        Camera.CFrame = CFrame.new(myPos + Vector3.new(0, 1.5, 0), targetHead.Position)
+    end
     local headOffset = Vector3.new(0, 1.5, 0)
     if targetHead and targetHRP then
         headOffset = targetHead.Position - targetHRP.Position
@@ -490,8 +496,8 @@ local function RagebotFrameTPStompKill(target)
                 local targetHRP = targetChar:FindFirstChild("HumanoidRootPart")
                 if not targetHRP then break end
 
-                -- FrameTP directly ONTO ragdolled player — track every frame
-                myHRP.CFrame = targetHRP.CFrame * CFrame.new(0, 1, 0)
+                -- FrameTP directly INTO ragdolled player — inside them
+                myHRP.CFrame = targetHRP.CFrame
                 myHRP.Velocity = Vector3.new(0, 0, 0)
                 myHRP.AssemblyLinearVelocity = Vector3.new(0, 0, 0)
                 myHRP.RotVelocity = Vector3.new(0, 0, 0)
