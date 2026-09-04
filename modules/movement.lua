@@ -93,7 +93,7 @@ end
 
 local LastBhopJump = 0
 
-local LastNoJumpCD = 0
+local LastManualJump = 0
 
 local function DoNoJumpCooldown()
     local Config = Movement.Config
@@ -105,34 +105,42 @@ local function DoNoJumpCooldown()
     if not hum or not root then return end
     if hum.Health <= 0 then return end
 
-    -- Method 1: Force Running state every frame (prevents Landed state)
-    local state = hum:GetState()
-    if state == Enum.HumanoidStateType.Landed or state == Enum.HumanoidStateType.Freefall then
-        hum:ChangeState(Enum.HumanoidStateType.Running)
-    end
+    -- Detect when player presses Space
+    if UserInputService:IsKeyDown(Enum.KeyCode.Space) then
+        local now = tick()
+        -- Only trigger once per press (not held)
+        if now - LastManualJump > 0.1 then
+            -- Check if on ground or close to ground
+            local onGround = hum.FloorMaterial ~= Enum.Material.Air
 
-    -- Method 2: Set JumpPower every frame (resets internal cooldown)
-    local currentJP = hum.JumpPower
-    hum.JumpPower = currentJP
+            if onGround then
+                -- INSTANT velocity jump — bypasses cooldown completely
+                root.AssemblyLinearVelocity = Vector3.new(
+                    root.AssemblyLinearVelocity.X, 
+                    Config.Move_JumpPower or 100, 
+                    root.AssemblyLinearVelocity.Z
+                )
+                LastManualJump = now
+            else
+                -- In air — check if close to ground (for landing jumps)
+                local raycastParams = RaycastParams.new()
+                raycastParams.FilterDescendantsInstances = {char}
+                raycastParams.FilterType = Enum.RaycastFilterType.Blacklist
+                local rayResult = Workspace:Raycast(root.Position, Vector3.new(0, -5, 0), raycastParams)
 
-    -- Method 3: Look for and reset any cooldown values in character
-    for _, obj in pairs(char:GetDescendants()) do
-        if obj:IsA("NumberValue") then
-            local name = obj.Name:lower()
-            if name:find("jump") and name:find("cool") or name:find("cd") or name:find("delay") then
-                obj.Value = 0
+                if rayResult then
+                    -- Close to ground — jump instantly on landing
+                    root.AssemblyLinearVelocity = Vector3.new(
+                        root.AssemblyLinearVelocity.X, 
+                        Config.Move_JumpPower or 100, 
+                        root.AssemblyLinearVelocity.Z
+                    )
+                    LastManualJump = now
+                end
             end
         end
-    end
-
-    -- Method 4: Look in Humanoid for cooldown
-    for _, obj in pairs(hum:GetDescendants()) do
-        if obj:IsA("NumberValue") then
-            local name = obj.Name:lower()
-            if name:find("jump") or name:find("cool") or name:find("cd") then
-                obj.Value = 0
-            end
-        end
+    else
+        LastManualJump = 0 -- Reset when Space released
     end
 end
 
