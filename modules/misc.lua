@@ -543,7 +543,7 @@ local function AutoStompTryStomp()
                 local distance = (myPos - targetHRP.Position).Magnitude
 
                 if AutoStompIsKnocked(plr) then
-                    if Misc.AutoStompLastStomp[plr] and now - Misc.AutoStompLastStomp[plr] < 0.1 then
+                    if Misc.AutoStompLastStomp[plr] and now - Misc.AutoStompLastStomp[plr] < 0.05 then
                         continue
                     end
                     Misc.AutoStompLastStomp[plr] = now

@@ -497,21 +497,27 @@ local function RagebotFrameTPStompKill(target)
                 local targetHRP = targetChar:FindFirstChild("HumanoidRootPart")
                 if not targetHRP then break end
 
-                -- FrameTP directly INTO ragdolled player — track every frame
-                myHRP.CFrame = targetHRP.CFrame
+                -- FrameTP into ragdolled player AND their head — maximum stomp range
+                local targetHead = targetChar:FindFirstChild("Head")
+                if targetHead then
+                    myHRP.CFrame = targetHead.CFrame
+                else
+                    myHRP.CFrame = targetHRP.CFrame
+                end
                 myHRP.Velocity = Vector3.new(0, 0, 0)
                 myHRP.AssemblyLinearVelocity = Vector3.new(0, 0, 0)
                 myHRP.RotVelocity = Vector3.new(0, 0, 0)
 
-                -- Stomp multiple times per frame for maximum attempts
+                -- Stomp 5 times per frame — no cooldown
                 pcall(function()
+                    mainRemote:FireServer("Stomp")
+                    mainRemote:FireServer("Stomp")
                     mainRemote:FireServer("Stomp")
                     mainRemote:FireServer("Stomp")
                     mainRemote:FireServer("Stomp")
                 end)
 
                 RunService.RenderStepped:Wait()
-                -- Return
                 myHRP.CFrame = originalCFrame
             end
         end
