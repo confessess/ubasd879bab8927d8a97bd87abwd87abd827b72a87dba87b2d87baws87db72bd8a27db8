@@ -85,7 +85,20 @@ local function GetBoxData(character)
     if (not topVis and not botVis) or (topZ <= 0 and botZ <= 0) then return nil end
     
     local h = math.abs(botScr.Y - topScr.Y)
-    local w = h * 0.5
+
+    -- Calculate width from actual arm positions (stable during animation)
+    local larm = character:FindFirstChild("LeftUpperArm") or character:FindFirstChild("Left Arm")
+    local rarm = character:FindFirstChild("RightUpperArm") or character:FindFirstChild("Right Arm")
+    local widthRatio = 0.5
+    if larm and rarm then
+        local armDist = math.abs((larm.Position - rarm.Position).Magnitude)
+        local heightDist = math.abs((topPos - botPos).Magnitude)
+        if heightDist > 0 then
+            widthRatio = math.clamp(armDist / heightDist, 0.35, 0.65)
+        end
+    end
+
+    local w = h * widthRatio
     if h <= 1 or w <= 1 then return nil end
     
     return {
