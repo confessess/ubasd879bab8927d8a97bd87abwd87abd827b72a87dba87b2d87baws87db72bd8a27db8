@@ -1105,8 +1105,8 @@ function UI.Build()
         CanvasSize = UDim2.new(0, 0, 0, 0),
         ZIndex = 14,
     }, CombatPage)
-    local CombatCard = CreateCard(CombatScroll, UDim2.fromOffset(0, 0), UDim2.new(1, 0, 0, 700))
-    CombatScroll.CanvasSize = UDim2.new(0, 0, 0, 720)
+    local CombatCard = CreateCard(CombatScroll, UDim2.fromOffset(0, 0), UDim2.new(1, 0, 0, 950))
+    CombatScroll.CanvasSize = UDim2.new(0, 0, 0, 970)
 
     New("TextLabel", {
         Size = UDim2.new(1, -20, 0, 20),
@@ -1152,9 +1152,53 @@ function UI.Build()
         function(v) Config.Aimbot_Priority = v end)
 
     CreateSeparator(CombatCard, 456)
+
+    -- Silent Aim Section
     New("TextLabel", {
         Size = UDim2.new(1, -20, 0, 20),
         Position = UDim2.fromOffset(10, 466),
+        BackgroundTransparency = 1,
+        Text = "Silent Aim (Hitbox Expander)",
+        TextColor3 = Color3.fromRGB(245, 220, 255),
+        TextSize = 14,
+        Font = Enum.Font.GothamBold,
+        TextXAlignment = Enum.TextXAlignment.Left,
+        ZIndex = 16,
+    }, CombatCard)
+
+    CreateToggle(CombatCard, 490, "Enable Silent Aim", Config.SilentAim_Enabled, "SilentAim_Enabled", true, function(v)
+        Config.SilentAim_Enabled = v
+        if UI.Combat then
+            UI.Combat.SetSilentAimEnabled(v)
+        end
+    end)
+
+    CreateSlider(CombatCard, 526, "Silent Aim FOV", 30, 300, Config.SilentAim_FOV or 120, function(v)
+        Config.SilentAim_FOV = v
+    end)
+
+    CreateSlider(CombatCard, 572, "Hit Chance %", 1, 100, Config.SilentAim_HitChance or 100, function(v)
+        Config.SilentAim_HitChance = v
+    end)
+
+    local silentAimPartDropdown = BuildDropdown(CombatCard, 618, "Target Part", Config.SilentAim_TargetPart or "Head",
+        {"Head", "HumanoidRootPart", "Torso", "UpperTorso"},
+        function(v) Config.SilentAim_TargetPart = v end)
+
+    CreateToggle(CombatCard, 676, "Wall Check", Config.SilentAim_WallCheck, "SilentAim_WallCheck", false, function(v)
+        Config.SilentAim_WallCheck = v
+    end)
+
+    CreateToggle(CombatCard, 712, "Team Check", Config.SilentAim_TeamCheck, "SilentAim_TeamCheck", false, function(v)
+        Config.SilentAim_TeamCheck = v
+    end)
+
+    CreateSeparator(CombatCard, 748)
+
+    -- Combat Section
+    New("TextLabel", {
+        Size = UDim2.new(1, -20, 0, 20),
+        Position = UDim2.fromOffset(10, 758),
         BackgroundTransparency = 1,
         Text = "Combat",
         TextColor3 = Color3.fromRGB(245, 220, 255),
@@ -1164,16 +1208,16 @@ function UI.Build()
         ZIndex = 16,
     }, CombatCard)
 
-    CreateToggle(CombatCard, 490, "Frame TP Shoot", Config.FrameTP, "FrameTP", true, function(v)
+    CreateToggle(CombatCard, 782, "Frame TP Shoot", Config.FrameTP, "FrameTP", true, function(v)
         Config.FrameTP = v
     end)
-    CreateToggle(CombatCard, 526, "One-Frame Delay", Config.OneFrameDelay, "OneFrameDelay", true, function(v)
+    CreateToggle(CombatCard, 818, "One-Frame Delay", Config.OneFrameDelay, "OneFrameDelay", true, function(v)
         Config.OneFrameDelay = v
     end)
-    CreateToggle(CombatCard, 562, "Rapid Fire", Config.RapidFire, "RapidFire", true, function(v)
+    CreateToggle(CombatCard, 854, "Rapid Fire", Config.RapidFire, "RapidFire", true, function(v)
         Config.RapidFire = v
     end)
-    CreateToggle(CombatCard, 598, "Karma", Config.Karma_Enabled, "Karma_Enabled", true, function(v)
+    CreateToggle(CombatCard, 890, "Karma", Config.Karma_Enabled, "Karma_Enabled", true, function(v)
         Config.Karma_Enabled = v
         if UI.Combat then
             UI.Combat.SetKarmaEnabled(v)

@@ -15,6 +15,12 @@ return {
 
     -- Aimbot
     Aimbot_Enabled = false,
+    SilentAim_Enabled = false,
+    SilentAim_FOV = 120,
+    SilentAim_HitChance = 100,
+    SilentAim_TargetPart = "Head",
+    SilentAim_WallCheck = false,
+    SilentAim_TeamCheck = true,
     Aimbot_ToggleMode = false,
     Aimbot_StickyTarget = false,
     Aimbot_Smoothness = 15,
@@ -148,6 +154,7 @@ return {
     SpamEnabledKey = nil,
     FarmEnabledKey = nil,
     Aimbot_EnabledKey = nil,
+    SilentAim_EnabledKey = nil,
     Move_SpeedEnabledKey = nil,
     Move_HighJumpEnabledKey = nil,
     Move_BunnyHopKey = nil,

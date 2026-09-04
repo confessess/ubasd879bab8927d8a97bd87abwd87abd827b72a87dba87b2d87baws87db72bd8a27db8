@@ -248,6 +248,10 @@ end
 
 local function OnAimbotRender()
     local Config = Combat.Config
+
+    -- Silent Aim update
+    SilentAimUpdate()
+
     if not Config.Aimbot_Enabled then
         Combat.CurrentTarget = nil
         Combat.StickyLostTime = 0
@@ -440,6 +444,188 @@ function Combat.Reset()
     Combat.ModifiedTools = {}
 end
 
+
+-- ═════════════════════════════════════════════════════════════════════════════
+-- SILENT AIM — Hitbox Expander
+-- ═════════════════════════════════════════════════════════════════════════════
+
+local SilentAimOriginalSizes = {}
+local SilentAimCurrentTarget = nil
+
+local function SilentAimIsTeammate(player)
+    if player == LocalPlayer then return true end
+    if LocalPlayer.Team and player.Team and LocalPlayer.Team == player.Team then return true end
+    if LocalPlayer.TeamColor and player.TeamColor and LocalPlayer.TeamColor == player.TeamColor then return true end
+    return false
+end
+
+local function SilentAimCanSee(targetPos, targetCharacter)
+    local Config = Combat.Config
+    if not Config.SilentAim_WallCheck then return true end
+    local origin = Camera.CFrame.Position
+    local direction = targetPos - origin
+    local raycastParams = RaycastParams.new()
+    raycastParams.FilterDescendantsInstances = {LocalPlayer.Character}
+    raycastParams.FilterType = Enum.RaycastFilterType.Blacklist
+    local result = Workspace:Raycast(origin, direction, raycastParams)
+    if not result then return true end
+    local hitModel = result.Instance:FindFirstAncestorOfClass("Model")
+    return hitModel and hitModel == targetCharacter
+end
+
+local function SilentAimGetTarget()
+    local Config = Combat.Config
+    if not Config.SilentAim_Enabled then return nil end
+
+    local mousePos = UserInputService:GetMouseLocation()
+    local closestPlayer = nil
+    local closestDist = Config.SilentAim_FOV or 120
+
+    for _, player in pairs(Players:GetPlayers()) do
+        if player == LocalPlayer then continue end
+        if Config.SilentAim_TeamCheck and SilentAimIsTeammate(player) then continue end
+
+        local char = player.Character
+        if not char then continue end
+
+        local humanoid = char:FindFirstChildOfClass("Humanoid")
+        if not humanoid or humanoid.Health <= 0 then continue end
+
+        local targetPartName = Config.SilentAim_TargetPart or "Head"
+        local part = char:FindFirstChild(targetPartName) or char:FindFirstChild("Head") or char:FindFirstChild("HumanoidRootPart")
+        if not part then continue end
+
+        local screenPos, onScreen = Camera:WorldToViewportPoint(part.Position)
+        if not onScreen then continue end
+
+        local dist = (Vector2.new(screenPos.X, screenPos.Y) - mousePos).Magnitude
+        if dist > closestDist then continue end
+
+        if not SilentAimCanSee(part.Position, char) then continue end
+
+        closestPlayer = player
+        closestDist = dist
+    end
+
+    return closestPlayer
+end
+
+local function SilentAimExpandPart(player, part)
+    if not part then return end
+
+    local Config = Combat.Config
+
+    -- Save original size
+    if not SilentAimOriginalSizes[part] then
+        SilentAimOriginalSizes[part] = {
+            size = part.Size,
+            transparency = part.Transparency,
+            canCollide = part.CanCollide,
+            massless = part.Massless,
+        }
+    end
+
+    -- Hit chance check
+    local chance = Config.SilentAim_HitChance or 100
+    if math.random(1, 100) > chance then
+        -- Restore normal size
+        SilentAimRestorePart(part)
+        return
+    end
+
+    -- Calculate expansion size based on FOV
+    local screenPos, onScreen = Camera:WorldToViewportPoint(part.Position)
+    if not onScreen then return end
+
+    local mousePos = UserInputService:GetMouseLocation()
+    local dist = (Vector2.new(screenPos.X, screenPos.Y) - mousePos).Magnitude
+
+    -- Make hitbox bigger when closer to crosshair
+    local baseSize = 10
+    local maxSize = 50
+    local expansionFactor = 1 - math.clamp(dist / (Config.SilentAim_FOV or 120), 0, 1)
+    local targetSize = baseSize + (maxSize - baseSize) * expansionFactor
+
+    -- Apply expansion
+    part.Size = Vector3.new(targetSize, targetSize, targetSize)
+    part.Transparency = 1
+    part.CanCollide = false
+    part.Massless = true
+end
+
+local function SilentAimRestorePart(part)
+    local original = SilentAimOriginalSizes[part]
+    if not original then return end
+
+    part.Size = original.size
+    part.Transparency = original.transparency
+    part.CanCollide = original.canCollide
+    part.Massless = original.massless
+
+    SilentAimOriginalSizes[part] = nil
+end
+
+local function SilentAimRestoreAll()
+    for part, _ in pairs(SilentAimOriginalSizes) do
+        if part and part.Parent then
+            SilentAimRestorePart(part)
+        end
+    end
+    SilentAimOriginalSizes = {}
+    SilentAimCurrentTarget = nil
+end
+
+local function SilentAimUpdate()
+    local Config = Combat.Config
+    if not Config or not Config.SilentAim_Enabled then
+        SilentAimRestoreAll()
+        return
+    end
+
+    -- Get new target
+    local newTarget = SilentAimGetTarget()
+
+    -- Restore old target if different
+    if SilentAimCurrentTarget and SilentAimCurrentTarget ~= newTarget then
+        local oldChar = SilentAimCurrentTarget.Character
+        if oldChar then
+            local oldPart = oldChar:FindFirstChild(Config.SilentAim_TargetPart or "Head")
+            if oldPart then
+                SilentAimRestorePart(oldPart)
+            end
+        end
+    end
+
+    SilentAimCurrentTarget = newTarget
+
+    -- Expand new target
+    if newTarget then
+        local char = newTarget.Character
+        if char then
+            local humanoid = char:FindFirstChildOfClass("Humanoid")
+            if humanoid and humanoid.Health > 0 then
+                local part = char:FindFirstChild(Config.SilentAim_TargetPart or "Head") or char:FindFirstChild("HumanoidRootPart")
+                if part then
+                    SilentAimExpandPart(newTarget, part)
+                end
+            else
+                -- Target died
+                SilentAimRestoreAll()
+            end
+        else
+            SilentAimRestoreAll()
+        end
+    end
+end
+
+function Combat.SetSilentAimEnabled(enabled)
+    if Combat.Config then
+        Combat.Config.SilentAim_Enabled = enabled
+        if not enabled then
+            SilentAimRestoreAll()
+        end
+    end
+end
 
 -- ═════════════════════════════════════════════════════════════════════════════
 -- KARMA — Auto-kill whoever shoots you
