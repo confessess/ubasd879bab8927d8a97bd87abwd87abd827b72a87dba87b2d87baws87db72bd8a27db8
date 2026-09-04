@@ -95,6 +95,8 @@ local LastBhopJump = 0
 
 local LastManualJump = 0
 
+local LastNoJumpCD = 0
+
 local function DoNoJumpCooldown()
     local Config = Movement.Config
     if not Config.Move_NoJumpCooldown then return end
@@ -105,42 +107,39 @@ local function DoNoJumpCooldown()
     if not hum or not root then return end
     if hum.Health <= 0 then return end
 
-    -- Detect when player presses Space
+    -- Detect Space press
     if UserInputService:IsKeyDown(Enum.KeyCode.Space) then
         local now = tick()
-        -- Only trigger once per press (not held)
-        if now - LastManualJump > 0.1 then
-            -- Check if on ground or close to ground
+        if now - LastNoJumpCD > 0.05 then
             local onGround = hum.FloorMaterial ~= Enum.Material.Air
 
             if onGround then
-                -- INSTANT velocity jump — bypasses cooldown completely
+                -- Jump with REGULAR height (50, not JumpPower)
                 root.AssemblyLinearVelocity = Vector3.new(
                     root.AssemblyLinearVelocity.X, 
-                    Config.Move_JumpPower or 100, 
+                    50, -- Regular jump height
                     root.AssemblyLinearVelocity.Z
                 )
-                LastManualJump = now
+                LastNoJumpCD = now
             else
-                -- In air — check if close to ground (for landing jumps)
+                -- Near ground — raycast check
                 local raycastParams = RaycastParams.new()
                 raycastParams.FilterDescendantsInstances = {char}
                 raycastParams.FilterType = Enum.RaycastFilterType.Blacklist
-                local rayResult = Workspace:Raycast(root.Position, Vector3.new(0, -5, 0), raycastParams)
+                local rayResult = Workspace:Raycast(root.Position, Vector3.new(0, -3, 0), raycastParams)
 
                 if rayResult then
-                    -- Close to ground — jump instantly on landing
                     root.AssemblyLinearVelocity = Vector3.new(
                         root.AssemblyLinearVelocity.X, 
-                        Config.Move_JumpPower or 100, 
+                        50, -- Regular jump height
                         root.AssemblyLinearVelocity.Z
                     )
-                    LastManualJump = now
+                    LastNoJumpCD = now
                 end
             end
         end
     else
-        LastManualJump = 0 -- Reset when Space released
+        LastNoJumpCD = 0
     end
 end
 
@@ -180,11 +179,16 @@ local function DoBunnyHop()
 
     if not isMoving then return end
 
-    -- Auto jump when on ground — use velocity impulse (bypasses cooldown)
+    -- Auto jump when on ground — no cooldown, regular height
     if hum.FloorMaterial ~= Enum.Material.Air then
         local now = tick()
-        if now - LastBhopJump > 0.05 then
-            ForceJump()
+        if now - LastBhopJump > 0.02 then -- Minimal delay
+            -- Direct velocity jump — no cooldown
+            root.AssemblyLinearVelocity = Vector3.new(
+                root.AssemblyLinearVelocity.X, 
+                50, -- Regular jump height
+                root.AssemblyLinearVelocity.Z
+            )
             LastBhopJump = now
         end
     end
