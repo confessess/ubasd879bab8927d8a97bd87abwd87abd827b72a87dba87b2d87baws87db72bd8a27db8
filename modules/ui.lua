@@ -1105,8 +1105,8 @@ function UI.Build()
         CanvasSize = UDim2.new(0, 0, 0, 0),
         ZIndex = 14,
     }, CombatPage)
-    local CombatCard = CreateCard(CombatScroll, UDim2.fromOffset(0, 0), UDim2.new(1, 0, 0, 950))
-    CombatScroll.CanvasSize = UDim2.new(0, 0, 0, 970)
+    local CombatCard = CreateCard(CombatScroll, UDim2.fromOffset(0, 0), UDim2.new(1, 0, 0, 990))
+    CombatScroll.CanvasSize = UDim2.new(0, 0, 0, 1010)
 
     New("TextLabel", {
         Size = UDim2.new(1, -20, 0, 20),
@@ -1193,12 +1193,16 @@ function UI.Build()
         Config.SilentAim_TeamCheck = v
     end)
 
-    CreateSeparator(CombatCard, 748)
+    CreateToggle(CombatCard, 748, "Show FOV", Config.SilentAim_ShowFOV, "SilentAim_ShowFOV", false, function(v)
+        Config.SilentAim_ShowFOV = v
+    end)
+
+    CreateSeparator(CombatCard, 784)
 
     -- Combat Section
     New("TextLabel", {
         Size = UDim2.new(1, -20, 0, 20),
-        Position = UDim2.fromOffset(10, 758),
+        Position = UDim2.fromOffset(10, 794),
         BackgroundTransparency = 1,
         Text = "Combat",
         TextColor3 = Color3.fromRGB(245, 220, 255),
@@ -1208,16 +1212,16 @@ function UI.Build()
         ZIndex = 16,
     }, CombatCard)
 
-    CreateToggle(CombatCard, 782, "Frame TP Shoot", Config.FrameTP, "FrameTP", true, function(v)
+    CreateToggle(CombatCard, 818, "Frame TP Shoot", Config.FrameTP, "FrameTP", true, function(v)
         Config.FrameTP = v
     end)
-    CreateToggle(CombatCard, 818, "One-Frame Delay", Config.OneFrameDelay, "OneFrameDelay", true, function(v)
+    CreateToggle(CombatCard, 854, "One-Frame Delay", Config.OneFrameDelay, "OneFrameDelay", true, function(v)
         Config.OneFrameDelay = v
     end)
-    CreateToggle(CombatCard, 854, "Rapid Fire", Config.RapidFire, "RapidFire", true, function(v)
+    CreateToggle(CombatCard, 890, "Rapid Fire", Config.RapidFire, "RapidFire", true, function(v)
         Config.RapidFire = v
     end)
-    CreateToggle(CombatCard, 890, "Karma", Config.Karma_Enabled, "Karma_Enabled", true, function(v)
+    CreateToggle(CombatCard, 926, "Karma", Config.Karma_Enabled, "Karma_Enabled", true, function(v)
         Config.Karma_Enabled = v
         if UI.Combat then
             UI.Combat.SetKarmaEnabled(v)

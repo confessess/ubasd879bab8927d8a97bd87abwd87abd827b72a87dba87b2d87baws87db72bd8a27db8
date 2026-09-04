@@ -20,7 +20,8 @@ return {
     SilentAim_HitChance = 100,
     SilentAim_TargetPart = "Head",
     SilentAim_WallCheck = false,
-    SilentAim_TeamCheck = true,
+    SilentAim_TeamCheck = false,
+    SilentAim_ShowFOV = false,
     Aimbot_ToggleMode = false,
     Aimbot_StickyTarget = false,
     Aimbot_Smoothness = 15,
@@ -130,7 +131,7 @@ return {
     Move_Fly = false,
     Move_FlyMethod = "Tween",
     Move_FlySpeed = 50,
-    Move_FlyKey = Enum.KeyCode.F,
+    Move_FlyKey = nil,
 
     -- UI
     ToggleKey = Enum.KeyCode.RightShift,
@@ -141,7 +142,7 @@ return {
     PanicKey = nil,
     FPSCap = 0, -- 0 = uncapped
     AutoHideOnScreenshot = false,
-    ShowNotifications = true,
+    ShowNotifications = false,
     NotificationDuration = 2.5,
 
     -- Keybinds

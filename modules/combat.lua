@@ -170,11 +170,36 @@ local function SilentAimRestoreAll()
     SilentAimCurrentTarget = nil
 end
 
+local SilentAimFOVCircle = nil
+
 local function SilentAimUpdate()
     local Config = Combat.Config
     if not Config or not Config.SilentAim_Enabled then
         SilentAimRestoreAll()
+        if SilentAimFOVCircle then
+            SilentAimFOVCircle.Visible = false
+        end
         return
+    end
+
+    -- Draw FOV circle
+    if Config.SilentAim_ShowFOV then
+        if not SilentAimFOVCircle then
+            SilentAimFOVCircle = Drawing.new("Circle")
+            SilentAimFOVCircle.Thickness = 1.5
+            SilentAimFOVCircle.Color = Color3.fromRGB(100, 200, 255)
+            SilentAimFOVCircle.Transparency = 0.5
+            SilentAimFOVCircle.NumSides = 64
+            SilentAimFOVCircle.Filled = false
+        end
+        local mousePos = UserInputService:GetMouseLocation()
+        SilentAimFOVCircle.Visible = true
+        SilentAimFOVCircle.Position = mousePos
+        SilentAimFOVCircle.Radius = Config.SilentAim_FOV or 120
+    else
+        if SilentAimFOVCircle then
+            SilentAimFOVCircle.Visible = false
+        end
     end
 
     -- Get new target
