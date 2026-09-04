@@ -74,33 +74,62 @@ local function GetBoxData(character)
     local head = character:FindFirstChild("Head")
     if not root then return nil end
 
-    -- Use actual body parts for 100% accurate positioning
-    local topPos = head and head.Position or (root.Position + Vector3.new(0, 2.5, 0))
-    local botPos = root.Position - Vector3.new(0, 2.5, 0)
+    -- Try GetBoundingBox first (same method as 3D box for identical accuracy)
+    local ok, cf, size = pcall(function()
+        return character:GetBoundingBox()
+    end)
+
+    if ok and cf and size then
+        local hx, hy, hz = size.X / 2, size.Y / 2, size.Z / 2
+        local p = cf.Position
+        local corners = {
+            p + Vector3.new(-hx, -hy, -hz), p + Vector3.new(hx, -hy, -hz),
+            p + Vector3.new(hx, -hy, hz), p + Vector3.new(-hx, -hy, hz),
+            p + Vector3.new(-hx, hy, -hz), p + Vector3.new(hx, hy, -hz),
+            p + Vector3.new(hx, hy, hz), p + Vector3.new(-hx, hy, hz)
+        }
+
+        local minX, minY = math.huge, math.huge
+        local maxX, maxY = -math.huge, -math.huge
+        local anyVisible = false
+
+        for i = 1, 8 do
+            local sp, vis, z = W2S(corners[i])
+            if vis and z > 0 then
+                anyVisible = true
+                if sp.X < minX then minX = sp.X end
+                if sp.X > maxX then maxX = sp.X end
+                if sp.Y < minY then minY = sp.Y end
+                if sp.Y > maxY then maxY = sp.Y end
+            end
+        end
+
+        if anyVisible then
+            local w = maxX - minX
+            local h = maxY - minY
+            if w > 1 and h > 1 then
+                return {
+                    TL = Vector2.new(minX, minY),
+                    BR = Vector2.new(maxX, maxY),
+                    Size = Vector2.new(w, h),
+                    Center = Vector2.new(minX + w / 2, minY + h / 2),
+                    Pos = root.Position
+                }
+            end
+        end
+    end
+
+    -- Fallback: generous head-to-feet with wide ratio
+    local topPos = head and head.Position or (root.Position + Vector3.new(0, 3.0, 0))
+    local botPos = root.Position - Vector3.new(0, 3.5, 0)
 
     local topScr, topVis, topZ = W2S(topPos)
     local botScr, botVis, botZ = W2S(botPos)
 
-    -- Visibility: at least one point must be on screen
     if (not topVis and not botVis) or (topZ <= 0 and botZ <= 0) then return nil end
 
     local h = math.abs(botScr.Y - topScr.Y)
-
-    -- Calculate width from actual character bounding box (accurate per-avatar, no smoothing)
-    local widthRatio = 0.8 -- wider default
-    local ok, cf, size = pcall(function()
-        return character:GetBoundingBox()
-    end)
-    if ok and size then
-        local charHeight = size.Y
-        local charWidth = size.X
-        if charHeight > 0 then
-            -- Use actual avatar proportions, wider range allowed
-            widthRatio = math.clamp(charWidth / charHeight, 0.5, 1.2)
-        end
-    end
-
-    local w = h * widthRatio
+    local w = h * 1.0
     if h <= 1 or w <= 1 then return nil end
 
     return {
@@ -119,23 +148,18 @@ local function Get3DCorners(character)
 
     local p = root.Position
 
-    -- Use actual character dimensions from bounding box
+    -- Generous defaults, wider and taller
+    local hx, hy, hz = 2.0, 3.5, 2.0
+
+    -- Try GetBoundingBox but keep generous minimums
     local ok, cf, size = pcall(function()
         return character:GetBoundingBox()
     end)
 
-    local hx, hy, hz
     if ok and size then
-        hx = size.X / 2
-        hy = size.Y / 2
-        hz = size.Z / 2
-    else
-        -- Fallback for R15/R6
-        if character:FindFirstChild("LeftFoot") then
-            hy = 3.0; hx = 1.5; hz = 1.5
-        else
-            hy = 2.5; hx = 1.5; hz = 1.5
-        end
+        hx = math.max(size.X / 2, 2.0)
+        hy = math.max(size.Y / 2, 3.5)
+        hz = math.max(size.Z / 2, 2.0)
     end
 
     local corners = {
