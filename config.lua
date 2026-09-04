@@ -117,18 +117,20 @@ return {
     Move_HighJumpEnabled = false,
     Move_JumpPower = 100,
     Move_BunnyHop = false,
+    Move_BunnyHopSpeed = 60,
     Move_NoJumpCooldown = false,
     Move_InfiniteJump = false,
     Move_NoClip = false,
     Move_Fly = false,
     Move_FlyMethod = "Tween",
     Move_FlySpeed = 50,
-    Move_FlyKey = nil,
+    Move_FlyKey = Enum.KeyCode.F,
 
     -- UI
     ToggleKey = Enum.KeyCode.RightShift,
     ShowHotkeys = false,
     GUIScale = 1.0,
+    GUIWindow = false,
     GUITheme = Color3.fromRGB(145, 75, 255),
     PanicKey = nil,
     FPSCap = 0, -- 0 = uncapped

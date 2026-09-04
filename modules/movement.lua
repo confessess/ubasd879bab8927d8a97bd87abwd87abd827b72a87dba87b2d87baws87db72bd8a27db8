@@ -227,9 +227,8 @@ local function DoBunnyHop()
     end
 
     -- Speed boost while bunny hopping
-    local currentSpeed = hum.WalkSpeed
-    local bhopSpeed = (Config.Move_Speed or 50) * 1.2 -- 20% faster than normal speed
-    if currentSpeed < bhopSpeed then
+    local bhopSpeed = Config.Move_BunnyHopSpeed or 60
+    if hum.WalkSpeed < bhopSpeed then
         hum.WalkSpeed = bhopSpeed
     end
 end

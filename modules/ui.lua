@@ -224,6 +224,7 @@ function UI.Build()
         ClipsDescendants = true,
     }, ScreenGui)
     UI.Main = Main
+    UI.Background = Background
     Corner(Main, 20)
     Stroke(Main, 0.72, 1)
     New("Frame", {
@@ -239,7 +240,37 @@ function UI.Build()
         Position = UDim2.fromOffset(15, 10),
         BackgroundTransparency = 1,
         ZIndex = 12,
+        Active = true, -- Enable drag
     }, Main)
+
+    -- Drag functionality for window mode
+    local dragging = false
+    local dragStart = nil
+    local startPos = nil
+
+    TopBar.InputBegan:Connect(function(input)
+        if input.UserInputType == Enum.UserInputType.MouseButton1 and Config.GUIWindow then
+            dragging = true
+            dragStart = input.Position
+            startPos = Main.Position
+        end
+    end)
+
+    TopBar.InputChanged:Connect(function(input)
+        if dragging and input.UserInputType == Enum.UserInputType.MouseMovement then
+            local delta = input.Position - dragStart
+            Main.Position = UDim2.new(
+                startPos.X.Scale, startPos.X.Offset + delta.X,
+                startPos.Y.Scale, startPos.Y.Offset + delta.Y
+            )
+        end
+    end)
+
+    TopBar.InputEnded:Connect(function(input)
+        if input.UserInputType == Enum.UserInputType.MouseButton1 then
+            dragging = false
+        end
+    end)
     New("TextLabel", {
         Size = UDim2.fromOffset(400, 27),
         Position = UDim2.fromOffset(8, 3),
@@ -1627,10 +1658,10 @@ function UI.Build()
         BorderSizePixel = 0,
         ScrollBarThickness = 5,
         ScrollBarImageColor3 = Color3.fromRGB(145, 75, 255),
-        CanvasSize = UDim2.new(0, 0, 0, 650),
+        CanvasSize = UDim2.new(0, 0, 0, 710),
         ZIndex = 14,
     }, MovementPage)
-    local MovementCard = CreateCard(MovementScroll, UDim2.fromOffset(0, 0), UDim2.new(1, 0, 0, 640))
+    local MovementCard = CreateCard(MovementScroll, UDim2.fromOffset(0, 0), UDim2.new(1, 0, 0, 700))
 
     -- Movement Section
     CreateToggle(MovementCard, 14, "Speed", Config.Move_SpeedEnabled, "Move_SpeedEnabled", true, function(v)
@@ -1661,7 +1692,7 @@ function UI.Build()
     }, MovementCard)
     Corner(walkSpeedTrack, 3)
     local walkSpeedFill = New("Frame", {
-        Size = UDim2.new(math.clamp((Config.Move_Speed - 16) / 10000, 0, 1), 0, 1, 0),
+        Size = UDim2.new(math.clamp((Config.Move_Speed - 16) / 284, 0, 1), 0, 1, 0),
         BackgroundColor3 = Color3.fromRGB(145, 75, 255),
         BorderSizePixel = 0,
         ZIndex = 17,
@@ -1687,20 +1718,20 @@ function UI.Build()
     local function setWalkSpeed(val)
         val = math.max(math.floor(val), 16)
         Config.Move_Speed = val
-        walkSpeedFill.Size = UDim2.new(math.clamp((val - 16) / 10000, 0, 1), 0, 1, 0)
+        walkSpeedFill.Size = UDim2.new(math.clamp((val - 16) / 284, 0, 1), 0, 1, 0)
         walkSpeedInput.Text = tostring(val)
     end
     walkSpeedTrack.InputBegan:Connect(function(input)
         if input.UserInputType == Enum.UserInputType.MouseButton1 then
             walkSpeedDragging = true
             local pos = math.clamp((input.Position.X - walkSpeedTrack.AbsolutePosition.X) / walkSpeedTrack.AbsoluteSize.X, 0, 1)
-            setWalkSpeed(16 + pos * 10000)
+            setWalkSpeed(16 + pos * 284)
         end
     end)
     UserInputService.InputChanged:Connect(function(input)
         if walkSpeedDragging and input.UserInputType == Enum.UserInputType.MouseMovement then
             local pos = math.clamp((input.Position.X - walkSpeedTrack.AbsolutePosition.X) / walkSpeedTrack.AbsoluteSize.X, 0, 1)
-            setWalkSpeed(16 + pos * 10000)
+            setWalkSpeed(16 + pos * 284)
         end
     end)
     UserInputService.InputEnded:Connect(function(input)
@@ -1746,7 +1777,7 @@ function UI.Build()
     }, MovementCard)
     Corner(jumpPowerTrack, 3)
     local jumpPowerFill = New("Frame", {
-        Size = UDim2.new(math.clamp((Config.Move_JumpPower - 50) / 10000, 0, 1), 0, 1, 0),
+        Size = UDim2.new(math.clamp((Config.Move_JumpPower - 50) / 250, 0, 1), 0, 1, 0),
         BackgroundColor3 = Color3.fromRGB(145, 75, 255),
         BorderSizePixel = 0,
         ZIndex = 17,
@@ -1772,20 +1803,20 @@ function UI.Build()
     local function setJumpPower(val)
         val = math.max(math.floor(val), 50)
         Config.Move_JumpPower = val
-        jumpPowerFill.Size = UDim2.new(math.clamp((val - 50) / 10000, 0, 1), 0, 1, 0)
+        jumpPowerFill.Size = UDim2.new(math.clamp((val - 50) / 250, 0, 1), 0, 1, 0)
         jumpPowerInput.Text = tostring(val)
     end
     jumpPowerTrack.InputBegan:Connect(function(input)
         if input.UserInputType == Enum.UserInputType.MouseButton1 then
             jumpPowerDragging = true
             local pos = math.clamp((input.Position.X - jumpPowerTrack.AbsolutePosition.X) / jumpPowerTrack.AbsoluteSize.X, 0, 1)
-            setJumpPower(50 + pos * 10000)
+            setJumpPower(50 + pos * 250)
         end
     end)
     UserInputService.InputChanged:Connect(function(input)
         if jumpPowerDragging and input.UserInputType == Enum.UserInputType.MouseMovement then
             local pos = math.clamp((input.Position.X - jumpPowerTrack.AbsolutePosition.X) / jumpPowerTrack.AbsoluteSize.X, 0, 1)
-            setJumpPower(50 + pos * 10000)
+            setJumpPower(50 + pos * 250)
         end
     end)
     UserInputService.InputEnded:Connect(function(input)
@@ -1809,35 +1840,113 @@ function UI.Build()
             UI.Movement.SetBunnyHop(v)
         end
     end)
-    CreateToggle(MovementCard, 234, "No Jump Cooldown", Config.Move_NoJumpCooldown, "Move_NoJumpCooldown", true, function(v)
+
+    -- Bunny Hop Speed slider
+    New("TextLabel", {
+        Size = UDim2.new(1, -140, 0, 20),
+        Position = UDim2.fromOffset(10, 234),
+        BackgroundTransparency = 1,
+        Text = "Bunny Hop Speed",
+        TextColor3 = Color3.fromRGB(200, 190, 215),
+        TextSize = 12,
+        Font = Enum.Font.GothamMedium,
+        TextXAlignment = Enum.TextXAlignment.Left,
+        ZIndex = 16,
+    }, MovementCard)
+    local bhopSpeedTrack = New("Frame", {
+        Size = UDim2.new(1, -160, 0, 5),
+        Position = UDim2.fromOffset(10, 264),
+        BackgroundColor3 = Color3.fromRGB(40, 40, 50),
+        BorderSizePixel = 0,
+        ZIndex = 16,
+    }, MovementCard)
+    Corner(bhopSpeedTrack, 3)
+    local bhopSpeedFill = New("Frame", {
+        Size = UDim2.new(math.clamp(((Config.Move_BunnyHopSpeed or 60) - 16) / 284, 0, 1), 0, 1, 0),
+        BackgroundColor3 = Color3.fromRGB(145, 75, 255),
+        BorderSizePixel = 0,
+        ZIndex = 17,
+    }, bhopSpeedTrack)
+    Corner(bhopSpeedFill, 3)
+    local bhopSpeedInput = New("TextBox", {
+        Size = UDim2.fromOffset(60, 24),
+        Position = UDim2.new(1, -70, 0, 234),
+        BackgroundColor3 = Color3.fromRGB(30, 20, 42),
+        BackgroundTransparency = 0.25,
+        BorderSizePixel = 0,
+        Text = tostring(Config.Move_BunnyHopSpeed or 60),
+        TextColor3 = Color3.fromRGB(245, 240, 250),
+        TextSize = 11,
+        Font = Enum.Font.Gotham,
+        ClearTextOnFocus = false,
+        ZIndex = 16,
+    }, MovementCard)
+    Corner(bhopSpeedInput, 6)
+    Stroke(bhopSpeedInput, 0.6, 1, Color3.fromRGB(80, 60, 100))
+
+    local bhopSpeedDragging = false
+    local function setBhopSpeed(val)
+        val = math.max(math.floor(val), 16)
+        Config.Move_BunnyHopSpeed = val
+        bhopSpeedFill.Size = UDim2.new(math.clamp((val - 16) / 284, 0, 1), 0, 1, 0)
+        bhopSpeedInput.Text = tostring(val)
+    end
+    bhopSpeedTrack.InputBegan:Connect(function(input)
+        if input.UserInputType == Enum.UserInputType.MouseButton1 then
+            bhopSpeedDragging = true
+            local pos = math.clamp((input.Position.X - bhopSpeedTrack.AbsolutePosition.X) / bhopSpeedTrack.AbsoluteSize.X, 0, 1)
+            setBhopSpeed(16 + pos * 284)
+        end
+    end)
+    UserInputService.InputChanged:Connect(function(input)
+        if bhopSpeedDragging and input.UserInputType == Enum.UserInputType.MouseMovement then
+            local pos = math.clamp((input.Position.X - bhopSpeedTrack.AbsolutePosition.X) / bhopSpeedTrack.AbsoluteSize.X, 0, 1)
+            setBhopSpeed(16 + pos * 284)
+        end
+    end)
+    UserInputService.InputEnded:Connect(function(input)
+        if input.UserInputType == Enum.UserInputType.MouseButton1 then bhopSpeedDragging = false end
+    end)
+    bhopSpeedInput.FocusLost:Connect(function()
+        local num = tonumber(bhopSpeedInput.Text)
+        if num then setBhopSpeed(num) end
+    end)
+    bhopSpeedInput:GetPropertyChangedSignal("Text"):Connect(function()
+        local num = tonumber(bhopSpeedInput.Text)
+        if num then
+            Config.Move_BunnyHopSpeed = math.max(math.floor(num), 16)
+            bhopSpeedFill.Size = UDim2.new(math.clamp((Config.Move_BunnyHopSpeed - 16) / 284, 0, 1), 0, 1, 0)
+        end
+    end)
+    CreateToggle(MovementCard, 290, "No Jump Cooldown", Config.Move_NoJumpCooldown, "Move_NoJumpCooldown", true, function(v)
         Config.Move_NoJumpCooldown = v
         if UI.Movement then
             UI.Movement.SetNoJumpCooldown(v)
         end
     end)
-    CreateToggle(MovementCard, 270, "Infinite Jump", Config.Move_InfiniteJump, "Move_InfiniteJump", true, function(v)
+    CreateToggle(MovementCard, 326, "Infinite Jump", Config.Move_InfiniteJump, "Move_InfiniteJump", true, function(v)
         Config.Move_InfiniteJump = v
         if UI.Movement then
             UI.Movement.SetInfiniteJump(v)
         end
     end)
-    CreateToggle(MovementCard, 306, "NoClip", Config.Move_NoClip, "Move_NoClip", true, function(v)
+    CreateToggle(MovementCard, 362, "NoClip", Config.Move_NoClip, "Move_NoClip", true, function(v)
         Config.Move_NoClip = v
         if UI.Movement then
             UI.Movement.SetNoClip(v)
         end
     end)
 
-    CreateSeparator(MovementCard, 350)
+    CreateSeparator(MovementCard, 406)
 
     -- Fly Section
-    CreateToggle(MovementCard, 362, "Enable Fly", Config.Move_Fly, "Move_Fly", true, function(v)
+    CreateToggle(MovementCard, 418, "Enable Fly", Config.Move_Fly, "Move_Fly", true, function(v)
         Config.Move_Fly = v
         if UI.Movement then
             UI.Movement.SetFly(v)
         end
     end)
-    local flyMethodDropdown = BuildDropdown(MovementCard, 398, "Fly Method", Config.Move_FlyMethod or "Tween",
+    local flyMethodDropdown = BuildDropdown(MovementCard, 454, "Fly Method", Config.Move_FlyMethod or "Tween",
         {"Tween", "Velocity", "CFrame"},
         function(v) Config.Move_FlyMethod = v end)
 
@@ -1862,7 +1971,7 @@ function UI.Build()
     }, MovementCard)
     Corner(flySpeedTrack, 3)
     local flySpeedFill = New("Frame", {
-        Size = UDim2.new(math.clamp((Config.Move_FlySpeed - 10) / 100000, 0, 1), 0, 1, 0),
+        Size = UDim2.new(math.clamp((Config.Move_FlySpeed - 10) / 290, 0, 1), 0, 1, 0),
         BackgroundColor3 = Color3.fromRGB(145, 75, 255),
         BorderSizePixel = 0,
         ZIndex = 17,
@@ -1888,20 +1997,20 @@ function UI.Build()
     local function setFlySpeed(val)
         val = math.max(math.floor(val), 1)
         Config.Move_FlySpeed = val
-        flySpeedFill.Size = UDim2.new(math.clamp((val - 10) / 100000, 0, 1), 0, 1, 0)
+        flySpeedFill.Size = UDim2.new(math.clamp((val - 10) / 290, 0, 1), 0, 1, 0)
         flySpeedInput.Text = tostring(val)
     end
     flySpeedTrack.InputBegan:Connect(function(input)
         if input.UserInputType == Enum.UserInputType.MouseButton1 then
             flySpeedDragging = true
             local pos = math.clamp((input.Position.X - flySpeedTrack.AbsolutePosition.X) / flySpeedTrack.AbsoluteSize.X, 0, 1)
-            setFlySpeed(10 + pos * 100000)
+            setFlySpeed(10 + pos * 290)
         end
     end)
     UserInputService.InputChanged:Connect(function(input)
         if flySpeedDragging and input.UserInputType == Enum.UserInputType.MouseMovement then
             local pos = math.clamp((input.Position.X - flySpeedTrack.AbsolutePosition.X) / flySpeedTrack.AbsoluteSize.X, 0, 1)
-            setFlySpeed(10 + pos * 100000)
+            setFlySpeed(10 + pos * 290)
         end
     end)
     UserInputService.InputEnded:Connect(function(input)
@@ -2130,6 +2239,27 @@ function UI.Build()
     CreateToggle(SettingsCard, 232, "Auto-hide on Screenshot", Config.AutoHideOnScreenshot, "AutoHideOnScreenshot", false, function(v)
         Config.AutoHideOnScreenshot = v
     end)
+    CreateToggle(SettingsCard, 268, "GUI Window Mode", Config.GUIWindow, "GUIWindow", false, function(v)
+        Config.GUIWindow = v
+        -- Apply window mode
+        if UI.Main then
+            if v then
+                -- Window mode — smaller, draggable
+                UI.Main.Size = UDim2.fromOffset(500 * (Config.GUIScale or 1), 400 * (Config.GUIScale or 1))
+                UI.Main.Position = UDim2.new(0.5, -250 * (Config.GUIScale or 1), 0.5, -200 * (Config.GUIScale or 1))
+                UI.Main.AnchorPoint = Vector2.new(0, 0)
+            else
+                -- Fullscreen mode
+                UI.Main.Size = UDim2.fromOffset(760 * (Config.GUIScale or 1), 540 * (Config.GUIScale or 1))
+                UI.Main.Position = UDim2.fromScale(0.5, 0.5)
+                UI.Main.AnchorPoint = Vector2.new(0.5, 0.5)
+            end
+        end
+        -- Hide background in window mode
+        if UI.Background then
+            UI.Background.Visible = not v and UI.GUIVisible
+        end
+    end)
 
     CreateSeparator(SettingsCard, 276)
 
@@ -2324,7 +2454,7 @@ function UI.Build()
     -- Config Management
     New("TextLabel", {
         Size = UDim2.new(1, -20, 0, 20),
-        Position = UDim2.fromOffset(10, 496),
+        Position = UDim2.fromOffset(10, 552),
         BackgroundTransparency = 1,
         Text = "Config Management",
         TextColor3 = Color3.fromRGB(245, 220, 255),
