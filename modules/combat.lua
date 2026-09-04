@@ -763,7 +763,6 @@ end
 
 function Combat.Init()
     StartAimbot()
-    KarmaCacheArmorDetector()
     if LocalPlayer.Character then
         KarmaSetupCharacter(LocalPlayer.Character)
     end
