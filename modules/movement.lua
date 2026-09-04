@@ -96,16 +96,38 @@ local LastBhopJump = 0
 local LastManualJump = 0
 
 local LastNoJumpCD = 0
+local CooldownWasDisabled = false
+local OriginalJumpHeight = nil
 
 local function DoNoJumpCooldown()
     local Config = Movement.Config
-    if not Config.Move_NoJumpCooldown then return end
     local char = LocalPlayer.Character
     if not char then return end
     local hum = char:FindFirstChildOfClass("Humanoid")
     local root = char:FindFirstChild("HumanoidRootPart")
     if not hum or not root then return end
+
+    -- Save original jump height on first run
+    if OriginalJumpHeight == nil then
+        OriginalJumpHeight = hum.JumpHeight
+    end
+
+    if not Config.Move_NoJumpCooldown then
+        -- Restore cooldown if it was disabled
+        if CooldownWasDisabled then
+            hum.JumpHeight = OriginalJumpHeight
+            CooldownWasDisabled = false
+        end
+        return
+    end
+
     if hum.Health <= 0 then return end
+
+    -- Disable cooldown by setting jump height to 0 and using velocity
+    if not CooldownWasDisabled then
+        hum.JumpHeight = 0
+        CooldownWasDisabled = true
+    end
 
     -- Detect Space press
     if UserInputService:IsKeyDown(Enum.KeyCode.Space) then
