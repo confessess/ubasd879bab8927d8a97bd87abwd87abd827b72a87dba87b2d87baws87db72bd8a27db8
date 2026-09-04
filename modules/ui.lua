@@ -504,10 +504,9 @@ function UI.Build()
                     Size = UDim2.fromScale(1, 1),
                     BackgroundTransparency = 1,
                     Image = textureId,
-                    ImageTransparency = 0.85,
-                    ImageColor3 = Theme.Accent,
-                    ScaleType = Enum.ScaleType.Tile,
-                    TileSize = UDim2.fromOffset(64, 64),
+                    ImageTransparency = 0.6,
+                    ImageColor3 = Color3.fromRGB(255, 255, 255),
+                    ScaleType = Enum.ScaleType.Stretch,
                     ZIndex = 1,
                 }, page)
             end
@@ -555,7 +554,7 @@ function UI.Build()
             Size = size,
             Position = position,
             BackgroundColor3 = Theme.BgCard,
-            BackgroundTransparency = 0.08,
+            BackgroundTransparency = 0.35,
             BorderSizePixel = 0,
             ZIndex = 15,
         }, page)
@@ -785,7 +784,7 @@ function UI.Build()
         local listHeight = math.min(#options, maxVisible) * itemHeight
 
         -- Parent to same card, position below header — scrolls with page
-        local list = New("Frame", {
+        local list = New("ScrollingFrame", {
             Size = UDim2.new(1, -20, 0, 0),
             Position = UDim2.fromOffset(10, y + 24 + 32 + 2),
             BackgroundColor3 = Theme.BgCard,
@@ -794,6 +793,9 @@ function UI.Build()
             ZIndex = 100,
             ClipsDescendants = true,
             Visible = false,
+            ScrollBarThickness = 3,
+            ScrollBarImageColor3 = Theme.Accent,
+            CanvasSize = UDim2.new(0, 0, 0, #options * itemHeight),
         }, parent)
         Corner(list, 8)
         Stroke(list, 0.85, 1, Theme.StrokeCard)
@@ -801,7 +803,7 @@ function UI.Build()
         local optionButtons = {}
         for i, optText in ipairs(options) do
             local btn = New("TextButton", {
-                Size = UDim2.new(1, -8, 0, itemHeight - 2),
+                Size = UDim2.new(1, -16, 0, itemHeight - 2),
                 Position = UDim2.fromOffset(4, 4 + (i - 1) * itemHeight),
                 BackgroundColor3 = Theme.DropdownItem,
                 BackgroundTransparency = 1,
