@@ -20,8 +20,8 @@ return {
     SilentAim_HitChance = 100,
     SilentAim_TargetPart = "Head",
     SilentAim_WallCheck = false,
-    SilentAim_TeamCheck = false,
-    SilentAim_ShowFOV = false,
+    SilentAim_TeamCheck = true,
+    SilentAim_ShowFOV = true,
     Aimbot_ToggleMode = false,
     Aimbot_StickyTarget = false,
     Aimbot_Smoothness = 15,
@@ -83,7 +83,7 @@ return {
     FarmPullSpeed = 1,
     RagebotEnabled = false,
     RagebotEnabledKey = nil,
-    RagebotMethod = "FarmVoid", -- "FarmVoid" or "FrameTPStomp"
+    RagebotMethod = "FarmVoid", -- "FarmVoid", "FrameTPStomp", or "AntiBulletTP"
     RagebotSelfVoid = false,
 
     -- Misc
@@ -131,7 +131,7 @@ return {
     Move_Fly = false,
     Move_FlyMethod = "Tween",
     Move_FlySpeed = 50,
-    Move_FlyKey = nil,
+    Move_FlyKey = Enum.KeyCode.F,
 
     -- UI
     ToggleKey = Enum.KeyCode.RightShift,
@@ -142,7 +142,7 @@ return {
     PanicKey = nil,
     FPSCap = 0, -- 0 = uncapped
     AutoHideOnScreenshot = false,
-    ShowNotifications = false,
+    ShowNotifications = true,
     NotificationDuration = 2.5,
 
     -- Keybinds

@@ -1408,7 +1408,7 @@ function UI.Build()
         end
     end)
     local ragebotMethodDropdown = BuildDropdown(FarmCard, 232, "Ragebot Method", Config.RagebotMethod or "FarmVoid",
-        {"FarmVoid", "FrameTPStomp"},
+        {"FarmVoid", "FrameTPStomp", "AntiBulletTP"},
         function(v) 
             Config.RagebotMethod = v
             if UI.Farm then

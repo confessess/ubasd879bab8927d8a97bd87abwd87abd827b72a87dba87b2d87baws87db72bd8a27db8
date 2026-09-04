@@ -369,12 +369,13 @@ local function RagebotConstantDeath(target)
     while tick() - startTime < maxWait do
         if not Farm.Config.RagebotEnabled then return false end
         if IsTargetAlive(target) and not IsTargetKnocked(target) then
+            -- INSTANT respawn and shoot — no delay
             pcall(function() LocalPlayer:LoadCharacter() end)
             local char = LocalPlayer.CharacterAdded:Wait()
-            local hrp = char:WaitForChild("HumanoidRootPart", 3)
-            local hum = char:WaitForChild("Humanoid", 3)
+            local hrp = char:WaitForChild("HumanoidRootPart", 2)
+            local hum = char:WaitForChild("Humanoid", 2)
             if hrp and hum then
-                task.wait(0.2)
+                -- No wait — return immediately to kill
                 return true
             end
             return false
@@ -496,13 +497,16 @@ local function RagebotFrameTPStompKill(target)
                 local targetHRP = targetChar:FindFirstChild("HumanoidRootPart")
                 if not targetHRP then break end
 
-                -- FrameTP directly INTO ragdolled player — inside them
+                -- FrameTP directly INTO ragdolled player — track every frame
                 myHRP.CFrame = targetHRP.CFrame
                 myHRP.Velocity = Vector3.new(0, 0, 0)
                 myHRP.AssemblyLinearVelocity = Vector3.new(0, 0, 0)
                 myHRP.RotVelocity = Vector3.new(0, 0, 0)
 
+                -- Stomp multiple times per frame for maximum attempts
                 pcall(function()
+                    mainRemote:FireServer("Stomp")
+                    mainRemote:FireServer("Stomp")
                     mainRemote:FireServer("Stomp")
                 end)
 
@@ -523,6 +527,56 @@ local function RagebotFrameTPStompKill(target)
     return false
 end
 
+-- Anti Bullet TP method — Farm kill + far teleport, no void
+local function RagebotAntiBulletTP(target)
+    local guns = RagebotGetAllGuns()
+    if #guns == 0 then return false end
+    local myHRP = GetHRP()
+    if not myHRP then return false end
+
+    -- Farm kill method
+    local killed = RagebotShootTarget(target)
+
+    if killed then
+        -- Teleport millions of blocks away — anti bullet TP
+        local farPos = Vector3.new(
+            math.random(-5000000, 5000000),
+            math.random(500000, 1000000),
+            math.random(-5000000, 5000000)
+        )
+        myHRP.CFrame = CFrame.new(farPos)
+        myHRP.Velocity = Vector3.new(0, 0, 0)
+        myHRP.AssemblyLinearVelocity = Vector3.new(0, 0, 0)
+
+        Farm.RagebotKillCount = Farm.RagebotKillCount + 1
+        Farm.Notify("Anti Bullet TP kill #" .. Farm.RagebotKillCount, Color3.fromRGB(255, 100, 0))
+
+        -- Keep teleporting randomly while waiting for respawn
+        local startTime = tick()
+        while tick() - startTime < 5 do
+            if not Farm.Config.RagebotEnabled then break end
+            if IsTargetAlive(target) and not IsTargetKnocked(target) then
+                -- Target respawned — return to kill
+                return true
+            end
+            -- Random teleport
+            local randomPos = Vector3.new(
+                math.random(-5000000, 5000000),
+                math.random(500000, 1000000),
+                math.random(-5000000, 5000000)
+            )
+            myHRP.CFrame = CFrame.new(randomPos)
+            myHRP.Velocity = Vector3.new(0, 0, 0)
+            myHRP.AssemblyLinearVelocity = Vector3.new(0, 0, 0)
+            RunService.Heartbeat:Wait()
+        end
+
+        return true
+    end
+
+    return false
+end
+
 local function RagebotKillLoop()
     if not Farm.Config or not Farm.Config.RagebotEnabled then return end
     if Farm.RagebotKillInProgress then return end
@@ -539,10 +593,12 @@ local function RagebotKillLoop()
     local killed = false
     if Farm.Config.RagebotMethod == "FrameTPStomp" then
         killed = RagebotFrameTPStompKill(target)
+    elseif Farm.Config.RagebotMethod == "AntiBulletTP" then
+        killed = RagebotAntiBulletTP(target)
     else
         killed = RagebotShootTarget(target)
     end
-    if killed then
+    if killed and Farm.Config.RagebotMethod ~= "AntiBulletTP" then
         RagebotConstantDeath(target)
     end
     Farm.RagebotKillInProgress = false
