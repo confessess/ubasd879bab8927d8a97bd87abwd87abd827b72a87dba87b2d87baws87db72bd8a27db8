@@ -357,8 +357,10 @@ local function UpdateChams(player, char, ESP)
         hl.Parent = char
     end
 
-    hl.FillColor = ESP.Colors.ChamsFill
-    hl.OutlineColor = ESP.Colors.ChamsOutline
+    pcall(function()
+        hl.FillColor = ESP.Colors.ChamsFill
+        hl.OutlineColor = ESP.Colors.ChamsOutline
+    end)
     hl.FillTransparency = 0.75
     hl.OutlineTransparency = 0.3
     hl.Enabled = true
