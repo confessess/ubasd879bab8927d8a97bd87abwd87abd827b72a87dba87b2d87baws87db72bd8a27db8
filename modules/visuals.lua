@@ -11,7 +11,7 @@ local Visuals = {
 }
 
 -- ═════════════════════════════════════════════════════════════════════════════
--- DRAWING LIFECYCLE
+-- DRAWING LIFECYCLE (Legacy — FOV, Tracer, Hitmarker)
 -- ═════════════════════════════════════════════════════════════════════════════
 local DrawingObjects = {}
 local function DrawingNew(type, props)
@@ -36,12 +36,13 @@ local Hitmarker = DrawingNew("Text", {
 })
 
 -- ═════════════════════════════════════════════════════════════════════════════
--- ESP UTILITIES
+-- ESP UTILITIES (Pouncing.exe style — GetExtentsSize)
 -- ═════════════════════════════════════════════════════════════════════════════
 local ESPDrawingObjects = {}
 local ESPRenderConnection = nil
 local ESPPlayerAddedConnection = nil
 local ESPPlayerRemovingConnection = nil
+local ESPCharacterAddedConnections = {}
 
 local function MakeDrawing(type, props)
     local s, obj = pcall(Drawing.new, type)
@@ -67,101 +68,37 @@ local function W2S(position)
     return Vector2.new(-999, -999), false, 0
 end
 
-
-
 local function GetBoxData(character)
     local root = character:FindFirstChild("HumanoidRootPart") or character:FindFirstChild("Torso")
-    local head = character:FindFirstChild("Head")
     if not root then return nil end
-
-    -- Try GetBoundingBox first (same method as 3D box for identical accuracy)
-    local ok, cf, size = pcall(function()
-        return character:GetBoundingBox()
-    end)
-
-    if ok and cf and size then
-        local hx, hy, hz = size.X / 2, size.Y / 2, size.Z / 2
-        local p = cf.Position
-        local corners = {
-            p + Vector3.new(-hx, -hy, -hz), p + Vector3.new(hx, -hy, -hz),
-            p + Vector3.new(hx, -hy, hz), p + Vector3.new(-hx, -hy, hz),
-            p + Vector3.new(-hx, hy, -hz), p + Vector3.new(hx, hy, -hz),
-            p + Vector3.new(hx, hy, hz), p + Vector3.new(-hx, hy, hz)
-        }
-
-        local minX, minY = math.huge, math.huge
-        local maxX, maxY = -math.huge, -math.huge
-        local anyVisible = false
-
-        for i = 1, 8 do
-            local sp, vis, z = W2S(corners[i])
-            if vis and z > 0 then
-                anyVisible = true
-                if sp.X < minX then minX = sp.X end
-                if sp.X > maxX then maxX = sp.X end
-                if sp.Y < minY then minY = sp.Y end
-                if sp.Y > maxY then maxY = sp.Y end
-            end
-        end
-
-        if anyVisible then
-            local w = maxX - minX
-            local h = maxY - minY
-            if w > 1 and h > 1 then
-                return {
-                    TL = Vector2.new(minX, minY),
-                    BR = Vector2.new(maxX, maxY),
-                    Size = Vector2.new(w, h),
-                    Center = Vector2.new(minX + w / 2, minY + h / 2),
-                    Pos = root.Position
-                }
-            end
-        end
-    end
-
-    -- Fallback: generous head-to-feet with wide ratio
-    local topPos = head and head.Position or (root.Position + Vector3.new(0, 3.0, 0))
-    local botPos = root.Position - Vector3.new(0, 3.5, 0)
-
+    local s, extents = pcall(function() return character:GetExtentsSize() end)
+    if not s or not extents then return nil end
+    local size = extents * 1.1
+    local topPos = root.Position + Vector3.new(0, size.Y / 2, 0)
+    local botPos = root.Position - Vector3.new(0, size.Y / 2, 0)
     local topScr, topVis, topZ = W2S(topPos)
     local botScr, botVis, botZ = W2S(botPos)
-
-    if (not topVis and not botVis) or (topZ <= 0 and botZ <= 0) then return nil end
-
+    if (not topVis and not botVis) or topZ <= 0 or botZ <= 0 then return nil end
     local h = math.abs(botScr.Y - topScr.Y)
-    local w = h * 1.0
+    local w = h * 0.6
     if h <= 1 or w <= 1 then return nil end
-
     return {
         TL = Vector2.new(topScr.X - w / 2, topScr.Y),
         BR = Vector2.new(topScr.X + w / 2, botScr.Y),
         Size = Vector2.new(w, h),
         Center = Vector2.new(topScr.X, (topScr.Y + botScr.Y) / 2),
-        Pos = root.Position
+        Pos = root.Position,
+        Extents = extents
     }
 end
 
 local function Get3DCorners(character)
     local root = character:FindFirstChild("HumanoidRootPart") or character:FindFirstChild("Torso")
-    local head = character:FindFirstChild("Head")
     if not root then return nil end
-
+    local s, extents = pcall(function() return character:GetExtentsSize() end)
+    if not s or not extents then return nil end
     local p = root.Position
-
-    -- Generous defaults, wider and taller
-    local hx, hy, hz = 2.0, 3.5, 2.0
-
-    -- Try GetBoundingBox but keep generous minimums
-    local ok, cf, size = pcall(function()
-        return character:GetBoundingBox()
-    end)
-
-    if ok and size then
-        hx = math.max(size.X / 2, 2.0)
-        hy = math.max(size.Y / 2, 3.5)
-        hz = math.max(size.Z / 2, 2.0)
-    end
-
+    local hx, hy, hz = extents.X / 2, extents.Y / 2, extents.Z / 2
     local corners = {
         p + Vector3.new(-hx, -hy, -hz), p + Vector3.new(hx, -hy, -hz),
         p + Vector3.new(hx, -hy, hz), p + Vector3.new(-hx, -hy, hz),
@@ -169,14 +106,11 @@ local function Get3DCorners(character)
         p + Vector3.new(hx, hy, hz), p + Vector3.new(-hx, hy, hz)
     }
     local screenCorners = {}
-    local visibleCount = 0
     for i = 1, 8 do
         local sp, vis, z = W2S(corners[i])
-        if vis and z > 0 then visibleCount = visibleCount + 1 end
+        if not vis or z <= 0 then return nil end
         screenCorners[i] = sp
     end
-    -- Require at least 3 corners visible
-    if visibleCount < 3 then return nil end
     return screenCorners
 end
 
@@ -196,7 +130,6 @@ local SkeletonConnections = {
 -- ═════════════════════════════════════════════════════════════════════════════
 -- ESP STATE
 -- ═════════════════════════════════════════════════════════════════════════════
-
 local function GetESPConfig()
     local Config = Visuals.Config
     if not Config then return nil end
@@ -267,6 +200,10 @@ local function ClearPlayer(player)
     if char then
         local h = char:FindFirstChild("Visuals_Chams")
         if h then h:Destroy() end
+    end
+    if ESPCharacterAddedConnections[player] then
+        ESPCharacterAddedConnections[player]:Disconnect()
+        ESPCharacterAddedConnections[player] = nil
     end
 end
 
@@ -361,8 +298,8 @@ local function UpdateChams(player, char, ESP)
         hl.FillColor = ESP.Colors.ChamsFill
         hl.OutlineColor = ESP.Colors.ChamsOutline
     end)
-    hl.FillTransparency = 0.75
-    hl.OutlineTransparency = 0.3
+    hl.FillTransparency = 0.6
+    hl.OutlineTransparency = 0.2
     hl.Enabled = true
 end
 
@@ -597,11 +534,52 @@ local function ESPUpdate()
 end
 
 local function ESPInit()
-    for _, p in pairs(Players:GetPlayers()) do InitPlayer(p) end
+    for _, p in pairs(Players:GetPlayers()) do
+        InitPlayer(p)
+        -- Set up CharacterAdded for chams persistence
+        if not ESPCharacterAddedConnections[p] then
+            ESPCharacterAddedConnections[p] = p.CharacterAdded:Connect(function(char)
+                task.wait(0.1)
+                local ESP = GetESPConfig()
+                if ESP and ESP.Chams then
+                    local hl = Instance.new("Highlight")
+                    hl.Name = "Visuals_Chams"
+                    hl.DepthMode = Enum.HighlightDepthMode.AlwaysOnTop
+                    hl.Parent = char
+                    pcall(function()
+                        hl.FillColor = ESP.Colors.ChamsFill
+                        hl.OutlineColor = ESP.Colors.ChamsOutline
+                    end)
+                    hl.FillTransparency = 0.6
+                    hl.OutlineTransparency = 0.2
+                    hl.Enabled = true
+                end
+            end)
+        end
+    end
     ESPPlayerAddedConnection = Players.PlayerAdded:Connect(function(p)
         InitPlayer(p)
+        ESPCharacterAddedConnections[p] = p.CharacterAdded:Connect(function(char)
+            task.wait(0.1)
+            local ESP = GetESPConfig()
+            if ESP and ESP.Chams then
+                local hl = Instance.new("Highlight")
+                hl.Name = "Visuals_Chams"
+                hl.DepthMode = Enum.HighlightDepthMode.AlwaysOnTop
+                hl.Parent = char
+                pcall(function()
+                    hl.FillColor = ESP.Colors.ChamsFill
+                    hl.OutlineColor = ESP.Colors.ChamsOutline
+                end)
+                hl.FillTransparency = 0.6
+                hl.OutlineTransparency = 0.2
+                hl.Enabled = true
+            end
+        end)
     end)
-    ESPPlayerRemovingConnection = Players.PlayerRemoving:Connect(ClearPlayer)
+    ESPPlayerRemovingConnection = Players.PlayerRemoving:Connect(function(p)
+        ClearPlayer(p)
+    end)
 end
 
 local function ESPDisable()
@@ -619,6 +597,10 @@ local function ESPCleanup()
     ESPDisable()
     if ESPPlayerAddedConnection then ESPPlayerAddedConnection:Disconnect(); ESPPlayerAddedConnection = nil end
     if ESPPlayerRemovingConnection then ESPPlayerRemovingConnection:Disconnect(); ESPPlayerRemovingConnection = nil end
+    for player, conn in pairs(ESPCharacterAddedConnections) do
+        if conn then conn:Disconnect() end
+    end
+    ESPCharacterAddedConnections = {}
     for player, _ in pairs(ESPDrawingObjects) do
         ClearPlayer(player)
     end
@@ -626,7 +608,7 @@ local function ESPCleanup()
 end
 
 -- ═════════════════════════════════════════════════════════════════════════════
--- LEGACY VISUALS
+-- LEGACY VISUALS (FOV, Tracer, Hitmarker — Stars.cc interface)
 -- ═════════════════════════════════════════════════════════════════════════════
 function Visuals.SetConfig(config)
     Visuals.Config = config
@@ -699,7 +681,6 @@ function Visuals.PlayHitmarker()
     Hitmarker.Color = Color3.fromRGB(255, 80, 80)
     delay(0.2, function() Hitmarker.Visible = false end)
 end
-
 
 function Visuals.Init(config)
     Visuals.Config = config
