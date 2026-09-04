@@ -450,7 +450,7 @@ local function RagebotFrameTPStompKill(target)
             local currentHRP = GetTargetHRP(target)
             if currentHead and currentHRP then
                 -- TP slightly BEHIND target — their head fills screen, you're invisible
-                local behindPos = currentHead.CFrame * CFrame.new(0, 0, -0.8)
+                local behindPos = currentHead.CFrame * CFrame.new(0, 0, -1.2)
                 myHRP.CFrame = behindPos
                 myHRP.Velocity = Vector3.new(0, 0, 0)
                 myHRP.AssemblyLinearVelocity = Vector3.new(0, 0, 0)
