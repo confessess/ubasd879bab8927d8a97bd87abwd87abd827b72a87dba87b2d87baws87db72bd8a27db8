@@ -283,8 +283,24 @@ local function DoNoClip()
     if not Config.Move_NoClip then return end
     local char = LocalPlayer.Character
     if not char then return end
+
+    -- Force CanCollide = false EVERY frame — game might reset it
     for _, part in pairs(char:GetDescendants()) do
-        if part:IsA("BasePart") and not NoClipModifiedParts[part] then
+        if part:IsA("BasePart") then
+            -- Save original once
+            if NoClipModifiedParts[part] == nil then
+                NoClipModifiedParts[part] = part.CanCollide
+            end
+            -- Force false every frame
+            if part.CanCollide then
+                part.CanCollide = false
+            end
+        end
+    end
+
+    -- Also check for new parts added to character
+    for _, part in pairs(char:GetChildren()) do
+        if part:IsA("BasePart") and NoClipModifiedParts[part] == nil then
             NoClipModifiedParts[part] = part.CanCollide
             part.CanCollide = false
         end
@@ -480,9 +496,17 @@ function Movement.SetFly(enabled)
     if Movement.Config then
         Movement.Config.Move_Fly = enabled
         if enabled then
-            StartFly()
+            -- Start fly immediately
+            local Config = Movement.Config
+            if Config.Move_FlyMethod == "Tween" then StartFly_Tween()
+            elseif Config.Move_FlyMethod == "Velocity" then StartFly_Velocity()
+            elseif Config.Move_FlyMethod == "CFrame" then StartFly_CFrame() end
         else
-            StopFly()
+            -- Stop fly immediately
+            local Config = Movement.Config
+            if Config.Move_FlyMethod == "Tween" then StopFly_Tween()
+            elseif Config.Move_FlyMethod == "Velocity" then StopFly_Velocity()
+            elseif Config.Move_FlyMethod == "CFrame" then StopFly_CFrame() end
         end
     end
 end

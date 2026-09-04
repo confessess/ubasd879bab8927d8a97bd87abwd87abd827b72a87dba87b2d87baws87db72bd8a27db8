@@ -170,17 +170,17 @@ local function InitPlayer(player)
     ESPDrawingObjects[player] = {
         Box = MakeDrawing("Square", {Visible = false, Thickness = 1, Color = Color3.fromRGB(255,105,180), Transparency = 0.9, Filled = false}),
         B3D = b3d, B3DO = b3do,
-        Name = MakeDrawing("Text", {Visible = false, Text = player.Name, Size = 13, Center = true, Outline = true, OutlineColor = Color3.fromRGB(0,0,0), Color = Color3.fromRGB(255,255,255)}),
+        Name = MakeDrawing("Text", {Visible = false, Text = player.Name, Size = 16, Center = true, Outline = true, OutlineColor = Color3.fromRGB(0,0,0), Color = Color3.fromRGB(255,255,255), Font = 2, Transparency = 0}),
         HB = MakeDrawing("Square", {Visible = false, Thickness = 1, Filled = true, Color = Color3.fromRGB(0,255,100)}),
         HBO = MakeDrawing("Square", {Visible = false, Thickness = 1, Filled = true, Color = Color3.fromRGB(0,0,0)}),
-        HT = MakeDrawing("Text", {Visible = false, Text = "100", Size = 11, Center = false, Outline = true, OutlineColor = Color3.fromRGB(0,0,0), Color = Color3.fromRGB(255,255,255)}),
+        HT = MakeDrawing("Text", {Visible = false, Text = "100", Size = 13, Center = false, Outline = true, OutlineColor = Color3.fromRGB(0,0,0), Color = Color3.fromRGB(255,255,255), Font = 2, Transparency = 0}),
         Skel = skel,
-        Dist = MakeDrawing("Text", {Visible = false, Text = "", Size = 11, Center = true, Outline = true, OutlineColor = Color3.fromRGB(0,0,0), Color = Color3.fromRGB(200,200,200)}),
+        Dist = MakeDrawing("Text", {Visible = false, Text = "", Size = 14, Center = true, Outline = true, OutlineColor = Color3.fromRGB(0,0,0), Color = Color3.fromRGB(200,200,200), Font = 2, Transparency = 0}),
         Tracer = MakeDrawing("Line", {Visible = false, Thickness = 1.5, Color = Color3.fromRGB(255,105,180), Transparency = 0.7}),
         TracerO = MakeDrawing("Line", {Visible = false, Thickness = 3, Color = Color3.fromRGB(0,0,0), Transparency = 0.4}),
         HeadDot = MakeDrawing("Circle", {Visible = false, Thickness = 1, Color = Color3.fromRGB(255,255,255), Transparency = 0.9, NumSides = 16, Filled = true}),
         HeadDotO = MakeDrawing("Circle", {Visible = false, Thickness = 2, Color = Color3.fromRGB(0,0,0), Transparency = 0.5, NumSides = 16, Filled = false}),
-        Weapon = MakeDrawing("Text", {Visible = false, Text = "", Size = 10, Center = true, Outline = true, OutlineColor = Color3.fromRGB(0,0,0), Color = Color3.fromRGB(255,200,100)}),
+        Weapon = MakeDrawing("Text", {Visible = false, Text = "", Size = 13, Center = true, Outline = true, OutlineColor = Color3.fromRGB(0,0,0), Color = Color3.fromRGB(255,200,100), Font = 2, Transparency = 0}),
     }
 end
 
