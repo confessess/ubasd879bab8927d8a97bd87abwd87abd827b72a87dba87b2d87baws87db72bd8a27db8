@@ -735,17 +735,93 @@ local function KarmaOnHealthChanged(health)
     if damage > 0 then
         Combat.KarmaTriggered = true
 
-        -- INSTANT — no delay
+        -- INSTANT TP AWAY — survive the double shot
+        local myChar = LocalPlayer.Character
+        local myRoot = myChar and myChar:FindFirstChild("HumanoidRootPart")
+        if myRoot then
+            -- TP to sky instantly — can't be shot
+            myRoot.CFrame = CFrame.new(myRoot.Position + Vector3.new(0, 500, 0))
+            myRoot.Velocity = Vector3.new(0, 0, 0)
+            myRoot.AssemblyLinearVelocity = Vector3.new(0, 0, 0)
+        end
+
+        -- INSTANT FrameTP kill from sky
         task.spawn(function()
             local shooter = KarmaIdentifyShooter()
             if shooter then
-                KarmaKillTarget(shooter)
+                KarmaFrameTPKill(shooter)
             end
+
+            -- TP back after kill
+            if myRoot and myRoot.Parent then
+                myRoot.CFrame = CFrame.new(myRoot.Position - Vector3.new(0, 500, 0))
+            end
+
             Combat.KarmaTriggered = false
         end)
     end
 
     Combat.KarmaLastHealth = health
+end
+
+local function KarmaFrameTPKill(target)
+    local myChar = LocalPlayer.Character
+    if not myChar then return end
+    local myRoot = myChar:FindFirstChild("HumanoidRootPart")
+    if not myRoot then return end
+
+    local guns = KarmaGetAllGuns()
+    if #guns == 0 then return end
+
+    local originalPos = myRoot.Position
+
+    -- FrameTP kill loop — TP to target, shoot, return to sky
+    for _, gun in pairs(guns) do
+        if KarmaIsTargetDead(target) then break end
+
+        local targetHum = target.Character and target.Character:FindFirstChildOfClass("Humanoid")
+        if not targetHum or targetHum.Health <= 0 then break end
+
+        KarmaEquipTool(gun)
+        Combat.SetupFullAuto(gun)
+
+        local shootStart = tick()
+        while tick() - shootStart < 0.5 do
+            if KarmaIsTargetDead(target) then break end
+
+            local targetHead = target.Character and target.Character:FindFirstChild("Head")
+            local targetRoot = target.Character and target.Character:FindFirstChild("HumanoidRootPart")
+            if not targetHead or not targetRoot then break end
+
+            -- FrameTP to target
+            myRoot.CFrame = targetRoot.CFrame * CFrame.new(0, 0, -2)
+            myRoot.Velocity = Vector3.new(0, 0, 0)
+            myRoot.AssemblyLinearVelocity = Vector3.new(0, 0, 0)
+
+            -- Shoot
+            if gun and gun.Parent then
+                gun:Activate()
+            end
+
+            RunService.RenderStepped:Wait()
+
+            -- Return to sky instantly
+            myRoot.CFrame = CFrame.new(originalPos)
+        end
+
+        if KarmaIsTargetDead(target) then break end
+    end
+
+    -- Auto armor in background
+    task.spawn(function()
+        KarmaAutoArmor()
+    end)
+
+    -- Reload in background
+    task.spawn(function()
+        KarmaReloadAllGuns()
+        KarmaUnequipAll()
+    end)
 end
 
 local function KarmaSetupCharacter(character)
