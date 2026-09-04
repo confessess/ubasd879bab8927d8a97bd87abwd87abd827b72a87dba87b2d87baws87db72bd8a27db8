@@ -17,6 +17,7 @@ local UI = {
     ListeningKey = nil,
     ToggleCallbacks = {},
     KeybindButtons = {},
+    Connections = {},
 }
 
 local Themes = {
@@ -2852,7 +2853,7 @@ function UI.Build()
     UI.SetGUIVisible = SetGUIVisible
 
     -- Input Handler
-    UserInputService.InputBegan:Connect(function(input, gameProcessed)
+    local mainInputConn = UserInputService.InputBegan:Connect(function(input, gameProcessed)
         if gameProcessed then return end
 
         if UI.ListeningKey then
@@ -2951,6 +2952,7 @@ function UI.Build()
             end
         end
     end)
+    table.insert(UI.Connections, mainInputConn)
 
     CloseBtn.MouseButton1Click:Connect(function()
         SetGUIVisible(not UI.GUIVisible)
@@ -2978,6 +2980,14 @@ function UI.ApplyTheme(themeName)
     if not Config then return end
     Config.GUIThemeName = themeName
     Theme = Themes.Get(themeName)
+
+    -- Disconnect all stored input connections to prevent duplicates
+    for _, conn in pairs(UI.Connections) do
+        if conn and conn.Connected then
+            conn:Disconnect()
+        end
+    end
+    UI.Connections = {}
 
     -- Rebuild the entire UI with new theme
     if UI.ScreenGui then
