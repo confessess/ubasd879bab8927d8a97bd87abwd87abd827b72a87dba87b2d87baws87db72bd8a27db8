@@ -2250,7 +2250,7 @@ function UI.Build()
         CanvasSize = UDim2.new(0, 0, 0, 850),
         ZIndex = 14,
     }, SettingsPage)
-    local SettingsCard = CreateCard(SettingsScroll, UDim2.fromOffset(0, 0), UDim2.new(1, 0, 0, 1020))
+    local SettingsCard = CreateCard(SettingsScroll, UDim2.fromOffset(0, 0), UDim2.new(1, 0, 0, 900))
 
     -- Keybinds Section
     New("TextLabel", {
@@ -2328,7 +2328,7 @@ function UI.Build()
         Tween(PanicKeyButton, {BackgroundTransparency = 0}, 0.2):Play()
     end)
 
-    CreateSeparator(SettingsCard, 110)
+    CreateSeparator(SettingsCard, 108)
 
     -- GUI Customization Section
     New("TextLabel", {
@@ -2422,18 +2422,18 @@ function UI.Build()
     end)
 
     -- Show Hotkeys Toggle
-    CreateToggle(SettingsCard, 196, "Show Hotkeys", Config.ShowHotkeys, "ShowHotkeys", false, function(v)
+    CreateToggle(SettingsCard, 188, "Show Hotkeys", Config.ShowHotkeys, "ShowHotkeys", false, function(v)
         Config.ShowHotkeys = v
         UI.UpdateHotkeyDisplay()
     end)
 
     -- Auto-hide on Screenshot Toggle
-    CreateToggle(SettingsCard, 232, "Auto-hide on Screenshot", Config.AutoHideOnScreenshot, "AutoHideOnScreenshot", false, function(v)
+    CreateToggle(SettingsCard, 224, "Auto-hide on Screenshot", Config.AutoHideOnScreenshot, "AutoHideOnScreenshot", false, function(v)
         Config.AutoHideOnScreenshot = v
     end)
 
     -- GUI Window Mode Toggle
-    CreateToggle(SettingsCard, 268, "GUI Window Mode", Config.GUIWindow, "GUIWindow", false, function(v)
+    CreateToggle(SettingsCard, 260, "GUI Window Mode", Config.GUIWindow, "GUIWindow", false, function(v)
         Config.GUIWindow = v
         if UI.Main then
             if v then
@@ -2451,7 +2451,7 @@ function UI.Build()
         end
     end)
 
-    CreateSeparator(SettingsCard, 312)
+    CreateSeparator(SettingsCard, 298)
 
     -- Performance Section
     New("TextLabel", {
@@ -2544,7 +2544,7 @@ function UI.Build()
         if num then setFPSCap(num) end
     end)
 
-    CreateSeparator(SettingsCard, 398)
+    CreateSeparator(SettingsCard, 378)
 
     -- Notifications Section
     New("TextLabel", {
@@ -2560,7 +2560,7 @@ function UI.Build()
     }, SettingsCard)
 
     -- Show Notifications Toggle
-    CreateToggle(SettingsCard, 436, "Show Notifications", Config.ShowNotifications, "ShowNotifications", false, function(v)
+    CreateToggle(SettingsCard, 414, "Show Notifications", Config.ShowNotifications, "ShowNotifications", false, function(v)
         Config.ShowNotifications = v
     end)
 
@@ -2639,7 +2639,7 @@ function UI.Build()
         if num then setNotifDuration(num) end
     end)
 
-    CreateSeparator(SettingsCard, 520)
+    CreateSeparator(SettingsCard, 494)
 
     -- Config Management Section
     New("TextLabel", {
@@ -2655,7 +2655,7 @@ function UI.Build()
     }, SettingsCard)
 
     -- Save Config Button
-    CreateActionButton(SettingsCard, 558, "Save Config", function()
+    CreateActionButton(SettingsCard, 530, "Save Config", function()
         if writefile then
             local configData = {}
             for k, v in pairs(Config) do
@@ -2683,7 +2683,7 @@ function UI.Build()
     end)
 
     -- Load Config Button
-    CreateActionButton(SettingsCard, 594, "Load Config", function()
+    CreateActionButton(SettingsCard, 566, "Load Config", function()
         if readfile then
             local success, err = pcall(function()
                 local data = readfile("starscc_config.json")
@@ -2711,7 +2711,7 @@ function UI.Build()
     end)
 
     -- Reset to Defaults Button
-    CreateActionButton(SettingsCard, 630, "Reset to Defaults", function()
+    CreateActionButton(SettingsCard, 602, "Reset to Defaults", function()
         for k, v in pairs(Config) do
             if typeof(v) == "boolean" then
                 Config[k] = false
@@ -2748,7 +2748,7 @@ function UI.Build()
 
 
     -- Theme Selector
-    CreateSeparator(SettingsCard, 694)
+    CreateSeparator(SettingsCard, 640)
     New("TextLabel", {
         Size = UDim2.new(1, -20, 0, 20),
         Position = UDim2.fromOffset(10, 706),
@@ -2760,7 +2760,7 @@ function UI.Build()
         TextXAlignment = Enum.TextXAlignment.Left,
         ZIndex = 16,
     }, SettingsCard)
-    local themeDropdown = BuildDropdown(SettingsCard, 730, "GUI Theme", Config.GUIThemeName or "Purple",
+    local themeDropdown = BuildDropdown(SettingsCard, 676, "GUI Theme", Config.GUIThemeName or "Purple",
         {"Purple", "Monochrome"},
         function(v)
             Config.GUIThemeName = v
@@ -2769,7 +2769,7 @@ function UI.Build()
 
 
     -- Background Image Selector
-    CreateSeparator(SettingsCard, 778)
+    CreateSeparator(SettingsCard, 736)
     New("TextLabel", {
         Size = UDim2.new(1, -20, 0, 20),
         Position = UDim2.fromOffset(10, 790),
@@ -2781,7 +2781,7 @@ function UI.Build()
         TextXAlignment = Enum.TextXAlignment.Left,
         ZIndex = 16,
     }, SettingsCard)
-    local bgImageDropdown = BuildDropdown(SettingsCard, 814, "Texture", Config.GUIBackgroundImage or "None",
+    local bgImageDropdown = BuildDropdown(SettingsCard, 772, "Texture", Config.GUIBackgroundImage or "None",
         BackgroundTextureNames,
         function(v)
             Config.GUIBackgroundImage = v
@@ -2791,7 +2791,7 @@ function UI.Build()
     -- Bottom padding
     New("Frame", {
         Size = UDim2.new(1, 0, 0, 40),
-        Position = UDim2.fromOffset(0, 880),
+        Position = UDim2.fromOffset(0, 832),
         BackgroundTransparency = 1,
         ZIndex = 16,
     }, SettingsCard)
