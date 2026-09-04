@@ -2247,7 +2247,7 @@ function UI.Build()
         BorderSizePixel = 0,
         ScrollBarThickness = 5,
         ScrollBarImageColor3 = Theme.Accent,
-        CanvasSize = UDim2.new(0, 0, 0, 850),
+        CanvasSize = UDim2.new(0, 0, 0, 910),
         ZIndex = 14,
     }, SettingsPage)
     local SettingsCard = CreateCard(SettingsScroll, UDim2.fromOffset(0, 0), UDim2.new(1, 0, 0, 900))
@@ -2296,7 +2296,7 @@ function UI.Build()
     -- Panic Key
     New("TextLabel", {
         Size = UDim2.new(1, -140, 0, 25),
-        Position = UDim2.fromOffset(15, 72),
+        Position = UDim2.fromOffset(15, 70),
         BackgroundTransparency = 1,
         Text = "Panic Key (disable all)",
         TextColor3 = Theme.TextTabActive,
@@ -2308,7 +2308,7 @@ function UI.Build()
 
     local PanicKeyButton = New("TextButton", {
         Size = UDim2.fromOffset(115, 30),
-        Position = UDim2.new(1, -130, 0, 70),
+        Position = UDim2.new(1, -130, 0, 68),
         BackgroundColor3 = Theme.PanicBtn,
         BackgroundTransparency = 0.18,
         BorderSizePixel = 0,
@@ -2333,7 +2333,7 @@ function UI.Build()
     -- GUI Customization Section
     New("TextLabel", {
         Size = UDim2.new(1, -20, 0, 20),
-        Position = UDim2.fromOffset(10, 122),
+        Position = UDim2.fromOffset(10, 120),
         BackgroundTransparency = 1,
         Text = "GUI Customization",
         TextColor3 = Theme.TextSection,
@@ -2346,7 +2346,7 @@ function UI.Build()
     -- GUI Scale Slider + Input
     New("TextLabel", {
         Size = UDim2.new(1, -140, 0, 20),
-        Position = UDim2.fromOffset(10, 148),
+        Position = UDim2.fromOffset(10, 144),
         BackgroundTransparency = 1,
         Text = "GUI Scale",
         TextColor3 = Theme.TextLabel,
@@ -2358,7 +2358,7 @@ function UI.Build()
 
     local guiScaleTrack = New("Frame", {
         Size = UDim2.new(1, -160, 0, 5),
-        Position = UDim2.fromOffset(10, 178),
+        Position = UDim2.fromOffset(10, 174),
         BackgroundColor3 = Theme.SliderTrack,
         BorderSizePixel = 0,
         ZIndex = 16,
@@ -2375,7 +2375,7 @@ function UI.Build()
 
     local guiScaleInput = New("TextBox", {
         Size = UDim2.fromOffset(60, 24),
-        Position = UDim2.new(1, -70, 0, 148),
+        Position = UDim2.new(1, -70, 0, 144),
         BackgroundColor3 = Theme.DropdownItem,
         BackgroundTransparency = 0.25,
         BorderSizePixel = 0,
@@ -2456,7 +2456,7 @@ function UI.Build()
     -- Performance Section
     New("TextLabel", {
         Size = UDim2.new(1, -20, 0, 20),
-        Position = UDim2.fromOffset(10, 324),
+        Position = UDim2.fromOffset(10, 310),
         BackgroundTransparency = 1,
         Text = "Performance",
         TextColor3 = Theme.TextSection,
@@ -2469,7 +2469,7 @@ function UI.Build()
     -- FPS Cap Slider + Input
     New("TextLabel", {
         Size = UDim2.new(1, -140, 0, 20),
-        Position = UDim2.fromOffset(10, 350),
+        Position = UDim2.fromOffset(10, 334),
         BackgroundTransparency = 1,
         Text = "FPS Cap (0 = uncapped)",
         TextColor3 = Theme.TextLabel,
@@ -2481,7 +2481,7 @@ function UI.Build()
 
     local fpsTrack = New("Frame", {
         Size = UDim2.new(1, -160, 0, 5),
-        Position = UDim2.fromOffset(10, 380),
+        Position = UDim2.fromOffset(10, 364),
         BackgroundColor3 = Theme.SliderTrack,
         BorderSizePixel = 0,
         ZIndex = 16,
@@ -2498,7 +2498,7 @@ function UI.Build()
 
     local fpsInput = New("TextBox", {
         Size = UDim2.fromOffset(60, 24),
-        Position = UDim2.new(1, -70, 0, 350),
+        Position = UDim2.new(1, -70, 0, 334),
         BackgroundColor3 = Theme.DropdownItem,
         BackgroundTransparency = 0.25,
         BorderSizePixel = 0,
@@ -2549,7 +2549,7 @@ function UI.Build()
     -- Notifications Section
     New("TextLabel", {
         Size = UDim2.new(1, -20, 0, 20),
-        Position = UDim2.fromOffset(10, 410),
+        Position = UDim2.fromOffset(10, 390),
         BackgroundTransparency = 1,
         Text = "Notifications",
         TextColor3 = Theme.TextSection,
@@ -2567,7 +2567,7 @@ function UI.Build()
     -- Notification Duration Slider + Input
     New("TextLabel", {
         Size = UDim2.new(1, -140, 0, 20),
-        Position = UDim2.fromOffset(10, 472),
+        Position = UDim2.fromOffset(10, 450),
         BackgroundTransparency = 1,
         Text = "Notification Duration",
         TextColor3 = Theme.TextLabel,
@@ -2579,7 +2579,7 @@ function UI.Build()
 
     local notifTrack = New("Frame", {
         Size = UDim2.new(1, -160, 0, 5),
-        Position = UDim2.fromOffset(10, 502),
+        Position = UDim2.fromOffset(10, 480),
         BackgroundColor3 = Theme.SliderTrack,
         BorderSizePixel = 0,
         ZIndex = 16,
@@ -2596,7 +2596,7 @@ function UI.Build()
 
     local notifInput = New("TextBox", {
         Size = UDim2.fromOffset(60, 24),
-        Position = UDim2.new(1, -70, 0, 472),
+        Position = UDim2.new(1, -70, 0, 450),
         BackgroundColor3 = Theme.DropdownItem,
         BackgroundTransparency = 0.25,
         BorderSizePixel = 0,
@@ -2644,7 +2644,7 @@ function UI.Build()
     -- Config Management Section
     New("TextLabel", {
         Size = UDim2.new(1, -20, 0, 20),
-        Position = UDim2.fromOffset(10, 532),
+        Position = UDim2.fromOffset(10, 506),
         BackgroundTransparency = 1,
         Text = "Config Management",
         TextColor3 = Theme.TextSection,
@@ -2751,7 +2751,7 @@ function UI.Build()
     CreateSeparator(SettingsCard, 640)
     New("TextLabel", {
         Size = UDim2.new(1, -20, 0, 20),
-        Position = UDim2.fromOffset(10, 706),
+        Position = UDim2.fromOffset(10, 652),
         BackgroundTransparency = 1,
         Text = "Theme",
         TextColor3 = Theme.TextSection,
@@ -2772,7 +2772,7 @@ function UI.Build()
     CreateSeparator(SettingsCard, 736)
     New("TextLabel", {
         Size = UDim2.new(1, -20, 0, 20),
-        Position = UDim2.fromOffset(10, 790),
+        Position = UDim2.fromOffset(10, 748),
         BackgroundTransparency = 1,
         Text = "Background Image",
         TextColor3 = Theme.TextSection,
