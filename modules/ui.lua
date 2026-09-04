@@ -1158,7 +1158,7 @@ function UI.Build()
         Size = UDim2.new(1, -20, 0, 20),
         Position = UDim2.fromOffset(10, 466),
         BackgroundTransparency = 1,
-        Text = "Silent Aim (Hitbox Expander)",
+        Text = "Silent Aim",
         TextColor3 = Color3.fromRGB(245, 220, 255),
         TextSize = 14,
         Font = Enum.Font.GothamBold,

@@ -131,7 +131,7 @@ return {
     Move_Fly = false,
     Move_FlyMethod = "Tween",
     Move_FlySpeed = 50,
-    Move_FlyKey = Enum.KeyCode.F,
+    Move_FlyKey = nil,
 
     -- UI
     ToggleKey = Enum.KeyCode.RightShift,
