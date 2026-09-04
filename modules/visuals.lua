@@ -331,8 +331,8 @@ local function UpdateChams(player, char, ESP)
 
     hl.FillColor = ESP.Colors.ChamsFill
     hl.OutlineColor = ESP.Colors.ChamsOutline
-    hl.FillTransparency = 0.5
-    hl.OutlineTransparency = 0
+    hl.FillTransparency = 0.75
+    hl.OutlineTransparency = 0.3
     hl.Enabled = true
 end
 
@@ -430,8 +430,21 @@ local function UpdateESPPlayer(player)
         for _, l in pairs(o.B3D) do SetDrawing(l, "Visible", false) end
         for _, l in pairs(o.B3DO) do SetDrawing(l, "Visible", false) end
     end
+    -- Smooth text positions independently
+    local textCache = ESPBoxCache[player]
+    local head = char:FindFirstChild("Head")
+    local headPos = head and W2S(head.Position) or nil
+
     if ESP.Names then
-        SetDrawing(o.Name, "Position", Vector2.new(box.Center.X, box.TL.Y - 16))
+        local nameY = box.TL.Y - 16
+        if headPos and headPos[2] then
+            nameY = headPos[1].Y - 20
+        end
+        if textCache and textCache.NameY then
+            nameY = textCache.NameY + (nameY - textCache.NameY) * 0.3
+        end
+        if textCache then textCache.NameY = nameY end
+        SetDrawing(o.Name, "Position", Vector2.new(box.Center.X, nameY))
         SetDrawing(o.Name, "Text", player.Name)
         SetDrawing(o.Name, "Color", ESP.Colors.Name)
         SetDrawing(o.Name, "Visible", true)
@@ -439,7 +452,15 @@ local function UpdateESPPlayer(player)
         SetDrawing(o.Name, "Visible", false)
     end
     if ESP.Distance then
-        SetDrawing(o.Dist, "Position", Vector2.new(box.Center.X, box.BR.Y + 4))
+        local distY = box.BR.Y + 4
+        if headPos and headPos[2] then
+            distY = headPos[1].Y + 8
+        end
+        if textCache and textCache.DistY then
+            distY = textCache.DistY + (distY - textCache.DistY) * 0.3
+        end
+        if textCache then textCache.DistY = distY end
+        SetDrawing(o.Dist, "Position", Vector2.new(box.Center.X, distY))
         SetDrawing(o.Dist, "Text", math.floor(dist) .. "m")
         SetDrawing(o.Dist, "Color", ESP.Colors.Distance)
         SetDrawing(o.Dist, "Visible", true)
@@ -465,17 +486,25 @@ local function UpdateESPPlayer(player)
                 SetDrawing(o.HT, "Visible", false)
                 return
             end
+            -- Smooth health bar position
+            local healthX = box.TL.X - bw - 6
+            local healthY = box.TL.Y - 1
+            if textCache and textCache.HealthX then
+                healthX = textCache.HealthX + (healthX - textCache.HealthX) * 0.3
+                healthY = textCache.HealthY + (healthY - textCache.HealthY) * 0.3
+            end
+            if textCache then textCache.HealthX = healthX textCache.HealthY = healthY end
             SetDrawing(o.HBO, "Size", Vector2.new(bw + 2, box.Size.Y + 2))
-            SetDrawing(o.HBO, "Position", Vector2.new(box.TL.X - bw - 6, box.TL.Y - 1))
+            SetDrawing(o.HBO, "Position", Vector2.new(healthX, healthY))
             SetDrawing(o.HBO, "Visible", true)
             SetDrawing(o.HB, "Size", Vector2.new(bw, bh))
-            SetDrawing(o.HB, "Position", Vector2.new(box.TL.X - bw - 5, box.BR.Y - bh))
+            SetDrawing(o.HB, "Position", Vector2.new(healthX + 1, healthY + 1 + box.Size.Y - bh))
             local fullColor = ESP.Colors.Health
             local emptyColor = Color3.fromRGB(255, 0, 0)
             local healthColor = emptyColor:Lerp(fullColor, pct)
             SetDrawing(o.HB, "Color", healthColor)
             SetDrawing(o.HB, "Visible", true)
-            SetDrawing(o.HT, "Position", Vector2.new(box.TL.X - bw - 28, box.BR.Y - bh - 6))
+            SetDrawing(o.HT, "Position", Vector2.new(healthX - 22, healthY + box.Size.Y - bh - 6))
             SetDrawing(o.HT, "Text", math.floor(ch))
             SetDrawing(o.HT, "Visible", true)
         end)
@@ -550,7 +579,15 @@ local function UpdateESPPlayer(player)
     if ESP.WeaponNames then
         local weapon = GetPlayerWeapon(player)
         if weapon then
-            SetDrawing(o.Weapon, "Position", Vector2.new(box.Center.X, box.BR.Y + 18))
+            local weaponY = box.BR.Y + 18
+            if headPos and headPos[2] then
+                weaponY = headPos[1].Y + 22
+            end
+            if textCache and textCache.WeaponY then
+                weaponY = textCache.WeaponY + (weaponY - textCache.WeaponY) * 0.3
+            end
+            if textCache then textCache.WeaponY = weaponY end
+            SetDrawing(o.Weapon, "Position", Vector2.new(box.Center.X, weaponY))
             SetDrawing(o.Weapon, "Text", "[" .. weapon .. "]")
             SetDrawing(o.Weapon, "Visible", true)
         else
