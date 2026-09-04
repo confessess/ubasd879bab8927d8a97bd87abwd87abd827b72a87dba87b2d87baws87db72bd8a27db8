@@ -67,19 +67,53 @@ local function W2S(position)
     return Vector2.new(-999, -999), false, 0
 end
 
+local CharDimensions = {}
+
+local function GetCharDimensions(character)
+    if CharDimensions[character] then
+        local dims = CharDimensions[character]
+        if tick() - dims.Time < 2 then
+            return dims.Width, dims.Height
+        end
+    end
+    -- Try GetBoundingBox first (most accurate)
+    local success, cframe, size = pcall(function()
+        return character:GetBoundingBox()
+    end)
+    if success and size then
+        CharDimensions[character] = {Width = size.X, Height = size.Y, Time = tick()}
+        return size.X, size.Y
+    end
+    -- Fallback: measure from body parts
+    local head = character:FindFirstChild("Head")
+    local root = character:FindFirstChild("HumanoidRootPart") or character:FindFirstChild("Torso")
+    local lfoot = character:FindFirstChild("LeftFoot") or character:FindFirstChild("Left Leg")
+    local rfoot = character:FindFirstChild("RightFoot") or character:FindFirstChild("Right Leg")
+    if head and root then
+        local height = math.abs(head.Position.Y - root.Position.Y) * 2.2
+        local width = height * 0.5
+        if lfoot and rfoot then
+            width = math.max(width, math.abs(lfoot.Position.X - rfoot.Position.X) * 1.5)
+        end
+        CharDimensions[character] = {Width = width, Height = height, Time = tick()}
+        return width, height
+    end
+    return nil, nil
+end
+
 local function GetBoxData(character)
     local root = character:FindFirstChild("HumanoidRootPart") or character:FindFirstChild("Torso")
     if not root then return nil end
-    local s, extents = pcall(function() return character:GetExtentsSize() end)
-    if not s or not extents then return nil end
-    local size = extents * 1.1
-    local topPos = root.Position + Vector3.new(0, size.Y / 2, 0)
-    local botPos = root.Position - Vector3.new(0, size.Y / 2, 0)
+    local charWidth, charHeight = GetCharDimensions(character)
+    if not charWidth or not charHeight then return nil end
+    local topPos = root.Position + Vector3.new(0, charHeight / 2, 0)
+    local botPos = root.Position - Vector3.new(0, charHeight / 2, 0)
     local topScr, topVis, topZ = W2S(topPos)
     local botScr, botVis, botZ = W2S(botPos)
-    if (not topVis and not botVis) or topZ <= 0 or botZ <= 0 then return nil end
+    -- Softer visibility: only require at least one point visible and Z > 0
+    if (not topVis and not botVis) or (topZ <= 0 and botZ <= 0) then return nil end
     local h = math.abs(botScr.Y - topScr.Y)
-    local w = h * 0.6
+    local w = h * (charWidth / charHeight)
     if h <= 1 or w <= 1 then return nil end
     return {
         TL = Vector2.new(topScr.X - w / 2, topScr.Y),
@@ -87,17 +121,18 @@ local function GetBoxData(character)
         Size = Vector2.new(w, h),
         Center = Vector2.new(topScr.X, (topScr.Y + botScr.Y) / 2),
         Pos = root.Position,
-        Extents = extents
+        Width = charWidth,
+        Height = charHeight
     }
 end
 
 local function Get3DCorners(character)
     local root = character:FindFirstChild("HumanoidRootPart") or character:FindFirstChild("Torso")
     if not root then return nil end
-    local s, extents = pcall(function() return character:GetExtentsSize() end)
-    if not s or not extents then return nil end
+    local charWidth, charHeight = GetCharDimensions(character)
+    if not charWidth or not charHeight then return nil end
     local p = root.Position
-    local hx, hy, hz = extents.X / 2, extents.Y / 2, extents.Z / 2
+    local hx, hy, hz = charWidth / 2, charHeight / 2, charWidth / 2
     local corners = {
         p + Vector3.new(-hx, -hy, -hz), p + Vector3.new(hx, -hy, -hz),
         p + Vector3.new(hx, -hy, hz), p + Vector3.new(-hx, -hy, hz),
@@ -105,11 +140,14 @@ local function Get3DCorners(character)
         p + Vector3.new(hx, hy, hz), p + Vector3.new(-hx, hy, hz)
     }
     local screenCorners = {}
+    local visibleCount = 0
     for i = 1, 8 do
         local sp, vis, z = W2S(corners[i])
-        if not vis or z <= 0 then return nil end
+        if vis and z > 0 then visibleCount = visibleCount + 1 end
         screenCorners[i] = sp
     end
+    -- Require at least 4 corners visible (half)
+    if visibleCount < 4 then return nil end
     return screenCorners
 end
 
@@ -129,6 +167,8 @@ local SkeletonConnections = {
 -- ═════════════════════════════════════════════════════════════════════════════
 -- ESP STATE
 -- ═════════════════════════════════════════════════════════════════════════════
+local ESPBoxCache = {} -- Smoothed box positions
+
 local function GetESPConfig()
     local Config = Visuals.Config
     if not Config then return nil end
@@ -347,6 +387,18 @@ local function UpdateESPPlayer(player)
         HideAll(o) 
         return 
     end
+
+    -- Smooth box position
+    local cache = ESPBoxCache[player]
+    if cache and cache.LastUpdate then
+        local dt = tick() - cache.LastUpdate
+        local lerpSpeed = math.clamp(dt * 15, 0, 1) -- Smooth over time
+        box.TL = cache.TL:Lerp(box.TL, lerpSpeed)
+        box.BR = cache.BR:Lerp(box.BR, lerpSpeed)
+        box.Size = box.BR - box.TL
+        box.Center = Vector2.new((box.TL.X + box.BR.X) / 2, (box.TL.Y + box.BR.Y) / 2)
+    end
+    ESPBoxCache[player] = {TL = box.TL, BR = box.BR, LastUpdate = tick()}
 
     SetDrawing(o.Box, "Thickness", ESP.BoxThickness)
     if ESP.Boxes and not ESP.Box3D then
