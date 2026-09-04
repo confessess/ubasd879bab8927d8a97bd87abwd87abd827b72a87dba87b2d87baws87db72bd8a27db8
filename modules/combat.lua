@@ -339,20 +339,11 @@ local function GetBestTarget()
         if IsTargetValidSticky(Combat.CurrentTarget) then
             local part = Combat.CurrentTarget.Character:FindFirstChild(Combat.CurrentTarget.Part.Name)
             if part then
-                if IsTargetValidStrict(Combat.CurrentTarget) then
-                    Combat.StickyLostTime = 0
-                    Combat.CurrentTarget.Part = part
-                    Combat.CurrentTarget.Position = part.Position
-                    return Combat.CurrentTarget
-                else
-                    if Combat.StickyLostTime == 0 then
-                        Combat.StickyLostTime = tick()
-                    elseif tick() - Combat.StickyLostTime < 0.6 then
-                        Combat.CurrentTarget.Part = part
-                        Combat.CurrentTarget.Position = part.Position
-                        return Combat.CurrentTarget
-                    end
-                end
+                -- 360-degree sticky: once locked, stay locked regardless of FOV/visibility
+                Combat.StickyLostTime = 0
+                Combat.CurrentTarget.Part = part
+                Combat.CurrentTarget.Position = part.Position
+                return Combat.CurrentTarget
             end
         end
         Combat.CurrentTarget = nil
