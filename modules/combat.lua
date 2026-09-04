@@ -727,43 +727,6 @@ local function KarmaKillTarget(target)
     myRoot.CFrame = originalCFrame
 end
 
-local function KarmaOnHealthChanged(health)
-    if not Combat.Config or not Combat.Config.Karma_Enabled then return end
-    if Combat.KarmaTriggered then return end
-
-    local damage = Combat.KarmaLastHealth - health
-    if damage > 0 then
-        Combat.KarmaTriggered = true
-
-        -- INSTANT TP AWAY — survive the double shot
-        local myChar = LocalPlayer.Character
-        local myRoot = myChar and myChar:FindFirstChild("HumanoidRootPart")
-        if myRoot then
-            -- TP to sky instantly — can't be shot
-            myRoot.CFrame = CFrame.new(myRoot.Position + Vector3.new(0, 500, 0))
-            myRoot.Velocity = Vector3.new(0, 0, 0)
-            myRoot.AssemblyLinearVelocity = Vector3.new(0, 0, 0)
-        end
-
-        -- INSTANT FrameTP kill from sky
-        task.spawn(function()
-            local shooter = KarmaIdentifyShooter()
-            if shooter then
-                KarmaFrameTPKill(shooter)
-            end
-
-            -- TP back after kill
-            if myRoot and myRoot.Parent then
-                myRoot.CFrame = CFrame.new(myRoot.Position - Vector3.new(0, 500, 0))
-            end
-
-            Combat.KarmaTriggered = false
-        end)
-    end
-
-    Combat.KarmaLastHealth = health
-end
-
 local function KarmaFrameTPKill(target)
     local myChar = LocalPlayer.Character
     if not myChar then return end
@@ -814,12 +777,18 @@ local function KarmaFrameTPKill(target)
 
     -- Auto armor in background
     task.spawn(function()
-        KarmaAutoArmor()
+        KarmaGrabArmor()
     end)
 
     -- Reload in background
     task.spawn(function()
-        KarmaReloadAllGuns()
+        local guns = KarmaGetAllGuns()
+        for _, gun in pairs(guns) do
+            KarmaEquipTool(gun)
+            task.wait(0.1)
+            KarmaReloadGun()
+            task.wait(0.2)
+        end
         KarmaUnequipAll()
     end)
 end
@@ -846,6 +815,80 @@ function Combat.SetKarmaEnabled(enabled)
             end
         end
     end
+end
+
+local function KarmaOnHealthChanged(health)
+    if not Combat.Config or not Combat.Config.Karma_Enabled then return end
+    if Combat.KarmaTriggered then return end
+
+    local damage = Combat.KarmaLastHealth - health
+    if damage > 0 then
+        Combat.KarmaTriggered = true
+
+        -- INSTANT TP AWAY — survive the double shot
+        local myChar = LocalPlayer.Character
+        local myRoot = myChar and myChar:FindFirstChild("HumanoidRootPart")
+        if myRoot then
+            -- TP to sky instantly — can't be shot
+            myRoot.CFrame = CFrame.new(myRoot.Position + Vector3.new(0, 500, 0))
+            myRoot.Velocity = Vector3.new(0, 0, 0)
+            myRoot.AssemblyLinearVelocity = Vector3.new(0, 0, 0)
+        end
+
+        -- INSTANT FrameTP kill from sky
+        task.spawn(function()
+            local shooter = KarmaIdentifyShooter()
+            if shooter then
+                KarmaFrameTPKill(shooter)
+            end
+
+            -- TP back after kill
+            if myRoot and myRoot.Parent then
+                myRoot.CFrame = CFrame.new(myRoot.Position - Vector3.new(0, 500, 0))
+            end
+
+            Combat.KarmaTriggered = false
+        end)
+    end
+
+    Combat.KarmaLastHealth = health
+end
+
+local function KarmaOnHealthChanged(health)
+    if not Combat.Config or not Combat.Config.Karma_Enabled then return end
+    if Combat.KarmaTriggered then return end
+
+    local damage = Combat.KarmaLastHealth - health
+    if damage > 0 then
+        Combat.KarmaTriggered = true
+
+        -- INSTANT TP AWAY — survive the double shot
+        local myChar = LocalPlayer.Character
+        local myRoot = myChar and myChar:FindFirstChild("HumanoidRootPart")
+        if myRoot then
+            -- TP to sky instantly — can't be shot
+            myRoot.CFrame = CFrame.new(myRoot.Position + Vector3.new(0, 500, 0))
+            myRoot.Velocity = Vector3.new(0, 0, 0)
+            myRoot.AssemblyLinearVelocity = Vector3.new(0, 0, 0)
+        end
+
+        -- INSTANT FrameTP kill from sky
+        task.spawn(function()
+            local shooter = KarmaIdentifyShooter()
+            if shooter then
+                KarmaFrameTPKill(shooter)
+            end
+
+            -- TP back after kill
+            if myRoot and myRoot.Parent then
+                myRoot.CFrame = CFrame.new(myRoot.Position - Vector3.new(0, 500, 0))
+            end
+
+            Combat.KarmaTriggered = false
+        end)
+    end
+
+    Combat.KarmaLastHealth = health
 end
 
 -- ═════════════════════════════════════════════════════════════════════════════

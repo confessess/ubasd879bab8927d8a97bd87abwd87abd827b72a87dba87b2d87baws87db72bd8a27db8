@@ -553,77 +553,73 @@ local function RagebotFrameTPStompKill(target)
         end
     end
 
-    -- Stomp phase — ultra-fast accurate tracking for any movement
+    -- Stomp phase — ULTRA aggressive tracking
     if IsTargetKnocked(target) then
         local mainRemote = ReplicatedStorage:FindFirstChild("MainRemotes") and ReplicatedStorage.MainRemotes:FindFirstChild("MainRemoteEvent")
 
         if mainRemote then
             local stompStart = tick()
-            local maxStompTime = 4 -- Reduced from 10 to 4 seconds
+            local maxStompTime = 5
             local stompCount = 0
-
-            -- Multiple position samples for accurate velocity
-            local posSamples = {}
-            local maxSamples = 3
+            local lastLogPos = nil
 
             while tick() - stompStart < maxStompTime do
                 if not Farm.Config.RagebotEnabled then break end
 
-                -- Check if target is DEAD
-                local targetHum = GetTargetHumanoid(target)
-                if not targetHum then break end
-                if targetHum.Health <= 0 then break end
-
-                -- Get FRESH position EVERY frame
-                local currentTargetHRP = GetTargetHRP(target)
-                if not currentTargetHRP then break end
-
-                local currentPos = currentTargetHRP.Position
-                local currentVel = currentTargetHRP.AssemblyLinearVelocity or Vector3.new(0, 0, 0)
-                local currentTime = tick()
-
-                -- Add to samples
-                table.insert(posSamples, {pos = currentPos, vel = currentVel, time = currentTime})
-                if #posSamples > maxSamples then
-                    table.remove(posSamples, 1)
+                -- Check if DEAD
+                local targetChar = target.Character
+                if not targetChar then 
+                    DebugPrint("Char gone — dead")
+                    break 
                 end
 
-                -- Calculate best prediction
-                local predictedPos = currentPos
+                local targetHum = targetChar:FindFirstChildOfClass("Humanoid")
+                if not targetHum then 
+                    DebugPrint("Hum gone — dead")
+                    break 
+                end
+                if targetHum.Health <= 0 then 
+                    DebugPrint("Health 0 — dead")
+                    break 
+                end
 
-                if #posSamples >= 2 then
-                    -- Use velocity directly if available
-                    if currentVel.Magnitude > 0.1 then
-                        -- Predict 1 frame ahead (16ms)
-                        predictedPos = currentPos + (currentVel * 0.016)
-                    else
-                        -- Calculate from position history
-                        local oldest = posSamples[1]
-                        local newest = posSamples[#posSamples]
-                        local timeDiff = newest.time - oldest.time
-                        if timeDiff > 0 then
-                            local calcVel = (newest.pos - oldest.pos) / timeDiff
-                            predictedPos = currentPos + (calcVel * 0.016)
-                        end
+                -- Get FRESH HRP — direct from character, no caching
+                local targetHRP = targetChar:FindFirstChild("HumanoidRootPart")
+                if not targetHRP then 
+                    DebugPrint("HRP gone — dead")
+                    break 
+                end
+
+                -- Get CURRENT position — no prediction, just raw chase
+                local currentPos = targetHRP.Position
+
+                -- Log movement
+                if lastLogPos then
+                    local moved = (currentPos - lastLogPos).Magnitude
+                    if moved > 1 and stompCount % 20 == 0 then
+                        DebugPrint("Chasing: moved " .. string.format("%.1f", moved))
                     end
                 end
+                lastLogPos = currentPos
 
-                -- TP to predicted position — tight offset
-                myHRP.CFrame = CFrame.new(predictedPos + Vector3.new(0, 1.2, 0))
+                -- TP DIRECTLY onto them — tight offset, every frame
+                myHRP.CFrame = CFrame.new(currentPos + Vector3.new(0, 1, 0))
                 myHRP.Velocity = Vector3.new(0, 0, 0)
                 myHRP.AssemblyLinearVelocity = Vector3.new(0, 0, 0)
                 myHRP.RotVelocity = Vector3.new(0, 0, 0)
 
                 stompCount = stompCount + 1
 
-                -- Stomp multiple times per frame for reliability
+                -- Stomp EVERY frame
                 pcall(function()
                     mainRemote:FireServer("Stomp")
                 end)
 
-                -- No wait — run as fast as possible
+                -- No wait — run every RenderStepped
                 RunService.RenderStepped:Wait()
             end
+
+            DebugPrint("Stomped " .. stompCount .. " times")
         end
 
         Farm.RagebotKillCount = Farm.RagebotKillCount + 1
