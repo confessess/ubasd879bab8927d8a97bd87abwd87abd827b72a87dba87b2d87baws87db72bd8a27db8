@@ -2520,16 +2520,26 @@ function UI.Build()
             }, 0.4):Play()
             Tween(Blur, {Size = 12}, 0.35):Play()
         else
-            -- Hide everything explicitly
-            Main.Visible = false
-            Background.Visible = false
-            Body.Visible = false
-            Sidebar.Visible = false
-            Content.Visible = false
-            for _, page in pairs(Pages) do
-                page.Visible = false
-            end
-            Tween(Blur, {Size = 0}, 0.2):Play()
+            -- Closing animation — shrink and fade
+            Tween(Main, {
+                Size = UDim2.fromOffset(GUI_WIDTH * (Config.GUIScale or 1), 0),
+                BackgroundTransparency = 1,
+            }, 0.25, Enum.EasingStyle.Quint, Enum.EasingDirection.In):Play()
+            Tween(Blur, {Size = 0}, 0.25):Play()
+
+            -- Hide after animation completes
+            task.delay(0.25, function()
+                if not UI.GUIVisible then
+                    Main.Visible = false
+                    Background.Visible = false
+                    Body.Visible = false
+                    Sidebar.Visible = false
+                    Content.Visible = false
+                    for _, page in pairs(Pages) do
+                        page.Visible = false
+                    end
+                end
+            end)
         end
         UI.UpdateHotkeyDisplay()
     end

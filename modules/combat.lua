@@ -586,27 +586,18 @@ local function KarmaFireAtTarget(target, myTool, myRoot, shots)
     local targetRoot = target.Character and target.Character:FindFirstChild("HumanoidRootPart")
     if not targetHead or not targetRoot then return false end
 
-    -- INSTANT TP — no wait for aim
-    local behindPos = targetRoot.CFrame * CFrame.new(0, 0, -2)
+    local behindPos = targetRoot.CFrame * CFrame.new(0, 0, -3)
     myRoot.CFrame = CFrame.new(behindPos.Position, targetHead.Position)
-    myRoot.Velocity = Vector3.new(0, 0, 0)
-    myRoot.AssemblyLinearVelocity = Vector3.new(0, 0, 0)
 
-    -- Fire immediately — no aim wait
+    RunService.RenderStepped:Wait()
+    RunService.RenderStepped:Wait()
+
     for i = 1, shots do
         if not targetHead.Parent then return true end
-
-        -- Re-aim every shot
-        local currentHead = target.Character and target.Character:FindFirstChild("Head")
-        if currentHead then
-            myRoot.CFrame = CFrame.new(myRoot.Position, currentHead.Position)
-        end
-
         if myTool and myTool.Parent then
+            myRoot.CFrame = CFrame.new(myRoot.Position, targetHead.Position)
             myTool:Activate()
         end
-
-        -- Minimal wait — every frame
         RunService.RenderStepped:Wait()
     end
 
@@ -619,13 +610,28 @@ local function KarmaReloadGun()
     VirtualInputManager:SendKeyEvent(false, Enum.KeyCode.R, false, game)
 end
 
-local KarmaArmorPos = Vector3.new(-934.12, -25.38, 571.02)
-local KarmaCachedArmorDetector = nil
-local KarmaLastArmorTime = 0
+local function KarmaGrabArmor()
+    local armorPos = nil
+    if Combat.Config and Combat.Config.AutoArmorPos then
+        armorPos = Combat.Config.AutoArmorPos
+    else
+        armorPos = Vector3.new(-934.12, -25.38, 571.02)
+    end
 
-local function KarmaCacheArmorDetector()
-    KarmaCachedArmorDetector = nil
-    local pos = KarmaArmorPos
+    local myChar = LocalPlayer.Character
+    if not myChar then return end
+    local myRoot = myChar:FindFirstChild("HumanoidRootPart")
+    local humanoid = myChar:FindFirstChildOfClass("Humanoid")
+    if not myRoot or not humanoid then return end
+    if humanoid.Health <= 0 then return end
+
+    local originalCFrame = myRoot.CFrame
+
+    myRoot.CFrame = CFrame.new(armorPos + Vector3.new(0, 4, 0))
+    myRoot.Velocity = Vector3.new(0, 0, 0)
+    myRoot.AssemblyLinearVelocity = Vector3.new(0, 0, 0)
+
+    task.wait(0.5)
 
     for _, obj in pairs(Workspace:GetDescendants()) do
         if not obj.Parent then continue end
@@ -639,59 +645,35 @@ local function KarmaCacheArmorDetector()
         end
 
         if not parentPos then continue end
-        if (parentPos - pos).Magnitude > 25 then continue end
+        if (parentPos - armorPos).Magnitude > 25 then continue end
 
-        if obj:IsA("ClickDetector") or obj:IsA("ProximityPrompt") then
-            KarmaCachedArmorDetector = obj
+        if obj:IsA("ProximityPrompt") then
+            pcall(function()
+                if fireproximityprompt then
+                    fireproximityprompt(obj)
+                else
+                    obj:InputHoldBegin()
+                    task.wait(obj.HoldDuration + 0.1)
+                    obj:InputHoldEnd()
+                end
+            end)
+            break
+        elseif obj:IsA("ClickDetector") then
+            pcall(function()
+                if fireclickdetector then
+                    fireclickdetector(obj)
+                else
+                    obj.MouseClick:Fire()
+                end
+            end)
             break
         end
-    end
-end
-
-local function KarmaGrabArmor()
-    local now = tick()
-    if (now - KarmaLastArmorTime) < 1 then return end
-
-    local hrp = LocalPlayer.Character and LocalPlayer.Character:FindFirstChild("HumanoidRootPart")
-    local humanoid = LocalPlayer.Character and LocalPlayer.Character:FindFirstChildOfClass("Humanoid")
-    if not hrp or not humanoid then return end
-    if humanoid.Health <= 0 then return end
-
-    KarmaLastArmorTime = now
-
-    local origCF = hrp.CFrame
-    local armorPos = KarmaArmorPos
-
-    hrp.CFrame = CFrame.new(armorPos + Vector3.new(0, 4, 0))
-    hrp.Velocity = Vector3.new(0, 0, 0)
-    hrp.AssemblyLinearVelocity = Vector3.new(0, 0, 0)
-
-    task.wait(0.5)
-
-    if KarmaCachedArmorDetector then
-        pcall(function()
-            if KarmaCachedArmorDetector:IsA("ProximityPrompt") then
-                if fireproximityprompt then
-                    fireproximityprompt(KarmaCachedArmorDetector)
-                else
-                    KarmaCachedArmorDetector:InputHoldBegin()
-                    task.wait(KarmaCachedArmorDetector.HoldDuration + 0.1)
-                    KarmaCachedArmorDetector:InputHoldEnd()
-                end
-            elseif KarmaCachedArmorDetector:IsA("ClickDetector") then
-                if fireclickdetector then
-                    fireclickdetector(KarmaCachedArmorDetector)
-                else
-                    KarmaCachedArmorDetector.MouseClick:Fire()
-                end
-            end
-        end)
     end
 
     task.wait(0.3)
 
-    hrp.CFrame = origCF
-    hrp.Velocity = Vector3.new(0, 0, 0)
+    myRoot.CFrame = originalCFrame
+    myRoot.Velocity = Vector3.new(0, 0, 0)
 end
 
 local function KarmaKillTarget(target)
@@ -717,80 +699,39 @@ local function KarmaKillTarget(target)
         if killed then break end
     end
 
-    KarmaReloadGun()
-    task.wait(0.3)
+    for _, gun in pairs(KarmaGetAllGuns()) do
+        KarmaEquipTool(gun)
+        task.wait(0.1)
+        KarmaReloadGun()
+        task.wait(0.2)
+    end
     KarmaUnequipAll()
 
-    -- Grab armor after kill
-    KarmaGrabArmor()
-
     myRoot.CFrame = originalCFrame
-end
 
-local function KarmaFrameTPKill(target)
-    local myChar = LocalPlayer.Character
-    if not myChar then return end
-    local myRoot = myChar:FindFirstChild("HumanoidRootPart")
-    if not myRoot then return end
-
-    local guns = KarmaGetAllGuns()
-    if #guns == 0 then return end
-
-    local originalPos = myRoot.Position
-
-    -- FrameTP kill loop — TP to target, shoot, return to sky
-    for _, gun in pairs(guns) do
-        if KarmaIsTargetDead(target) then break end
-
-        local targetHum = target.Character and target.Character:FindFirstChildOfClass("Humanoid")
-        if not targetHum or targetHum.Health <= 0 then break end
-
-        KarmaEquipTool(gun)
-        Combat.SetupFullAuto(gun)
-
-        local shootStart = tick()
-        while tick() - shootStart < 0.5 do
-            if KarmaIsTargetDead(target) then break end
-
-            local targetHead = target.Character and target.Character:FindFirstChild("Head")
-            local targetRoot = target.Character and target.Character:FindFirstChild("HumanoidRootPart")
-            if not targetHead or not targetRoot then break end
-
-            -- FrameTP to target
-            myRoot.CFrame = targetRoot.CFrame * CFrame.new(0, 0, -2)
-            myRoot.Velocity = Vector3.new(0, 0, 0)
-            myRoot.AssemblyLinearVelocity = Vector3.new(0, 0, 0)
-
-            -- Shoot
-            if gun and gun.Parent then
-                gun:Activate()
-            end
-
-            RunService.RenderStepped:Wait()
-
-            -- Return to sky instantly
-            myRoot.CFrame = CFrame.new(originalPos)
-        end
-
-        if KarmaIsTargetDead(target) then break end
-    end
-
-    -- Auto armor in background
     task.spawn(function()
         KarmaGrabArmor()
     end)
+end
 
-    -- Reload in background
-    task.spawn(function()
-        local guns = KarmaGetAllGuns()
-        for _, gun in pairs(guns) do
-            KarmaEquipTool(gun)
-            task.wait(0.1)
-            KarmaReloadGun()
-            task.wait(0.2)
-        end
-        KarmaUnequipAll()
-    end)
+local function KarmaOnHealthChanged(health)
+    if not Combat.Config or not Combat.Config.Karma_Enabled then return end
+    if Combat.KarmaTriggered then return end
+
+    local damage = Combat.KarmaLastHealth - health
+    if damage > 0 then
+        Combat.KarmaTriggered = true
+
+        task.delay(0.05, function()
+            local shooter = KarmaIdentifyShooter()
+            if shooter then
+                KarmaKillTarget(shooter)
+            end
+            Combat.KarmaTriggered = false
+        end)
+    end
+
+    Combat.KarmaLastHealth = health
 end
 
 local function KarmaSetupCharacter(character)
@@ -807,7 +748,6 @@ function Combat.SetKarmaEnabled(enabled)
     if Combat.Config then
         Combat.Config.Karma_Enabled = enabled
         Combat.KarmaTriggered = false
-        -- Re-setup character connection if enabling
         if enabled and LocalPlayer.Character then
             local humanoid = LocalPlayer.Character:FindFirstChildOfClass("Humanoid")
             if humanoid then
@@ -815,100 +755,6 @@ function Combat.SetKarmaEnabled(enabled)
             end
         end
     end
-end
-
-local function KarmaOnHealthChanged(health)
-    if not Combat.Config or not Combat.Config.Karma_Enabled then 
-        return 
-    end
-    if Combat.KarmaTriggered then 
-        return 
-    end
-
-    local damage = Combat.KarmaLastHealth - health
-    if damage > 0 then
-        print("[Karma] Damage taken: " .. damage)
-        Combat.KarmaTriggered = true
-
-        -- TP away
-        local myChar = LocalPlayer.Character
-        local myRoot = myChar and myChar:FindFirstChild("HumanoidRootPart")
-        if myRoot then
-            print("[Karma] TP to sky")
-            myRoot.CFrame = CFrame.new(myRoot.Position + Vector3.new(0, 500, 0))
-            myRoot.Velocity = Vector3.new(0, 0, 0)
-            myRoot.AssemblyLinearVelocity = Vector3.new(0, 0, 0)
-        end
-
-        task.spawn(function()
-            print("[Karma] Identifying shooter...")
-            local shooter = KarmaIdentifyShooter()
-            if shooter then
-                print("[Karma] Found shooter: " .. shooter.Player.Name)
-                KarmaFrameTPKill(shooter)
-                print("[Karma] Kill complete")
-            else
-                print("[Karma] No shooter found!")
-            end
-
-            -- TP back
-            if myRoot and myRoot.Parent then
-                myRoot.CFrame = CFrame.new(myRoot.Position - Vector3.new(0, 500, 0))
-                print("[Karma] TP back down")
-            end
-
-            Combat.KarmaTriggered = false
-        end)
-    end
-
-    Combat.KarmaLastHealth = health
-end
-
-local function KarmaOnHealthChanged(health)
-    if not Combat.Config or not Combat.Config.Karma_Enabled then 
-        return 
-    end
-    if Combat.KarmaTriggered then 
-        return 
-    end
-
-    local damage = Combat.KarmaLastHealth - health
-    if damage > 0 then
-        print("[Karma] Damage taken: " .. damage)
-        Combat.KarmaTriggered = true
-
-        -- TP away
-        local myChar = LocalPlayer.Character
-        local myRoot = myChar and myChar:FindFirstChild("HumanoidRootPart")
-        if myRoot then
-            print("[Karma] TP to sky")
-            myRoot.CFrame = CFrame.new(myRoot.Position + Vector3.new(0, 500, 0))
-            myRoot.Velocity = Vector3.new(0, 0, 0)
-            myRoot.AssemblyLinearVelocity = Vector3.new(0, 0, 0)
-        end
-
-        task.spawn(function()
-            print("[Karma] Identifying shooter...")
-            local shooter = KarmaIdentifyShooter()
-            if shooter then
-                print("[Karma] Found shooter: " .. shooter.Player.Name)
-                KarmaFrameTPKill(shooter)
-                print("[Karma] Kill complete")
-            else
-                print("[Karma] No shooter found!")
-            end
-
-            -- TP back
-            if myRoot and myRoot.Parent then
-                myRoot.CFrame = CFrame.new(myRoot.Position - Vector3.new(0, 500, 0))
-                print("[Karma] TP back down")
-            end
-
-            Combat.KarmaTriggered = false
-        end)
-    end
-
-    Combat.KarmaLastHealth = health
 end
 
 -- ═════════════════════════════════════════════════════════════════════════════
