@@ -449,18 +449,20 @@ local function RagebotFrameTPStompKill(target)
             local currentHead = GetTargetHead(target)
             local currentHRP = GetTargetHRP(target)
             if currentHead and currentHRP then
-                -- Get direction FROM target TO us (behind them)
+                -- Direction behind target
                 local targetLook = currentHead.CFrame.LookVector
-                local behindDirection = -targetLook -- Opposite of where they're facing
+                local behindDirection = -targetLook
 
-                -- TP 0.5 studs behind their head
-                local behindPos = currentHead.Position + (behindDirection * 0.5)
+                -- TP 2 studs behind target
+                local behindPos = currentHead.Position + (behindDirection * 2)
                 myHRP.CFrame = CFrame.new(behindPos, currentHead.Position)
                 myHRP.Velocity = Vector3.new(0, 0, 0)
                 myHRP.AssemblyLinearVelocity = Vector3.new(0, 0, 0)
 
-                -- Camera at our position looking AT their head
-                Camera.CFrame = CFrame.new(behindPos, currentHead.Position)
+                -- Camera 1.5 studs behind target — target head is between camera and our character
+                -- This means bullets travel: camera -> target head -> our character
+                local camPos = currentHead.Position + (behindDirection * 1.5)
+                Camera.CFrame = CFrame.new(camPos, behindPos) -- Look back towards our character
             end
 
             if gun and gun.Parent then
