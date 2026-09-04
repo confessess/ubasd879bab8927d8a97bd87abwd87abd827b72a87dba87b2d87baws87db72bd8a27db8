@@ -779,8 +779,8 @@ function UI.Build()
         Corner(header, 8)
 
         local open = false
-        local itemHeight = 28
-        local maxVisible = 8
+        local itemHeight = 36
+        local maxVisible = 3
         local listHeight = math.min(#options, maxVisible) * itemHeight
 
         -- Parent to same card, position below header — scrolls with page
