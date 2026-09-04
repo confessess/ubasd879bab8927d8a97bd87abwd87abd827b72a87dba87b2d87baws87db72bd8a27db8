@@ -98,6 +98,27 @@ local LastManualJump = 0
 local LastNoJumpCD = 0
 local CooldownWasDisabled = false
 local OriginalJumpHeight = nil
+local OriginalJumpPower = nil
+local WasOnGround = true
+
+local function DoRealisticJump(root, hum)
+    -- Calculate jump velocity like Roblox does
+    -- JumpPower 50 = ~7.5 studs jump height
+    -- Use proper physics: v = sqrt(2 * g * h)
+    local jumpHeight = 7.2 -- Default Roblox jump height in studs
+    local gravity = Workspace.Gravity -- Usually 196.2
+    local jumpVelocity = math.sqrt(2 * gravity * jumpHeight)
+
+    -- Apply velocity with slight randomization for realism
+    local randomX = (math.random() - 0.5) * 0.1
+    local randomZ = (math.random() - 0.5) * 0.1
+
+    root.AssemblyLinearVelocity = Vector3.new(
+        root.AssemblyLinearVelocity.X + randomX,
+        jumpVelocity,
+        root.AssemblyLinearVelocity.Z + randomZ
+    )
+end
 
 local function DoNoJumpCooldown()
     local Config = Movement.Config
@@ -107,15 +128,17 @@ local function DoNoJumpCooldown()
     local root = char:FindFirstChild("HumanoidRootPart")
     if not hum or not root then return end
 
-    -- Save original jump height on first run
+    -- Save original values on first run
     if OriginalJumpHeight == nil then
         OriginalJumpHeight = hum.JumpHeight
+        OriginalJumpPower = hum.JumpPower
     end
 
     if not Config.Move_NoJumpCooldown then
-        -- Restore cooldown if it was disabled
+        -- Restore original jump feel
         if CooldownWasDisabled then
             hum.JumpHeight = OriginalJumpHeight
+            hum.JumpPower = OriginalJumpPower
             CooldownWasDisabled = false
         end
         return
@@ -123,45 +146,38 @@ local function DoNoJumpCooldown()
 
     if hum.Health <= 0 then return end
 
-    -- Disable cooldown by setting jump height to 0 and using velocity
+    -- Disable default jump, use custom
     if not CooldownWasDisabled then
         hum.JumpHeight = 0
+        hum.JumpPower = 0
         CooldownWasDisabled = true
     end
 
-    -- Detect Space press
-    if UserInputService:IsKeyDown(Enum.KeyCode.Space) then
+    -- Detect ground state
+    local onGround = hum.FloorMaterial ~= Enum.Material.Air
+
+    -- Detect Space press with edge detection (only on new press)
+    local spacePressed = UserInputService:IsKeyDown(Enum.KeyCode.Space)
+
+    if spacePressed and onGround and WasOnGround then
         local now = tick()
-        if now - LastNoJumpCD > 0.05 then
-            local onGround = hum.FloorMaterial ~= Enum.Material.Air
-
-            if onGround then
-                -- Jump with REGULAR height (50, not JumpPower)
-                root.AssemblyLinearVelocity = Vector3.new(
-                    root.AssemblyLinearVelocity.X, 
-                    50, -- Regular jump height
-                    root.AssemblyLinearVelocity.Z
-                )
-                LastNoJumpCD = now
-            else
-                -- Near ground — raycast check
-                local raycastParams = RaycastParams.new()
-                raycastParams.FilterDescendantsInstances = {char}
-                raycastParams.FilterType = Enum.RaycastFilterType.Blacklist
-                local rayResult = Workspace:Raycast(root.Position, Vector3.new(0, -3, 0), raycastParams)
-
-                if rayResult then
-                    root.AssemblyLinearVelocity = Vector3.new(
-                        root.AssemblyLinearVelocity.X, 
-                        50, -- Regular jump height
-                        root.AssemblyLinearVelocity.Z
-                    )
-                    LastNoJumpCD = now
-                end
-            end
+        if now - LastNoJumpCD > 0.03 then -- Small buffer
+            DoRealisticJump(root, hum)
+            LastNoJumpCD = now
+            WasOnGround = false -- Prevent double jump while holding
         end
-    else
+    elseif not spacePressed then
+        WasOnGround = true -- Reset when Space released
         LastNoJumpCD = 0
+    end
+
+    -- If landed and still holding space, jump again (for held space)
+    if onGround and spacePressed and not WasOnGround then
+        local now = tick()
+        if now - LastNoJumpCD > 0.1 then -- Slightly longer for held space
+            DoRealisticJump(root, hum)
+            LastNoJumpCD = now
+        end
     end
 end
 
@@ -201,16 +217,11 @@ local function DoBunnyHop()
 
     if not isMoving then return end
 
-    -- Auto jump when on ground — no cooldown, regular height
+    -- Auto jump when on ground — realistic feel, no cooldown
     if hum.FloorMaterial ~= Enum.Material.Air then
         local now = tick()
-        if now - LastBhopJump > 0.02 then -- Minimal delay
-            -- Direct velocity jump — no cooldown
-            root.AssemblyLinearVelocity = Vector3.new(
-                root.AssemblyLinearVelocity.X, 
-                50, -- Regular jump height
-                root.AssemblyLinearVelocity.Z
-            )
+        if now - LastBhopJump > 0.03 then
+            DoRealisticJump(root, hum)
             LastBhopJump = now
         end
     end
