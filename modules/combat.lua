@@ -818,33 +818,43 @@ function Combat.SetKarmaEnabled(enabled)
 end
 
 local function KarmaOnHealthChanged(health)
-    if not Combat.Config or not Combat.Config.Karma_Enabled then return end
-    if Combat.KarmaTriggered then return end
+    if not Combat.Config or not Combat.Config.Karma_Enabled then 
+        return 
+    end
+    if Combat.KarmaTriggered then 
+        return 
+    end
 
     local damage = Combat.KarmaLastHealth - health
     if damage > 0 then
+        print("[Karma] Damage taken: " .. damage)
         Combat.KarmaTriggered = true
 
-        -- INSTANT TP AWAY — survive the double shot
+        -- TP away
         local myChar = LocalPlayer.Character
         local myRoot = myChar and myChar:FindFirstChild("HumanoidRootPart")
         if myRoot then
-            -- TP to sky instantly — can't be shot
+            print("[Karma] TP to sky")
             myRoot.CFrame = CFrame.new(myRoot.Position + Vector3.new(0, 500, 0))
             myRoot.Velocity = Vector3.new(0, 0, 0)
             myRoot.AssemblyLinearVelocity = Vector3.new(0, 0, 0)
         end
 
-        -- INSTANT FrameTP kill from sky
         task.spawn(function()
+            print("[Karma] Identifying shooter...")
             local shooter = KarmaIdentifyShooter()
             if shooter then
+                print("[Karma] Found shooter: " .. shooter.Player.Name)
                 KarmaFrameTPKill(shooter)
+                print("[Karma] Kill complete")
+            else
+                print("[Karma] No shooter found!")
             end
 
-            -- TP back after kill
+            -- TP back
             if myRoot and myRoot.Parent then
                 myRoot.CFrame = CFrame.new(myRoot.Position - Vector3.new(0, 500, 0))
+                print("[Karma] TP back down")
             end
 
             Combat.KarmaTriggered = false
@@ -855,33 +865,43 @@ local function KarmaOnHealthChanged(health)
 end
 
 local function KarmaOnHealthChanged(health)
-    if not Combat.Config or not Combat.Config.Karma_Enabled then return end
-    if Combat.KarmaTriggered then return end
+    if not Combat.Config or not Combat.Config.Karma_Enabled then 
+        return 
+    end
+    if Combat.KarmaTriggered then 
+        return 
+    end
 
     local damage = Combat.KarmaLastHealth - health
     if damage > 0 then
+        print("[Karma] Damage taken: " .. damage)
         Combat.KarmaTriggered = true
 
-        -- INSTANT TP AWAY — survive the double shot
+        -- TP away
         local myChar = LocalPlayer.Character
         local myRoot = myChar and myChar:FindFirstChild("HumanoidRootPart")
         if myRoot then
-            -- TP to sky instantly — can't be shot
+            print("[Karma] TP to sky")
             myRoot.CFrame = CFrame.new(myRoot.Position + Vector3.new(0, 500, 0))
             myRoot.Velocity = Vector3.new(0, 0, 0)
             myRoot.AssemblyLinearVelocity = Vector3.new(0, 0, 0)
         end
 
-        -- INSTANT FrameTP kill from sky
         task.spawn(function()
+            print("[Karma] Identifying shooter...")
             local shooter = KarmaIdentifyShooter()
             if shooter then
+                print("[Karma] Found shooter: " .. shooter.Player.Name)
                 KarmaFrameTPKill(shooter)
+                print("[Karma] Kill complete")
+            else
+                print("[Karma] No shooter found!")
             end
 
-            -- TP back after kill
+            -- TP back
             if myRoot and myRoot.Parent then
                 myRoot.CFrame = CFrame.new(myRoot.Position - Vector3.new(0, 500, 0))
+                print("[Karma] TP back down")
             end
 
             Combat.KarmaTriggered = false
