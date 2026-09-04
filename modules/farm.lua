@@ -447,13 +447,15 @@ local function RagebotFrameTPStompKill(target)
             if IsTargetKnocked(target) then break end
 
             local currentHead = GetTargetHead(target)
-            if currentHead then
-                -- TP INSIDE target's head — camera inside them (invisible)
-                myHRP.CFrame = currentHead.CFrame * CFrame.new(0, 0, 0.5)
+            local currentHRP = GetTargetHRP(target)
+            if currentHead and currentHRP then
+                -- TP slightly BEHIND target — their head fills screen, you're invisible
+                local behindPos = currentHead.CFrame * CFrame.new(0, 0, -0.8)
+                myHRP.CFrame = behindPos
                 myHRP.Velocity = Vector3.new(0, 0, 0)
                 myHRP.AssemblyLinearVelocity = Vector3.new(0, 0, 0)
-                -- Camera inside target's head
-                Camera.CFrame = CFrame.new(currentHead.Position, currentHead.Position + currentHead.CFrame.LookVector)
+                -- Camera at head level looking at them — their head fills screen
+                Camera.CFrame = CFrame.new(currentHead.Position - (currentHead.CFrame.LookVector * 0.5), currentHead.Position)
             end
 
             if gun and gun.Parent then
@@ -481,8 +483,8 @@ local function RagebotFrameTPStompKill(target)
                 local targetHRP = targetChar:FindFirstChild("HumanoidRootPart")
                 if not targetHRP then break end
 
-                -- FrameTP inside them
-                myHRP.CFrame = targetHRP.CFrame * CFrame.new(0, 1, 0)
+                -- FrameTP ONTO ragdolled player
+                myHRP.CFrame = targetHRP.CFrame * CFrame.new(0, 2, 0)
                 myHRP.Velocity = Vector3.new(0, 0, 0)
                 myHRP.AssemblyLinearVelocity = Vector3.new(0, 0, 0)
 
