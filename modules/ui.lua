@@ -19,8 +19,117 @@ local UI = {
     KeybindButtons = {},
 }
 
-local PURPLE = Color3.fromRGB(145, 75, 255)
-local PURPLE_LIGHT = Color3.fromRGB(195, 140, 255)
+local Themes = {
+    Palettes = {
+        Purple = {
+            Accent = Color3.fromRGB(145, 75, 255),
+            AccentLight = Color3.fromRGB(195, 140, 255),
+            BgMain = Color3.fromRGB(9, 6, 15),
+            BgCard = Color3.fromRGB(18, 11, 27),
+            BgSidebar = Color3.fromRGB(16, 10, 24),
+            BgBackdrop = Color3.fromRGB(4, 3, 9),
+            BgHotkey = Color3.fromRGB(15, 9, 23),
+            BgPicker = Color3.fromRGB(14, 9, 22),
+            BgList = Color3.fromRGB(12, 8, 18),
+            TextTitle = Color3.fromRGB(245, 238, 250),
+            TextSubtitle = Color3.fromRGB(145, 125, 165),
+            TextPageTitle = Color3.fromRGB(245, 240, 250),
+            TextPageDesc = Color3.fromRGB(135, 120, 150),
+            TextLabel = Color3.fromRGB(200, 190, 215),
+            TextSection = Color3.fromRGB(245, 220, 255),
+            TextTabInactive = Color3.fromRGB(145, 135, 160),
+            TextTabActive = Color3.fromRGB(235, 220, 255),
+            TextHotkey = Color3.fromRGB(195, 175, 220),
+            StrokeMain = Color3.fromRGB(180, 120, 255),
+            StrokeCard = Color3.fromRGB(140, 90, 200),
+            StrokeInput = Color3.fromRGB(80, 60, 100),
+            ToggleOff = Color3.fromRGB(50, 50, 60),
+            SliderTrack = Color3.fromRGB(40, 40, 50),
+            CloseBtn = Color3.fromRGB(145, 45, 175),
+            PanicBtn = Color3.fromRGB(200, 50, 50),
+            KeybindBg = Color3.fromRGB(45, 65, 110),
+            UnbindBg = Color3.fromRGB(80, 80, 90),
+            DropdownBg = Color3.fromRGB(22, 14, 32),
+            DropdownItem = Color3.fromRGB(30, 20, 42),
+            Gradient0 = Color3.fromRGB(22, 8, 38),
+            Gradient50 = Color3.fromRGB(5, 3, 10),
+            Gradient100 = Color3.fromRGB(27, 7, 45),
+            Stars = Color3.fromRGB(220, 195, 255),
+            Scrollbar = Color3.fromRGB(145, 75, 255),
+            Separator = Color3.fromRGB(60, 40, 80),
+            DropdownText = Color3.fromRGB(220, 215, 235),
+            DropdownOption = Color3.fromRGB(180, 170, 200),
+            DropdownHover = Color3.fromRGB(235, 220, 255),
+            PickerLabel = Color3.fromRGB(160, 150, 175),
+            ArmorPos = Color3.fromRGB(130, 130, 150),
+            SetPosBtn = Color3.fromRGB(80, 60, 120),
+            ActionBtnText = Color3.fromRGB(255, 250, 255),
+            CloseBtnText = Color3.fromRGB(255, 245, 255),
+            KeybindText = Color3.fromRGB(180, 180, 200),
+            UnbindText = Color3.fromRGB(200, 200, 210),
+            HelpText = Color3.fromRGB(140, 130, 155),
+            ErrorRed = Color3.fromRGB(255, 80, 80),
+            SuccessGreen = Color3.fromRGB(80, 255, 80),
+        },
+        Monochrome = {
+            Accent = Color3.fromRGB(255, 255, 255),
+            AccentLight = Color3.fromRGB(255, 255, 255),
+            BgMain = Color3.fromRGB(0, 0, 0),
+            BgCard = Color3.fromRGB(0, 0, 0),
+            BgSidebar = Color3.fromRGB(0, 0, 0),
+            BgBackdrop = Color3.fromRGB(0, 0, 0),
+            BgHotkey = Color3.fromRGB(0, 0, 0),
+            BgPicker = Color3.fromRGB(0, 0, 0),
+            BgList = Color3.fromRGB(0, 0, 0),
+            TextTitle = Color3.fromRGB(255, 255, 255),
+            TextSubtitle = Color3.fromRGB(150, 150, 150),
+            TextPageTitle = Color3.fromRGB(255, 255, 255),
+            TextPageDesc = Color3.fromRGB(150, 150, 150),
+            TextLabel = Color3.fromRGB(200, 200, 200),
+            TextSection = Color3.fromRGB(255, 255, 255),
+            TextTabInactive = Color3.fromRGB(160, 160, 160),
+            TextTabActive = Color3.fromRGB(255, 255, 255),
+            TextHotkey = Color3.fromRGB(180, 180, 180),
+            StrokeMain = Color3.fromRGB(255, 255, 255),
+            StrokeCard = Color3.fromRGB(200, 200, 200),
+            StrokeInput = Color3.fromRGB(120, 120, 120),
+            ToggleOff = Color3.fromRGB(80, 80, 80),
+            SliderTrack = Color3.fromRGB(50, 50, 50),
+            CloseBtn = Color3.fromRGB(255, 255, 255),
+            PanicBtn = Color3.fromRGB(200, 50, 50),
+            KeybindBg = Color3.fromRGB(255, 255, 255),
+            UnbindBg = Color3.fromRGB(120, 120, 120),
+            DropdownBg = Color3.fromRGB(0, 0, 0),
+            DropdownItem = Color3.fromRGB(0, 0, 0),
+            Gradient0 = Color3.fromRGB(0, 0, 0),
+            Gradient50 = Color3.fromRGB(0, 0, 0),
+            Gradient100 = Color3.fromRGB(0, 0, 0),
+            Stars = Color3.fromRGB(255, 255, 255),
+            Scrollbar = Color3.fromRGB(255, 255, 255),
+            Separator = Color3.fromRGB(255, 255, 255),
+            DropdownText = Color3.fromRGB(255, 255, 255),
+            DropdownOption = Color3.fromRGB(180, 180, 180),
+            DropdownHover = Color3.fromRGB(255, 255, 255),
+            PickerLabel = Color3.fromRGB(160, 160, 160),
+            ArmorPos = Color3.fromRGB(140, 140, 140),
+            SetPosBtn = Color3.fromRGB(255, 255, 255),
+            ActionBtnText = Color3.fromRGB(0, 0, 0),
+            CloseBtnText = Color3.fromRGB(0, 0, 0),
+            KeybindText = Color3.fromRGB(0, 0, 0),
+            UnbindText = Color3.fromRGB(0, 0, 0),
+            HelpText = Color3.fromRGB(150, 150, 150),
+            ErrorRed = Color3.fromRGB(255, 80, 80),
+            SuccessGreen = Color3.fromRGB(80, 255, 80),
+        },
+    },
+    Names = {"Purple", "Monochrome"},
+}
+
+function Themes.Get(name)
+    return Themes.Palettes[name] or Themes.Palettes.Purple
+end
+
+local Theme = nil
 
 local function New(className, properties, parent)
     local object = Instance.new(className)
@@ -37,7 +146,7 @@ end
 
 local function Stroke(parent, transparency, thickness, color)
     return New("UIStroke", {
-        Color = color or Color3.fromRGB(180, 120, 255),
+        Color = color or Theme.StrokeMain,
         Transparency = transparency or 0.72,
         Thickness = thickness or 1,
     }, parent)
@@ -120,7 +229,7 @@ function UI.UpdateHotkeyDisplay()
             Position = UDim2.fromOffset(8, y),
             BackgroundTransparency = 1,
             Text = text,
-            TextColor3 = Color3.fromRGB(195, 175, 220),
+            TextColor3 = Theme.TextHotkey,
             TextSize = 10,
             Font = Enum.Font.GothamMedium,
             TextXAlignment = Enum.TextXAlignment.Left,
@@ -147,6 +256,7 @@ end
 
 function UI.Build()
     local Config = UI.Config
+    Theme = Themes.Get(Config.GUIThemeName or "Purple")
     if not Config then return end
     UI.ToggleCallbacks = {}
     UI.KeybindButtons = {}
@@ -164,7 +274,7 @@ function UI.Build()
     local Background = New("Frame", {
         Name = "Background",
         Size = UDim2.fromScale(1, 1),
-        BackgroundColor3 = Color3.fromRGB(4, 3, 9),
+        BackgroundColor3 = Theme.BgBackdrop,
         BackgroundTransparency = 0.08,
         BorderSizePixel = 0,
         ZIndex = 1,
@@ -173,9 +283,9 @@ function UI.Build()
     New("UIGradient", {
         Rotation = 35,
         Color = ColorSequence.new({
-            ColorSequenceKeypoint.new(0, Color3.fromRGB(22, 8, 38)),
-            ColorSequenceKeypoint.new(0.5, Color3.fromRGB(5, 3, 10)),
-            ColorSequenceKeypoint.new(1, Color3.fromRGB(27, 7, 45)),
+            ColorSequenceKeypoint.new(0, Theme.Gradient0),
+            ColorSequenceKeypoint.new(0.5, Theme.Gradient50),
+            ColorSequenceKeypoint.new(1, Theme.Gradient100),
         }),
     }, Background)
     local StarContainer = New("Frame", {
@@ -190,7 +300,7 @@ function UI.Build()
         local star = New("Frame", {
             Size = UDim2.fromOffset(size, size),
             Position = UDim2.fromScale(math.random(), math.random()),
-            BackgroundColor3 = Color3.fromRGB(220, 195, 255),
+            BackgroundColor3 = Theme.Stars,
             BackgroundTransparency = math.random(20, 90) / 100,
             BorderSizePixel = 0,
             ZIndex = 2,
@@ -216,7 +326,7 @@ function UI.Build()
         Size = UDim2.fromOffset(GUI_WIDTH, GUI_HEIGHT),
         Position = UDim2.fromScale(0.5, 0.5),
         AnchorPoint = Vector2.new(0.5, 0.5),
-        BackgroundColor3 = Color3.fromRGB(9, 6, 15),
+        BackgroundColor3 = Theme.BgMain,
         BackgroundTransparency = 0.04,
         BorderSizePixel = 0,
         ZIndex = 10,
@@ -230,7 +340,7 @@ function UI.Build()
     New("Frame", {
         Size = UDim2.new(1, -40, 0, 1),
         Position = UDim2.fromOffset(20, 1),
-        BackgroundColor3 = Color3.fromRGB(195, 140, 255),
+        BackgroundColor3 = Theme.AccentLight,
         BackgroundTransparency = 0.5,
         BorderSizePixel = 0,
         ZIndex = 11,
@@ -276,7 +386,7 @@ function UI.Build()
         Position = UDim2.fromOffset(8, 3),
         BackgroundTransparency = 1,
         Text = "Stars.cc",
-        TextColor3 = Color3.fromRGB(245, 238, 250),
+        TextColor3 = Theme.TextTitle,
         TextSize = 20,
         Font = Enum.Font.GothamBold,
         TextXAlignment = Enum.TextXAlignment.Left,
@@ -287,7 +397,7 @@ function UI.Build()
         Position = UDim2.fromOffset(9, 30),
         BackgroundTransparency = 1,
         Text = "Made by confess",
-        TextColor3 = Color3.fromRGB(145, 125, 165),
+        TextColor3 = Theme.TextSubtitle,
         TextSize = 9,
         Font = Enum.Font.GothamMedium,
         TextXAlignment = Enum.TextXAlignment.Left,
@@ -296,11 +406,11 @@ function UI.Build()
     local CloseBtn = New("TextButton", {
         Size = UDim2.fromOffset(34, 34),
         Position = UDim2.new(1, -34, 0, 7),
-        BackgroundColor3 = Color3.fromRGB(145, 45, 175),
+        BackgroundColor3 = Theme.CloseBtn,
         BackgroundTransparency = 0.2,
         BorderSizePixel = 0,
         Text = "×",
-        TextColor3 = Color3.fromRGB(255, 245, 255),
+        TextColor3 = Theme.CloseBtnText,
         TextSize = 20,
         Font = Enum.Font.GothamBold,
         AutoButtonColor = false,
@@ -316,7 +426,7 @@ function UI.Build()
     local Sidebar = New("Frame", {
         Size = UDim2.new(0, 175, 1, 0),
         Position = UDim2.fromOffset(0, 0),
-        BackgroundColor3 = Color3.fromRGB(16, 10, 24),
+        BackgroundColor3 = Theme.BgSidebar,
         BackgroundTransparency = 0.1,
         BorderSizePixel = 0,
         ZIndex = 13,
@@ -337,11 +447,11 @@ function UI.Build()
         local button = New("TextButton", {
             Size = UDim2.new(1, -32, 0, 43),
             Position = UDim2.fromOffset(22, 12 + ((index - 1) * 50)),
-            BackgroundColor3 = PURPLE,
+            BackgroundColor3 = Theme.Accent,
             BackgroundTransparency = 1,
             BorderSizePixel = 0,
             Text = name,
-            TextColor3 = Color3.fromRGB(145, 135, 160),
+            TextColor3 = Theme.TextTabInactive,
             TextSize = 12,
             Font = Enum.Font.GothamMedium,
             TextXAlignment = Enum.TextXAlignment.Left,
@@ -353,7 +463,7 @@ function UI.Build()
         local indicator = New("Frame", {
             Size = UDim2.fromOffset(3, 18),
             Position = UDim2.new(0, 8, 0, 25 + ((index - 1) * 50)),
-            BackgroundColor3 = PURPLE_LIGHT,
+            BackgroundColor3 = Theme.AccentLight,
             BackgroundTransparency = 1,
             BorderSizePixel = 0,
             ZIndex = 20,
@@ -375,7 +485,7 @@ function UI.Build()
             Position = UDim2.fromOffset(10, 7),
             BackgroundTransparency = 1,
             Text = title,
-            TextColor3 = Color3.fromRGB(245, 240, 250),
+            TextColor3 = Theme.TextPageTitle,
             TextSize = 21,
             Font = Enum.Font.GothamBold,
             TextXAlignment = Enum.TextXAlignment.Left,
@@ -386,7 +496,7 @@ function UI.Build()
             Position = UDim2.fromOffset(10, 35),
             BackgroundTransparency = 1,
             Text = description,
-            TextColor3 = Color3.fromRGB(135, 120, 150),
+            TextColor3 = Theme.TextPageDesc,
             TextSize = 10,
             Font = Enum.Font.GothamMedium,
             TextXAlignment = Enum.TextXAlignment.Left,
@@ -397,7 +507,7 @@ function UI.Build()
         New("Frame", {
             Size = UDim2.new(1, -20, 0, 1),
             Position = UDim2.fromOffset(10, y),
-            BackgroundColor3 = Color3.fromRGB(60, 40, 80),
+            BackgroundColor3 = Theme.Separator,
             BackgroundTransparency = 0.5,
             BorderSizePixel = 0,
             ZIndex = 16,
@@ -408,7 +518,7 @@ function UI.Build()
         local card = New("Frame", {
             Size = size,
             Position = position,
-            BackgroundColor3 = Color3.fromRGB(18, 11, 27),
+            BackgroundColor3 = Theme.BgCard,
             BackgroundTransparency = 0.08,
             BorderSizePixel = 0,
             ZIndex = 15,
@@ -430,7 +540,7 @@ function UI.Build()
             Size = UDim2.new(1, -labelWidth, 1, 0),
             BackgroundTransparency = 1,
             Text = text,
-            TextColor3 = Color3.fromRGB(200, 190, 215),
+            TextColor3 = Theme.TextLabel,
             TextSize = 12,
             Font = Enum.Font.GothamMedium,
             TextXAlignment = Enum.TextXAlignment.Left,
@@ -441,11 +551,11 @@ function UI.Build()
             local keyBtn = New("TextButton", {
                 Size = UDim2.fromOffset(44, 20),
                 Position = UDim2.new(1, -102, 0.5, -10),
-                BackgroundColor3 = Color3.fromRGB(45, 65, 110),
+                BackgroundColor3 = Theme.KeybindBg,
                 BackgroundTransparency = 0.2,
                 BorderSizePixel = 0,
                 Text = keybindKey and FormatKeyName(keybindKey) or "—",
-                TextColor3 = Color3.fromRGB(180, 180, 200),
+                TextColor3 = Theme.KeybindText,
                 TextSize = 10,
                 Font = Enum.Font.GothamBold,
                 AutoButtonColor = false,
@@ -464,11 +574,11 @@ function UI.Build()
             local unbindBtn = New("TextButton", {
                 Size = UDim2.fromOffset(20, 20),
                 Position = UDim2.new(1, -126, 0.5, -10),
-                BackgroundColor3 = Color3.fromRGB(80, 80, 90),
+                BackgroundColor3 = Theme.UnbindBg,
                 BackgroundTransparency = 0.3,
                 BorderSizePixel = 0,
                 Text = "−",
-                TextColor3 = Color3.fromRGB(200, 200, 210),
+                TextColor3 = Theme.UnbindText,
                 TextSize = 14,
                 Font = Enum.Font.GothamBold,
                 AutoButtonColor = false,
@@ -484,7 +594,7 @@ function UI.Build()
         local toggle = New("TextButton", {
             Size = UDim2.fromOffset(44, 22),
             Position = UDim2.new(1, -50, 0.5, -11),
-            BackgroundColor3 = default and PURPLE or Color3.fromRGB(50, 50, 60),
+            BackgroundColor3 = default and Theme.Accent or Theme.ToggleOff,
             BorderSizePixel = 0,
             Text = "",
             AutoButtonColor = false,
@@ -502,7 +612,7 @@ function UI.Build()
         local state = default
         local function setState(newState)
             state = newState
-            Tween(toggle, {BackgroundColor3 = state and PURPLE or Color3.fromRGB(50, 50, 60)}, 0.2):Play()
+            Tween(toggle, {BackgroundColor3 = state and Theme.Accent or Theme.ToggleOff}, 0.2):Play()
             Tween(knob, {Position = state and UDim2.new(1, -20, 0.5, -9) or UDim2.new(0, 2, 0.5, -9)}, 0.2):Play()
             callback(state)
         end
@@ -525,7 +635,7 @@ function UI.Build()
             Size = UDim2.new(1, 0, 0, 20),
             BackgroundTransparency = 1,
             Text = text .. " [" .. default .. "]",
-            TextColor3 = Color3.fromRGB(200, 190, 215),
+            TextColor3 = Theme.TextLabel,
             TextSize = 12,
             Font = Enum.Font.GothamMedium,
             TextXAlignment = Enum.TextXAlignment.Left,
@@ -534,14 +644,14 @@ function UI.Build()
         local track = New("Frame", {
             Size = UDim2.new(1, 0, 0, 5),
             Position = UDim2.new(0, 0, 0, 30),
-            BackgroundColor3 = Color3.fromRGB(40, 40, 50),
+            BackgroundColor3 = Theme.SliderTrack,
             BorderSizePixel = 0,
             ZIndex = 17,
         }, frame)
         Corner(track, 3)
         local fill = New("Frame", {
             Size = UDim2.new((default - min) / (max - min), 0, 1, 0),
-            BackgroundColor3 = PURPLE,
+            BackgroundColor3 = Theme.Accent,
             BorderSizePixel = 0,
             ZIndex = 18,
         }, track)
@@ -575,11 +685,11 @@ function UI.Build()
         local btn = New("TextButton", {
             Size = UDim2.new(1, -20, 0, 30),
             Position = UDim2.fromOffset(10, y),
-            BackgroundColor3 = PURPLE,
+            BackgroundColor3 = Theme.Accent,
             BackgroundTransparency = 0.18,
             BorderSizePixel = 0,
             Text = text,
-            TextColor3 = Color3.fromRGB(255, 250, 255),
+            TextColor3 = Theme.ActionBtnText,
             TextSize = 12,
             Font = Enum.Font.GothamBold,
             AutoButtonColor = false,
@@ -602,7 +712,7 @@ function UI.Build()
             Position = UDim2.fromOffset(10, y),
             BackgroundTransparency = 1,
             Text = labelText,
-            TextColor3 = Color3.fromRGB(200, 190, 215),
+            TextColor3 = Theme.TextLabel,
             TextSize = 12,
             Font = Enum.Font.GothamMedium,
             TextXAlignment = Enum.TextXAlignment.Left,
@@ -611,20 +721,20 @@ function UI.Build()
         local container = New("Frame", {
             Size = UDim2.new(1, -20, 0, 32),
             Position = UDim2.fromOffset(10, y + 24),
-            BackgroundColor3 = Color3.fromRGB(22, 14, 32),
+            BackgroundColor3 = Theme.DropdownBg,
             BackgroundTransparency = 0.15,
             BorderSizePixel = 0,
             ZIndex = 16,
         }, parent)
         Corner(container, 8)
-        Stroke(container, 0.85, 1, Color3.fromRGB(140, 90, 200))
+        Stroke(container, 0.85, 1, Theme.StrokeCard)
         local header = New("TextButton", {
             Size = UDim2.new(1, 0, 0, 32),
-            BackgroundColor3 = Color3.fromRGB(22, 14, 32),
+            BackgroundColor3 = Theme.DropdownBg,
             BackgroundTransparency = 0,
             BorderSizePixel = 0,
             Text = "  " .. currentValue .. "  ▼",
-            TextColor3 = Color3.fromRGB(220, 215, 235),
+            TextColor3 = Theme.DropdownText,
             TextSize = 12,
             Font = Enum.Font.GothamMedium,
             TextXAlignment = Enum.TextXAlignment.Left,
@@ -642,7 +752,7 @@ function UI.Build()
         local list = New("Frame", {
             Size = UDim2.new(1, -20, 0, 0),
             Position = UDim2.fromOffset(10, y + 24 + 32 + 2),
-            BackgroundColor3 = Color3.fromRGB(18, 11, 27),
+            BackgroundColor3 = Theme.BgCard,
             BackgroundTransparency = 0.02,
             BorderSizePixel = 0,
             ZIndex = 100,
@@ -650,18 +760,18 @@ function UI.Build()
             Visible = false,
         }, parent)
         Corner(list, 8)
-        Stroke(list, 0.85, 1, Color3.fromRGB(140, 90, 200))
+        Stroke(list, 0.85, 1, Theme.StrokeCard)
 
         local optionButtons = {}
         for i, optText in ipairs(options) do
             local btn = New("TextButton", {
                 Size = UDim2.new(1, -8, 0, itemHeight - 2),
                 Position = UDim2.fromOffset(4, 4 + (i - 1) * itemHeight),
-                BackgroundColor3 = Color3.fromRGB(30, 20, 42),
+                BackgroundColor3 = Theme.DropdownItem,
                 BackgroundTransparency = 1,
                 BorderSizePixel = 0,
                 Text = "  " .. optText,
-                TextColor3 = Color3.fromRGB(180, 170, 200),
+                TextColor3 = Theme.DropdownOption,
                 TextSize = 11,
                 Font = Enum.Font.GothamMedium,
                 TextXAlignment = Enum.TextXAlignment.Left,
@@ -670,10 +780,10 @@ function UI.Build()
             }, list)
             Corner(btn, 4)
             btn.MouseEnter:Connect(function()
-                Tween(btn, {BackgroundTransparency = 0.3, TextColor3 = Color3.fromRGB(235, 220, 255)}, 0.15):Play()
+                Tween(btn, {BackgroundTransparency = 0.3, TextColor3 = Theme.TextTabActive}, 0.15):Play()
             end)
             btn.MouseLeave:Connect(function()
-                Tween(btn, {BackgroundTransparency = 1, TextColor3 = Color3.fromRGB(180, 170, 200)}, 0.15):Play()
+                Tween(btn, {BackgroundTransparency = 1, TextColor3 = Theme.DropdownOption}, 0.15):Play()
             end)
             btn.MouseButton1Click:Connect(function()
                 onSelect(optText)
@@ -729,14 +839,14 @@ function UI.Build()
         Name = "ColorPicker",
         Size = UDim2.fromOffset(300, 300),
         Position = UDim2.new(0.5, -150, 0.5, -150),
-        BackgroundColor3 = Color3.fromRGB(14, 9, 22),
+        BackgroundColor3 = Theme.BgPicker,
         BackgroundTransparency = 0.03,
         BorderSizePixel = 0,
         Visible = false,
         ZIndex = 200,
     }, ScreenGui)
     Corner(ColorPickerFrame, 16)
-    Stroke(ColorPickerFrame, 0.85, 1.5, Color3.fromRGB(140, 90, 200))
+    Stroke(ColorPickerFrame, 0.85, 1.5, Theme.StrokeCard)
 
     New("Frame", {
         Size = UDim2.fromScale(1, 1),
@@ -751,7 +861,7 @@ function UI.Build()
         Position = UDim2.fromOffset(18, 10),
         BackgroundTransparency = 1,
         Text = "Color",
-        TextColor3 = Color3.fromRGB(245, 240, 250),
+        TextColor3 = Theme.TextPageTitle,
         TextSize = 14,
         Font = Enum.Font.GothamBold,
         TextXAlignment = Enum.TextXAlignment.Left,
@@ -763,7 +873,7 @@ function UI.Build()
         Position = UDim2.new(1, -38, 0, 10),
         BackgroundTransparency = 1,
         Text = "×",
-        TextColor3 = Color3.fromRGB(180, 170, 200),
+        TextColor3 = Theme.DropdownOption,
         TextSize = 24,
         Font = Enum.Font.GothamBold,
         ZIndex = 201,
@@ -808,7 +918,7 @@ function UI.Build()
             Position = UDim2.fromOffset(18, y),
             BackgroundTransparency = 1,
             Text = labelText,
-            TextColor3 = Color3.fromRGB(160, 150, 175),
+            TextColor3 = Theme.PickerLabel,
             TextSize = 11,
             Font = Enum.Font.Gotham,
             ZIndex = 201,
@@ -817,7 +927,7 @@ function UI.Build()
         local track = New("Frame", {
             Size = UDim2.new(1, -36, 0, 6),
             Position = UDim2.fromOffset(18, y + 18),
-            BackgroundColor3 = Color3.fromRGB(40, 40, 50),
+            BackgroundColor3 = Theme.SliderTrack,
             BackgroundTransparency = 0.4,
             BorderSizePixel = 0,
             ZIndex = 201,
@@ -836,7 +946,7 @@ function UI.Build()
         Corner(knob, 7)
 
         New("UIStroke", {
-            Color = PURPLE,
+            Color = Theme.Accent,
             Thickness = 2.5,
         }, knob)
 
@@ -867,7 +977,7 @@ function UI.Build()
         Position = UDim2.fromOffset(18, 174),
         BackgroundTransparency = 1,
         Text = "Preview",
-        TextColor3 = Color3.fromRGB(160, 150, 175),
+        TextColor3 = Theme.PickerLabel,
         TextSize = 11,
         Font = Enum.Font.Gotham,
         ZIndex = 201,
@@ -881,7 +991,7 @@ function UI.Build()
         ZIndex = 201,
     }, ColorPickerFrame)
     Corner(previewBox, 8)
-    Stroke(previewBox, 0.2, 1, Color3.fromRGB(140, 90, 200))
+    Stroke(previewBox, 0.2, 1, Theme.StrokeCard)
     CPUI.Preview = previewBox
 
     New("TextLabel", {
@@ -889,7 +999,7 @@ function UI.Build()
         Position = UDim2.fromOffset(88, 174),
         BackgroundTransparency = 1,
         Text = "Hex",
-        TextColor3 = Color3.fromRGB(160, 150, 175),
+        TextColor3 = Theme.PickerLabel,
         TextSize = 11,
         Font = Enum.Font.Gotham,
         ZIndex = 201,
@@ -898,18 +1008,18 @@ function UI.Build()
     local hexBox = New("TextBox", {
         Size = UDim2.fromOffset(130, 28),
         Position = UDim2.fromOffset(88, 192),
-        BackgroundColor3 = Color3.fromRGB(30, 20, 42),
+        BackgroundColor3 = Theme.DropdownItem,
         BackgroundTransparency = 0.25,
         BorderSizePixel = 0,
         Text = "#FF69B4",
-        TextColor3 = Color3.fromRGB(245, 240, 250),
+        TextColor3 = Theme.TextPageTitle,
         TextSize = 12,
         Font = Enum.Font.Gotham,
         ClearTextOnFocus = false,
         ZIndex = 201,
     }, ColorPickerFrame)
     Corner(hexBox, 8)
-    Stroke(hexBox, 0.6, 1, Color3.fromRGB(80, 60, 100))
+    Stroke(hexBox, 0.6, 1, Theme.StrokeInput)
     CPUI.HexBox = hexBox
 
     local function CPGetSliderPos(track)
@@ -981,7 +1091,7 @@ function UI.Build()
             hexBox:FindFirstChildOfClass("UIStroke").Color = Color3.fromRGB(255, 80, 80)
             task.delay(0.3, function()
                 local s = hexBox:FindFirstChildOfClass("UIStroke")
-                if s then s.Color = Color3.fromRGB(80, 60, 100) end
+                if s then s.Color = Theme.StrokeInput end
             end)
             return
         end
@@ -994,7 +1104,7 @@ function UI.Build()
         hexBox:FindFirstChildOfClass("UIStroke").Color = Color3.fromRGB(80, 255, 80)
         task.delay(0.3, function()
             local st = hexBox:FindFirstChildOfClass("UIStroke")
-            if st then st.Color = Color3.fromRGB(80, 60, 100) end
+            if st then st.Color = Theme.StrokeInput end
         end)
     end
 
@@ -1101,7 +1211,7 @@ function UI.Build()
         BackgroundTransparency = 1,
         BorderSizePixel = 0,
         ScrollBarThickness = 5,
-        ScrollBarImageColor3 = Color3.fromRGB(145, 75, 255),
+        ScrollBarImageColor3 = Theme.Accent,
         CanvasSize = UDim2.new(0, 0, 0, 0),
         ZIndex = 14,
     }, CombatPage)
@@ -1113,7 +1223,7 @@ function UI.Build()
         Position = UDim2.fromOffset(10, 10),
         BackgroundTransparency = 1,
         Text = "Aimbot",
-        TextColor3 = Color3.fromRGB(245, 220, 255),
+        TextColor3 = Theme.TextSection,
         TextSize = 14,
         Font = Enum.Font.GothamBold,
         TextXAlignment = Enum.TextXAlignment.Left,
@@ -1159,7 +1269,7 @@ function UI.Build()
         Position = UDim2.fromOffset(10, 466),
         BackgroundTransparency = 1,
         Text = "Silent Aim",
-        TextColor3 = Color3.fromRGB(245, 220, 255),
+        TextColor3 = Theme.TextSection,
         TextSize = 14,
         Font = Enum.Font.GothamBold,
         TextXAlignment = Enum.TextXAlignment.Left,
@@ -1205,7 +1315,7 @@ function UI.Build()
         Position = UDim2.fromOffset(10, 794),
         BackgroundTransparency = 1,
         Text = "Combat",
-        TextColor3 = Color3.fromRGB(245, 220, 255),
+        TextColor3 = Theme.TextSection,
         TextSize = 14,
         Font = Enum.Font.GothamBold,
         TextXAlignment = Enum.TextXAlignment.Left,
@@ -1237,7 +1347,7 @@ function UI.Build()
         BackgroundTransparency = 1,
         BorderSizePixel = 0,
         ScrollBarThickness = 5,
-        ScrollBarImageColor3 = Color3.fromRGB(145, 75, 255),
+        ScrollBarImageColor3 = Theme.Accent,
         CanvasSize = UDim2.new(0, 0, 0, 0),
         ZIndex = 14,
     }, VisualsPage)
@@ -1266,7 +1376,7 @@ function UI.Build()
         Position = UDim2.fromOffset(10, 236),
         BackgroundTransparency = 1,
         Text = "ESP Suite",
-        TextColor3 = Color3.fromRGB(245, 220, 255),
+        TextColor3 = Theme.TextSection,
         TextSize = 14,
         Font = Enum.Font.GothamBold,
         TextXAlignment = Enum.TextXAlignment.Left,
@@ -1351,7 +1461,7 @@ function UI.Build()
         Position = UDim2.fromOffset(10, 152),
         BackgroundTransparency = 1,
         Text = "Player List",
-        TextColor3 = Color3.fromRGB(160, 150, 175),
+        TextColor3 = Theme.PickerLabel,
         TextSize = 10,
         Font = Enum.Font.GothamBold,
         TextXAlignment = Enum.TextXAlignment.Left,
@@ -1360,11 +1470,11 @@ function UI.Build()
     local PlayerList = New("ScrollingFrame", {
         Size = UDim2.new(1, -20, 0, 120),
         Position = UDim2.fromOffset(10, 172),
-        BackgroundColor3 = Color3.fromRGB(12, 8, 18),
+        BackgroundColor3 = Theme.BgList,
         BackgroundTransparency = 0.3,
         BorderSizePixel = 0,
         ScrollBarThickness = 5,
-        ScrollBarImageColor3 = Color3.fromRGB(145, 75, 255),
+        ScrollBarImageColor3 = Theme.Accent,
         CanvasSize = UDim2.new(0, 0, 0, 0),
         ZIndex = 16,
     }, TargetCard)
@@ -1380,7 +1490,7 @@ function UI.Build()
         BackgroundTransparency = 1,
         BorderSizePixel = 0,
         ScrollBarThickness = 5,
-        ScrollBarImageColor3 = Color3.fromRGB(145, 75, 255),
+        ScrollBarImageColor3 = Theme.Accent,
         CanvasSize = UDim2.new(0, 0, 0, 470),
         ZIndex = 14,
     }, FarmPage)
@@ -1420,7 +1530,7 @@ function UI.Build()
         Position = UDim2.fromOffset(10, 300),
         BackgroundTransparency = 1,
         Text = "Select a target in the Target tab first. Their head will align to your crosshair when Farm is ON. Toggle OFF to restore them.",
-        TextColor3 = Color3.fromRGB(140, 130, 155),
+        TextColor3 = Theme.HelpText,
         TextSize = 10,
         Font = Enum.Font.GothamMedium,
         TextWrapped = true,
@@ -1437,7 +1547,7 @@ function UI.Build()
         BackgroundTransparency = 1,
         BorderSizePixel = 0,
         ScrollBarThickness = 5,
-        ScrollBarImageColor3 = Color3.fromRGB(145, 75, 255),
+        ScrollBarImageColor3 = Theme.Accent,
         CanvasSize = UDim2.new(0, 0, 0, 900),
         ZIndex = 14,
     }, MiscPage)
@@ -1510,7 +1620,7 @@ function UI.Build()
     ArmorPosLabel.Position = UDim2.new(0.05, 0, 0, 600)
     ArmorPosLabel.BackgroundTransparency = 1
     ArmorPosLabel.Text = string.format("Pos: %.0f, %.0f, %.0f", armorPos.X, armorPos.Y, armorPos.Z)
-    ArmorPosLabel.TextColor3 = Color3.fromRGB(130, 130, 150)
+    ArmorPosLabel.TextColor3 = Theme.ArmorPos
     ArmorPosLabel.Font = Enum.Font.Gotham
     ArmorPosLabel.TextSize = 10
     ArmorPosLabel.TextXAlignment = Enum.TextXAlignment.Left
@@ -1518,7 +1628,7 @@ function UI.Build()
     local SetPosBtn = Instance.new("TextButton")
     SetPosBtn.Size = UDim2.new(0.3, 0, 0, 20)
     SetPosBtn.Position = UDim2.new(0.65, 0, 0, 598)
-    SetPosBtn.BackgroundColor3 = Color3.fromRGB(80, 60, 120)
+    SetPosBtn.BackgroundColor3 = Theme.SetPosBtn
     SetPosBtn.Text = "Set Pos"
     SetPosBtn.TextColor3 = Color3.fromRGB(255, 255, 255)
     SetPosBtn.Font = Enum.Font.GothamBold
@@ -1559,7 +1669,7 @@ function UI.Build()
     local SpectatePanel = New("Frame", {
         Size = UDim2.fromOffset(200, 320),
         Position = UDim2.new(1, -220, 0.5, -160),
-        BackgroundColor3 = Color3.fromRGB(9, 6, 15),
+        BackgroundColor3 = Theme.BgMain,
         BackgroundTransparency = 0.04,
         BorderSizePixel = 0,
         ZIndex = 60,
@@ -1572,7 +1682,7 @@ function UI.Build()
         Position = UDim2.fromOffset(10, 10),
         BackgroundTransparency = 1,
         Text = "SPECTATE",
-        TextColor3 = Color3.fromRGB(245, 240, 250),
+        TextColor3 = Theme.TextPageTitle,
         TextSize = 16,
         Font = Enum.Font.GothamBold,
         TextXAlignment = Enum.TextXAlignment.Left,
@@ -1594,7 +1704,7 @@ function UI.Build()
         Position = UDim2.fromOffset(10, 82),
         BackgroundTransparency = 1,
         Text = "Player List",
-        TextColor3 = Color3.fromRGB(160, 150, 175),
+        TextColor3 = Theme.PickerLabel,
         TextSize = 10,
         Font = Enum.Font.GothamBold,
         TextXAlignment = Enum.TextXAlignment.Left,
@@ -1603,11 +1713,11 @@ function UI.Build()
     local PanelPlayerList = New("ScrollingFrame", {
         Size = UDim2.new(1, -20, 1, -108),
         Position = UDim2.fromOffset(10, 102),
-        BackgroundColor3 = Color3.fromRGB(12, 8, 18),
+        BackgroundColor3 = Theme.BgList,
         BackgroundTransparency = 0.3,
         BorderSizePixel = 0,
         ScrollBarThickness = 5,
-        ScrollBarImageColor3 = Color3.fromRGB(145, 75, 255),
+        ScrollBarImageColor3 = Theme.Accent,
         CanvasSize = UDim2.new(0, 0, 0, 0),
         ZIndex = 61,
     }, SpectatePanel)
@@ -1656,7 +1766,7 @@ function UI.Build()
         BackgroundTransparency = 1,
         BorderSizePixel = 0,
         ScrollBarThickness = 5,
-        ScrollBarImageColor3 = Color3.fromRGB(145, 75, 255),
+        ScrollBarImageColor3 = Theme.Accent,
         CanvasSize = UDim2.new(0, 0, 0, 0),
         ZIndex = 14,
     }, WorldPage)
@@ -1705,7 +1815,7 @@ function UI.Build()
         BackgroundTransparency = 1,
         BorderSizePixel = 0,
         ScrollBarThickness = 5,
-        ScrollBarImageColor3 = Color3.fromRGB(145, 75, 255),
+        ScrollBarImageColor3 = Theme.Accent,
         CanvasSize = UDim2.new(0, 0, 0, 750),
         ZIndex = 14,
     }, MovementPage)
@@ -1723,7 +1833,7 @@ function UI.Build()
         Position = UDim2.fromOffset(10, 50),
         BackgroundTransparency = 1,
         Text = "Walk Speed",
-        TextColor3 = Color3.fromRGB(200, 190, 215),
+        TextColor3 = Theme.TextLabel,
         TextSize = 12,
         Font = Enum.Font.GothamMedium,
         TextXAlignment = Enum.TextXAlignment.Left,
@@ -1732,14 +1842,14 @@ function UI.Build()
     local walkSpeedTrack = New("Frame", {
         Size = UDim2.new(1, -160, 0, 5),
         Position = UDim2.fromOffset(10, 80),
-        BackgroundColor3 = Color3.fromRGB(40, 40, 50),
+        BackgroundColor3 = Theme.SliderTrack,
         BorderSizePixel = 0,
         ZIndex = 16,
     }, MovementCard)
     Corner(walkSpeedTrack, 3)
     local walkSpeedFill = New("Frame", {
         Size = UDim2.new(math.clamp((Config.Move_Speed - 16) / 284, 0, 1), 0, 1, 0),
-        BackgroundColor3 = Color3.fromRGB(145, 75, 255),
+        BackgroundColor3 = Theme.Accent,
         BorderSizePixel = 0,
         ZIndex = 17,
     }, walkSpeedTrack)
@@ -1747,18 +1857,18 @@ function UI.Build()
     local walkSpeedInput = New("TextBox", {
         Size = UDim2.fromOffset(60, 24),
         Position = UDim2.new(1, -70, 0, 50),
-        BackgroundColor3 = Color3.fromRGB(30, 20, 42),
+        BackgroundColor3 = Theme.DropdownItem,
         BackgroundTransparency = 0.25,
         BorderSizePixel = 0,
         Text = tostring(Config.Move_Speed or 50),
-        TextColor3 = Color3.fromRGB(245, 240, 250),
+        TextColor3 = Theme.TextPageTitle,
         TextSize = 11,
         Font = Enum.Font.Gotham,
         ClearTextOnFocus = false,
         ZIndex = 16,
     }, MovementCard)
     Corner(walkSpeedInput, 6)
-    Stroke(walkSpeedInput, 0.6, 1, Color3.fromRGB(80, 60, 100))
+    Stroke(walkSpeedInput, 0.6, 1, Theme.StrokeInput)
 
     local walkSpeedDragging = false
     local function setWalkSpeed(val)
@@ -1807,7 +1917,7 @@ function UI.Build()
         Position = UDim2.fromOffset(10, 142),
         BackgroundTransparency = 1,
         Text = "Jump Power",
-        TextColor3 = Color3.fromRGB(200, 190, 215),
+        TextColor3 = Theme.TextLabel,
         TextSize = 12,
         Font = Enum.Font.GothamMedium,
         TextXAlignment = Enum.TextXAlignment.Left,
@@ -1816,14 +1926,14 @@ function UI.Build()
     local jumpPowerTrack = New("Frame", {
         Size = UDim2.new(1, -160, 0, 5),
         Position = UDim2.fromOffset(10, 172),
-        BackgroundColor3 = Color3.fromRGB(40, 40, 50),
+        BackgroundColor3 = Theme.SliderTrack,
         BorderSizePixel = 0,
         ZIndex = 16,
     }, MovementCard)
     Corner(jumpPowerTrack, 3)
     local jumpPowerFill = New("Frame", {
         Size = UDim2.new(math.clamp((Config.Move_JumpPower - 50) / 250, 0, 1), 0, 1, 0),
-        BackgroundColor3 = Color3.fromRGB(145, 75, 255),
+        BackgroundColor3 = Theme.Accent,
         BorderSizePixel = 0,
         ZIndex = 17,
     }, jumpPowerTrack)
@@ -1831,18 +1941,18 @@ function UI.Build()
     local jumpPowerInput = New("TextBox", {
         Size = UDim2.fromOffset(60, 24),
         Position = UDim2.new(1, -70, 0, 142),
-        BackgroundColor3 = Color3.fromRGB(30, 20, 42),
+        BackgroundColor3 = Theme.DropdownItem,
         BackgroundTransparency = 0.25,
         BorderSizePixel = 0,
         Text = tostring(Config.Move_JumpPower or 100),
-        TextColor3 = Color3.fromRGB(245, 240, 250),
+        TextColor3 = Theme.TextPageTitle,
         TextSize = 11,
         Font = Enum.Font.Gotham,
         ClearTextOnFocus = false,
         ZIndex = 16,
     }, MovementCard)
     Corner(jumpPowerInput, 6)
-    Stroke(jumpPowerInput, 0.6, 1, Color3.fromRGB(80, 60, 100))
+    Stroke(jumpPowerInput, 0.6, 1, Theme.StrokeInput)
 
     local jumpPowerDragging = false
     local function setJumpPower(val)
@@ -1891,7 +2001,7 @@ function UI.Build()
         Position = UDim2.fromOffset(10, 234),
         BackgroundTransparency = 1,
         Text = "Bunny Hop Speed",
-        TextColor3 = Color3.fromRGB(200, 190, 215),
+        TextColor3 = Theme.TextLabel,
         TextSize = 12,
         Font = Enum.Font.GothamMedium,
         TextXAlignment = Enum.TextXAlignment.Left,
@@ -1900,14 +2010,14 @@ function UI.Build()
     local bhopSpeedTrack = New("Frame", {
         Size = UDim2.new(1, -160, 0, 5),
         Position = UDim2.fromOffset(10, 264),
-        BackgroundColor3 = Color3.fromRGB(40, 40, 50),
+        BackgroundColor3 = Theme.SliderTrack,
         BorderSizePixel = 0,
         ZIndex = 16,
     }, MovementCard)
     Corner(bhopSpeedTrack, 3)
     local bhopSpeedFill = New("Frame", {
         Size = UDim2.new(math.clamp(((Config.Move_BunnyHopSpeed or 60) - 16) / 284, 0, 1), 0, 1, 0),
-        BackgroundColor3 = Color3.fromRGB(145, 75, 255),
+        BackgroundColor3 = Theme.Accent,
         BorderSizePixel = 0,
         ZIndex = 17,
     }, bhopSpeedTrack)
@@ -1915,18 +2025,18 @@ function UI.Build()
     local bhopSpeedInput = New("TextBox", {
         Size = UDim2.fromOffset(60, 24),
         Position = UDim2.new(1, -70, 0, 234),
-        BackgroundColor3 = Color3.fromRGB(30, 20, 42),
+        BackgroundColor3 = Theme.DropdownItem,
         BackgroundTransparency = 0.25,
         BorderSizePixel = 0,
         Text = tostring(Config.Move_BunnyHopSpeed or 60),
-        TextColor3 = Color3.fromRGB(245, 240, 250),
+        TextColor3 = Theme.TextPageTitle,
         TextSize = 11,
         Font = Enum.Font.Gotham,
         ClearTextOnFocus = false,
         ZIndex = 16,
     }, MovementCard)
     Corner(bhopSpeedInput, 6)
-    Stroke(bhopSpeedInput, 0.6, 1, Color3.fromRGB(80, 60, 100))
+    Stroke(bhopSpeedInput, 0.6, 1, Theme.StrokeInput)
 
     local bhopSpeedDragging = false
     local function setBhopSpeed(val)
@@ -1999,7 +2109,7 @@ function UI.Build()
         Position = UDim2.fromOffset(10, 526),
         BackgroundTransparency = 1,
         Text = "Fly Speed",
-        TextColor3 = Color3.fromRGB(200, 190, 215),
+        TextColor3 = Theme.TextLabel,
         TextSize = 12,
         Font = Enum.Font.GothamMedium,
         TextXAlignment = Enum.TextXAlignment.Left,
@@ -2008,14 +2118,14 @@ function UI.Build()
     local flySpeedTrack = New("Frame", {
         Size = UDim2.new(1, -160, 0, 5),
         Position = UDim2.fromOffset(10, 556),
-        BackgroundColor3 = Color3.fromRGB(40, 40, 50),
+        BackgroundColor3 = Theme.SliderTrack,
         BorderSizePixel = 0,
         ZIndex = 16,
     }, MovementCard)
     Corner(flySpeedTrack, 3)
     local flySpeedFill = New("Frame", {
         Size = UDim2.new(math.clamp((Config.Move_FlySpeed - 10) / 290, 0, 1), 0, 1, 0),
-        BackgroundColor3 = Color3.fromRGB(145, 75, 255),
+        BackgroundColor3 = Theme.Accent,
         BorderSizePixel = 0,
         ZIndex = 17,
     }, flySpeedTrack)
@@ -2023,18 +2133,18 @@ function UI.Build()
     local flySpeedInput = New("TextBox", {
         Size = UDim2.fromOffset(60, 24),
         Position = UDim2.new(1, -70, 0, 526),
-        BackgroundColor3 = Color3.fromRGB(30, 20, 42),
+        BackgroundColor3 = Theme.DropdownItem,
         BackgroundTransparency = 0.25,
         BorderSizePixel = 0,
         Text = tostring(Config.Move_FlySpeed or 50),
-        TextColor3 = Color3.fromRGB(245, 240, 250),
+        TextColor3 = Theme.TextPageTitle,
         TextSize = 11,
         Font = Enum.Font.Gotham,
         ClearTextOnFocus = false,
         ZIndex = 16,
     }, MovementCard)
     Corner(flySpeedInput, 6)
-    Stroke(flySpeedInput, 0.6, 1, Color3.fromRGB(80, 60, 100))
+    Stroke(flySpeedInput, 0.6, 1, Theme.StrokeInput)
 
     local flySpeedDragging = false
     local function setFlySpeed(val)
@@ -2077,7 +2187,7 @@ function UI.Build()
         Position = UDim2.fromOffset(10, 576),
         BackgroundTransparency = 1,
         Text = "WASD to move, Space up, Shift down",
-        TextColor3 = Color3.fromRGB(140, 130, 155),
+        TextColor3 = Theme.HelpText,
         TextSize = 10,
         Font = Enum.Font.GothamMedium,
         TextXAlignment = Enum.TextXAlignment.Left,
@@ -2100,11 +2210,11 @@ function UI.Build()
         BackgroundTransparency = 1,
         BorderSizePixel = 0,
         ScrollBarThickness = 5,
-        ScrollBarImageColor3 = Color3.fromRGB(145, 75, 255),
+        ScrollBarImageColor3 = Theme.Accent,
         CanvasSize = UDim2.new(0, 0, 0, 850),
         ZIndex = 14,
     }, SettingsPage)
-    local SettingsCard = CreateCard(SettingsScroll, UDim2.fromOffset(0, 0), UDim2.new(1, 0, 0, 840))
+    local SettingsCard = CreateCard(SettingsScroll, UDim2.fromOffset(0, 0), UDim2.new(1, 0, 0, 940))
 
     -- Keybinds Section
     New("TextLabel", {
@@ -2112,7 +2222,7 @@ function UI.Build()
         Position = UDim2.fromOffset(10, 10),
         BackgroundTransparency = 1,
         Text = "Keybinds",
-        TextColor3 = Color3.fromRGB(245, 220, 255),
+        TextColor3 = Theme.TextSection,
         TextSize = 14,
         Font = Enum.Font.GothamBold,
         TextXAlignment = Enum.TextXAlignment.Left,
@@ -2125,7 +2235,7 @@ function UI.Build()
         Position = UDim2.fromOffset(15, 36),
         BackgroundTransparency = 1,
         Text = "Menu Toggle Key",
-        TextColor3 = Color3.fromRGB(235, 220, 255),
+        TextColor3 = Theme.TextTabActive,
         TextSize = 12,
         Font = Enum.Font.GothamBold,
         TextXAlignment = Enum.TextXAlignment.Left,
@@ -2135,11 +2245,11 @@ function UI.Build()
     local KeybindButton = New("TextButton", {
         Size = UDim2.fromOffset(115, 30),
         Position = UDim2.new(1, -130, 0, 34),
-        BackgroundColor3 = PURPLE,
+        BackgroundColor3 = Theme.Accent,
         BackgroundTransparency = 0.18,
         BorderSizePixel = 0,
         Text = FormatKeyName(Config.ToggleKey),
-        TextColor3 = Color3.fromRGB(255, 250, 255),
+        TextColor3 = Theme.ActionBtnText,
         TextSize = 11,
         Font = Enum.Font.GothamBold,
         AutoButtonColor = false,
@@ -2153,7 +2263,7 @@ function UI.Build()
         Position = UDim2.fromOffset(15, 72),
         BackgroundTransparency = 1,
         Text = "Panic Key (disable all)",
-        TextColor3 = Color3.fromRGB(235, 220, 255),
+        TextColor3 = Theme.TextTabActive,
         TextSize = 12,
         Font = Enum.Font.GothamBold,
         TextXAlignment = Enum.TextXAlignment.Left,
@@ -2163,11 +2273,11 @@ function UI.Build()
     local PanicKeyButton = New("TextButton", {
         Size = UDim2.fromOffset(115, 30),
         Position = UDim2.new(1, -130, 0, 70),
-        BackgroundColor3 = Color3.fromRGB(200, 50, 50),
+        BackgroundColor3 = Theme.PanicBtn,
         BackgroundTransparency = 0.18,
         BorderSizePixel = 0,
         Text = Config.PanicKey and FormatKeyName(Config.PanicKey) or "—",
-        TextColor3 = Color3.fromRGB(255, 250, 255),
+        TextColor3 = Theme.ActionBtnText,
         TextSize = 11,
         Font = Enum.Font.GothamBold,
         AutoButtonColor = false,
@@ -2190,7 +2300,7 @@ function UI.Build()
         Position = UDim2.fromOffset(10, 122),
         BackgroundTransparency = 1,
         Text = "GUI Customization",
-        TextColor3 = Color3.fromRGB(245, 220, 255),
+        TextColor3 = Theme.TextSection,
         TextSize = 14,
         Font = Enum.Font.GothamBold,
         TextXAlignment = Enum.TextXAlignment.Left,
@@ -2203,7 +2313,7 @@ function UI.Build()
         Position = UDim2.fromOffset(10, 148),
         BackgroundTransparency = 1,
         Text = "GUI Scale",
-        TextColor3 = Color3.fromRGB(200, 190, 215),
+        TextColor3 = Theme.TextLabel,
         TextSize = 12,
         Font = Enum.Font.GothamMedium,
         TextXAlignment = Enum.TextXAlignment.Left,
@@ -2213,7 +2323,7 @@ function UI.Build()
     local guiScaleTrack = New("Frame", {
         Size = UDim2.new(1, -160, 0, 5),
         Position = UDim2.fromOffset(10, 178),
-        BackgroundColor3 = Color3.fromRGB(40, 40, 50),
+        BackgroundColor3 = Theme.SliderTrack,
         BorderSizePixel = 0,
         ZIndex = 16,
     }, SettingsCard)
@@ -2221,7 +2331,7 @@ function UI.Build()
 
     local guiScaleFill = New("Frame", {
         Size = UDim2.new((Config.GUIScale - 0.5) / 1.5, 0, 1, 0),
-        BackgroundColor3 = PURPLE,
+        BackgroundColor3 = Theme.Accent,
         BorderSizePixel = 0,
         ZIndex = 17,
     }, guiScaleTrack)
@@ -2230,18 +2340,18 @@ function UI.Build()
     local guiScaleInput = New("TextBox", {
         Size = UDim2.fromOffset(60, 24),
         Position = UDim2.new(1, -70, 0, 148),
-        BackgroundColor3 = Color3.fromRGB(30, 20, 42),
+        BackgroundColor3 = Theme.DropdownItem,
         BackgroundTransparency = 0.25,
         BorderSizePixel = 0,
         Text = string.format("%.1f", Config.GUIScale or 1.0),
-        TextColor3 = Color3.fromRGB(245, 240, 250),
+        TextColor3 = Theme.TextPageTitle,
         TextSize = 11,
         Font = Enum.Font.Gotham,
         ClearTextOnFocus = false,
         ZIndex = 16,
     }, SettingsCard)
     Corner(guiScaleInput, 6)
-    Stroke(guiScaleInput, 0.6, 1, Color3.fromRGB(80, 60, 100))
+    Stroke(guiScaleInput, 0.6, 1, Theme.StrokeInput)
 
     local guiScaleDragging = false
     local function setGUIScale(val)
@@ -2313,7 +2423,7 @@ function UI.Build()
         Position = UDim2.fromOffset(10, 324),
         BackgroundTransparency = 1,
         Text = "Performance",
-        TextColor3 = Color3.fromRGB(245, 220, 255),
+        TextColor3 = Theme.TextSection,
         TextSize = 14,
         Font = Enum.Font.GothamBold,
         TextXAlignment = Enum.TextXAlignment.Left,
@@ -2326,7 +2436,7 @@ function UI.Build()
         Position = UDim2.fromOffset(10, 350),
         BackgroundTransparency = 1,
         Text = "FPS Cap (0 = uncapped)",
-        TextColor3 = Color3.fromRGB(200, 190, 215),
+        TextColor3 = Theme.TextLabel,
         TextSize = 12,
         Font = Enum.Font.GothamMedium,
         TextXAlignment = Enum.TextXAlignment.Left,
@@ -2336,7 +2446,7 @@ function UI.Build()
     local fpsTrack = New("Frame", {
         Size = UDim2.new(1, -160, 0, 5),
         Position = UDim2.fromOffset(10, 380),
-        BackgroundColor3 = Color3.fromRGB(40, 40, 50),
+        BackgroundColor3 = Theme.SliderTrack,
         BorderSizePixel = 0,
         ZIndex = 16,
     }, SettingsCard)
@@ -2344,7 +2454,7 @@ function UI.Build()
 
     local fpsFill = New("Frame", {
         Size = UDim2.new(math.clamp((Config.FPSCap or 0) / 480, 0, 1), 0, 1, 0),
-        BackgroundColor3 = PURPLE,
+        BackgroundColor3 = Theme.Accent,
         BorderSizePixel = 0,
         ZIndex = 17,
     }, fpsTrack)
@@ -2353,18 +2463,18 @@ function UI.Build()
     local fpsInput = New("TextBox", {
         Size = UDim2.fromOffset(60, 24),
         Position = UDim2.new(1, -70, 0, 350),
-        BackgroundColor3 = Color3.fromRGB(30, 20, 42),
+        BackgroundColor3 = Theme.DropdownItem,
         BackgroundTransparency = 0.25,
         BorderSizePixel = 0,
         Text = tostring(Config.FPSCap or 0),
-        TextColor3 = Color3.fromRGB(245, 240, 250),
+        TextColor3 = Theme.TextPageTitle,
         TextSize = 11,
         Font = Enum.Font.Gotham,
         ClearTextOnFocus = false,
         ZIndex = 16,
     }, SettingsCard)
     Corner(fpsInput, 6)
-    Stroke(fpsInput, 0.6, 1, Color3.fromRGB(80, 60, 100))
+    Stroke(fpsInput, 0.6, 1, Theme.StrokeInput)
 
     local fpsDragging = false
     local function setFPSCap(val)
@@ -2406,7 +2516,7 @@ function UI.Build()
         Position = UDim2.fromOffset(10, 410),
         BackgroundTransparency = 1,
         Text = "Notifications",
-        TextColor3 = Color3.fromRGB(245, 220, 255),
+        TextColor3 = Theme.TextSection,
         TextSize = 14,
         Font = Enum.Font.GothamBold,
         TextXAlignment = Enum.TextXAlignment.Left,
@@ -2424,7 +2534,7 @@ function UI.Build()
         Position = UDim2.fromOffset(10, 472),
         BackgroundTransparency = 1,
         Text = "Notification Duration",
-        TextColor3 = Color3.fromRGB(200, 190, 215),
+        TextColor3 = Theme.TextLabel,
         TextSize = 12,
         Font = Enum.Font.GothamMedium,
         TextXAlignment = Enum.TextXAlignment.Left,
@@ -2434,7 +2544,7 @@ function UI.Build()
     local notifTrack = New("Frame", {
         Size = UDim2.new(1, -160, 0, 5),
         Position = UDim2.fromOffset(10, 502),
-        BackgroundColor3 = Color3.fromRGB(40, 40, 50),
+        BackgroundColor3 = Theme.SliderTrack,
         BorderSizePixel = 0,
         ZIndex = 16,
     }, SettingsCard)
@@ -2442,7 +2552,7 @@ function UI.Build()
 
     local notifFill = New("Frame", {
         Size = UDim2.new(math.clamp((Config.NotificationDuration or 2.5) / 10, 0, 1), 0, 1, 0),
-        BackgroundColor3 = PURPLE,
+        BackgroundColor3 = Theme.Accent,
         BorderSizePixel = 0,
         ZIndex = 17,
     }, notifTrack)
@@ -2451,18 +2561,18 @@ function UI.Build()
     local notifInput = New("TextBox", {
         Size = UDim2.fromOffset(60, 24),
         Position = UDim2.new(1, -70, 0, 472),
-        BackgroundColor3 = Color3.fromRGB(30, 20, 42),
+        BackgroundColor3 = Theme.DropdownItem,
         BackgroundTransparency = 0.25,
         BorderSizePixel = 0,
         Text = string.format("%.1f", Config.NotificationDuration or 2.5),
-        TextColor3 = Color3.fromRGB(245, 240, 250),
+        TextColor3 = Theme.TextPageTitle,
         TextSize = 11,
         Font = Enum.Font.Gotham,
         ClearTextOnFocus = false,
         ZIndex = 16,
     }, SettingsCard)
     Corner(notifInput, 6)
-    Stroke(notifInput, 0.6, 1, Color3.fromRGB(80, 60, 100))
+    Stroke(notifInput, 0.6, 1, Theme.StrokeInput)
 
     local notifDragging = false
     local function setNotifDuration(val)
@@ -2501,7 +2611,7 @@ function UI.Build()
         Position = UDim2.fromOffset(10, 532),
         BackgroundTransparency = 1,
         Text = "Config Management",
-        TextColor3 = Color3.fromRGB(245, 220, 255),
+        TextColor3 = Theme.TextSection,
         TextSize = 14,
         Font = Enum.Font.GothamBold,
         TextXAlignment = Enum.TextXAlignment.Left,
@@ -2600,10 +2710,31 @@ function UI.Build()
         print("[Stars.cc] Config reset to defaults! Restart script to apply.")
     end)
 
+
+    -- Theme Selector
+    CreateSeparator(SettingsCard, 694)
+    New("TextLabel", {
+        Size = UDim2.new(1, -20, 0, 20),
+        Position = UDim2.fromOffset(10, 706),
+        BackgroundTransparency = 1,
+        Text = "Theme",
+        TextColor3 = Theme.TextSection,
+        TextSize = 14,
+        Font = Enum.Font.GothamBold,
+        TextXAlignment = Enum.TextXAlignment.Left,
+        ZIndex = 16,
+    }, SettingsCard)
+    local themeDropdown = BuildDropdown(SettingsCard, 730, "GUI Theme", Config.GUIThemeName or "Purple",
+        {"Purple", "Monochrome"},
+        function(v)
+            Config.GUIThemeName = v
+            UI.ApplyTheme(v)
+        end)
+
     -- Bottom padding
     New("Frame", {
         Size = UDim2.new(1, 0, 0, 40),
-        Position = UDim2.fromOffset(0, 680),
+        Position = UDim2.fromOffset(0, 780),
         BackgroundTransparency = 1,
         ZIndex = 16,
     }, SettingsCard)
@@ -2613,7 +2744,7 @@ function UI.Build()
         Size = UDim2.fromOffset(155, 36),
         AnchorPoint = Vector2.new(1, 0),
         Position = UDim2.new(1, -20, 0, 20),
-        BackgroundColor3 = Color3.fromRGB(15, 9, 23),
+        BackgroundColor3 = Theme.BgHotkey,
         BackgroundTransparency = 0.08,
         BorderSizePixel = 0,
         Visible = false,
@@ -2631,7 +2762,7 @@ function UI.Build()
             local active = tabName == name
             Tween(data.Button, {
                 BackgroundTransparency = active and 0.84 or 1,
-                TextColor3 = active and Color3.fromRGB(235, 220, 255) or Color3.fromRGB(145, 135, 160),
+                TextColor3 = active and Theme.TextTabActive or Theme.TextTabInactive,
             }, 0.2):Play()
             Tween(data.Indicator, {BackgroundTransparency = active and 0 or 1}, 0.2):Play()
         end
@@ -2839,6 +2970,22 @@ function UI.Build()
     Main.Size = UDim2.fromOffset(GUI_WIDTH, 0)
     SetGUIVisible(true)
     return ScreenGui
+end
+
+
+function UI.ApplyTheme(themeName)
+    local Config = UI.Config
+    if not Config then return end
+    Config.GUIThemeName = themeName
+    Theme = Themes.Get(themeName)
+
+    -- Rebuild the entire UI with new theme
+    if UI.ScreenGui then
+        UI.ScreenGui:Destroy()
+    end
+    local oldBlur = Lighting:FindFirstChild("ZeeHoodBlur")
+    if oldBlur then oldBlur:Destroy() end
+    UI.Build()
 end
 
 return UI
