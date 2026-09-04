@@ -73,34 +73,36 @@ local function GetBoxData(character)
     local root = character:FindFirstChild("HumanoidRootPart") or character:FindFirstChild("Torso")
     local head = character:FindFirstChild("Head")
     if not root then return nil end
-    
+
     -- Use actual body parts for 100% accurate positioning
     local topPos = head and head.Position or (root.Position + Vector3.new(0, 2.5, 0))
     local botPos = root.Position - Vector3.new(0, 2.5, 0)
-    
+
     local topScr, topVis, topZ = W2S(topPos)
     local botScr, botVis, botZ = W2S(botPos)
-    
+
     -- Visibility: at least one point must be on screen
     if (not topVis and not botVis) or (topZ <= 0 and botZ <= 0) then return nil end
-    
+
     local h = math.abs(botScr.Y - topScr.Y)
 
-    -- Calculate width from actual arm positions (stable during animation)
-    local larm = character:FindFirstChild("LeftUpperArm") or character:FindFirstChild("Left Arm")
-    local rarm = character:FindFirstChild("RightUpperArm") or character:FindFirstChild("Right Arm")
-    local widthRatio = 0.5
-    if larm and rarm then
-        local armDist = math.abs((larm.Position - rarm.Position).Magnitude)
-        local heightDist = math.abs((topPos - botPos).Magnitude)
-        if heightDist > 0 then
-            widthRatio = math.clamp(armDist / heightDist, 0.35, 0.65)
+    -- Calculate width from actual character bounding box (accurate per-avatar, no smoothing)
+    local widthRatio = 0.8 -- wider default
+    local ok, cf, size = pcall(function()
+        return character:GetBoundingBox()
+    end)
+    if ok and size then
+        local charHeight = size.Y
+        local charWidth = size.X
+        if charHeight > 0 then
+            -- Use actual avatar proportions, wider range allowed
+            widthRatio = math.clamp(charWidth / charHeight, 0.5, 1.2)
         end
     end
 
     local w = h * widthRatio
     if h <= 1 or w <= 1 then return nil end
-    
+
     return {
         TL = Vector2.new(topScr.X - w / 2, topScr.Y),
         BR = Vector2.new(topScr.X + w / 2, botScr.Y),
@@ -116,16 +118,24 @@ local function Get3DCorners(character)
     if not root then return nil end
 
     local p = root.Position
-    local hx, hy = 1.5, 3.5 -- Fixed half-width and half-height for R15
-    local hz = 1.5
 
-    -- Adjust based on character type
-    if character:FindFirstChild("LeftFoot") then
-        -- R15
-        hy = 3.0
+    -- Use actual character dimensions from bounding box
+    local ok, cf, size = pcall(function()
+        return character:GetBoundingBox()
+    end)
+
+    local hx, hy, hz
+    if ok and size then
+        hx = size.X / 2
+        hy = size.Y / 2
+        hz = size.Z / 2
     else
-        -- R6
-        hy = 2.5
+        -- Fallback for R15/R6
+        if character:FindFirstChild("LeftFoot") then
+            hy = 3.0; hx = 1.5; hz = 1.5
+        else
+            hy = 2.5; hx = 1.5; hz = 1.5
+        end
     end
 
     local corners = {
@@ -162,7 +172,6 @@ local SkeletonConnections = {
 -- ═════════════════════════════════════════════════════════════════════════════
 -- ESP STATE
 -- ═════════════════════════════════════════════════════════════════════════════
-local ESPBoxCache = {} -- Smoothed box positions
 
 local function GetESPConfig()
     local Config = Visuals.Config
