@@ -62,7 +62,7 @@ return {
         Box = Color3.fromRGB(255, 105, 180),
         Name = Color3.fromRGB(255, 255, 255),
         Distance = Color3.fromRGB(200, 200, 200),
-        Health = Color3.fromRGB(0, 255, 100),
+        Health = Color3.fromRGB(0, 255, 0),
         Skeleton = Color3.fromRGB(255, 255, 255),
         ChamsFill = Color3.fromRGB(255, 105, 180),
         ChamsOutline = Color3.fromRGB(255, 255, 255),

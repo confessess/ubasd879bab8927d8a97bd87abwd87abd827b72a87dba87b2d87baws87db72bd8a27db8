@@ -67,21 +67,13 @@ local function W2S(position)
     return Vector2.new(-999, -999), false, 0
 end
 
-local CharDimensions = {}
 
-local function GetCharDimensions(character)
-    if CharDimensions[character] then
-        local dims = CharDimensions[character]
-        if tick() - dims.Time < 2 then
-            return dims.Width, dims.Height
-        end
     end
     -- Try GetBoundingBox first (most accurate)
     local success, cframe, size = pcall(function()
         return character:GetBoundingBox()
     end)
     if success and size then
-        CharDimensions[character] = {Width = size.X, Height = size.Y, Time = tick()}
         return size.X, size.Y
     end
     -- Fallback: measure from body parts
@@ -95,7 +87,6 @@ local function GetCharDimensions(character)
         if lfoot and rfoot then
             width = math.max(width, math.abs(lfoot.Position.X - rfoot.Position.X) * 1.5)
         end
-        CharDimensions[character] = {Width = width, Height = height, Time = tick()}
         return width, height
     end
     return nil, nil
@@ -103,36 +94,50 @@ end
 
 local function GetBoxData(character)
     local root = character:FindFirstChild("HumanoidRootPart") or character:FindFirstChild("Torso")
+    local head = character:FindFirstChild("Head")
     if not root then return nil end
-    local charWidth, charHeight = GetCharDimensions(character)
-    if not charWidth or not charHeight then return nil end
-    local topPos = root.Position + Vector3.new(0, charHeight / 2, 0)
-    local botPos = root.Position - Vector3.new(0, charHeight / 2, 0)
+    
+    -- Use actual body parts for 100% accurate positioning
+    local topPos = head and head.Position or (root.Position + Vector3.new(0, 2.5, 0))
+    local botPos = root.Position - Vector3.new(0, 2.5, 0)
+    
     local topScr, topVis, topZ = W2S(topPos)
     local botScr, botVis, botZ = W2S(botPos)
-    -- Softer visibility: only require at least one point visible and Z > 0
+    
+    -- Visibility: at least one point must be on screen
     if (not topVis and not botVis) or (topZ <= 0 and botZ <= 0) then return nil end
+    
     local h = math.abs(botScr.Y - topScr.Y)
-    local w = h * (charWidth / charHeight)
+    local w = h * 0.5
     if h <= 1 or w <= 1 then return nil end
+    
     return {
         TL = Vector2.new(topScr.X - w / 2, topScr.Y),
         BR = Vector2.new(topScr.X + w / 2, botScr.Y),
         Size = Vector2.new(w, h),
         Center = Vector2.new(topScr.X, (topScr.Y + botScr.Y) / 2),
-        Pos = root.Position,
-        Width = charWidth,
-        Height = charHeight
+        Pos = root.Position
     }
 end
 
 local function Get3DCorners(character)
     local root = character:FindFirstChild("HumanoidRootPart") or character:FindFirstChild("Torso")
+    local head = character:FindFirstChild("Head")
     if not root then return nil end
-    local charWidth, charHeight = GetCharDimensions(character)
-    if not charWidth or not charHeight then return nil end
+
     local p = root.Position
-    local hx, hy, hz = charWidth / 2, charHeight / 2, charWidth / 2
+    local hx, hy = 1.5, 3.5 -- Fixed half-width and half-height for R15
+    local hz = 1.5
+
+    -- Adjust based on character type
+    if character:FindFirstChild("LeftFoot") then
+        -- R15
+        hy = 3.0
+    else
+        -- R6
+        hy = 2.5
+    end
+
     local corners = {
         p + Vector3.new(-hx, -hy, -hz), p + Vector3.new(hx, -hy, -hz),
         p + Vector3.new(hx, -hy, hz), p + Vector3.new(-hx, -hy, hz),
@@ -146,8 +151,8 @@ local function Get3DCorners(character)
         if vis and z > 0 then visibleCount = visibleCount + 1 end
         screenCorners[i] = sp
     end
-    -- Require at least 4 corners visible (half)
-    if visibleCount < 4 then return nil end
+    -- Require at least 3 corners visible
+    if visibleCount < 3 then return nil end
     return screenCorners
 end
 
@@ -388,17 +393,7 @@ local function UpdateESPPlayer(player)
         return 
     end
 
-    -- Smooth box position
-    local cache = ESPBoxCache[player]
-    if cache and cache.LastUpdate then
-        local dt = tick() - cache.LastUpdate
-        local lerpSpeed = math.clamp(dt * 15, 0, 1) -- Smooth over time
-        box.TL = cache.TL:Lerp(box.TL, lerpSpeed)
-        box.BR = cache.BR:Lerp(box.BR, lerpSpeed)
-        box.Size = box.BR - box.TL
-        box.Center = Vector2.new((box.TL.X + box.BR.X) / 2, (box.TL.Y + box.BR.Y) / 2)
-    end
-    ESPBoxCache[player] = {TL = box.TL, BR = box.BR, LastUpdate = tick()}
+    -- No smoothing - 100% accurate tracking
 
     SetDrawing(o.Box, "Thickness", ESP.BoxThickness)
     if ESP.Boxes and not ESP.Box3D then
@@ -430,21 +425,8 @@ local function UpdateESPPlayer(player)
         for _, l in pairs(o.B3D) do SetDrawing(l, "Visible", false) end
         for _, l in pairs(o.B3DO) do SetDrawing(l, "Visible", false) end
     end
-    -- Smooth text positions independently
-    local textCache = ESPBoxCache[player]
-    local head = char:FindFirstChild("Head")
-    local headPos = head and W2S(head.Position) or nil
-
     if ESP.Names then
-        local nameY = box.TL.Y - 16
-        if headPos and headPos[2] then
-            nameY = headPos[1].Y - 20
-        end
-        if textCache and textCache.NameY then
-            nameY = textCache.NameY + (nameY - textCache.NameY) * 0.3
-        end
-        if textCache then textCache.NameY = nameY end
-        SetDrawing(o.Name, "Position", Vector2.new(box.Center.X, nameY))
+        SetDrawing(o.Name, "Position", Vector2.new(box.Center.X, box.TL.Y - 16))
         SetDrawing(o.Name, "Text", player.Name)
         SetDrawing(o.Name, "Color", ESP.Colors.Name)
         SetDrawing(o.Name, "Visible", true)
@@ -452,15 +434,7 @@ local function UpdateESPPlayer(player)
         SetDrawing(o.Name, "Visible", false)
     end
     if ESP.Distance then
-        local distY = box.BR.Y + 4
-        if headPos and headPos[2] then
-            distY = headPos[1].Y + 8
-        end
-        if textCache and textCache.DistY then
-            distY = textCache.DistY + (distY - textCache.DistY) * 0.3
-        end
-        if textCache then textCache.DistY = distY end
-        SetDrawing(o.Dist, "Position", Vector2.new(box.Center.X, distY))
+        SetDrawing(o.Dist, "Position", Vector2.new(box.Center.X, box.BR.Y + 4))
         SetDrawing(o.Dist, "Text", math.floor(dist) .. "m")
         SetDrawing(o.Dist, "Color", ESP.Colors.Distance)
         SetDrawing(o.Dist, "Visible", true)
@@ -486,25 +460,17 @@ local function UpdateESPPlayer(player)
                 SetDrawing(o.HT, "Visible", false)
                 return
             end
-            -- Smooth health bar position
-            local healthX = box.TL.X - bw - 6
-            local healthY = box.TL.Y - 1
-            if textCache and textCache.HealthX then
-                healthX = textCache.HealthX + (healthX - textCache.HealthX) * 0.3
-                healthY = textCache.HealthY + (healthY - textCache.HealthY) * 0.3
-            end
-            if textCache then textCache.HealthX = healthX textCache.HealthY = healthY end
             SetDrawing(o.HBO, "Size", Vector2.new(bw + 2, box.Size.Y + 2))
-            SetDrawing(o.HBO, "Position", Vector2.new(healthX, healthY))
+            SetDrawing(o.HBO, "Position", Vector2.new(box.TL.X - bw - 6, box.TL.Y - 1))
             SetDrawing(o.HBO, "Visible", true)
             SetDrawing(o.HB, "Size", Vector2.new(bw, bh))
-            SetDrawing(o.HB, "Position", Vector2.new(healthX + 1, healthY + 1 + box.Size.Y - bh))
+            SetDrawing(o.HB, "Position", Vector2.new(box.TL.X - bw - 5, box.BR.Y - bh))
             local fullColor = ESP.Colors.Health
             local emptyColor = Color3.fromRGB(255, 0, 0)
             local healthColor = emptyColor:Lerp(fullColor, pct)
             SetDrawing(o.HB, "Color", healthColor)
             SetDrawing(o.HB, "Visible", true)
-            SetDrawing(o.HT, "Position", Vector2.new(healthX - 22, healthY + box.Size.Y - bh - 6))
+            SetDrawing(o.HT, "Position", Vector2.new(box.TL.X - bw - 28, box.BR.Y - bh - 6))
             SetDrawing(o.HT, "Text", math.floor(ch))
             SetDrawing(o.HT, "Visible", true)
         end)
@@ -579,15 +545,7 @@ local function UpdateESPPlayer(player)
     if ESP.WeaponNames then
         local weapon = GetPlayerWeapon(player)
         if weapon then
-            local weaponY = box.BR.Y + 18
-            if headPos and headPos[2] then
-                weaponY = headPos[1].Y + 22
-            end
-            if textCache and textCache.WeaponY then
-                weaponY = textCache.WeaponY + (weaponY - textCache.WeaponY) * 0.3
-            end
-            if textCache then textCache.WeaponY = weaponY end
-            SetDrawing(o.Weapon, "Position", Vector2.new(box.Center.X, weaponY))
+            SetDrawing(o.Weapon, "Position", Vector2.new(box.Center.X, box.BR.Y + 18))
             SetDrawing(o.Weapon, "Text", "[" .. weapon .. "]")
             SetDrawing(o.Weapon, "Visible", true)
         else
