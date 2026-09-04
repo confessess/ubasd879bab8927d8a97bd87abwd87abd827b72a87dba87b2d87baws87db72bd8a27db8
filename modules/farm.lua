@@ -310,7 +310,7 @@ local function RagebotPullTarget(target)
     if not targetHRP or not myHRP then return end
     local myPos = myHRP.Position
     local myLook = myHRP.CFrame.LookVector
-    local headTargetPos = myPos + (myLook * 4) + Vector3.new(0, 0, 0)
+    local headTargetPos = myPos + (myLook * 2) + Vector3.new(0, 0, 0)
     local headOffset = Vector3.new(0, 1.5, 0)
     if targetHead and targetHRP then
         headOffset = targetHead.Position - targetHRP.Position
@@ -490,10 +490,11 @@ local function RagebotFrameTPStompKill(target)
                 local targetHRP = targetChar:FindFirstChild("HumanoidRootPart")
                 if not targetHRP then break end
 
-                -- FrameTP ONTO ragdolled player
-                myHRP.CFrame = targetHRP.CFrame * CFrame.new(0, 2, 0)
+                -- FrameTP directly ONTO ragdolled player — track every frame
+                myHRP.CFrame = targetHRP.CFrame * CFrame.new(0, 1, 0)
                 myHRP.Velocity = Vector3.new(0, 0, 0)
                 myHRP.AssemblyLinearVelocity = Vector3.new(0, 0, 0)
+                myHRP.RotVelocity = Vector3.new(0, 0, 0)
 
                 pcall(function()
                     mainRemote:FireServer("Stomp")
