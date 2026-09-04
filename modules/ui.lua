@@ -1648,7 +1648,7 @@ function UI.Build()
     local skyThemeDropdown = BuildDropdown(WorldCard, 394, "Sky Theme", Config.World_SkyTheme or "Default",
         {"Default", "Night", "Light", "Blood", "Gray", "DarkNight", "Space", "Test", "Clouds", "Sunset2", "Galaxy2", "Nebula", "Storm2"},
         function(v) Config.World_SkyTheme = v end)
-            -- MOVEMENT PAGE
+                -- MOVEMENT PAGE
     local MovementPage = Pages.Movement
     PageTitle(MovementPage, "Movement", "Speed, fly, jump, and collision modifiers.")
     local MovementScroll = New("ScrollingFrame", {
@@ -1658,20 +1658,18 @@ function UI.Build()
         BorderSizePixel = 0,
         ScrollBarThickness = 5,
         ScrollBarImageColor3 = Color3.fromRGB(145, 75, 255),
-        CanvasSize = UDim2.new(0, 0, 0, 710),
+        CanvasSize = UDim2.new(0, 0, 0, 750),
         ZIndex = 14,
     }, MovementPage)
-    local MovementCard = CreateCard(MovementScroll, UDim2.fromOffset(0, 0), UDim2.new(1, 0, 0, 700))
+    local MovementCard = CreateCard(MovementScroll, UDim2.fromOffset(0, 0), UDim2.new(1, 0, 0, 740))
 
-    -- Movement Section
+    -- Speed Toggle
     CreateToggle(MovementCard, 14, "Speed", Config.Move_SpeedEnabled, "Move_SpeedEnabled", true, function(v)
         Config.Move_SpeedEnabled = v
-        if UI.Movement then
-            UI.Movement.SetSpeedEnabled(v)
-        end
+        if UI.Movement then UI.Movement.SetSpeedEnabled(v) end
     end)
 
-    -- Walk Speed with input
+    -- Walk Speed Slider + Input
     New("TextLabel", {
         Size = UDim2.new(1, -140, 0, 20),
         Position = UDim2.fromOffset(10, 50),
@@ -1745,18 +1743,17 @@ function UI.Build()
         local num = tonumber(walkSpeedInput.Text)
         if num then
             Config.Move_Speed = math.max(math.floor(num), 16)
-            walkSpeedFill.Size = UDim2.new(math.clamp((Config.Move_Speed - 16) / 10000, 0, 1), 0, 1, 0)
+            walkSpeedFill.Size = UDim2.new(math.clamp((Config.Move_Speed - 16) / 284, 0, 1), 0, 1, 0)
         end
     end)
 
+    -- High Jump Toggle
     CreateToggle(MovementCard, 106, "High Jump", Config.Move_HighJumpEnabled, "Move_HighJumpEnabled", true, function(v)
         Config.Move_HighJumpEnabled = v
-        if UI.Movement then
-            UI.Movement.SetHighJumpEnabled(v)
-        end
+        if UI.Movement then UI.Movement.SetHighJumpEnabled(v) end
     end)
 
-    -- Jump Power with input
+    -- Jump Power Slider + Input
     New("TextLabel", {
         Size = UDim2.new(1, -140, 0, 20),
         Position = UDim2.fromOffset(10, 142),
@@ -1830,18 +1827,17 @@ function UI.Build()
         local num = tonumber(jumpPowerInput.Text)
         if num then
             Config.Move_JumpPower = math.max(math.floor(num), 50)
-            jumpPowerFill.Size = UDim2.new(math.clamp((Config.Move_JumpPower - 50) / 10000, 0, 1), 0, 1, 0)
+            jumpPowerFill.Size = UDim2.new(math.clamp((Config.Move_JumpPower - 50) / 250, 0, 1), 0, 1, 0)
         end
     end)
 
+    -- Bunny Hop Toggle
     CreateToggle(MovementCard, 198, "Bunny Hop", Config.Move_BunnyHop, "Move_BunnyHop", true, function(v)
         Config.Move_BunnyHop = v
-        if UI.Movement then
-            UI.Movement.SetBunnyHop(v)
-        end
+        if UI.Movement then UI.Movement.SetBunnyHop(v) end
     end)
 
-    -- Bunny Hop Speed slider
+    -- Bunny Hop Speed Slider + Input
     New("TextLabel", {
         Size = UDim2.new(1, -140, 0, 20),
         Position = UDim2.fromOffset(10, 234),
@@ -1918,23 +1914,23 @@ function UI.Build()
             bhopSpeedFill.Size = UDim2.new(math.clamp((Config.Move_BunnyHopSpeed - 16) / 284, 0, 1), 0, 1, 0)
         end
     end)
+
+    -- No Jump Cooldown Toggle
     CreateToggle(MovementCard, 290, "No Jump Cooldown", Config.Move_NoJumpCooldown, "Move_NoJumpCooldown", true, function(v)
         Config.Move_NoJumpCooldown = v
-        if UI.Movement then
-            UI.Movement.SetNoJumpCooldown(v)
-        end
+        if UI.Movement then UI.Movement.SetNoJumpCooldown(v) end
     end)
+
+    -- Infinite Jump Toggle
     CreateToggle(MovementCard, 326, "Infinite Jump", Config.Move_InfiniteJump, "Move_InfiniteJump", true, function(v)
         Config.Move_InfiniteJump = v
-        if UI.Movement then
-            UI.Movement.SetInfiniteJump(v)
-        end
+        if UI.Movement then UI.Movement.SetInfiniteJump(v) end
     end)
+
+    -- NoClip Toggle
     CreateToggle(MovementCard, 362, "NoClip", Config.Move_NoClip, "Move_NoClip", true, function(v)
         Config.Move_NoClip = v
-        if UI.Movement then
-            UI.Movement.SetNoClip(v)
-        end
+        if UI.Movement then UI.Movement.SetNoClip(v) end
     end)
 
     CreateSeparator(MovementCard, 406)
@@ -1942,18 +1938,17 @@ function UI.Build()
     -- Fly Section
     CreateToggle(MovementCard, 418, "Enable Fly", Config.Move_Fly, "Move_Fly", true, function(v)
         Config.Move_Fly = v
-        if UI.Movement then
-            UI.Movement.SetFly(v)
-        end
+        if UI.Movement then UI.Movement.SetFly(v) end
     end)
+
     local flyMethodDropdown = BuildDropdown(MovementCard, 454, "Fly Method", Config.Move_FlyMethod or "Tween",
         {"Tween", "Velocity", "CFrame"},
         function(v) Config.Move_FlyMethod = v end)
 
-    -- Fly Speed with input — more space after dropdown
+    -- Fly Speed Slider + Input
     New("TextLabel", {
         Size = UDim2.new(1, -140, 0, 20),
-        Position = UDim2.fromOffset(10, 470),
+        Position = UDim2.fromOffset(10, 526),
         BackgroundTransparency = 1,
         Text = "Fly Speed",
         TextColor3 = Color3.fromRGB(200, 190, 215),
@@ -1964,7 +1959,7 @@ function UI.Build()
     }, MovementCard)
     local flySpeedTrack = New("Frame", {
         Size = UDim2.new(1, -160, 0, 5),
-        Position = UDim2.fromOffset(10, 500),
+        Position = UDim2.fromOffset(10, 556),
         BackgroundColor3 = Color3.fromRGB(40, 40, 50),
         BorderSizePixel = 0,
         ZIndex = 16,
@@ -1979,7 +1974,7 @@ function UI.Build()
     Corner(flySpeedFill, 3)
     local flySpeedInput = New("TextBox", {
         Size = UDim2.fromOffset(60, 24),
-        Position = UDim2.new(1, -70, 0, 470),
+        Position = UDim2.new(1, -70, 0, 526),
         BackgroundColor3 = Color3.fromRGB(30, 20, 42),
         BackgroundTransparency = 0.25,
         BorderSizePixel = 0,
@@ -2024,13 +2019,14 @@ function UI.Build()
         local num = tonumber(flySpeedInput.Text)
         if num then
             Config.Move_FlySpeed = math.max(math.floor(num), 1)
-            flySpeedFill.Size = UDim2.new(math.clamp((Config.Move_FlySpeed - 10) / 100000, 0, 1), 0, 1, 0)
+            flySpeedFill.Size = UDim2.new(math.clamp((Config.Move_FlySpeed - 10) / 290, 0, 1), 0, 1, 0)
         end
     end)
 
+    -- WASD Help Text
     New("TextLabel", {
         Size = UDim2.new(1, -20, 0, 16),
-        Position = UDim2.fromOffset(10, 520),
+        Position = UDim2.fromOffset(10, 576),
         BackgroundTransparency = 1,
         Text = "WASD to move, Space up, Shift down",
         TextColor3 = Color3.fromRGB(140, 130, 155),
@@ -2043,11 +2039,11 @@ function UI.Build()
     -- Bottom padding
     New("Frame", {
         Size = UDim2.new(1, 0, 0, 40),
-        Position = UDim2.fromOffset(0, 550),
+        Position = UDim2.fromOffset(0, 610),
         BackgroundTransparency = 1,
         ZIndex = 16,
     }, MovementCard)
--- SETTINGS PAGE
+    -- SETTINGS PAGE
     local SettingsPage = Pages.Settings
     PageTitle(SettingsPage, "Settings", "Interface customization, config management, and safety options.")
     local SettingsScroll = New("ScrollingFrame", {
@@ -2057,12 +2053,12 @@ function UI.Build()
         BorderSizePixel = 0,
         ScrollBarThickness = 5,
         ScrollBarImageColor3 = Color3.fromRGB(145, 75, 255),
-        CanvasSize = UDim2.new(0, 0, 0, 800),
+        CanvasSize = UDim2.new(0, 0, 0, 850),
         ZIndex = 14,
     }, SettingsPage)
-    local SettingsCard = CreateCard(SettingsScroll, UDim2.fromOffset(0, 0), UDim2.new(1, 0, 0, 790))
+    local SettingsCard = CreateCard(SettingsScroll, UDim2.fromOffset(0, 0), UDim2.new(1, 0, 0, 840))
 
-    -- Keybind Section
+    -- Keybinds Section
     New("TextLabel", {
         Size = UDim2.new(1, -20, 0, 20),
         Position = UDim2.fromOffset(10, 10),
@@ -2075,6 +2071,7 @@ function UI.Build()
         ZIndex = 16,
     }, SettingsCard)
 
+    -- Menu Toggle Key
     New("TextLabel", {
         Size = UDim2.new(1, -140, 0, 25),
         Position = UDim2.fromOffset(15, 36),
@@ -2139,7 +2136,7 @@ function UI.Build()
 
     CreateSeparator(SettingsCard, 110)
 
-    -- GUI Customization
+    -- GUI Customization Section
     New("TextLabel", {
         Size = UDim2.new(1, -20, 0, 20),
         Position = UDim2.fromOffset(10, 122),
@@ -2152,7 +2149,7 @@ function UI.Build()
         ZIndex = 16,
     }, SettingsCard)
 
-    -- GUI Scale
+    -- GUI Scale Slider + Input
     New("TextLabel", {
         Size = UDim2.new(1, -140, 0, 20),
         Position = UDim2.fromOffset(10, 148),
@@ -2204,7 +2201,6 @@ function UI.Build()
         Config.GUIScale = val
         guiScaleFill.Size = UDim2.new((val - 0.5) / 1.5, 0, 1, 0)
         guiScaleInput.Text = string.format("%.1f", val)
-        -- Apply scale
         if UI.Main then
             UI.Main.Size = UDim2.fromOffset(760 * val, 540 * val)
         end
@@ -2231,42 +2227,42 @@ function UI.Build()
         if num then setGUIScale(num) end
     end)
 
+    -- Show Hotkeys Toggle
     CreateToggle(SettingsCard, 196, "Show Hotkeys", Config.ShowHotkeys, "ShowHotkeys", false, function(v)
         Config.ShowHotkeys = v
         UI.UpdateHotkeyDisplay()
     end)
 
+    -- Auto-hide on Screenshot Toggle
     CreateToggle(SettingsCard, 232, "Auto-hide on Screenshot", Config.AutoHideOnScreenshot, "AutoHideOnScreenshot", false, function(v)
         Config.AutoHideOnScreenshot = v
     end)
+
+    -- GUI Window Mode Toggle
     CreateToggle(SettingsCard, 268, "GUI Window Mode", Config.GUIWindow, "GUIWindow", false, function(v)
         Config.GUIWindow = v
-        -- Apply window mode
         if UI.Main then
             if v then
-                -- Window mode — smaller, draggable
                 UI.Main.Size = UDim2.fromOffset(500 * (Config.GUIScale or 1), 400 * (Config.GUIScale or 1))
                 UI.Main.Position = UDim2.new(0.5, -250 * (Config.GUIScale or 1), 0.5, -200 * (Config.GUIScale or 1))
                 UI.Main.AnchorPoint = Vector2.new(0, 0)
             else
-                -- Fullscreen mode
                 UI.Main.Size = UDim2.fromOffset(760 * (Config.GUIScale or 1), 540 * (Config.GUIScale or 1))
                 UI.Main.Position = UDim2.fromScale(0.5, 0.5)
                 UI.Main.AnchorPoint = Vector2.new(0.5, 0.5)
             end
         end
-        -- Hide background in window mode
         if UI.Background then
             UI.Background.Visible = not v and UI.GUIVisible
         end
     end)
 
-    CreateSeparator(SettingsCard, 276)
+    CreateSeparator(SettingsCard, 312)
 
-    -- Performance
+    -- Performance Section
     New("TextLabel", {
         Size = UDim2.new(1, -20, 0, 20),
-        Position = UDim2.fromOffset(10, 288),
+        Position = UDim2.fromOffset(10, 324),
         BackgroundTransparency = 1,
         Text = "Performance",
         TextColor3 = Color3.fromRGB(245, 220, 255),
@@ -2276,10 +2272,10 @@ function UI.Build()
         ZIndex = 16,
     }, SettingsCard)
 
-    -- FPS Cap
+    -- FPS Cap Slider + Input
     New("TextLabel", {
         Size = UDim2.new(1, -140, 0, 20),
-        Position = UDim2.fromOffset(10, 314),
+        Position = UDim2.fromOffset(10, 350),
         BackgroundTransparency = 1,
         Text = "FPS Cap (0 = uncapped)",
         TextColor3 = Color3.fromRGB(200, 190, 215),
@@ -2291,7 +2287,7 @@ function UI.Build()
 
     local fpsTrack = New("Frame", {
         Size = UDim2.new(1, -160, 0, 5),
-        Position = UDim2.fromOffset(10, 344),
+        Position = UDim2.fromOffset(10, 380),
         BackgroundColor3 = Color3.fromRGB(40, 40, 50),
         BorderSizePixel = 0,
         ZIndex = 16,
@@ -2308,7 +2304,7 @@ function UI.Build()
 
     local fpsInput = New("TextBox", {
         Size = UDim2.fromOffset(60, 24),
-        Position = UDim2.new(1, -70, 0, 314),
+        Position = UDim2.new(1, -70, 0, 350),
         BackgroundColor3 = Color3.fromRGB(30, 20, 42),
         BackgroundTransparency = 0.25,
         BorderSizePixel = 0,
@@ -2328,7 +2324,6 @@ function UI.Build()
         Config.FPSCap = val
         fpsFill.Size = UDim2.new(val / 480, 0, 1, 0)
         fpsInput.Text = tostring(val)
-        -- Apply FPS cap
         if setfpscap then
             setfpscap(val > 0 and val or 480)
         end
@@ -2355,12 +2350,12 @@ function UI.Build()
         if num then setFPSCap(num) end
     end)
 
-    CreateSeparator(SettingsCard, 362)
+    CreateSeparator(SettingsCard, 398)
 
-    -- Notifications
+    -- Notifications Section
     New("TextLabel", {
         Size = UDim2.new(1, -20, 0, 20),
-        Position = UDim2.fromOffset(10, 374),
+        Position = UDim2.fromOffset(10, 410),
         BackgroundTransparency = 1,
         Text = "Notifications",
         TextColor3 = Color3.fromRGB(245, 220, 255),
@@ -2370,14 +2365,15 @@ function UI.Build()
         ZIndex = 16,
     }, SettingsCard)
 
-    CreateToggle(SettingsCard, 400, "Show Notifications", Config.ShowNotifications, "ShowNotifications", false, function(v)
+    -- Show Notifications Toggle
+    CreateToggle(SettingsCard, 436, "Show Notifications", Config.ShowNotifications, "ShowNotifications", false, function(v)
         Config.ShowNotifications = v
     end)
 
-    -- Notification Duration
+    -- Notification Duration Slider + Input
     New("TextLabel", {
         Size = UDim2.new(1, -140, 0, 20),
-        Position = UDim2.fromOffset(10, 436),
+        Position = UDim2.fromOffset(10, 472),
         BackgroundTransparency = 1,
         Text = "Notification Duration",
         TextColor3 = Color3.fromRGB(200, 190, 215),
@@ -2389,7 +2385,7 @@ function UI.Build()
 
     local notifTrack = New("Frame", {
         Size = UDim2.new(1, -160, 0, 5),
-        Position = UDim2.fromOffset(10, 466),
+        Position = UDim2.fromOffset(10, 502),
         BackgroundColor3 = Color3.fromRGB(40, 40, 50),
         BorderSizePixel = 0,
         ZIndex = 16,
@@ -2406,7 +2402,7 @@ function UI.Build()
 
     local notifInput = New("TextBox", {
         Size = UDim2.fromOffset(60, 24),
-        Position = UDim2.new(1, -70, 0, 436),
+        Position = UDim2.new(1, -70, 0, 472),
         BackgroundColor3 = Color3.fromRGB(30, 20, 42),
         BackgroundTransparency = 0.25,
         BorderSizePixel = 0,
@@ -2449,12 +2445,12 @@ function UI.Build()
         if num then setNotifDuration(num) end
     end)
 
-    CreateSeparator(SettingsCard, 484)
+    CreateSeparator(SettingsCard, 520)
 
-    -- Config Management
+    -- Config Management Section
     New("TextLabel", {
         Size = UDim2.new(1, -20, 0, 20),
-        Position = UDim2.fromOffset(10, 552),
+        Position = UDim2.fromOffset(10, 532),
         BackgroundTransparency = 1,
         Text = "Config Management",
         TextColor3 = Color3.fromRGB(245, 220, 255),
@@ -2464,7 +2460,8 @@ function UI.Build()
         ZIndex = 16,
     }, SettingsCard)
 
-    CreateActionButton(SettingsCard, 522, "Save Config", function()
+    -- Save Config Button
+    CreateActionButton(SettingsCard, 558, "Save Config", function()
         if writefile then
             local configData = {}
             for k, v in pairs(Config) do
@@ -2482,7 +2479,6 @@ function UI.Build()
                 writefile("starscc_config.json", game:GetService("HttpService"):JSONEncode(configData))
             end)
             if success then
-                -- Show success notification
                 print("[Stars.cc] Config saved!")
             else
                 print("[Stars.cc] Failed to save: " .. tostring(err))
@@ -2492,7 +2488,8 @@ function UI.Build()
         end
     end)
 
-    CreateActionButton(SettingsCard, 558, "Load Config", function()
+    -- Load Config Button
+    CreateActionButton(SettingsCard, 594, "Load Config", function()
         if readfile then
             local success, err = pcall(function()
                 local data = readfile("starscc_config.json")
@@ -2519,8 +2516,8 @@ function UI.Build()
         end
     end)
 
-    CreateActionButton(SettingsCard, 594, "Reset to Defaults", function()
-        -- Reset all config values to defaults
+    -- Reset to Defaults Button
+    CreateActionButton(SettingsCard, 630, "Reset to Defaults", function()
         for k, v in pairs(Config) do
             if typeof(v) == "boolean" then
                 Config[k] = false
@@ -2532,6 +2529,7 @@ function UI.Build()
                 elseif k == "Move_Speed" then Config[k] = 50
                 elseif k == "Move_JumpPower" then Config[k] = 100
                 elseif k == "Move_FlySpeed" then Config[k] = 50
+                elseif k == "Move_BunnyHopSpeed" then Config[k] = 60
                 elseif k == "FarmDistance" then Config[k] = 12
                 elseif k == "GUIScale" then Config[k] = 1.0
                 elseif k == "FPSCap" then Config[k] = 0
@@ -2557,11 +2555,10 @@ function UI.Build()
     -- Bottom padding
     New("Frame", {
         Size = UDim2.new(1, 0, 0, 40),
-        Position = UDim2.fromOffset(0, 640),
+        Position = UDim2.fromOffset(0, 680),
         BackgroundTransparency = 1,
         ZIndex = 16,
     }, SettingsCard)
-
 -- Hotkey Display
     local HotkeyDisplay = New("Frame", {
         Name = "HotkeyDisplay",

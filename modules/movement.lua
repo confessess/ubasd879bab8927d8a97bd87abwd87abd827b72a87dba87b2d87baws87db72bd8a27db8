@@ -102,17 +102,17 @@ local OriginalJumpPower = nil
 local WasOnGround = true
 
 local function DoRealisticJump(root, hum)
-    -- Calculate jump velocity like Roblox does
-    -- JumpPower 50 = ~7.5 studs jump height
-    -- Use proper physics: v = sqrt(2 * g * h)
-    local jumpHeight = 7.2 -- Default Roblox jump height in studs
-    local gravity = Workspace.Gravity -- Usually 196.2
+    -- Roblox default jump: JumpPower 50 = ~7.2 studs height
+    -- Velocity = sqrt(2 * gravity * height)
+    local gravity = Workspace.Gravity or 196.2
+    local jumpHeight = 7.2
     local jumpVelocity = math.sqrt(2 * gravity * jumpHeight)
 
-    -- Apply velocity with slight randomization for realism
-    local randomX = (math.random() - 0.5) * 0.1
-    local randomZ = (math.random() - 0.5) * 0.1
+    -- Minimal randomization — just enough to feel natural
+    local randomX = (math.random() - 0.5) * 0.02
+    local randomZ = (math.random() - 0.5) * 0.02
 
+    -- Preserve horizontal momentum, apply vertical jump
     root.AssemblyLinearVelocity = Vector3.new(
         root.AssemblyLinearVelocity.X + randomX,
         jumpVelocity,
@@ -220,7 +220,7 @@ local function DoBunnyHop()
     -- Auto jump when on ground — realistic feel, no cooldown
     if hum.FloorMaterial ~= Enum.Material.Air then
         local now = tick()
-        if now - LastBhopJump > 0.03 then
+        if now - LastBhopJump > 0.05 then
             DoRealisticJump(root, hum)
             LastBhopJump = now
         end
