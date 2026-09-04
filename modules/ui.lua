@@ -2657,6 +2657,38 @@ function UI.Build()
     }, SettingsCard)
 
     -- Save Config Button
+    local function ShowNotification(text, color)
+        if not Config.ShowNotifications then return end
+        local notif = New("Frame", {
+            Size = UDim2.new(0, 300, 0, 36),
+            Position = UDim2.new(0.5, -150, 1, -60),
+            BackgroundColor3 = Theme.BgCard,
+            BackgroundTransparency = 0.15,
+            BorderSizePixel = 0,
+            ZIndex = 200,
+        }, ScreenGui)
+        Corner(notif, 8)
+        Stroke(notif, 0.6, 1, color or Theme.Accent)
+        local notifText = New("TextLabel", {
+            Size = UDim2.new(1, -20, 1, 0),
+            Position = UDim2.fromOffset(10, 0),
+            BackgroundTransparency = 1,
+            Text = text,
+            TextColor3 = color or Theme.TextLabel,
+            TextSize = 12,
+            Font = Enum.Font.GothamMedium,
+            TextXAlignment = Enum.TextXAlignment.Left,
+            ZIndex = 201,
+        }, notif)
+        Tween(notif, {Position = UDim2.new(0.5, -150, 1, -100)}, 0.3):Play()
+        task.delay(Config.NotificationDuration or 2.5, function()
+            Tween(notif, {Position = UDim2.new(0.5, -150, 1, -40)}, 0.3):Play()
+            task.delay(0.3, function()
+                notif:Destroy()
+            end)
+        end)
+    end
+
     CreateActionButton(SettingsCard, 530, "Save Config", function()
         if writefile then
             local configData = {}
