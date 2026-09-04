@@ -449,14 +449,18 @@ local function RagebotFrameTPStompKill(target)
             local currentHead = GetTargetHead(target)
             local currentHRP = GetTargetHRP(target)
             if currentHead and currentHRP then
-                -- TP extremely close behind — head fills entire screen
-                local behindPos = currentHead.CFrame * CFrame.new(0, 0, -0.1)
-                myHRP.CFrame = behindPos
+                -- Get direction FROM target TO us (behind them)
+                local targetLook = currentHead.CFrame.LookVector
+                local behindDirection = -targetLook -- Opposite of where they're facing
+
+                -- TP 0.5 studs behind their head
+                local behindPos = currentHead.Position + (behindDirection * 0.5)
+                myHRP.CFrame = CFrame.new(behindPos, currentHead.Position)
                 myHRP.Velocity = Vector3.new(0, 0, 0)
                 myHRP.AssemblyLinearVelocity = Vector3.new(0, 0, 0)
-                -- Camera just behind their head looking at it — head fills screen
-                local camPos = currentHead.Position - (currentHead.CFrame.LookVector * 0.2)
-                Camera.CFrame = CFrame.new(camPos, currentHead.Position)
+
+                -- Camera at our position looking AT their head
+                Camera.CFrame = CFrame.new(behindPos, currentHead.Position)
             end
 
             if gun and gun.Parent then
