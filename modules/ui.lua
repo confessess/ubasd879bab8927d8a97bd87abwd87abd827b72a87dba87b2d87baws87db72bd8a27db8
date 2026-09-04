@@ -2675,12 +2675,12 @@ function UI.Build()
                 writefile("starscc_config.json", game:GetService("HttpService"):JSONEncode(configData))
             end)
             if success then
-                print("[Stars.cc] Config saved!")
+                ShowNotification("Config saved successfully!", Theme.SuccessGreen)
             else
-                print("[Stars.cc] Failed to save: " .. tostring(err))
+                ShowNotification("Failed to save: " .. tostring(err), Theme.ErrorRed)
             end
         else
-            print("[Stars.cc] writefile not supported")
+            ShowNotification("writefile not supported by your executor", Theme.ErrorRed)
         end
     end)
 
@@ -2703,12 +2703,19 @@ function UI.Build()
                 end
             end)
             if success then
-                print("[Stars.cc] Config loaded! Restart script to apply.")
+                -- Apply loaded theme and background image immediately
+                if Config.GUIThemeName then
+                    UI.ApplyTheme(Config.GUIThemeName)
+                end
+                if Config.GUIBackgroundImage then
+                    UI.ApplyBackgroundImage()
+                end
+                ShowNotification("Config loaded and applied!", Theme.SuccessGreen)
             else
-                print("[Stars.cc] Failed to load: " .. tostring(err))
+                ShowNotification("Failed to load: " .. tostring(err), Theme.ErrorRed)
             end
         else
-            print("[Stars.cc] readfile not supported")
+            ShowNotification("readfile not supported by your executor", Theme.ErrorRed)
         end
     end)
 
@@ -2745,7 +2752,12 @@ function UI.Build()
         end
         Config.ToggleKey = Enum.KeyCode.RightShift
         Config.PanicKey = nil
-        print("[Stars.cc] Config reset to defaults! Restart script to apply.")
+        Config.GUIThemeName = "Purple"
+        Config.GUIBackgroundImage = "None"
+        -- Apply defaults immediately
+        UI.ApplyTheme("Purple")
+        UI.ApplyBackgroundImage()
+        ShowNotification("Config reset to defaults!", Theme.SuccessGreen)
     end)
 
 
