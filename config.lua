@@ -83,7 +83,7 @@ return {
     FarmPullSpeed = 1,
     RagebotEnabled = false,
     RagebotEnabledKey = nil,
-    RagebotMethod = "FarmVoid", -- "FarmVoid", "FrameTPStomp", or "AntiBulletTP"
+    RagebotMethod = "FarmVoid",
     RagebotSelfVoid = false,
 
     -- Misc
@@ -140,7 +140,7 @@ return {
     GUIWindow = false,
     GUITheme = Color3.fromRGB(145, 75, 255),
     PanicKey = nil,
-    FPSCap = 0, -- 0 = uncapped
+    FPSCap = 0,
     AutoHideOnScreenshot = false,
     ShowNotifications = false,
     NotificationDuration = 2.5,
