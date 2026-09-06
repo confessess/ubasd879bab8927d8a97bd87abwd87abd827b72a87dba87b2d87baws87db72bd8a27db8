@@ -1308,7 +1308,7 @@ function UI.Build()
         Size = UDim2.new(1, -20, 0, 20),
         Position = UDim2.fromOffset(10, 466),
         BackgroundTransparency = 1,
-        Text = "Real Silent Aim",
+        Text = "Silent Aim",
         TextColor3 = Theme.TextSection,
         TextSize = 14,
         Font = Enum.Font.GothamBold,
@@ -1316,7 +1316,7 @@ function UI.Build()
         ZIndex = 16,
     }, CombatCard)
 
-    CreateToggle(CombatCard, 490, "Enable Real Silent Aim", Config.RealSilentAim_Enabled, "RealSilentAim", true, function(v)
+    CreateToggle(CombatCard, 490, "Enable Silent Aim", Config.RealSilentAim_Enabled, "RealSilentAim", true, function(v)
         Config.RealSilentAim_Enabled = v
         if UI.Combat then
             UI.Combat.SetRealSilentAimEnabled(v)
