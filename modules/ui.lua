@@ -1542,6 +1542,8 @@ function UI.Build()
             UI.Targeting.StopSpectate()
         end
     end)
+        local PlayerList, PanelPlayerList
+
     CreateToggle(TargetCard, 150, "Multi Target", Config.MultiTarget or false, "MultiTarget", false, function(v)
         Config.MultiTarget = v
         if UI.Targeting then
@@ -1571,7 +1573,7 @@ function UI.Build()
         TextXAlignment = Enum.TextXAlignment.Left,
         ZIndex = 16,
     }, TargetCard)
-    local PlayerList = New("ScrollingFrame", {
+    PlayerList = New("ScrollingFrame", {
         Size = UDim2.new(1, -20, 0, 160),
         Position = UDim2.fromOffset(10, 246),
         BackgroundColor3 = Theme.BgList,
@@ -1814,7 +1816,7 @@ function UI.Build()
         TextXAlignment = Enum.TextXAlignment.Left,
         ZIndex = 61,
     }, SpectatePanel)
-    local PanelPlayerList = New("ScrollingFrame", {
+    PanelPlayerList = New("ScrollingFrame", {
         Size = UDim2.new(1, -20, 1, -108),
         Position = UDim2.fromOffset(10, 102),
         BackgroundColor3 = Theme.BgList,

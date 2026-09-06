@@ -473,7 +473,7 @@ local function RagebotFrameTPStompKill(target)
         local mainRemote = ReplicatedStorage:FindFirstChild("MainRemotes") and ReplicatedStorage.MainRemotes:FindFirstChild("MainRemoteEvent")
         if mainRemote then
             local stompStart = tick()
-            while tick() - stompStart < 1.5 do
+            while tick() - stompStart < 4 do
                 if not Farm.Config.RagebotEnabled then break end
                 local targetChar = target.Character
                 if not targetChar then break end
