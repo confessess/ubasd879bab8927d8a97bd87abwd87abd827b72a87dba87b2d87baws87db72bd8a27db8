@@ -6,12 +6,76 @@ local Camera = Workspace.CurrentCamera
 
 local Targeting = {
     SelectedTarget = nil,
+    SelectedTargets = {},
+    MultiTargetEnabled = false,
+    CurrentTargetIndex = 0,
     HighlightBox = nil,
     Config = nil,
 }
 
 function Targeting.SetConfig(config)
     Targeting.Config = config
+end
+
+function Targeting.AddTarget(player)
+    if not player then return end
+    for _, p in ipairs(Targeting.SelectedTargets) do
+        if p == player then return end
+    end
+    table.insert(Targeting.SelectedTargets, player)
+end
+
+function Targeting.RemoveTarget(player)
+    for i, p in ipairs(Targeting.SelectedTargets) do
+        if p == player then
+            table.remove(Targeting.SelectedTargets, i)
+            return
+        end
+    end
+end
+
+function Targeting.IsTargetSelected(player)
+    for _, p in ipairs(Targeting.SelectedTargets) do
+        if p == player then return true end
+    end
+    return false
+end
+
+function Targeting.ClearTargets()
+    Targeting.SelectedTargets = {}
+    Targeting.CurrentTargetIndex = 0
+end
+
+function Targeting.GetNextValidTarget()
+    if not Targeting.MultiTargetEnabled or #Targeting.SelectedTargets == 0 then
+        local t = Targeting.SelectedTarget
+        if t and t.Parent and t.Character then
+            local hum = t.Character:FindFirstChildOfClass("Humanoid")
+            if hum and hum.Health > 0 then
+                return t
+            end
+        end
+        return nil
+    end
+    local valid = {}
+    for _, plr in ipairs(Targeting.SelectedTargets) do
+        if plr and plr.Parent and plr.Character then
+            local hum = plr.Character:FindFirstChildOfClass("Humanoid")
+            if hum and hum.Health > 0 then
+                table.insert(valid, plr)
+            end
+        end
+    end
+    Targeting.SelectedTargets = valid
+    if #valid == 0 then
+        Targeting.CurrentTargetIndex = 0
+        return nil
+    end
+    Targeting.CurrentTargetIndex = (Targeting.CurrentTargetIndex or 0) + 1
+    if Targeting.CurrentTargetIndex > #valid then
+        Targeting.CurrentTargetIndex = 1
+    end
+    return valid[Targeting.CurrentTargetIndex]
 end
 
 local function getCharacterPart(char, partName)
@@ -28,6 +92,21 @@ end
 function Targeting.GetTarget()
     local Config = Targeting.Config
     if not Config then return nil end
+
+    if Targeting.MultiTargetEnabled then
+        local mt = Targeting.GetNextValidTarget()
+        if mt then
+            local char = mt.Character
+            if char then
+                local hum = char:FindFirstChildOfClass("Humanoid")
+                if hum and hum.Health > 0 then
+                    return getCharacterPart(char, Config.TargetPart)
+                end
+            end
+        end
+        return nil
+    end
+
     if Config.TargetMode == "Selected" and Targeting.SelectedTarget then
         local char = Targeting.SelectedTarget.Character
         if char then
@@ -134,18 +213,35 @@ function Targeting.RefreshPlayerList(container, onSelect)
         if plr ~= LocalPlayer then
             local btn = Instance.new("TextButton")
             btn.Size = UDim2.new(1, 0, 0, 24)
-            btn.Position = UDim2.new(0, 0, 0, y)
-            btn.BackgroundColor3 = (Targeting.SelectedTarget == plr) and Color3.fromRGB(70, 100, 160) or Color3.fromRGB(35, 35, 45)
+            btn.Position = UDim2.fromOffset(0, y)
+
+            local isSelected = false
+            if Targeting.MultiTargetEnabled then
+                isSelected = Targeting.IsTargetSelected(plr)
+            else
+                isSelected = (Targeting.SelectedTarget == plr)
+            end
+
+            btn.BackgroundColor3 = isSelected and Color3.fromRGB(70, 100, 160) or Color3.fromRGB(35, 35, 45)
             btn.Text = plr.DisplayName
             btn.TextColor3 = Color3.fromRGB(200, 200, 215)
             btn.TextSize = 11
             btn.Font = Enum.Font.Gotham
             btn.Parent = container
-            local corner = Instance.new("UICorner", btn)
+            local corner = Instance.new("UICorner")
             corner.CornerRadius = UDim.new(0, 4)
+            corner.Parent = btn
             btn.MouseButton1Click:Connect(function()
-                Targeting.SelectedTarget = plr
-                Targeting.Config.TargetMode = "Selected"
+                if Targeting.MultiTargetEnabled then
+                    if Targeting.IsTargetSelected(plr) then
+                        Targeting.RemoveTarget(plr)
+                    else
+                        Targeting.AddTarget(plr)
+                    end
+                else
+                    Targeting.SelectedTarget = plr
+                    Targeting.Config.TargetMode = "Selected"
+                end
                 onSelect()
             end)
             y = y + 26

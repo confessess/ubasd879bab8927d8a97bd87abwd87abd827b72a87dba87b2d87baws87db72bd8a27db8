@@ -1524,10 +1524,10 @@ function UI.Build()
     CreateSlider(VisualsCard, 844, "Head Dot Size", 1, 30, math.floor(Config.ESP_HeadDotSize * 10), function(v)
         Config.ESP_HeadDotSize = v / 10
     end)
-    -- TARGET PAGE
+        -- TARGET PAGE
     local TargetPage = Pages.Target
     PageTitle(TargetPage, "Target", "Player selection, part targeting, and spectate.")
-    local TargetCard = CreateCard(TargetPage, UDim2.fromOffset(10, 72), UDim2.new(1, -20, 0, 310))
+    local TargetCard = CreateCard(TargetPage, UDim2.fromOffset(10, 72), UDim2.new(1, -20, 0, 410))
     local targetPartDropdown = BuildDropdown(TargetCard, 14, "Target Part", Config.TargetPart,
         {"Head", "HumanoidRootPart", "Torso", "UpperTorso", "LowerTorso", "LeftLeg", "RightLeg"},
         function(v) Config.TargetPart = v end)
@@ -1542,11 +1542,29 @@ function UI.Build()
             UI.Targeting.StopSpectate()
         end
     end)
+    CreateToggle(TargetCard, 150, "Multi Target", Config.MultiTarget or false, "MultiTarget", false, function(v)
+        Config.MultiTarget = v
+        if UI.Targeting then
+            UI.Targeting.MultiTargetEnabled = v
+            if not v then
+                UI.Targeting.ClearTargets()
+            end
+            UI.Targeting.RefreshPlayerList(PlayerList, refreshAllLists)
+            UI.Targeting.RefreshPlayerList(PanelPlayerList, refreshAllLists)
+        end
+    end)
+    CreateActionButton(TargetCard, 186, "Clear All Targets", function()
+        if UI.Targeting then
+            UI.Targeting.ClearTargets()
+            UI.Targeting.RefreshPlayerList(PlayerList, refreshAllLists)
+            UI.Targeting.RefreshPlayerList(PanelPlayerList, refreshAllLists)
+        end
+    end)
     New("TextLabel", {
         Size = UDim2.new(1, -20, 0, 18),
-        Position = UDim2.fromOffset(10, 152),
+        Position = UDim2.fromOffset(10, 224),
         BackgroundTransparency = 1,
-        Text = "Player List",
+        Text = "Player List (Click to select / deselect)",
         TextColor3 = Theme.PickerLabel,
         TextSize = 10,
         Font = Enum.Font.GothamBold,
@@ -1554,8 +1572,8 @@ function UI.Build()
         ZIndex = 16,
     }, TargetCard)
     local PlayerList = New("ScrollingFrame", {
-        Size = UDim2.new(1, -20, 0, 120),
-        Position = UDim2.fromOffset(10, 172),
+        Size = UDim2.new(1, -20, 0, 160),
+        Position = UDim2.fromOffset(10, 246),
         BackgroundColor3 = Theme.BgList,
         BackgroundTransparency = 0.3,
         BorderSizePixel = 0,

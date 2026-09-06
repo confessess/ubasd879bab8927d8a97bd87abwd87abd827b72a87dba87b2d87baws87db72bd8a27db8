@@ -15,13 +15,29 @@ return {
 
     -- Aimbot
     Aimbot_Enabled = false,
-    SilentAim_Enabled = false,
-    SilentAim_FOV = 120,
-    SilentAim_HitChance = 100,
-    SilentAim_TargetPart = "Head",
-    SilentAim_WallCheck = false,
-    SilentAim_TeamCheck = false,
-    SilentAim_ShowFOV = false,
+   
+
+    -- Real Silent Aim 
+    RealSilentAim_Enabled = false,
+    RealSilentAim_FOV = 130,
+    RealSilentAim_TargetPart = "Head",
+    RealSilentAim_HitChance = 100,
+    RealSilentAim_WallCheck = false,
+    RealSilentAim_TeamCheck = false,
+    RealSilentAim_ShowFOV = true,
+    RealSilentAim_EnabledKey = nil,
+
+    -- hitbox expander
+    HitboxExpander_Enabled = false,
+    HitboxExpander_FOV = 120,
+    HitboxExpander_HitChance = 100,
+    HitboxExpander_TargetPart = "Head",
+    HitboxExpander_WallCheck = false,
+    HitboxExpander_TeamCheck = false,
+    HitboxExpander_ShowFOV = false,
+    HitboxExpander_EnabledKey = nil,
+
+
     Aimbot_ToggleMode = false,
     Aimbot_StickyTarget = false,
     Aimbot_Smoothness = 15,
