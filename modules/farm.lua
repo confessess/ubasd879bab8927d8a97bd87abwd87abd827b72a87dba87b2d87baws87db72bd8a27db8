@@ -372,35 +372,63 @@ end
 
 local function RagebotKillLoop()
     if not Farm.Config or not Farm.Config.RagebotEnabled then return end
-    if Farm.RagebotKillInProgress then return end
     
-    -- Don't attempt kills while dead/respawning
+    -- Don't attempt while local player is dead
     local myHRP = GetHRP()
     local myHum = GetHumanoid()
     if not myHRP or not myHum or myHum.Health <= 0 then return end
     
-    Farm.RagebotKillInProgress = true
+    -- Already have a kill in flight? Let it finish, but keep heartbeat scanning
+    if Farm.RagebotKillInProgress then return end
     
-    local success, killed = pcall(function()
-        local target = Farm.GetSelectedTarget()
-        if not target then return false end
+    local target = Farm.GetSelectedTarget()
+    if not target then return end
+    
+    -- Skip invalid targets immediately so we cycle to next target fast
+    if Farm.Config.RagebotMethod ~= "FrameTPStomp" then
+        if not IsTargetAlive(target) or IsTargetKnocked(target) then
+            return
+        end
+    else
+        -- FrameTPStomp: only skip if fully dead (not knocked)
+        if not IsTargetAlive(target) and not IsTargetKnocked(target) then
+            return
+        end
+    end
+    
+    -- Spawn kill attempt asynchronously — heartbeat stays free to rescan
+    task.spawn(function()
+        Farm.RagebotKillInProgress = true
         
-        -- FrameTPStomp needs to handle knocked targets (stomp phase)
-        -- Other methods should skip dead/knocked
-        if Farm.Config.RagebotMethod == "FrameTPStomp" then
-            if not IsTargetAlive(target) then return false end
-            return RagebotFrameTPStompKill(target)
-        else
-            if not IsTargetAlive(target) or IsTargetKnocked(target) then
-                return false
-            end
-            if Farm.Config.RagebotMethod == "AntiBulletTP" then
+        local success, killed = pcall(function()
+            if Farm.Config.RagebotMethod == "FrameTPStomp" then
+                return RagebotFrameTPStompKill(target)
+            elseif Farm.Config.RagebotMethod == "AntiBulletTP" then
                 return RagebotAntiBulletTP(target)
             else
                 return RagebotShootTarget(target)
             end
+        end)
+        
+        if not success then
+            warn("[Ragebot] Kill error: " .. tostring(killed))
+            killed = false
         end
+        
+        if killed and Farm.Config.RagebotMethod ~= "AntiBulletTP" then
+            RagebotConstantDeath(target)
+        end
+        
+        Farm.RagebotKillInProgress = false
     end)
+end
+    
+    if killed and Farm.Config.RagebotMethod ~= "AntiBulletTP" then
+        RagebotConstantDeath(target)
+    end
+    
+    Farm.RagebotKillInProgress = false
+end
     
     if not success then
         warn("[Ragebot] Kill error: " .. tostring(killed))
