@@ -261,9 +261,11 @@ local function RagebotEquipTool(tool)
     local myChar = LocalPlayer.Character
     if not myChar then return false end
     local current = myChar:FindFirstChildOfClass("Tool")
-    if current then current.Parent = LocalPlayer.Backpack end
-    tool.Parent = myChar
-    return true
+    if current then
+        pcall(function() current.Parent = LocalPlayer.Backpack end)
+    end
+    local success = pcall(function() tool.Parent = myChar end)
+    return success
 end
 
 local function RagebotUnequipAll()
@@ -368,33 +370,48 @@ local function RagebotShootTarget(target)
     return targetHum.Health <= 0 or IsTargetKnocked(target)
 end
 
-local function RagebotConstantDeath(target)
-    task.spawn(function()
-        local maxWait = 3
-        local startTime = tick()
-        while tick() - startTime < maxWait do
-            if not Farm.Config or not Farm.Config.RagebotEnabled then return end
-            if IsTargetAlive(target) and not IsTargetKnocked(target) then
-                pcall(function() LocalPlayer:LoadCharacter() end)
-                return
+local function RagebotKillLoop()
+    if not Farm.Config or not Farm.Config.RagebotEnabled then return end
+    if Farm.RagebotKillInProgress then return end
+    
+    -- Don't attempt kills while dead/respawning
+    local myHRP = GetHRP()
+    local myHum = GetHumanoid()
+    if not myHRP or not myHum or myHum.Health <= 0 then return end
+    
+    Farm.RagebotKillInProgress = true
+    
+    local success, killed = pcall(function()
+        local target = Farm.GetSelectedTarget()
+        if not target then return false end
+        
+        -- FrameTPStomp needs to handle knocked targets (stomp phase)
+        -- Other methods should skip dead/knocked
+        if Farm.Config.RagebotMethod == "FrameTPStomp" then
+            if not IsTargetAlive(target) then return false end
+            return RagebotFrameTPStompKill(target)
+        else
+            if not IsTargetAlive(target) or IsTargetKnocked(target) then
+                return false
             end
-            local myHRP = GetHRP()
-            local humanoid = GetHumanoid()
-            if myHRP and humanoid and humanoid.Health > 0 then
-                myHRP.CFrame = CFrame.new(0, -50000, 0)
-                humanoid.Health = 0
-                pcall(function() 
-                    local char = LocalPlayer.Character
-                    if char then char:BreakJoints() end
-                end)
+            if Farm.Config.RagebotMethod == "AntiBulletTP" then
+                return RagebotAntiBulletTP(target)
+            else
+                return RagebotShootTarget(target)
             end
-            if not myHRP or not humanoid or humanoid.Health <= 0 then
-                pcall(function() LocalPlayer:LoadCharacter() end)
-            end
-            RunService.Heartbeat:Wait()
         end
-        pcall(function() LocalPlayer:LoadCharacter() end)
     end)
+    
+    if not success then
+        warn("[Ragebot] Kill error: " .. tostring(killed))
+        killed = false
+    end
+    
+    if killed and Farm.Config.RagebotMethod ~= "AntiBulletTP" then
+        RagebotConstantDeath(target)
+    end
+    
+    Farm.RagebotKillInProgress = false
 end
 
 -- FrameTP method -- TP inside target, shoot, return (invisible to them)

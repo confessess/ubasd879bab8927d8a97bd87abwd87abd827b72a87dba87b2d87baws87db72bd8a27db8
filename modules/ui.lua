@@ -1521,10 +1521,11 @@ function UI.Build()
     CreateSlider(VisualsCard, 788, "Box Thickness", 1, 5, Config.ESP_BoxThickness, function(v)
         Config.ESP_BoxThickness = v
     end)
-    CreateSlider(VisualsCard, 844, "Head Dot Size", 1, 30, math.floor(Config.ESP_HeadDotSize * 10), function(v)
+        CreateSlider(VisualsCard, 844, "Head Dot Size", 1, 30, math.floor(Config.ESP_HeadDotSize * 10), function(v)
         Config.ESP_HeadDotSize = v / 10
     end)
-        local PlayerList, PanelPlayerList, refreshAllLists
+
+    local PlayerList, PanelPlayerList, refreshAllLists
 
     -- TARGET PAGE
     local TargetPage = Pages.Target
@@ -1544,8 +1545,6 @@ function UI.Build()
             UI.Targeting.StopSpectate()
         end
     end)
-        local PlayerList, PanelPlayerList
-
     CreateToggle(TargetCard, 150, "Multi Target", Config.MultiTarget or false, "MultiTarget", false, function(v)
         Config.MultiTarget = v
         if UI.Targeting then
