@@ -590,74 +590,63 @@ local function RagebotAntiBulletTP(target)
     return false
 end
 
+Farm.RagebotKillStartTime = 0
+
 local function RagebotKillLoop()
     if not Farm.Config or not Farm.Config.RagebotEnabled then return end
-    if Farm.RagebotKillInProgress then return end
-    Farm.RagebotKillInProgress = true
-
-    local target = Farm.GetSelectedTarget()
-    if not target then
+    
+    -- Auto-reset stuck flag after 8 seconds (safety net)
+    if Farm.RagebotKillInProgress and (tick() - Farm.RagebotKillStartTime) > 8 then
         Farm.RagebotKillInProgress = false
-        return
     end
-    if not IsTargetAlive(target) or IsTargetKnocked(target) then
-        Farm.RagebotKillInProgress = false
-        return
-    end
-
-    local killed = false
-    if Farm.Config.RagebotMethod == "FrameTPStomp" then
-        killed = RagebotFrameTPStompKill(target)
-    elseif Farm.Config.RagebotMethod == "AntiBulletTP" then
-        killed = RagebotAntiBulletTP(target)
-    else
-        killed = RagebotShootTarget(target)
-    end
-
-    if killed and Farm.Config.RagebotMethod ~= "AntiBulletTP" then
-        RagebotConstantDeath(target)
-    end
-
-    Farm.RagebotKillInProgress = false
-end
-
-function Farm.StartRagebot()
-    if Farm.RagebotConn then return end
-    Camera.CameraType = Enum.CameraType.Scriptable
-    Farm.RagebotConn = RunService.Heartbeat:Connect(RagebotKillLoop)
-    Farm.Notify("Ragebot ON", Color3.fromRGB(200, 50, 50))
-end
-
-function Farm.StopRagebot()
-    if Farm.RagebotConn then
-        Farm.RagebotConn:Disconnect()
-        Farm.RagebotConn = nil
-    end
-    Farm.RagebotKillInProgress = false
-    RagebotUnequipAll()
-    Camera.CameraType = Enum.CameraType.Custom
-    Camera.FieldOfView = 70
+    
     local myHRP = GetHRP()
-    if myHRP then
-        local camPos = myHRP.Position + Vector3.new(0, 1.5, 0) - (myHRP.CFrame.LookVector * 5)
-        Camera.CFrame = CFrame.new(camPos, myHRP.Position)
-    end
-    Farm.Notify("Ragebot OFF", Color3.fromRGB(150, 150, 150))
-end
-
-function Farm.SetRagebotMethod(method)
-    if not Farm.Config then return end
-    Farm.Config.RagebotMethod = method
-end
-
-function Farm.SetRagebotEnabled(enabled)
-    if not Farm.Config then return end
-    Farm.Config.RagebotEnabled = enabled
-    if enabled then
-        Farm.StartRagebot()
+    local myHum = GetHumanoid()
+    if not myHRP or not myHum or myHum.Health <= 0 then return end
+    
+    if Farm.RagebotKillInProgress then return end
+    
+    local target = Farm.GetSelectedTarget()
+    if not target then return end
+    
+    -- FrameTPStomp: allow alive OR knocked
+    -- Others: only alive non-knocked
+    if Farm.Config.RagebotMethod ~= "FrameTPStomp" then
+        if not IsTargetAlive(target) or IsTargetKnocked(target) then
+            return
+        end
     else
-        Farm.StopRagebot()
+        if not IsTargetAlive(target) and not IsTargetKnocked(target) then
+            return
+        end
     end
+    
+    Farm.RagebotKillInProgress = true
+    Farm.RagebotKillStartTime = tick()
+    
+    local doSpawn = task.spawn or spawn or function(f) f() end
+    doSpawn(function()
+        local success, killed = pcall(function()
+            if Farm.Config.RagebotMethod == "FrameTPStomp" then
+                return RagebotFrameTPStompKill(target)
+            elseif Farm.Config.RagebotMethod == "AntiBulletTP" then
+                return RagebotAntiBulletTP(target)
+            else
+                return RagebotShootTarget(target)
+            end
+        end)
+        
+        if not success then
+            print("[Ragebot] Kill error: " .. tostring(killed))
+            killed = false
+        end
+        
+        if killed and Farm.Config.RagebotMethod ~= "AntiBulletTP" then
+            RagebotConstantDeath(target)
+        end
+        
+        Farm.RagebotKillInProgress = false
+    end)
 end
 
 --// ==================== CONTROL ====================

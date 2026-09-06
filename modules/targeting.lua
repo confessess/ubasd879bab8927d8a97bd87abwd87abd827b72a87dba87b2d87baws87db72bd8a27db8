@@ -57,6 +57,8 @@ function Targeting.GetNextValidTarget()
         end
         return nil
     end
+    -- Build valid list WITHOUT mutating SelectedTargets
+    -- so dead/respawning players stay in the hit-list
     local valid = {}
     for _, plr in ipairs(Targeting.SelectedTargets) do
         if plr and plr.Parent and plr.Character then
@@ -66,7 +68,6 @@ function Targeting.GetNextValidTarget()
             end
         end
     end
-    Targeting.SelectedTargets = valid
     if #valid == 0 then
         Targeting.CurrentTargetIndex = 0
         return nil
