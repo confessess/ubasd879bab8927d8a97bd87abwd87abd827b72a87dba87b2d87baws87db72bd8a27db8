@@ -1524,7 +1524,9 @@ function UI.Build()
     CreateSlider(VisualsCard, 844, "Head Dot Size", 1, 30, math.floor(Config.ESP_HeadDotSize * 10), function(v)
         Config.ESP_HeadDotSize = v / 10
     end)
-        -- TARGET PAGE
+        local PlayerList, PanelPlayerList, refreshAllLists
+
+    -- TARGET PAGE
     local TargetPage = Pages.Target
     PageTitle(TargetPage, "Target", "Player selection, part targeting, and spectate.")
     local TargetCard = CreateCard(TargetPage, UDim2.fromOffset(10, 72), UDim2.new(1, -20, 0, 410))
@@ -1830,7 +1832,7 @@ function UI.Build()
     Corner(PanelPlayerList, 8)
     New("UIListLayout", {Padding = UDim.new(0, 2), Parent = PanelPlayerList})
 
-    local function refreshAllLists()
+    refreshAllLists = function()
         UI.Targeting.RefreshPlayerList(PlayerList, refreshAllLists)
         UI.Targeting.RefreshPlayerList(PanelPlayerList, refreshAllLists)
     end
