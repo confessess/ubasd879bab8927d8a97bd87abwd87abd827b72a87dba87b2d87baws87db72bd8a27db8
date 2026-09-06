@@ -3,6 +3,7 @@ local RunService = game:GetService("RunService")
 local Workspace = game:GetService("Workspace")
 local UserInputService = game:GetService("UserInputService")
 local VirtualInputManager = game:GetService("VirtualInputManager")
+local ReplicatedStorage = game:GetService("ReplicatedStorage")
 
 local LocalPlayer = Players.LocalPlayer
 local Camera = Workspace.CurrentCamera
@@ -39,24 +40,190 @@ function Combat.SetVisuals(visuals)
 end
 
 -- ═════════════════════════════════════════════════════════════════════════════
--- AIMBOT
--- ═════════════════════════════════════════════════════════════════════════════
--- SILENT AIM — Hitbox Expander
+-- REAL SILENT AIM — GunHandlerModule.GetAim Hook (LO's script)
 -- ═════════════════════════════════════════════════════════════════════════════
 
-local SilentAimOriginalSizes = {}
-local SilentAimCurrentTarget = nil
+local RealSilentAim = {
+    Enabled = false,
+    FOV = 130,
+    TargetPart = "Head",
+    FOVCircle = nil,
+    GunHandlerHooked = false,
+    OriginalGetAim = nil,
+}
 
-local function SilentAimIsTeammate(player)
+local function IsKnocked(plr)
+    local char = plr and plr.Character
+    if not char then return false end
+    local be = char:FindFirstChild("BodyEffects")
+    if not be then return false end
+    local ko = be:FindFirstChild("K.O") or be:FindFirstChild("Knocked")
+    return ko and ko.Value == true
+end
+
+local function IsGrabbed(plr)
+    local char = plr and plr.Character
+    if not char then return false end
+    local be = char:FindFirstChild("BodyEffects")
+    if not be then return false end
+    local g = be:FindFirstChild("Grabbed")
+    return g and g.Value == true
+end
+
+local function IsAlive(plr)
+    local char = plr and plr.Character
+    if not char then return false end
+    local hum = char:FindFirstChildOfClass("Humanoid")
+    return hum and hum.Health > 0
+end
+
+local function GetRealSilentAimTargetPart(plr)
+    local char = plr.Character
+    if not char then return nil end
+    local partName = Combat.Config.RealSilentAim_TargetPart or "Head"
+    if partName == "Head" then
+        return char:FindFirstChild("Head")
+    else
+        return char:FindFirstChild("HumanoidRootPart") or char:FindFirstChild("Torso") or char:FindFirstChild("UpperTorso")
+    end
+end
+
+local function GetClosestPlayerInRealSilentAimFOV()
+    local Config = Combat.Config
+    if not Config then return nil end
+    
+    local fov = Config.RealSilentAim_FOV or 130
+    local closest = nil
+    local smallestDist = fov + 1
+    local mousePos = UserInputService:GetMouseLocation()
+
+    for _, player in ipairs(Players:GetPlayers()) do
+        if player == LocalPlayer then continue end
+        
+        local teamCheck = Config.RealSilentAim_TeamCheck
+        if teamCheck then
+            if LocalPlayer.Team and player.Team and LocalPlayer.Team == player.Team then continue end
+            if LocalPlayer.TeamColor and player.TeamColor and LocalPlayer.TeamColor == player.TeamColor then continue end
+        end
+        
+        if not IsAlive(player) or IsKnocked(player) or IsGrabbed(player) then continue end
+
+        local part = GetRealSilentAimTargetPart(player)
+        if not part then continue end
+
+        -- Wall check
+        if Config.RealSilentAim_WallCheck then
+            local origin = Camera.CFrame.Position
+            local direction = part.Position - origin
+            local raycastParams = RaycastParams.new()
+            raycastParams.FilterDescendantsInstances = {LocalPlayer.Character}
+            raycastParams.FilterType = Enum.RaycastFilterType.Blacklist
+            local result = Workspace:Raycast(origin, direction, raycastParams)
+            if result then
+                local hitModel = result.Instance:FindFirstAncestorOfClass("Model")
+                if not hitModel or hitModel ~= player.Character then continue end
+            end
+        end
+
+        local screenPos, onScreen = Camera:WorldToViewportPoint(part.Position)
+        if not onScreen then continue end
+
+        local distance = (Vector2.new(screenPos.X, screenPos.Y) - mousePos).Magnitude
+        if distance < smallestDist and distance <= fov then
+            smallestDist = distance
+            closest = part
+        end
+    end
+
+    return closest
+end
+
+local function HookRealSilentAim()
+    if RealSilentAim.GunHandlerHooked then return end
+    
+    local GunHandler = ReplicatedStorage:FindFirstChild("Modules") and
+                       ReplicatedStorage.Modules:FindFirstChild("GunHandler")
+    
+    if not GunHandler then return end
+    
+    local success, GunHandlerModule = pcall(require, GunHandler)
+    if not success or not GunHandlerModule then return end
+    if not GunHandlerModule.GetAim then return end
+    
+    RealSilentAim.OriginalGetAim = GunHandlerModule.GetAim
+    
+    GunHandlerModule.GetAim = function(muzzlePos)
+        local Config = Combat.Config
+        if Config and Config.RealSilentAim_Enabled then
+            -- Hit chance check
+            local chance = Config.RealSilentAim_HitChance or 100
+            if math.random(1, 100) <= chance then
+                local target = GetClosestPlayerInRealSilentAimFOV()
+                if target then
+                    return (target.Position - muzzlePos).Unit
+                end
+            end
+        end
+        return RealSilentAim.OriginalGetAim(muzzlePos)
+    end
+    
+    RealSilentAim.GunHandlerHooked = true
+end
+
+local function UpdateRealSilentAimFOV()
+    local Config = Combat.Config
+    if not Config then return end
+    
+    if Config.RealSilentAim_Enabled and Config.RealSilentAim_ShowFOV then
+        if not RealSilentAim.FOVCircle then
+            RealSilentAim.FOVCircle = Drawing.new("Circle")
+            RealSilentAim.FOVCircle.Thickness = 1.5
+            RealSilentAim.FOVCircle.NumSides = 120
+            RealSilentAim.FOVCircle.Filled = false
+            RealSilentAim.FOVCircle.ZIndex = 999
+            RealSilentAim.FOVCircle.Transparency = 0.6
+            RealSilentAim.FOVCircle.Color = Color3.fromRGB(0, 200, 255)
+        end
+        local mousePos = UserInputService:GetMouseLocation()
+        RealSilentAim.FOVCircle.Position = mousePos
+        RealSilentAim.FOVCircle.Radius = Config.RealSilentAim_FOV or 130
+        RealSilentAim.FOVCircle.Visible = true
+    else
+        if RealSilentAim.FOVCircle then
+            RealSilentAim.FOVCircle.Visible = false
+        end
+    end
+end
+
+function Combat.SetRealSilentAimEnabled(enabled)
+    if Combat.Config then
+        Combat.Config.RealSilentAim_Enabled = enabled
+        if enabled then
+            HookRealSilentAim()
+        end
+    end
+end
+
+-- ═════════════════════════════════════════════════════════════════════════════
+-- HITBOX EXPANDER (was the old "Silent Aim")
+-- ═════════════════════════════════════════════════════════════════════════════
+
+local HitboxExpander = {
+    OriginalSizes = {},
+    CurrentTarget = nil,
+    FOVCircle = nil,
+}
+
+local function HitboxIsTeammate(player)
     if player == LocalPlayer then return true end
     if LocalPlayer.Team and player.Team and LocalPlayer.Team == player.Team then return true end
     if LocalPlayer.TeamColor and player.TeamColor and LocalPlayer.TeamColor == player.TeamColor then return true end
     return false
 end
 
-local function SilentAimCanSee(targetPos, targetCharacter)
+local function HitboxCanSee(targetPos, targetCharacter)
     local Config = Combat.Config
-    if not Config.SilentAim_WallCheck then return true end
+    if not Config.HitboxExpander_WallCheck then return true end
     local origin = Camera.CFrame.Position
     local direction = targetPos - origin
     local raycastParams = RaycastParams.new()
@@ -68,17 +235,17 @@ local function SilentAimCanSee(targetPos, targetCharacter)
     return hitModel and hitModel == targetCharacter
 end
 
-local function SilentAimGetTarget()
+local function HitboxGetTarget()
     local Config = Combat.Config
-    if not Config.SilentAim_Enabled then return nil end
+    if not Config.HitboxExpander_Enabled then return nil end
 
     local mousePos = UserInputService:GetMouseLocation()
     local closestPlayer = nil
-    local closestDist = Config.SilentAim_FOV or 120
+    local closestDist = Config.HitboxExpander_FOV or 120
 
     for _, player in pairs(Players:GetPlayers()) do
         if player == LocalPlayer then continue end
-        if Config.SilentAim_TeamCheck and SilentAimIsTeammate(player) then continue end
+        if Config.HitboxExpander_TeamCheck and HitboxIsTeammate(player) then continue end
 
         local char = player.Character
         if not char then continue end
@@ -86,7 +253,7 @@ local function SilentAimGetTarget()
         local humanoid = char:FindFirstChildOfClass("Humanoid")
         if not humanoid or humanoid.Health <= 0 then continue end
 
-        local targetPartName = Config.SilentAim_TargetPart or "Head"
+        local targetPartName = Config.HitboxExpander_TargetPart or "Head"
         local part = char:FindFirstChild(targetPartName) or char:FindFirstChild("Head") or char:FindFirstChild("HumanoidRootPart")
         if not part then continue end
 
@@ -96,7 +263,7 @@ local function SilentAimGetTarget()
         local dist = (Vector2.new(screenPos.X, screenPos.Y) - mousePos).Magnitude
         if dist > closestDist then continue end
 
-        if not SilentAimCanSee(part.Position, char) then continue end
+        if not HitboxCanSee(part.Position, char) then continue end
 
         closestPlayer = player
         closestDist = dist
@@ -105,14 +272,12 @@ local function SilentAimGetTarget()
     return closestPlayer
 end
 
-local function SilentAimExpandPart(player, part)
+local function HitboxExpandPart(player, part)
     if not part then return end
-
     local Config = Combat.Config
 
-    -- Save original size
-    if not SilentAimOriginalSizes[part] then
-        SilentAimOriginalSizes[part] = {
+    if not HitboxExpander.OriginalSizes[part] then
+        HitboxExpander.OriginalSizes[part] = {
             size = part.Size,
             transparency = part.Transparency,
             canCollide = part.CanCollide,
@@ -120,133 +285,121 @@ local function SilentAimExpandPart(player, part)
         }
     end
 
-    -- Hit chance check
-    local chance = Config.SilentAim_HitChance or 100
+    local chance = Config.HitboxExpander_HitChance or 100
     if math.random(1, 100) > chance then
-        -- Restore normal size
-        SilentAimRestorePart(part)
+        HitboxRestorePart(part)
         return
     end
 
-    -- Calculate expansion size based on FOV
     local screenPos, onScreen = Camera:WorldToViewportPoint(part.Position)
     if not onScreen then return end
 
     local mousePos = UserInputService:GetMouseLocation()
     local dist = (Vector2.new(screenPos.X, screenPos.Y) - mousePos).Magnitude
 
-    -- Make hitbox bigger when closer to crosshair
     local baseSize = 10
     local maxSize = 50
-    local expansionFactor = 1 - math.clamp(dist / (Config.SilentAim_FOV or 120), 0, 1)
+    local expansionFactor = 1 - math.clamp(dist / (Config.HitboxExpander_FOV or 120), 0, 1)
     local targetSize = baseSize + (maxSize - baseSize) * expansionFactor
 
-    -- Apply expansion
     part.Size = Vector3.new(targetSize, targetSize, targetSize)
     part.Transparency = 1
     part.CanCollide = false
     part.Massless = true
 end
 
-local function SilentAimRestorePart(part)
-    local original = SilentAimOriginalSizes[part]
+local function HitboxRestorePart(part)
+    local original = HitboxExpander.OriginalSizes[part]
     if not original then return end
-
     part.Size = original.size
     part.Transparency = original.transparency
     part.CanCollide = original.canCollide
     part.Massless = original.massless
-
-    SilentAimOriginalSizes[part] = nil
+    HitboxExpander.OriginalSizes[part] = nil
 end
 
-local function SilentAimRestoreAll()
-    for part, _ in pairs(SilentAimOriginalSizes) do
+local function HitboxRestoreAll()
+    for part, _ in pairs(HitboxExpander.OriginalSizes) do
         if part and part.Parent then
-            SilentAimRestorePart(part)
+            HitboxRestorePart(part)
         end
     end
-    SilentAimOriginalSizes = {}
-    SilentAimCurrentTarget = nil
+    HitboxExpander.OriginalSizes = {}
+    HitboxExpander.CurrentTarget = nil
 end
 
-local SilentAimFOVCircle = nil
-
-local function SilentAimUpdate()
+local function HitboxUpdate()
     local Config = Combat.Config
-    if not Config or not Config.SilentAim_Enabled then
-        SilentAimRestoreAll()
-        if SilentAimFOVCircle then
-            SilentAimFOVCircle.Visible = false
+    if not Config or not Config.HitboxExpander_Enabled then
+        HitboxRestoreAll()
+        if HitboxExpander.FOVCircle then
+            HitboxExpander.FOVCircle.Visible = false
         end
         return
     end
 
-    -- Draw FOV circle
-    if Config.SilentAim_ShowFOV then
-        if not SilentAimFOVCircle then
-            SilentAimFOVCircle = Drawing.new("Circle")
-            SilentAimFOVCircle.Thickness = 1.5
-            SilentAimFOVCircle.Color = Color3.fromRGB(100, 200, 255)
-            SilentAimFOVCircle.Transparency = 0.5
-            SilentAimFOVCircle.NumSides = 64
-            SilentAimFOVCircle.Filled = false
+    if Config.HitboxExpander_ShowFOV then
+        if not HitboxExpander.FOVCircle then
+            HitboxExpander.FOVCircle = Drawing.new("Circle")
+            HitboxExpander.FOVCircle.Thickness = 1.5
+            HitboxExpander.FOVCircle.Color = Color3.fromRGB(255, 100, 100)
+            HitboxExpander.FOVCircle.Transparency = 0.5
+            HitboxExpander.FOVCircle.NumSides = 64
+            HitboxExpander.FOVCircle.Filled = false
         end
         local mousePos = UserInputService:GetMouseLocation()
-        SilentAimFOVCircle.Visible = true
-        SilentAimFOVCircle.Position = mousePos
-        SilentAimFOVCircle.Radius = Config.SilentAim_FOV or 120
+        HitboxExpander.FOVCircle.Visible = true
+        HitboxExpander.FOVCircle.Position = mousePos
+        HitboxExpander.FOVCircle.Radius = Config.HitboxExpander_FOV or 120
     else
-        if SilentAimFOVCircle then
-            SilentAimFOVCircle.Visible = false
+        if HitboxExpander.FOVCircle then
+            HitboxExpander.FOVCircle.Visible = false
         end
     end
 
-    -- Get new target
-    local newTarget = SilentAimGetTarget()
+    local newTarget = HitboxGetTarget()
 
-    -- Restore old target if different
-    if SilentAimCurrentTarget and SilentAimCurrentTarget ~= newTarget then
-        local oldChar = SilentAimCurrentTarget.Character
+    if HitboxExpander.CurrentTarget and HitboxExpander.CurrentTarget ~= newTarget then
+        local oldChar = HitboxExpander.CurrentTarget.Character
         if oldChar then
-            local oldPart = oldChar:FindFirstChild(Config.SilentAim_TargetPart or "Head")
+            local oldPart = oldChar:FindFirstChild(Config.HitboxExpander_TargetPart or "Head")
             if oldPart then
-                SilentAimRestorePart(oldPart)
+                HitboxRestorePart(oldPart)
             end
         end
     end
 
-    SilentAimCurrentTarget = newTarget
+    HitboxExpander.CurrentTarget = newTarget
 
-    -- Expand new target
     if newTarget then
         local char = newTarget.Character
         if char then
             local humanoid = char:FindFirstChildOfClass("Humanoid")
             if humanoid and humanoid.Health > 0 then
-                local part = char:FindFirstChild(Config.SilentAim_TargetPart or "Head") or char:FindFirstChild("HumanoidRootPart")
+                local part = char:FindFirstChild(Config.HitboxExpander_TargetPart or "Head") or char:FindFirstChild("HumanoidRootPart")
                 if part then
-                    SilentAimExpandPart(newTarget, part)
+                    HitboxExpandPart(newTarget, part)
                 end
             else
-                -- Target died
-                SilentAimRestoreAll()
+                HitboxRestoreAll()
             end
         else
-            SilentAimRestoreAll()
+            HitboxRestoreAll()
         end
     end
 end
 
-function Combat.SetSilentAimEnabled(enabled)
+function Combat.SetHitboxExpanderEnabled(enabled)
     if Combat.Config then
-        Combat.Config.SilentAim_Enabled = enabled
+        Combat.Config.HitboxExpander_Enabled = enabled
         if not enabled then
-            SilentAimRestoreAll()
+            HitboxRestoreAll()
         end
     end
 end
 
+-- ═════════════════════════════════════════════════════════════════════════════
+-- AIMBOT (existing, unchanged)
 -- ═════════════════════════════════════════════════════════════════════════════
 
 local function GetCharacter(player)
@@ -339,7 +492,6 @@ local function GetBestTarget()
         if IsTargetValidSticky(Combat.CurrentTarget) then
             local part = Combat.CurrentTarget.Character:FindFirstChild(Combat.CurrentTarget.Part.Name)
             if part then
-                -- 360-degree sticky: once locked, stay locked regardless of FOV/visibility
                 Combat.StickyLostTime = 0
                 Combat.CurrentTarget.Part = part
                 Combat.CurrentTarget.Position = part.Position
@@ -371,6 +523,7 @@ local function GetBestTarget()
 
         if not CanSee(targetPos, character) then continue end
 
+        local dist = GetDistance(targetPos)
         local score = math.huge
         local hum = GetHumanoid(character)
 
@@ -447,8 +600,11 @@ end
 local function OnAimbotRender()
     local Config = Combat.Config
 
-    -- Silent Aim update
-    SilentAimUpdate()
+    -- Update Real Silent Aim
+    UpdateRealSilentAimFOV()
+    
+    -- Update Hitbox Expander
+    HitboxUpdate()
 
     if not Config.Aimbot_Enabled then
         Combat.CurrentTarget = nil
@@ -509,14 +665,40 @@ local function StopAimbot()
         Combat.TargetCircle:Remove()
         Combat.TargetCircle = nil
     end
+    if RealSilentAim.FOVCircle then
+        RealSilentAim.FOVCircle.Visible = false
+        RealSilentAim.FOVCircle:Remove()
+        RealSilentAim.FOVCircle = nil
+    end
+    if HitboxExpander.FOVCircle then
+        HitboxExpander.FOVCircle.Visible = false
+        HitboxExpander.FOVCircle:Remove()
+        HitboxExpander.FOVCircle = nil
+    end
+    HitboxRestoreAll()
 end
 
 UserInputService.InputBegan:Connect(function(input, gp)
     if gp then return end
     local Config = Combat.Config
-    if not Config or not Config.Aimbot_Enabled then return end
+    if not Config then return end
+    
+    -- Real Silent Aim toggle
+    local rsaKey = Config.RealSilentAim_EnabledKey
+    if rsaKey and (input.KeyCode == rsaKey or input.UserInputType == rsaKey) then
+        Combat.SetRealSilentAimEnabled(not Config.RealSilentAim_Enabled)
+        return
+    end
+    
+    -- Hitbox Expander toggle
+    local hbKey = Config.HitboxExpander_EnabledKey
+    if hbKey and (input.KeyCode == hbKey or input.UserInputType == hbKey) then
+        Combat.SetHitboxExpanderEnabled(not Config.HitboxExpander_Enabled)
+        return
+    end
+    
+    if not Config.Aimbot_Enabled then return end
     local aimKey = Config.Aimbot_EnabledKey
-
     local matched = (input.KeyCode == aimKey) or (input.UserInputType == aimKey)
     if not matched then return end
 
@@ -541,12 +723,11 @@ UserInputService.InputEnded:Connect(function(input, gp)
 end)
 
 -- ═════════════════════════════════════════════════════════════════════════════
--- EXISTING COMBAT FEATURES
+-- EXISTING COMBAT FEATURES (FrameTP, RapidFire, Karma — unchanged)
 -- ═════════════════════════════════════════════════════════════════════════════
 
 function Combat.SetupFullAuto(tool)
     if Combat.ModifiedTools[tool] or not tool:FindFirstChild("GunScript") then return end
-
     local success = pcall(function()
         local connections = getconnections(tool.Activated)
         for _, conn in ipairs(connections) do
@@ -562,7 +743,6 @@ function Combat.SetupFullAuto(tool)
             end
         end
     end)
-
     if success then
         Combat.ModifiedTools[tool] = true
     end
@@ -572,69 +752,55 @@ function Combat.FrameTeleportActivate(tool, isRapidFire)
     local Config = Combat.Config
     local Targeting = Combat.Targeting
     local Visuals = Combat.Visuals
-
     if not Config or not Targeting or not Visuals then
         tool:Activate()
         return
     end
-
     if not Config.FrameTP then
         tool:Activate()
         return
     end
-
     local target = Targeting.GetTarget()
     if not target then
         tool:Activate()
         return
     end
-
     local char = LocalPlayer.Character
     if not char then
         tool:Activate()
         return
     end
-
     local hrp = char:FindFirstChild("HumanoidRootPart")
     if not hrp then
         tool:Activate()
         return
     end
-
     local targetChar = target.Parent
     if not targetChar then
         tool:Activate()
         return
     end
-
     local targetHRP = targetChar:FindFirstChild("HumanoidRootPart")
     if not targetHRP then
         tool:Activate()
         return
     end
-
     local origHRP = hrp.CFrame
     local origCam = Camera.CFrame
-
     local targetCF = targetHRP.CFrame
     local shootPos = targetCF.Position + (targetCF.LookVector * 2) + Vector3.new(0, 0.5, 0)
-
     hrp.CFrame = CFrame.new(shootPos, targetCF.Position)
     hrp.Velocity = Vector3.new(0, 0, 0)
     Camera.CFrame = CFrame.new(shootPos + Vector3.new(0, 1.5, 0), target.Position)
-
     tool:Activate()
-
     if not isRapidFire then
         RunService.Heartbeat:Wait()
     elseif Config.OneFrameDelay then
         RunService.Heartbeat:Wait()
     end
-
     hrp.CFrame = origHRP
     hrp.Velocity = Vector3.new(0, 0, 0)
     Camera.CFrame = origCam
-
     Visuals.PlayHitmarker()
 end
 
@@ -642,9 +808,8 @@ function Combat.Reset()
     Combat.ModifiedTools = {}
 end
 
-
 -- ═════════════════════════════════════════════════════════════════════════════
--- KARMA — Auto-kill whoever shoots you
+-- KARMA (unchanged)
 -- ═════════════════════════════════════════════════════════════════════════════
 
 local function KarmaHasGun(character)
@@ -692,34 +857,27 @@ local function KarmaIdentifyShooter()
     local myRoot = myChar:FindFirstChild("HumanoidRootPart")
     local myHead = myChar:FindFirstChild("Head")
     if not myRoot or not myHead then return nil end
-
     local myPos = myRoot.Position
     local gunPlayers = KarmaGetGunPlayers()
     local bestCandidate = nil
     local bestScore = -1
     local killDistance = (Combat.Config and Combat.Config.Karma_KillDistance) or 500
-
     for _, candidate in pairs(gunPlayers) do
         if candidate.RootPart and candidate.Humanoid and candidate.Humanoid.Health > 0 then
             local theirPos = candidate.RootPart.Position
             local distance = (theirPos - myPos).Magnitude
-
             if distance <= killDistance then
                 local score = 0
-
                 if candidate.Head and KarmaHasLOS(candidate.Head.Position, myHead.Position) then
                     score = score + 50
                 end
-
                 local theirLook = candidate.RootPart.CFrame.LookVector
                 local directionToMe = (myPos - theirPos).Unit
                 local dot = theirLook:Dot(directionToMe)
                 if dot > 0.5 then
                     score = score + 30
                 end
-
                 score = score + (100 - math.min(distance, 100))
-
                 if score > bestScore then
                     bestScore = score
                     bestCandidate = candidate
@@ -727,7 +885,6 @@ local function KarmaIdentifyShooter()
             end
         end
     end
-
     return bestCandidate
 end
 
@@ -736,14 +893,12 @@ local function KarmaGetAllGuns()
     local myChar = LocalPlayer.Character
     local backpack = LocalPlayer:FindFirstChild("Backpack")
     local maxGuns = (Combat.Config and Combat.Config.Karma_MaxGuns) or 10
-
     if myChar then
         local equipped = myChar:FindFirstChildOfClass("Tool")
         if equipped and equipped:FindFirstChild("GunScript") then
             table.insert(guns, equipped)
         end
     end
-
     if backpack then
         for _, item in pairs(backpack:GetChildren()) do
             if #guns >= maxGuns then break end
@@ -752,7 +907,6 @@ local function KarmaGetAllGuns()
             end
         end
     end
-
     return guns
 end
 
@@ -787,13 +941,10 @@ local function KarmaFireAtTarget(target, myTool, myRoot, shots)
     local targetHead = target.Character and target.Character:FindFirstChild("Head")
     local targetRoot = target.Character and target.Character:FindFirstChild("HumanoidRootPart")
     if not targetHead or not targetRoot then return false end
-
     local behindPos = targetRoot.CFrame * CFrame.new(0, 0, -3)
     myRoot.CFrame = CFrame.new(behindPos.Position, targetHead.Position)
-
     RunService.RenderStepped:Wait()
     RunService.RenderStepped:Wait()
-
     for i = 1, shots do
         if not targetHead.Parent then return true end
         if myTool and myTool.Parent then
@@ -802,7 +953,6 @@ local function KarmaFireAtTarget(target, myTool, myRoot, shots)
         end
         RunService.RenderStepped:Wait()
     end
-
     return KarmaIsTargetDead(target)
 end
 
@@ -819,22 +969,17 @@ local function KarmaGrabArmor()
     else
         armorPos = Vector3.new(-934.12, -25.38, 571.02)
     end
-
     local myChar = LocalPlayer.Character
     if not myChar then return end
     local myRoot = myChar:FindFirstChild("HumanoidRootPart")
     local humanoid = myChar:FindFirstChildOfClass("Humanoid")
     if not myRoot or not humanoid then return end
     if humanoid.Health <= 0 then return end
-
     local originalCFrame = myRoot.CFrame
-
     myRoot.CFrame = CFrame.new(armorPos + Vector3.new(0, 4, 0))
     myRoot.Velocity = Vector3.new(0, 0, 0)
     myRoot.AssemblyLinearVelocity = Vector3.new(0, 0, 0)
-
     task.wait(0.5)
-
     for _, obj in pairs(Workspace:GetDescendants()) do
         if not obj.Parent then continue end
         local parentPos = nil
@@ -845,10 +990,8 @@ local function KarmaGrabArmor()
         elseif obj.Parent:IsA("Model") and obj.Parent:FindFirstChild("Head") then
             parentPos = obj.Parent.Head.Position
         end
-
         if not parentPos then continue end
         if (parentPos - armorPos).Magnitude > 25 then continue end
-
         if obj:IsA("ProximityPrompt") then
             pcall(function()
                 if fireproximityprompt then
@@ -871,9 +1014,7 @@ local function KarmaGrabArmor()
             break
         end
     end
-
     task.wait(0.3)
-
     myRoot.CFrame = originalCFrame
     myRoot.Velocity = Vector3.new(0, 0, 0)
 end
@@ -883,24 +1024,17 @@ local function KarmaKillTarget(target)
     if not myChar then return end
     local myRoot = myChar:FindFirstChild("HumanoidRootPart")
     if not myRoot then return end
-
     local originalCFrame = myRoot.CFrame
     local guns = KarmaGetAllGuns()
-
     if #guns == 0 then return end
-
     for gunIndex, gun in pairs(guns) do
         if KarmaIsTargetDead(target) then break end
-
         KarmaEquipTool(gun)
         Combat.SetupFullAuto(gun)
         task.wait(0.1)
-
         local killed = KarmaFireAtTarget(target, gun, myRoot, 20)
-
         if killed then break end
     end
-
     for _, gun in pairs(KarmaGetAllGuns()) do
         KarmaEquipTool(gun)
         task.wait(0.1)
@@ -908,9 +1042,7 @@ local function KarmaKillTarget(target)
         task.wait(0.2)
     end
     KarmaUnequipAll()
-
     myRoot.CFrame = originalCFrame
-
     task.spawn(function()
         KarmaGrabArmor()
     end)
@@ -919,11 +1051,9 @@ end
 local function KarmaOnHealthChanged(health)
     if not Combat.Config or not Combat.Config.Karma_Enabled then return end
     if Combat.KarmaTriggered then return end
-
     local damage = Combat.KarmaLastHealth - health
     if damage > 0 then
         Combat.KarmaTriggered = true
-
         task.delay(0.05, function()
             local shooter = KarmaIdentifyShooter()
             if shooter then
@@ -932,17 +1062,14 @@ local function KarmaOnHealthChanged(health)
             Combat.KarmaTriggered = false
         end)
     end
-
     Combat.KarmaLastHealth = health
 end
 
 local function KarmaSetupCharacter(character)
     local humanoid = character:WaitForChild("Humanoid", 5)
     if not humanoid then return end
-
     Combat.KarmaLastHealth = humanoid.Health
     Combat.KarmaTriggered = false
-
     humanoid.HealthChanged:Connect(KarmaOnHealthChanged)
 end
 
@@ -965,6 +1092,7 @@ end
 
 function Combat.Init()
     StartAimbot()
+    HookRealSilentAim() -- Attempt to hook immediately
     if LocalPlayer.Character then
         KarmaSetupCharacter(LocalPlayer.Character)
     end

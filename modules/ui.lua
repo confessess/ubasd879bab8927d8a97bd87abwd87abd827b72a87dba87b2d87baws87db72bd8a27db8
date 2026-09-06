@@ -1240,9 +1240,10 @@ function UI.Build()
 
         return circle
     end
-    -- COMBAT PAGE
+    
+       -- COMBAT PAGE
     local CombatPage = Pages.Combat
-    PageTitle(CombatPage, "Combat", "Aimbot, frame teleport shoot, rapid fire, and hotkeys.")
+    PageTitle(CombatPage, "Combat", "Silent aim, hitbox expander, frame TP, and rapid fire.")
     local CombatScroll = New("ScrollingFrame", {
         Size = UDim2.new(1, -20, 1, -72),
         Position = UDim2.fromOffset(10, 72),
@@ -1253,9 +1254,10 @@ function UI.Build()
         CanvasSize = UDim2.new(0, 0, 0, 0),
         ZIndex = 14,
     }, CombatPage)
-    local CombatCard = CreateCard(CombatScroll, UDim2.fromOffset(0, 0), UDim2.new(1, 0, 0, 990))
-    CombatScroll.CanvasSize = UDim2.new(0, 0, 0, 1010)
+    local CombatCard = CreateCard(CombatScroll, UDim2.fromOffset(0, 0), UDim2.new(1, 0, 0, 1350))
+    CombatScroll.CanvasSize = UDim2.new(0, 0, 0, 1370)
 
+    -- Aimbot Section
     New("TextLabel", {
         Size = UDim2.new(1, -20, 0, 20),
         Position = UDim2.fromOffset(10, 10),
@@ -1301,12 +1303,12 @@ function UI.Build()
 
     CreateSeparator(CombatCard, 456)
 
-    -- Silent Aim Section
+    -- Real Silent Aim Section
     New("TextLabel", {
         Size = UDim2.new(1, -20, 0, 20),
         Position = UDim2.fromOffset(10, 466),
         BackgroundTransparency = 1,
-        Text = "Silent Aim",
+        Text = "Real Silent Aim",
         TextColor3 = Theme.TextSection,
         TextSize = 14,
         Font = Enum.Font.GothamBold,
@@ -1314,45 +1316,45 @@ function UI.Build()
         ZIndex = 16,
     }, CombatCard)
 
-    CreateToggle(CombatCard, 490, "Enable Silent Aim", Config.SilentAim_Enabled, "SilentAim_Enabled", true, function(v)
-        Config.SilentAim_Enabled = v
+    CreateToggle(CombatCard, 490, "Enable Real Silent Aim", Config.RealSilentAim_Enabled, "RealSilentAim", true, function(v)
+        Config.RealSilentAim_Enabled = v
         if UI.Combat then
-            UI.Combat.SetSilentAimEnabled(v)
+            UI.Combat.SetRealSilentAimEnabled(v)
         end
     end)
 
-    CreateSlider(CombatCard, 526, "Silent Aim FOV", 30, 300, Config.SilentAim_FOV or 120, function(v)
-        Config.SilentAim_FOV = v
+    CreateSlider(CombatCard, 526, "FOV Radius", 50, 300, Config.RealSilentAim_FOV or 130, function(v)
+        Config.RealSilentAim_FOV = v
     end)
 
-    CreateSlider(CombatCard, 572, "Hit Chance %", 1, 100, Config.SilentAim_HitChance or 100, function(v)
-        Config.SilentAim_HitChance = v
+    CreateSlider(CombatCard, 572, "Hit Chance %", 1, 100, Config.RealSilentAim_HitChance or 100, function(v)
+        Config.RealSilentAim_HitChance = v
     end)
 
-    local silentAimPartDropdown = BuildDropdown(CombatCard, 618, "Target Part", Config.SilentAim_TargetPart or "Head",
+    local realSilentPartDropdown = BuildDropdown(CombatCard, 618, "Target Part", Config.RealSilentAim_TargetPart or "Head",
         {"Head", "HumanoidRootPart", "Torso", "UpperTorso"},
-        function(v) Config.SilentAim_TargetPart = v end)
+        function(v) Config.RealSilentAim_TargetPart = v end)
 
-    CreateToggle(CombatCard, 676, "Wall Check", Config.SilentAim_WallCheck, "SilentAim_WallCheck", false, function(v)
-        Config.SilentAim_WallCheck = v
+    CreateToggle(CombatCard, 676, "Wall Check", Config.RealSilentAim_WallCheck, "RealSilentAim_WallCheck", false, function(v)
+        Config.RealSilentAim_WallCheck = v
     end)
 
-    CreateToggle(CombatCard, 712, "Team Check", Config.SilentAim_TeamCheck, "SilentAim_TeamCheck", false, function(v)
-        Config.SilentAim_TeamCheck = v
+    CreateToggle(CombatCard, 712, "Team Check", Config.RealSilentAim_TeamCheck, "RealSilentAim_TeamCheck", false, function(v)
+        Config.RealSilentAim_TeamCheck = v
     end)
 
-    CreateToggle(CombatCard, 748, "Show FOV", Config.SilentAim_ShowFOV, "SilentAim_ShowFOV", false, function(v)
-        Config.SilentAim_ShowFOV = v
+    CreateToggle(CombatCard, 748, "Show FOV", Config.RealSilentAim_ShowFOV, "RealSilentAim_ShowFOV", false, function(v)
+        Config.RealSilentAim_ShowFOV = v
     end)
 
     CreateSeparator(CombatCard, 784)
 
-    -- Combat Section
+    -- Hitbox Expander Section
     New("TextLabel", {
         Size = UDim2.new(1, -20, 0, 20),
         Position = UDim2.fromOffset(10, 794),
         BackgroundTransparency = 1,
-        Text = "Combat",
+        Text = "Hitbox Expander",
         TextColor3 = Theme.TextSection,
         TextSize = 14,
         Font = Enum.Font.GothamBold,
@@ -1360,16 +1362,62 @@ function UI.Build()
         ZIndex = 16,
     }, CombatCard)
 
-    CreateToggle(CombatCard, 818, "Frame TP Shoot", Config.FrameTP, "FrameTP", true, function(v)
+    CreateToggle(CombatCard, 818, "Enable Hitbox Expander", Config.HitboxExpander_Enabled, "HitboxExpander", true, function(v)
+        Config.HitboxExpander_Enabled = v
+        if UI.Combat then
+            UI.Combat.SetHitboxExpanderEnabled(v)
+        end
+    end)
+
+    CreateSlider(CombatCard, 854, "FOV Radius", 50, 300, Config.HitboxExpander_FOV or 120, function(v)
+        Config.HitboxExpander_FOV = v
+    end)
+
+    CreateSlider(CombatCard, 900, "Hit Chance %", 1, 100, Config.HitboxExpander_HitChance or 100, function(v)
+        Config.HitboxExpander_HitChance = v
+    end)
+
+    local hitboxPartDropdown = BuildDropdown(CombatCard, 946, "Target Part", Config.HitboxExpander_TargetPart or "Head",
+        {"Head", "HumanoidRootPart", "Torso", "UpperTorso"},
+        function(v) Config.HitboxExpander_TargetPart = v end)
+
+    CreateToggle(CombatCard, 1004, "Wall Check", Config.HitboxExpander_WallCheck, "HitboxExpander_WallCheck", false, function(v)
+        Config.HitboxExpander_WallCheck = v
+    end)
+
+    CreateToggle(CombatCard, 1040, "Team Check", Config.HitboxExpander_TeamCheck, "HitboxExpander_TeamCheck", false, function(v)
+        Config.HitboxExpander_TeamCheck = v
+    end)
+
+    CreateToggle(CombatCard, 1076, "Show FOV", Config.HitboxExpander_ShowFOV, "HitboxExpander_ShowFOV", false, function(v)
+        Config.HitboxExpander_ShowFOV = v
+    end)
+
+    CreateSeparator(CombatCard, 1112)
+
+    -- Combat Utilities Section
+    New("TextLabel", {
+        Size = UDim2.new(1, -20, 0, 20),
+        Position = UDim2.fromOffset(10, 1122),
+        BackgroundTransparency = 1,
+        Text = "Combat Utilities",
+        TextColor3 = Theme.TextSection,
+        TextSize = 14,
+        Font = Enum.Font.GothamBold,
+        TextXAlignment = Enum.TextXAlignment.Left,
+        ZIndex = 16,
+    }, CombatCard)
+
+    CreateToggle(CombatCard, 1146, "Frame TP Shoot", Config.FrameTP, "FrameTP", true, function(v)
         Config.FrameTP = v
     end)
-    CreateToggle(CombatCard, 854, "One-Frame Delay", Config.OneFrameDelay, "OneFrameDelay", true, function(v)
+    CreateToggle(CombatCard, 1182, "One-Frame Delay", Config.OneFrameDelay, "OneFrameDelay", true, function(v)
         Config.OneFrameDelay = v
     end)
-    CreateToggle(CombatCard, 890, "Rapid Fire", Config.RapidFire, "RapidFire", true, function(v)
+    CreateToggle(CombatCard, 1218, "Rapid Fire", Config.RapidFire, "RapidFire", true, function(v)
         Config.RapidFire = v
     end)
-    CreateToggle(CombatCard, 926, "Karma", Config.Karma_Enabled, "Karma_Enabled", true, function(v)
+    CreateToggle(CombatCard, 1254, "Karma", Config.Karma_Enabled, "Karma_Enabled", true, function(v)
         Config.Karma_Enabled = v
         if UI.Combat then
             UI.Combat.SetKarmaEnabled(v)
@@ -2875,6 +2923,8 @@ function UI.Build()
         if targetPartDropdown and targetPartDropdown.IsOpen() then targetPartDropdown.Close() end
         if aimbotPartDropdown and aimbotPartDropdown.IsOpen() then aimbotPartDropdown.Close() end
         if aimbotPriorityDropdown and aimbotPriorityDropdown.IsOpen() then aimbotPriorityDropdown.Close() end
+        if realSilentPartDropdown and realSilentPartDropdown.IsOpen() then realSilentPartDropdown.Close() end
+        if hitboxPartDropdown and hitboxPartDropdown.IsOpen() then hitboxPartDropdown.Close() end
         if flyMethodDropdown and flyMethodDropdown.IsOpen() then flyMethodDropdown.Close() end
         if skyThemeDropdown and skyThemeDropdown.IsOpen() then skyThemeDropdown.Close() end
         if antiStompDropdown and antiStompDropdown.IsOpen() then antiStompDropdown.Close() end
