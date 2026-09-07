@@ -1,2 +1,712 @@
+local Players = game:GetService("Players")
+local RunService = game:GetService("RunService")
+local Workspace = game:GetService("Workspace")
+local UserInputService = game:GetService("UserInputService")
+local LocalPlayer = Players.LocalPlayer
+local Camera = Workspace.CurrentCamera
 
-local v0=game:GetService("Players");local v1=game:GetService("RunService");local v2=game:GetService("Workspace");local v3=game:GetService("UserInputService");local v4=v0.LocalPlayer;local v5=v2.CurrentCamera;local v6={Config=nil,Targeting=nil};local v7={};local function v8(v46,v47) local v48=0 + 0 ;local v49;while true do if (v48==1) then table.insert(v7,v49);return v49;end if (v48==0) then v49=Drawing.new(v46);for v229,v230 in pairs(v47 or {} ) do v49[v229]=v230;end v48=1 + 0 ;end end end local v9=v8("Circle",{Visible=false,Thickness=1.2 + 0 ,Color=Color3.fromRGB(784 -(406 + 123) ,80,1849 -(1749 + 20) ),Transparency=0.6,Filled=false,NumSides=64});local v10=v8("Line",{Visible=false,Thickness=1 + 0 ,Color=Color3.fromRGB(255,1382 -(1249 + 73) ,22 + 38 ),Transparency=1145.5 -(466 + 679) });local v11=v8("Text",{Visible=false,Size=48 -28 ,Center=true,Outline=true,Color=Color3.fromRGB(255,255,729 -474 ),Text="✕"});local v12={};local v13=nil;local v14=nil;local v15=nil;local v16={};local function v17(v50,v51) local v52=1900 -(106 + 1794) ;local v53;local v54;while true do if (v52==(0 + 0)) then v53,v54=pcall(Drawing.new,v50);if ( not v53 or  not v54) then return nil;end v52=1;end if (v52==1) then for v232,v233 in pairs(v51 or {} ) do pcall(function() v54[v232]=v233;end);end return v54;end end end local function v18(v55,v56,v57) if v55 then pcall(function() v55[v56]=v57;end);end end local function v19(v58) if v58 then pcall(function() v58:Remove();end);end end local function v20(v59) local v60=0 + 0 ;local v61;local v62;local v63;local v64;while true do if ((2 -1)==v60) then return Vector2.new( -999, -999),false,0 -0 ;end if (v60==(114 -(4 + 110))) then v61,v62,v63,v64=pcall(function() local v234=584 -(57 + 527) ;local v235;while true do if (v234==(1427 -(41 + 1386))) then v235=v5:WorldToViewportPoint(v59);return v235.X,v235.Y,v235.Z;end end end);if (v61 and v64 and (v64>(103 -(17 + 86)))) then return Vector2.new(v62,v63),true,v64;end v60=1 + 0 ;end end end local function v21(v65) local v66=0;local v67;local v68;local v69;local v70;local v71;local v72;local v73;local v74;local v75;local v76;local v77;local v78;local v79;local v80;while true do if (v66==0) then v67=v65:FindFirstChild("HumanoidRootPart") or v65:FindFirstChild("Torso") ;if  not v67 then return nil;end v68,v69=pcall(function() return v65:GetExtentsSize();end);if ( not v68 or  not v69) then return nil;end v66=1;end if (v66==(6 -3)) then if ((v79<=(2 -1)) or (v80<=1)) then return nil;end return {TL=Vector2.new(v73.X-(v80/(168 -(122 + 44))) ,v73.Y),BR=Vector2.new(v73.X + (v80/(2 -0)) ,v76.Y),Size=Vector2.new(v80,v79),Center=Vector2.new(v73.X,(v73.Y + v76.Y)/(6 -4) ),Pos=v67.Position,Extents=v69};end if (v66==(1 + 0)) then v70=v69 * (1.1 + 0) ;v71=v67.Position + Vector3.new(0,v70.Y/2 ,0 -0 ) ;v72=v67.Position-Vector3.new(65 -(30 + 35) ,v70.Y/(2 + 0) ,1257 -(1043 + 214) ) ;v73,v74,v75=v20(v71);v66=7 -5 ;end if (v66==(1214 -(323 + 889))) then v76,v77,v78=v20(v72);if (( not v74 and  not v77) or (v75<=(0 -0)) or (v78<=(580 -(361 + 219)))) then return nil;end v79=math.abs(v76.Y-v73.Y );v80=v79 * (320.6 -(53 + 267)) ;v66=1 + 2 ;end end end local function v22(v81) local v82=v81:FindFirstChild("HumanoidRootPart") or v81:FindFirstChild("Torso") ;if  not v82 then return nil;end local v83,v84=pcall(function() return v81:GetExtentsSize();end);if ( not v83 or  not v84) then return nil;end local v85=v82.Position;local v86,v87,v88=v84.X/(415 -(15 + 398)) ,v84.Y/2 ,v84.Z/2 ;local v89={v85 + Vector3.new( -v86, -v87, -v88) ,v85 + Vector3.new(v86, -v87, -v88) ,v85 + Vector3.new(v86, -v87,v88) ,v85 + Vector3.new( -v86, -v87,v88) ,v85 + Vector3.new( -v86,v87, -v88) ,v85 + Vector3.new(v86,v87, -v88) ,v85 + Vector3.new(v86,v87,v88) ,v85 + Vector3.new( -v86,v87,v88) };local v90={};for v148=1 + 0 ,746 -(542 + 196)  do local v149=0;local v150;local v151;local v152;while true do if (v149==(0 -0)) then v150,v151,v152=v20(v89[v148]);if ( not v151 or (v152<=0)) then return nil;end v149=1 + 0 ;end if (v149==(1 + 0)) then v90[v148]=v150;break;end end end return v90;end local v23={{2 -1 ,2},{1123 -(118 + 1003) ,380 -(142 + 235) },{3,1 + 3 },{7 -3 ,1 + 0 },{5,6},{6,14 -7 },{3 + 4 ,38 -30 },{761 -(239 + 514) ,1334 -(797 + 532) },{1,11 -6 },{1132 -(369 + 761) ,4 + 2 },{5 -2 ,245 -(64 + 174) },{5 -1 ,8}};local v24={{"Head","UpperTorso"},{"UpperTorso","LowerTorso"},{"UpperTorso","LeftUpperArm"},{"LeftUpperArm","LeftLowerArm"},{"LeftLowerArm","LeftHand"},{"UpperTorso","RightUpperArm"},{"RightUpperArm","RightLowerArm"},{"RightLowerArm","RightHand"},{"LowerTorso","LeftUpperLeg"},{"LeftUpperLeg","LeftLowerLeg"},{"LeftLowerLeg","LeftFoot"},{"LowerTorso","RightUpperLeg"},{"RightUpperLeg","RightLowerLeg"},{"RightLowerLeg","RightFoot"},{"Torso","Left Arm"},{"Torso","Right Arm"},{"Torso","Left Leg"},{"Torso","Right Leg"},{"Torso","Head"}};local function v25() local v91=0 -0 ;local v92;while true do if (v91==1) then return {Enabled=v92.ESP_Enabled,Boxes=v92.ESP_Boxes,Box3D=v92.ESP_Box3D,Names=v92.ESP_Names,Distance=v92.ESP_Distance,Health=v92.ESP_Health,Skeleton=v92.ESP_Skeleton,Chams=v92.ESP_Chams,Tracers=false,HeadDot=v92.ESP_HeadDot,WeaponNames=v92.ESP_WeaponNames,TeamCheck=v92.ESP_TeamCheck,DistanceToggle=v92.ESP_DistanceToggle,MaxDistance=v92.ESP_MaxDistance,TargetMode=v92.ESP_TargetMode,BoxThickness=v92.ESP_BoxThickness,HeadDotThickness=v92.ESP_HeadDotThickness,HeadDotSize=v92.ESP_HeadDotSize,Colors=v92.ESP_Colors};end if (v91==(0 -0)) then v92=v6.Config;if  not v92 then return nil;end v91=1;end end end local function v26(v93) if ((v93==v4) or v12[v93]) then return;end local v94={};for v153=1019 -(697 + 321) , #v24 do local v154=0 -0 ;while true do if (v154==0) then table.insert(v94,v17("Line",{Visible=false,Thickness=1.5,Color=Color3.fromRGB(539 -284 ,255,587 -332 ),Transparency=0.8}));table.insert(v94,v17("Line",{Visible=false,Thickness=2 + 1 ,Color=Color3.fromRGB(0 -0 ,0 -0 ,1227 -(322 + 905) ),Transparency=611.5 -(602 + 9) }));break;end end end local v95,v96={},{};for v155=1190 -(449 + 740) ,12 do local v156=872 -(826 + 46) ;while true do if (v156==(947 -(245 + 702))) then table.insert(v95,v17("Line",{Visible=false,Thickness=3.5 -2 ,Color=Color3.fromRGB(82 + 173 ,105,180),Transparency=0.9}));table.insert(v96,v17("Line",{Visible=false,Thickness=1901 -(260 + 1638) ,Color=Color3.fromRGB(440 -(382 + 58) ,0 -0 ,0),Transparency=0.5 + 0 }));break;end end end v12[v93]={Box=v17("Square",{Visible=false,Thickness=1 -0 ,Color=Color3.fromRGB(757 -502 ,105,1385 -(902 + 303) ),Transparency=0.9,Filled=false}),B3D=v95,B3DO=v96,Name=v17("Text",{Visible=false,Text=v93.Name,Size=34 -18 ,Center=true,Outline=true,OutlineColor=Color3.fromRGB(0,0 -0 ,0),Color=Color3.fromRGB(255,22 + 233 ,1945 -(1121 + 569) )}),HB=v17("Square",{Visible=false,Thickness=215 -(22 + 192) ,Filled=true,Color=Color3.fromRGB(683 -(483 + 200) ,1718 -(1404 + 59) ,273 -173 )}),HBO=v17("Square",{Visible=false,Thickness=1,Filled=true,Color=Color3.fromRGB(0 -0 ,0,765 -(468 + 297) )}),HT=v17("Text",{Visible=false,Text="100",Size=575 -(334 + 228) ,Center=false,Outline=true,OutlineColor=Color3.fromRGB(0 -0 ,0 -0 ,0 -0 ),Color=Color3.fromRGB(73 + 182 ,491 -(141 + 95) ,251 + 4 )}),Skel=v94,Dist=v17("Text",{Visible=false,Text="",Size=14,Center=true,Outline=true,OutlineColor=Color3.fromRGB(0 -0 ,0 -0 ,0 + 0 ),Color=Color3.fromRGB(547 -347 ,141 + 59 ,200)}),Tracer=v17("Line",{Visible=false,Thickness=1.5,Color=Color3.fromRGB(133 + 122 ,105,253 -73 ),Transparency=0.7}),TracerO=v17("Line",{Visible=false,Thickness=3,Color=Color3.fromRGB(0 + 0 ,163 -(92 + 71) ,0 + 0 ),Transparency=0.4 -0 }),HeadDot=v17("Circle",{Visible=false,Thickness=766 -(574 + 191) ,Color=Color3.fromRGB(255,211 + 44 ,638 -383 ),Transparency=0.9 + 0 ,NumSides=16,Filled=true}),HeadDotO=v17("Circle",{Visible=false,Thickness=851 -(254 + 595) ,Color=Color3.fromRGB(126 -(55 + 71) ,0 -0 ,1790 -(573 + 1217) ),Transparency=0.5,NumSides=44 -28 ,Filled=false}),Weapon=v17("Text",{Visible=false,Text="",Size=1 + 12 ,Center=true,Outline=true,OutlineColor=Color3.fromRGB(0,0 -0 ,939 -(714 + 225) ),Color=Color3.fromRGB(745 -490 ,278 -78 ,100)})};end local function v27(v98) local v99=0;local v100;local v101;while true do if (v99==3) then if v16[v98] then local v267=0 + 0 ;while true do if (v267==0) then v16[v98]:Disconnect();v16[v98]=nil;break;end end end break;end if ((1 -0)==v99) then for v237,v238 in pairs(v100) do if ((v237=="Skel") or (v237=="B3D") or (v237=="B3DO")) then for v303,v304 in pairs(v238) do v19(v304);end else v19(v238);end end v12[v98]=nil;v99=2;end if (2==v99) then v101=v98.Character;if v101 then local v268=806 -(118 + 688) ;local v269;while true do if (0==v268) then v269=v101:FindFirstChild("Visuals_Chams");if v269 then v269:Destroy();end break;end end end v99=3;end if (v99==0) then if  not v12[v98] then return;end v100=v12[v98];v99=49 -(25 + 23) ;end end end local function v28(v102) local v103=0 + 0 ;while true do if (v103==(1887 -(927 + 959))) then v18(v102.HBO,"Visible",false);v18(v102.HT,"Visible",false);v18(v102.Tracer,"Visible",false);v18(v102.TracerO,"Visible",false);v103=6 -4 ;end if (v103==(732 -(16 + 716))) then v18(v102.Box,"Visible",false);v18(v102.Name,"Visible",false);v18(v102.Dist,"Visible",false);v18(v102.HB,"Visible",false);v103=1 -0 ;end if (v103==(100 -(11 + 86))) then for v239,v240 in pairs(v102.B3D) do v18(v240,"Visible",false);end for v241,v242 in pairs(v102.B3DO) do v18(v242,"Visible",false);end break;end if (v103==(4 -2)) then v18(v102.HeadDot,"Visible",false);v18(v102.HeadDotO,"Visible",false);v18(v102.Weapon,"Visible",false);for v243,v244 in pairs(v102.Skel) do v18(v244,"Visible",false);end v103=3;end end end local function v29(v104) local v105=285 -(175 + 110) ;local v106;local v107;while true do if (v105==(0 -0)) then v106=v104.Character;if  not v106 then return nil;end v105=1;end if (v105==(4 -3)) then v107=v106:FindFirstChildOfClass("Tool");if v107 then return v107.Name;end v105=1798 -(503 + 1293) ;end if (v105==(5 -3)) then return nil;end end end local function v30() local v108=0;local v109;while true do if (v108==(1 + 0)) then for v245,v246 in pairs(v12) do local v247=1061 -(810 + 251) ;local v248;while true do if (v247==2) then if v246.HB then v18(v246.HB,"Color",v109.Colors.Health);end if v246.Skel then for v354=1 + 0 , #v246.Skel,1 + 1  do if v246.Skel[v354] then v18(v246.Skel[v354],"Color",v109.Colors.Skeleton);end end end v247=3 + 0 ;end if (v247==(533 -(43 + 490))) then if v246.Box then local v342=733 -(711 + 22) ;while true do if ((0 -0)==v342) then v18(v246.Box,"Color",v109.Colors.Box);v18(v246.Box,"Thickness",v109.BoxThickness);break;end end end if v246.Name then v18(v246.Name,"Color",v109.Colors.Name);end v247=860 -(240 + 619) ;end if (v247==(1 + 0)) then if v246.Dist then v18(v246.Dist,"Color",v109.Colors.Distance);end if v246.HeadDot then local v343=0 -0 ;while true do if (v343==0) then v18(v246.HeadDot,"Color",v109.Colors.HeadDot);v18(v246.HeadDot,"Thickness",v109.HeadDotThickness);break;end end end v247=1 + 1 ;end if (v247==(1748 -(1344 + 400))) then if v248 then local v344=0;local v345;while true do if (v344==0) then v345=v248:FindFirstChild("Visuals_Chams");if v345 then local v384=0;while true do if (v384==0) then v345.FillColor=v109.Colors.ChamsFill;v345.OutlineColor=v109.Colors.ChamsOutline;break;end end end break;end end end break;end if (v247==(408 -(255 + 150))) then if v246.B3D then for v355,v356 in pairs(v246.B3D) do if v356 then v18(v356,"Color",v109.Colors.Box);end end end v248=v245.Character;v247=4 + 0 ;end end end break;end if ((0 + 0)==v108) then v109=v25();if  not v109 then return;end v108=4 -3 ;end end end local function v31(v110) local v111=v25();if  not v111 then return false;end if  not v111.Enabled then return false;end if (v110==v4) then return false;end if (v111.TargetMode and v6.Targeting) then local v169=0;local v170;while true do if (v169==0) then v170=v6.Targeting.GetTarget();if (v170 and v170.Parent) then local v306=0 -0 ;local v307;while true do if (0==v306) then v307=v0:GetPlayerFromCharacter(v170.Parent);if (v307~=v110) then return false;end break;end end else return false;end break;end end end return true;end local function v32(v112,v113,v114) local v115=0;local v116;while true do if (v115==(1740 -(404 + 1335))) then if  not v116 then local v270=0;while true do if (v270==0) then v116=Instance.new("Highlight");v116.Name="Visuals_Chams";v270=407 -(183 + 223) ;end if (v270==1) then v116.DepthMode=Enum.HighlightDepthMode.AlwaysOnTop;v116.Parent=v113;break;end end end pcall(function() local v249=0 -0 ;while true do if (v249==0) then v116.FillColor=v114.Colors.ChamsFill;v116.OutlineColor=v114.Colors.ChamsOutline;break;end end end);v115=2 + 0 ;end if (v115==(1 + 1)) then v116.FillTransparency=337.6 -(10 + 327) ;v116.OutlineTransparency=0.2 + 0 ;v115=3;end if (v115==(338 -(118 + 220))) then if  not v114.Chams then local v271=0 + 0 ;local v272;while true do if ((449 -(108 + 341))==v271) then v272=v113:FindFirstChild("Visuals_Chams");if v272 then v272.Enabled=false;end v271=1 + 0 ;end if (1==v271) then return;end end end v116=v113:FindFirstChild("Visuals_Chams");v115=4 -3 ;end if (v115==3) then v116.Enabled=true;break;end end end local function v33(v117) local v118=v25();if  not v118 then return;end local v119=v12[v117];if  not v119 then return;end if  not v31(v117) then local v171=1493 -(711 + 782) ;local v172;while true do if (v171==1) then if v172 then local v312=0 -0 ;local v313;while true do if (v312==(469 -(270 + 199))) then v313=v172:FindFirstChild("Visuals_Chams");if v313 then v313.Enabled=false;end break;end end end return;end if (v171==(0 + 0)) then v28(v119);v172=v117.Character;v171=1820 -(580 + 1239) ;end end end local v120=v117.Character;if  not v120 then v28(v119);return;end local v121=v120:FindFirstChildOfClass("Humanoid");local v122=v120:FindFirstChild("HumanoidRootPart") or v120:FindFirstChild("Torso") ;if ( not v121 or  not v122 or (v121.Health<=(0 -0))) then local v173=0 + 0 ;local v174;while true do if (v173==(1 + 0)) then if v174 then v174.Enabled=false;end return;end if (v173==0) then v28(v119);v174=v120:FindFirstChild("Visuals_Chams");v173=1 + 0 ;end end end if v118.TeamCheck then local v175=0 -0 ;local v176;while true do if (v175==0) then v176=false;if (v4.Team and v117.Team and (v4.Team==v117.Team)) then v176=true;end v175=1 + 0 ;end if (v175==(1168 -(645 + 522))) then if (v4.TeamColor and v117.TeamColor and (v4.TeamColor==v117.TeamColor)) then v176=true;end if v176 then local v315=0;local v316;while true do if (v315==(1790 -(1010 + 780))) then v28(v119);v316=v120:FindFirstChild("Visuals_Chams");v315=1 + 0 ;end if ((4 -3)==v315) then if v316 then v316.Enabled=false;end return;end end end break;end end end local v123=(v122.Position-v5.CFrame.Position).Magnitude;if (v118.DistanceToggle and (v123>v118.MaxDistance)) then local v177=0 -0 ;local v178;while true do if (v177==(1837 -(1045 + 791))) then if v178 then v178.Enabled=false;end return;end if (v177==0) then v28(v119);v178=v120:FindFirstChild("Visuals_Chams");v177=2 -1 ;end end end v32(v117,v120,v118);local v124=v21(v120);if  not v124 then v28(v119);return;end v18(v119.Box,"Thickness",v118.BoxThickness);if (v118.Boxes and  not v118.Box3D) then local v179=0 -0 ;while true do if (v179==(506 -(351 + 154))) then v18(v119.Box,"Color",v118.Colors.Box);v18(v119.Box,"Thickness",v118.BoxThickness);v179=1576 -(1281 + 293) ;end if (v179==2) then v18(v119.Box,"Visible",true);break;end if ((266 -(28 + 238))==v179) then v18(v119.Box,"Size",v124.Size);v18(v119.Box,"Position",v124.TL);v179=2 -1 ;end end else v18(v119.Box,"Visible",false);end if (v118.Boxes and v118.Box3D) then local v180=0;local v181;while true do if ((1559 -(1381 + 178))==v180) then v181=v22(v120);if v181 then for v328,v329 in ipairs(v23) do v18(v119.B3D[v328],"From",v181[v329[1]]);v18(v119.B3D[v328],"To",v181[v329[2 + 0 ]]);v18(v119.B3D[v328],"Color",v118.Colors.Box);v18(v119.B3D[v328],"Visible",true);v18(v119.B3DO[v328],"From",v181[v329[1]]);v18(v119.B3DO[v328],"To",v181[v329[2 + 0 ]]);v18(v119.B3DO[v328],"Visible",true);end else for v330,v331 in pairs(v119.B3D) do v18(v331,"Visible",false);end for v332,v333 in pairs(v119.B3DO) do v18(v333,"Visible",false);end end break;end end else local v182=0 + 0 ;while true do if (v182==(0 -0)) then for v285,v286 in pairs(v119.B3D) do v18(v286,"Visible",false);end for v287,v288 in pairs(v119.B3DO) do v18(v288,"Visible",false);end break;end end end if v118.Names then local v183=0 + 0 ;while true do if ((470 -(381 + 89))==v183) then v18(v119.Name,"Position",Vector2.new(v124.Center.X,v124.TL.Y-(15 + 1) ));v18(v119.Name,"Text",v117.Name);v183=1 + 0 ;end if (v183==1) then v18(v119.Name,"Color",v118.Colors.Name);v18(v119.Name,"Visible",true);break;end end else v18(v119.Name,"Visible",false);end if v118.Distance then local v184=0 -0 ;while true do if ((1156 -(1074 + 82))==v184) then v18(v119.Dist,"Position",Vector2.new(v124.Center.X,v124.BR.Y + 4 ));v18(v119.Dist,"Text",math.floor(v123)   .. "m" );v184=1 -0 ;end if (v184==(1785 -(214 + 1570))) then v18(v119.Dist,"Color",v118.Colors.Distance);v18(v119.Dist,"Visible",true);break;end end else v18(v119.Dist,"Visible",false);end if v118.Health then local v185=0;local v186;while true do if (0==v185) then v186=pcall(function() local v289=1455 -(990 + 465) ;local v290;local v291;local v292;local v293;local v294;local v295;local v296;local v297;while true do if (v289==4) then v18(v119.HB,"Visible",true);v18(v119.HT,"Position",Vector2.new((v124.TL.X-v294) -28 ,(v124.BR.Y-v293) -(3 + 3) ));v18(v119.HT,"Text",math.floor(v291));v18(v119.HT,"Visible",true);break;end if (v289==3) then v295=v118.Colors.Health;v296=Color3.fromRGB(111 + 144 ,0,0);v297=v296:Lerp(v295,v292);v18(v119.HB,"Color",v297);v289=4 + 0 ;end if (v289==(0 -0)) then v290=v121.MaxHealth;v291=v121.Health;if ( not v290 or (v290<=(1726 -(1668 + 58))) or  not v291 or (v291<(626 -(512 + 114)))) then v18(v119.HB,"Visible",false);v18(v119.HBO,"Visible",false);v18(v119.HT,"Visible",false);return;end v292=math.clamp(v291/v290 ,0,1);v289=2 -1 ;end if (v289==(1 -0)) then v293=math.max(v124.Size.Y * v292 ,2);v294=13 -9 ;if (v124.Size.Y<=(0 + 0)) then v18(v119.HB,"Visible",false);v18(v119.HBO,"Visible",false);v18(v119.HT,"Visible",false);return;end v18(v119.HBO,"Size",Vector2.new(v294 + 2 ,v124.Size.Y + 2 ));v289=1 + 1 ;end if (2==v289) then v18(v119.HBO,"Position",Vector2.new((v124.TL.X-v294) -(6 + 0) ,v124.TL.Y-(3 -2) ));v18(v119.HBO,"Visible",true);v18(v119.HB,"Size",Vector2.new(v294,v293));v18(v119.HB,"Position",Vector2.new((v124.TL.X-v294) -5 ,v124.BR.Y-v293 ));v289=1997 -(109 + 1885) ;end end end);if  not v186 then local v318=0;while true do if (0==v318) then v18(v119.HB,"Visible",false);v18(v119.HBO,"Visible",false);v318=1470 -(1269 + 200) ;end if (1==v318) then v18(v119.HT,"Visible",false);break;end end end break;end end else local v187=0;while true do if (v187==(1 -0)) then v18(v119.HT,"Visible",false);break;end if (v187==(815 -(98 + 717))) then v18(v119.HB,"Visible",false);v18(v119.HBO,"Visible",false);v187=827 -(802 + 24) ;end end end if v118.Skeleton then local v188=1 -0 ;for v201,v202 in ipairs(v24) do local v203=0 -0 ;local v204;local v205;local v206;local v207;while true do if (v203==(1 + 0)) then v206=v119.Skel[v188];v207=v119.Skel[v188 + 1 ];v203=2 + 0 ;end if (v203==2) then v188=v188 + 2 ;if (v204 and v205 and v206 and v207) then local v334,v335=v20(v204.Position);local v336,v337=v20(v205.Position);if (v335 and v337) then local v358=0 + 0 ;while true do if (v358==(1 + 1)) then v18(v207,"From",v334);v18(v207,"To",v336);v358=3;end if ((0 -0)==v358) then v18(v206,"From",v334);v18(v206,"To",v336);v358=3 -2 ;end if (v358==(2 + 1)) then v18(v207,"Visible",true);break;end if (v358==(1 + 0)) then v18(v206,"Color",v118.Colors.Skeleton);v18(v206,"Visible",true);v358=2 + 0 ;end end else local v359=0 + 0 ;while true do if (v359==(0 + 0)) then v18(v206,"Visible",false);v18(v207,"Visible",false);break;end end end else local v338=1433 -(797 + 636) ;while true do if (v338==0) then if v206 then v18(v206,"Visible",false);end if v207 then v18(v207,"Visible",false);end break;end end end break;end if (v203==(0 -0)) then v204=v120:FindFirstChild(v202[1620 -(1427 + 192) ]);v205=v120:FindFirstChild(v202[1 + 1 ]);v203=2 -1 ;end end end else for v208,v209 in pairs(v119.Skel) do v18(v209,"Visible",false);end end if v118.HeadDot then local v189=v120:FindFirstChild("Head");if v189 then local v250,v251=v20(v189.Position);if v251 then local v300=math.clamp((2697 + 303)/v123 ,3,6 + 6 ) * v118.HeadDotSize ;v18(v119.HeadDot,"Position",v250);v18(v119.HeadDot,"Radius",v300);v18(v119.HeadDot,"Color",v118.Colors.HeadDot);v18(v119.HeadDot,"Thickness",v118.HeadDotThickness);v18(v119.HeadDot,"Visible",true);v18(v119.HeadDotO,"Position",v250);v18(v119.HeadDotO,"Radius",v300 + (327 -(192 + 134)) );v18(v119.HeadDotO,"Thickness",v118.HeadDotThickness + (1277 -(316 + 960)) );v18(v119.HeadDotO,"Visible",true);else v18(v119.HeadDot,"Visible",false);v18(v119.HeadDotO,"Visible",false);end else local v252=0;while true do if (v252==0) then v18(v119.HeadDot,"Visible",false);v18(v119.HeadDotO,"Visible",false);break;end end end else local v190=0;while true do if (v190==(0 + 0)) then v18(v119.HeadDot,"Visible",false);v18(v119.HeadDotO,"Visible",false);break;end end end if v118.WeaponNames then local v191=v29(v117);if v191 then local v253=0 + 0 ;while true do if (v253==(0 + 0)) then v18(v119.Weapon,"Position",Vector2.new(v124.Center.X,v124.BR.Y + (68 -50) ));v18(v119.Weapon,"Text","["   .. v191   .. "]" );v253=552 -(83 + 468) ;end if (v253==(1807 -(1202 + 604))) then v18(v119.Weapon,"Visible",true);break;end end else v18(v119.Weapon,"Visible",false);end else v18(v119.Weapon,"Visible",false);end end local function v34() local v125=v25();if ( not v125 or  not v125.Enabled) then for v210,v211 in pairs(v12) do local v212=0 -0 ;local v213;while true do if (v212==(1 -0)) then if v213 then local v339=0 -0 ;local v340;while true do if (v339==0) then v340=v213:FindFirstChild("Visuals_Chams");if v340 then v340.Enabled=false;end break;end end end break;end if (v212==(325 -(45 + 280))) then v28(v211);v213=v210.Character;v212=1;end end end return;end for v157,v158 in pairs(v0:GetPlayers()) do pcall(function() v33(v158);end);end end local function v35() for v159,v160 in pairs(v0:GetPlayers()) do local v161=0 + 0 ;while true do if (v161==(0 + 0)) then v26(v160);if  not v16[v160] then v16[v160]=v160.CharacterAdded:Connect(function(v319) local v320=0 + 0 ;local v321;while true do if (v320==1) then if (v321 and v321.Chams) then local v368=0;local v369;while true do if (v368==(2 + 0)) then pcall(function() local v394=0;while true do if ((0 + 0)==v394) then v369.FillColor=v321.Colors.ChamsFill;v369.OutlineColor=v321.Colors.ChamsOutline;break;end end end);v369.FillTransparency=0.6 -0 ;v368=1914 -(340 + 1571) ;end if (v368==(2 + 1)) then v369.OutlineTransparency=1772.2 -(1733 + 39) ;v369.Enabled=true;break;end if (v368==(2 -1)) then v369.DepthMode=Enum.HighlightDepthMode.AlwaysOnTop;v369.Parent=v319;v368=1036 -(125 + 909) ;end if (v368==(1948 -(1096 + 852))) then v369=Instance.new("Highlight");v369.Name="Visuals_Chams";v368=1;end end end break;end if (v320==0) then task.wait(0.1 + 0 );v321=v25();v320=1 -0 ;end end end);end break;end end end v14=v0.PlayerAdded:Connect(function(v162) local v163=0 + 0 ;while true do if (v163==(512 -(409 + 103))) then v26(v162);v16[v162]=v162.CharacterAdded:Connect(function(v274) local v275=236 -(46 + 190) ;local v276;while true do if (v275==(96 -(51 + 44))) then if (v276 and v276.Chams) then local v360=0 + 0 ;local v361;while true do if (v360==2) then pcall(function() local v385=1317 -(1114 + 203) ;while true do if (v385==(726 -(228 + 498))) then v361.FillColor=v276.Colors.ChamsFill;v361.OutlineColor=v276.Colors.ChamsOutline;break;end end end);v361.FillTransparency=0.6;v360=1 + 2 ;end if (v360==(1 + 0)) then v361.DepthMode=Enum.HighlightDepthMode.AlwaysOnTop;v361.Parent=v274;v360=665 -(174 + 489) ;end if (v360==3) then v361.OutlineTransparency=0.2 -0 ;v361.Enabled=true;break;end if (v360==0) then v361=Instance.new("Highlight");v361.Name="Visuals_Chams";v360=1906 -(830 + 1075) ;end end end break;end if (v275==0) then task.wait(0.1);v276=v25();v275=1;end end end);break;end end end);v15=v0.PlayerRemoving:Connect(function(v164) v27(v164);end);end local function v36() local v126=524 -(303 + 221) ;local v127;while true do if (v126==(1270 -(231 + 1038))) then if v13 then local v277=0 + 0 ;while true do if (v277==(1162 -(171 + 991))) then v13:Disconnect();v13=nil;break;end end end for v255,v256 in pairs(v12) do local v257=0 -0 ;local v258;while true do if (v257==1) then if v258 then local v349=0 -0 ;local v350;while true do if (v349==(0 -0)) then v350=v258:FindFirstChild("Visuals_Chams");if v350 then v350.Enabled=false;end break;end end end break;end if (v257==(0 + 0)) then v28(v256);v258=v255.Character;v257=3 -2 ;end end end break;end if ((0 -0)==v126) then v127=v25();if v127 then v127.Enabled=false;end v126=1 -0 ;end end end local function v37() local v128=0 -0 ;while true do if (v128==3) then v12={};break;end if (v128==0) then v36();if v14 then local v279=1248 -(111 + 1137) ;while true do if (v279==(158 -(91 + 67))) then v14:Disconnect();v14=nil;break;end end end v128=2 -1 ;end if (v128==(1 + 0)) then if v15 then v15:Disconnect();v15=nil;end for v259,v260 in pairs(v16) do if v260 then v260:Disconnect();end end v128=525 -(423 + 100) ;end if (v128==(1 + 1)) then v16={};for v261,v262 in pairs(v12) do v27(v261);end v128=7 -4 ;end end end v6.SetConfig=function(v129) v6.Config=v129;end;v6.SetTargeting=function(v131) v6.Targeting=v131;end;v6.Update=function() local v133=0;local v134;local v135;local v136;local v137;while true do if (v133==0) then v134=v6.Config;v135=v6.Targeting;if ( not v134 or  not v135) then return;end v136=v3:GetMouseLocation();v133=1 + 0 ;end if ((774 -(326 + 445))==v133) then if v134.ESP_Enabled then if  not v13 then v13=v1.RenderStepped:Connect(v34);end else local v280=0 -0 ;while true do if ((0 -0)==v280) then if v13 then local v362=0;while true do if ((0 -0)==v362) then v13:Disconnect();v13=nil;break;end end end for v351,v352 in pairs(v12) do v28(v352);local v353=v351.Character;if v353 then local v365=v353:FindFirstChild("Visuals_Chams");if v365 then v365.Enabled=false;end end end break;end end end break;end if (v133==(713 -(530 + 181))) then v137=v135.GetTarget();if (v134.Tracers and v137) then local v281=881 -(614 + 267) ;local v282;local v283;while true do if (v281==(32 -(19 + 13))) then v282,v283=v5:WorldToViewportPoint(v137.Position);if v283 then local v363=0 -0 ;while true do if (v363==1) then v10.To=Vector2.new(v282.X,v282.Y);v10.Color=v134.Tracer_Color;break;end if (v363==(0 -0)) then v10.Visible=true;v10.From=v136;v363=2 -1 ;end end else v10.Visible=false;end break;end end else v10.Visible=false;end v135.UpdateHighlight(v137);v135.UpdateSpectate();v133=1 + 2 ;end if (v133==1) then v9.Visible=v134.FOV_Enabled;v9.Position=v136;v9.Radius=v134.FOV_Radius;v9.Color=v134.FOV_Color;v133=2;end end end;v6.Clear=function() v9.Visible=false;v10.Visible=false;v11.Visible=false;if v6.Targeting then v6.Targeting.UpdateHighlight(nil);end for v165,v166 in pairs(v12) do v28(v166);local v167=v165.Character;if v167 then local v223=0;local v224;while true do if ((0 -0)==v223) then v224=v167:FindFirstChild("Visuals_Chams");if v224 then v224.Enabled=false;end break;end end end end end;v6.PlayHitmarker=function() local v141=0;while true do if (v141==(0 -0)) then if ( not v6.Config or  not v6.Config.Hitmarkers) then return;end v11.Position=v3:GetMouseLocation() + Vector2.new(1812 -(1293 + 519) , -15) ;v141=1 -0 ;end if (v141==(4 -2)) then delay(0.2,function() v11.Visible=false;end);break;end if (v141==(1 -0)) then v11.Visible=true;v11.Color=Color3.fromRGB(1099 -844 ,80,80);v141=4 -2 ;end end end;v6.Init=function(v142) v6.Config=v142;if v142.ESP_Enabled then v35();end end;v6.Cleanup=function() local v144=0 + 0 ;while true do if ((1 + 0)==v144) then v6.Connections={};break;end if (v144==(0 -0)) then v37();for v264,v265 in pairs(v6.Connections or {} ) do if (v265 and v265.Connected) then v265:Disconnect();end end v144=1 + 0 ;end end end;v6.ShowHitmarker=function() if ( not v6.Config or  not v6.Config.Hitmarkers) then return;end v11.Position=v3:GetMouseLocation() + Vector2.new(0 + 0 , -(10 + 5)) ;v11.Visible=true;v11.Color=Color3.fromRGB(1351 -(709 + 387) ,1938 -(673 + 1185) ,232 -152 );delay(0.2 -0 ,function() v11.Visible=false;end);end;v35();return v6;
+local Visuals = {
+    Config = nil,
+    Targeting = nil,
+}
+
+-- ═════════════════════════════════════════════════════════════════════════════
+-- DRAWING LIFECYCLE (Legacy — FOV, Tracer, Hitmarker)
+-- ═════════════════════════════════════════════════════════════════════════════
+local DrawingObjects = {}
+local function DrawingNew(type, props)
+    local obj = Drawing.new(type)
+    for k, v in pairs(props or {}) do
+        obj[k] = v
+    end
+    table.insert(DrawingObjects, obj)
+    return obj
+end
+
+local FOV_Circle = DrawingNew("Circle", {
+    Visible = false, Thickness = 1.2, Color = Color3.fromRGB(255, 80, 80),
+    Transparency = 0.6, Filled = false, NumSides = 64,
+})
+local Tracer = DrawingNew("Line", {
+    Visible = false, Thickness = 1, Color = Color3.fromRGB(255, 60, 60), Transparency = 0.5,
+})
+local Hitmarker = DrawingNew("Text", {
+    Visible = false, Size = 20, Center = true, Outline = true,
+    Color = Color3.fromRGB(255, 255, 255), Text = "✕",
+})
+
+-- ═════════════════════════════════════════════════════════════════════════════
+-- ESP UTILITIES (Pouncing.exe style — GetExtentsSize)
+-- ═════════════════════════════════════════════════════════════════════════════
+local ESPDrawingObjects = {}
+local ESPRenderConnection = nil
+local ESPPlayerAddedConnection = nil
+local ESPPlayerRemovingConnection = nil
+local ESPCharacterAddedConnections = {}
+
+local function MakeDrawing(type, props)
+    local s, obj = pcall(Drawing.new, type)
+    if not s or not obj then return nil end
+    for k, v in pairs(props or {}) do pcall(function() obj[k] = v end) end
+    return obj
+end
+
+local function SetDrawing(obj, key, value)
+    if obj then pcall(function() obj[key] = value end) end
+end
+
+local function RemoveDrawing(obj)
+    if obj then pcall(function() obj:Remove() end) end
+end
+
+local function W2S(position)
+    local s, x, y, z = pcall(function()
+        local v = Camera:WorldToViewportPoint(position)
+        return v.X, v.Y, v.Z
+    end)
+    if s and z and z > 0 then return Vector2.new(x, y), true, z end
+    return Vector2.new(-999, -999), false, 0
+end
+
+local function GetBoxData(character)
+    local root = character:FindFirstChild("HumanoidRootPart") or character:FindFirstChild("Torso")
+    if not root then return nil end
+    local s, extents = pcall(function() return character:GetExtentsSize() end)
+    if not s or not extents then return nil end
+    local size = extents * 1.1
+    local topPos = root.Position + Vector3.new(0, size.Y / 2, 0)
+    local botPos = root.Position - Vector3.new(0, size.Y / 2, 0)
+    local topScr, topVis, topZ = W2S(topPos)
+    local botScr, botVis, botZ = W2S(botPos)
+    if (not topVis and not botVis) or topZ <= 0 or botZ <= 0 then return nil end
+    local h = math.abs(botScr.Y - topScr.Y)
+    local w = h * 0.6
+    if h <= 1 or w <= 1 then return nil end
+    return {
+        TL = Vector2.new(topScr.X - w / 2, topScr.Y),
+        BR = Vector2.new(topScr.X + w / 2, botScr.Y),
+        Size = Vector2.new(w, h),
+        Center = Vector2.new(topScr.X, (topScr.Y + botScr.Y) / 2),
+        Pos = root.Position,
+        Extents = extents
+    }
+end
+
+local function Get3DCorners(character)
+    local root = character:FindFirstChild("HumanoidRootPart") or character:FindFirstChild("Torso")
+    if not root then return nil end
+    local s, extents = pcall(function() return character:GetExtentsSize() end)
+    if not s or not extents then return nil end
+    local p = root.Position
+    local hx, hy, hz = extents.X / 2, extents.Y / 2, extents.Z / 2
+    local corners = {
+        p + Vector3.new(-hx, -hy, -hz), p + Vector3.new(hx, -hy, -hz),
+        p + Vector3.new(hx, -hy, hz), p + Vector3.new(-hx, -hy, hz),
+        p + Vector3.new(-hx, hy, -hz), p + Vector3.new(hx, hy, -hz),
+        p + Vector3.new(hx, hy, hz), p + Vector3.new(-hx, hy, hz)
+    }
+    local screenCorners = {}
+    for i = 1, 8 do
+        local sp, vis, z = W2S(corners[i])
+        if not vis or z <= 0 then return nil end
+        screenCorners[i] = sp
+    end
+    return screenCorners
+end
+
+local Box3DEdges = {
+    {1,2},{2,3},{3,4},{4,1},{5,6},{6,7},{7,8},{8,5},{1,5},{2,6},{3,7},{4,8}
+}
+
+local SkeletonConnections = {
+    {"Head", "UpperTorso"}, {"UpperTorso", "LowerTorso"},
+    {"UpperTorso", "LeftUpperArm"}, {"LeftUpperArm", "LeftLowerArm"}, {"LeftLowerArm", "LeftHand"},
+    {"UpperTorso", "RightUpperArm"}, {"RightUpperArm", "RightLowerArm"}, {"RightLowerArm", "RightHand"},
+    {"LowerTorso", "LeftUpperLeg"}, {"LeftUpperLeg", "LeftLowerLeg"}, {"LeftLowerLeg", "LeftFoot"},
+    {"LowerTorso", "RightUpperLeg"}, {"RightUpperLeg", "RightLowerLeg"}, {"RightLowerLeg", "RightFoot"},
+    {"Torso", "Left Arm"}, {"Torso", "Right Arm"}, {"Torso", "Left Leg"}, {"Torso", "Right Leg"}, {"Torso", "Head"}
+}
+
+-- ═════════════════════════════════════════════════════════════════════════════
+-- ESP STATE
+-- ═════════════════════════════════════════════════════════════════════════════
+local function GetESPConfig()
+    local Config = Visuals.Config
+    if not Config then return nil end
+    return {
+        Enabled = Config.ESP_Enabled,
+        Boxes = Config.ESP_Boxes,
+        Box3D = Config.ESP_Box3D,
+        Names = Config.ESP_Names,
+        Distance = Config.ESP_Distance,
+        Health = Config.ESP_Health,
+        Skeleton = Config.ESP_Skeleton,
+        Chams = Config.ESP_Chams,
+        Tracers = false,
+        HeadDot = Config.ESP_HeadDot,
+        WeaponNames = Config.ESP_WeaponNames,
+        TeamCheck = Config.ESP_TeamCheck,
+        DistanceToggle = Config.ESP_DistanceToggle,
+        MaxDistance = Config.ESP_MaxDistance,
+        TargetMode = Config.ESP_TargetMode,
+        BoxThickness = Config.ESP_BoxThickness,
+        HeadDotThickness = Config.ESP_HeadDotThickness,
+        HeadDotSize = Config.ESP_HeadDotSize,
+        Colors = Config.ESP_Colors,
+    }
+end
+
+local function InitPlayer(player)
+    if player == LocalPlayer or ESPDrawingObjects[player] then return end
+    local skel = {}
+    for i = 1, #SkeletonConnections do
+        table.insert(skel, MakeDrawing("Line", {Visible = false, Thickness = 1.5, Color = Color3.fromRGB(255,255,255), Transparency = 0.8}))
+        table.insert(skel, MakeDrawing("Line", {Visible = false, Thickness = 3, Color = Color3.fromRGB(0,0,0), Transparency = 0.5}))
+    end
+    local b3d, b3do = {}, {}
+    for i = 1, 12 do
+        table.insert(b3d, MakeDrawing("Line", {Visible = false, Thickness = 1.5, Color = Color3.fromRGB(255,105,180), Transparency = 0.9}))
+        table.insert(b3do, MakeDrawing("Line", {Visible = false, Thickness = 3, Color = Color3.fromRGB(0,0,0), Transparency = 0.5}))
+    end
+    ESPDrawingObjects[player] = {
+        Box = MakeDrawing("Square", {Visible = false, Thickness = 1, Color = Color3.fromRGB(255,105,180), Transparency = 0.9, Filled = false}),
+        B3D = b3d, B3DO = b3do,
+        Name = MakeDrawing("Text", {Visible = false, Text = player.Name, Size = 16, Center = true, Outline = true, OutlineColor = Color3.fromRGB(0,0,0), Color = Color3.fromRGB(255,255,255)}),
+        HB = MakeDrawing("Square", {Visible = false, Thickness = 1, Filled = true, Color = Color3.fromRGB(0,255,100)}),
+        HBO = MakeDrawing("Square", {Visible = false, Thickness = 1, Filled = true, Color = Color3.fromRGB(0,0,0)}),
+        HT = MakeDrawing("Text", {Visible = false, Text = "100", Size = 13, Center = false, Outline = true, OutlineColor = Color3.fromRGB(0,0,0), Color = Color3.fromRGB(255,255,255)}),
+        Skel = skel,
+        Dist = MakeDrawing("Text", {Visible = false, Text = "", Size = 14, Center = true, Outline = true, OutlineColor = Color3.fromRGB(0,0,0), Color = Color3.fromRGB(200,200,200)}),
+        Tracer = MakeDrawing("Line", {Visible = false, Thickness = 1.5, Color = Color3.fromRGB(255,105,180), Transparency = 0.7}),
+        TracerO = MakeDrawing("Line", {Visible = false, Thickness = 3, Color = Color3.fromRGB(0,0,0), Transparency = 0.4}),
+        HeadDot = MakeDrawing("Circle", {Visible = false, Thickness = 1, Color = Color3.fromRGB(255,255,255), Transparency = 0.9, NumSides = 16, Filled = true}),
+        HeadDotO = MakeDrawing("Circle", {Visible = false, Thickness = 2, Color = Color3.fromRGB(0,0,0), Transparency = 0.5, NumSides = 16, Filled = false}),
+        Weapon = MakeDrawing("Text", {Visible = false, Text = "", Size = 13, Center = true, Outline = true, OutlineColor = Color3.fromRGB(0,0,0), Color = Color3.fromRGB(255,200,100)}),
+    }
+end
+
+local function ClearPlayer(player)
+    if not ESPDrawingObjects[player] then return end
+    local o = ESPDrawingObjects[player]
+    for k, v in pairs(o) do
+        if k == "Skel" or k == "B3D" or k == "B3DO" then
+            for _, line in pairs(v) do RemoveDrawing(line) end
+        else
+            RemoveDrawing(v)
+        end
+    end
+    ESPDrawingObjects[player] = nil
+    local char = player.Character
+    if char then
+        local h = char:FindFirstChild("Visuals_Chams")
+        if h then h:Destroy() end
+    end
+    if ESPCharacterAddedConnections[player] then
+        ESPCharacterAddedConnections[player]:Disconnect()
+        ESPCharacterAddedConnections[player] = nil
+    end
+end
+
+local function HideAll(o)
+    SetDrawing(o.Box, "Visible", false)
+    SetDrawing(o.Name, "Visible", false)
+    SetDrawing(o.Dist, "Visible", false)
+    SetDrawing(o.HB, "Visible", false)
+    SetDrawing(o.HBO, "Visible", false)
+    SetDrawing(o.HT, "Visible", false)
+    SetDrawing(o.Tracer, "Visible", false)
+    SetDrawing(o.TracerO, "Visible", false)
+    SetDrawing(o.HeadDot, "Visible", false)
+    SetDrawing(o.HeadDotO, "Visible", false)
+    SetDrawing(o.Weapon, "Visible", false)
+    for _, l in pairs(o.Skel) do SetDrawing(l, "Visible", false) end
+    for _, l in pairs(o.B3D) do SetDrawing(l, "Visible", false) end
+    for _, l in pairs(o.B3DO) do SetDrawing(l, "Visible", false) end
+end
+
+local function GetPlayerWeapon(player)
+    local char = player.Character
+    if not char then return nil end
+    local tool = char:FindFirstChildOfClass("Tool")
+    if tool then return tool.Name end
+    return nil
+end
+
+local function RefreshESPColors()
+    local ESP = GetESPConfig()
+    if not ESP then return end
+    for player, o in pairs(ESPDrawingObjects) do
+        if o.Box then SetDrawing(o.Box, "Color", ESP.Colors.Box); SetDrawing(o.Box, "Thickness", ESP.BoxThickness) end
+        if o.Name then SetDrawing(o.Name, "Color", ESP.Colors.Name) end
+        if o.Dist then SetDrawing(o.Dist, "Color", ESP.Colors.Distance) end
+        if o.HeadDot then SetDrawing(o.HeadDot, "Color", ESP.Colors.HeadDot); SetDrawing(o.HeadDot, "Thickness", ESP.HeadDotThickness) end
+        if o.HB then SetDrawing(o.HB, "Color", ESP.Colors.Health) end
+        if o.Skel then
+            for i = 1, #o.Skel, 2 do
+                if o.Skel[i] then SetDrawing(o.Skel[i], "Color", ESP.Colors.Skeleton) end
+            end
+        end
+        if o.B3D then
+            for _, line in pairs(o.B3D) do
+                if line then SetDrawing(line, "Color", ESP.Colors.Box) end
+            end
+        end
+        local char = player.Character
+        if char then
+            local hl = char:FindFirstChild("Visuals_Chams")
+            if hl then
+                hl.FillColor = ESP.Colors.ChamsFill
+                hl.OutlineColor = ESP.Colors.ChamsOutline
+            end
+        end
+    end
+end
+
+local function ShouldShowESP(player)
+    local ESP = GetESPConfig()
+    if not ESP then return false end
+    if not ESP.Enabled then return false end
+    if player == LocalPlayer then return false end
+    if ESP.TargetMode and Visuals.Targeting then
+        local target = Visuals.Targeting.GetTarget()
+        if target and target.Parent then
+            local targetPlayer = Players:GetPlayerFromCharacter(target.Parent)
+            if targetPlayer ~= player then return false end
+        else
+            return false
+        end
+    end
+    return true
+end
+
+local function UpdateChams(player, char, ESP)
+    if not ESP.Chams then
+        local old = char:FindFirstChild("Visuals_Chams")
+        if old then old.Enabled = false end
+        return
+    end
+
+    local hl = char:FindFirstChild("Visuals_Chams")
+    if not hl then
+        hl = Instance.new("Highlight")
+        hl.Name = "Visuals_Chams"
+        hl.DepthMode = Enum.HighlightDepthMode.AlwaysOnTop
+        hl.Parent = char
+    end
+
+    pcall(function()
+        hl.FillColor = ESP.Colors.ChamsFill
+        hl.OutlineColor = ESP.Colors.ChamsOutline
+    end)
+    hl.FillTransparency = 0.6
+    hl.OutlineTransparency = 0.2
+    hl.Enabled = true
+end
+
+local function UpdateESPPlayer(player)
+    local ESP = GetESPConfig()
+    if not ESP then return end
+    local o = ESPDrawingObjects[player]
+    if not o then return end
+    if not ShouldShowESP(player) then 
+        HideAll(o) 
+        local char = player.Character
+        if char then
+            local hl = char:FindFirstChild("Visuals_Chams")
+            if hl then hl.Enabled = false end
+        end
+        return 
+    end
+    local char = player.Character
+    if not char then HideAll(o) return end
+    local hum = char:FindFirstChildOfClass("Humanoid")
+    local root = char:FindFirstChild("HumanoidRootPart") or char:FindFirstChild("Torso")
+    if not hum or not root or hum.Health <= 0 then 
+        HideAll(o) 
+        local hl = char:FindFirstChild("Visuals_Chams")
+        if hl then hl.Enabled = false end
+        return 
+    end
+    if ESP.TeamCheck then
+        local isTeammate = false
+        if LocalPlayer.Team and player.Team and LocalPlayer.Team == player.Team then isTeammate = true end
+        if LocalPlayer.TeamColor and player.TeamColor and LocalPlayer.TeamColor == player.TeamColor then isTeammate = true end
+        if isTeammate then 
+            HideAll(o) 
+            local hl = char:FindFirstChild("Visuals_Chams")
+            if hl then hl.Enabled = false end
+            return 
+        end
+    end
+    local dist = (root.Position - Camera.CFrame.Position).Magnitude
+    if ESP.DistanceToggle and dist > ESP.MaxDistance then 
+        HideAll(o) 
+        local hl = char:FindFirstChild("Visuals_Chams")
+        if hl then hl.Enabled = false end
+        return 
+    end
+
+    -- Update Chams
+    UpdateChams(player, char, ESP)
+
+    local box = GetBoxData(char)
+    if not box then 
+        HideAll(o) 
+        return 
+    end
+
+    -- No smoothing - 100% accurate tracking
+
+    SetDrawing(o.Box, "Thickness", ESP.BoxThickness)
+    if ESP.Boxes and not ESP.Box3D then
+        SetDrawing(o.Box, "Size", box.Size)
+        SetDrawing(o.Box, "Position", box.TL)
+        SetDrawing(o.Box, "Color", ESP.Colors.Box)
+        SetDrawing(o.Box, "Thickness", ESP.BoxThickness)
+        SetDrawing(o.Box, "Visible", true)
+    else
+        SetDrawing(o.Box, "Visible", false)
+    end
+    if ESP.Boxes and ESP.Box3D then
+        local c = Get3DCorners(char)
+        if c then
+            for i, e in ipairs(Box3DEdges) do
+                SetDrawing(o.B3D[i], "From", c[e[1]])
+                SetDrawing(o.B3D[i], "To", c[e[2]])
+                SetDrawing(o.B3D[i], "Color", ESP.Colors.Box)
+                SetDrawing(o.B3D[i], "Visible", true)
+                SetDrawing(o.B3DO[i], "From", c[e[1]])
+                SetDrawing(o.B3DO[i], "To", c[e[2]])
+                SetDrawing(o.B3DO[i], "Visible", true)
+            end
+        else
+            for _, l in pairs(o.B3D) do SetDrawing(l, "Visible", false) end
+            for _, l in pairs(o.B3DO) do SetDrawing(l, "Visible", false) end
+        end
+    else
+        for _, l in pairs(o.B3D) do SetDrawing(l, "Visible", false) end
+        for _, l in pairs(o.B3DO) do SetDrawing(l, "Visible", false) end
+    end
+    if ESP.Names then
+        SetDrawing(o.Name, "Position", Vector2.new(box.Center.X, box.TL.Y - 16))
+        SetDrawing(o.Name, "Text", player.Name)
+        SetDrawing(o.Name, "Color", ESP.Colors.Name)
+        SetDrawing(o.Name, "Visible", true)
+    else
+        SetDrawing(o.Name, "Visible", false)
+    end
+    if ESP.Distance then
+        SetDrawing(o.Dist, "Position", Vector2.new(box.Center.X, box.BR.Y + 4))
+        SetDrawing(o.Dist, "Text", math.floor(dist) .. "m")
+        SetDrawing(o.Dist, "Color", ESP.Colors.Distance)
+        SetDrawing(o.Dist, "Visible", true)
+    else
+        SetDrawing(o.Dist, "Visible", false)
+    end
+    if ESP.Health then
+        local ok = pcall(function()
+            local mh = hum.MaxHealth
+            local ch = hum.Health
+            if not mh or mh <= 0 or not ch or ch < 0 then
+                SetDrawing(o.HB, "Visible", false)
+                SetDrawing(o.HBO, "Visible", false)
+                SetDrawing(o.HT, "Visible", false)
+                return
+            end
+            local pct = math.clamp(ch / mh, 0, 1)
+            local bh = math.max(box.Size.Y * pct, 2)
+            local bw = 4
+            if box.Size.Y <= 0 then
+                SetDrawing(o.HB, "Visible", false)
+                SetDrawing(o.HBO, "Visible", false)
+                SetDrawing(o.HT, "Visible", false)
+                return
+            end
+            SetDrawing(o.HBO, "Size", Vector2.new(bw + 2, box.Size.Y + 2))
+            SetDrawing(o.HBO, "Position", Vector2.new(box.TL.X - bw - 6, box.TL.Y - 1))
+            SetDrawing(o.HBO, "Visible", true)
+            SetDrawing(o.HB, "Size", Vector2.new(bw, bh))
+            SetDrawing(o.HB, "Position", Vector2.new(box.TL.X - bw - 5, box.BR.Y - bh))
+            local fullColor = ESP.Colors.Health
+            local emptyColor = Color3.fromRGB(255, 0, 0)
+            local healthColor = emptyColor:Lerp(fullColor, pct)
+            SetDrawing(o.HB, "Color", healthColor)
+            SetDrawing(o.HB, "Visible", true)
+            SetDrawing(o.HT, "Position", Vector2.new(box.TL.X - bw - 28, box.BR.Y - bh - 6))
+            SetDrawing(o.HT, "Text", math.floor(ch))
+            SetDrawing(o.HT, "Visible", true)
+        end)
+        if not ok then
+            SetDrawing(o.HB, "Visible", false)
+            SetDrawing(o.HBO, "Visible", false)
+            SetDrawing(o.HT, "Visible", false)
+        end
+    else
+        SetDrawing(o.HB, "Visible", false)
+        SetDrawing(o.HBO, "Visible", false)
+        SetDrawing(o.HT, "Visible", false)
+    end
+    if ESP.Skeleton then
+        local idx = 1
+        for _, conn in ipairs(SkeletonConnections) do
+            local p1 = char:FindFirstChild(conn[1])
+            local p2 = char:FindFirstChild(conn[2])
+            local line = o.Skel[idx]
+            local outline = o.Skel[idx + 1]
+            idx = idx + 2
+            if p1 and p2 and line and outline then
+                local s1, v1 = W2S(p1.Position)
+                local s2, v2 = W2S(p2.Position)
+                if v1 and v2 then
+                    SetDrawing(line, "From", s1)
+                    SetDrawing(line, "To", s2)
+                    SetDrawing(line, "Color", ESP.Colors.Skeleton)
+                    SetDrawing(line, "Visible", true)
+                    SetDrawing(outline, "From", s1)
+                    SetDrawing(outline, "To", s2)
+                    SetDrawing(outline, "Visible", true)
+                else
+                    SetDrawing(line, "Visible", false)
+                    SetDrawing(outline, "Visible", false)
+                end
+            else
+                if line then SetDrawing(line, "Visible", false) end
+                if outline then SetDrawing(outline, "Visible", false) end
+            end
+        end
+    else
+        for _, l in pairs(o.Skel) do SetDrawing(l, "Visible", false) end
+    end
+    if ESP.HeadDot then
+        local head = char:FindFirstChild("Head")
+        if head then
+            local headPos, onScreen = W2S(head.Position)
+            if onScreen then
+                local radius = math.clamp(3000 / dist, 3, 12) * ESP.HeadDotSize
+                SetDrawing(o.HeadDot, "Position", headPos)
+                SetDrawing(o.HeadDot, "Radius", radius)
+                SetDrawing(o.HeadDot, "Color", ESP.Colors.HeadDot)
+                SetDrawing(o.HeadDot, "Thickness", ESP.HeadDotThickness)
+                SetDrawing(o.HeadDot, "Visible", true)
+                SetDrawing(o.HeadDotO, "Position", headPos)
+                SetDrawing(o.HeadDotO, "Radius", radius + 1)
+                SetDrawing(o.HeadDotO, "Thickness", ESP.HeadDotThickness + 1)
+                SetDrawing(o.HeadDotO, "Visible", true)
+            else
+                SetDrawing(o.HeadDot, "Visible", false)
+                SetDrawing(o.HeadDotO, "Visible", false)
+            end
+        else
+            SetDrawing(o.HeadDot, "Visible", false)
+            SetDrawing(o.HeadDotO, "Visible", false)
+        end
+    else
+        SetDrawing(o.HeadDot, "Visible", false)
+        SetDrawing(o.HeadDotO, "Visible", false)
+    end
+    if ESP.WeaponNames then
+        local weapon = GetPlayerWeapon(player)
+        if weapon then
+            SetDrawing(o.Weapon, "Position", Vector2.new(box.Center.X, box.BR.Y + 18))
+            SetDrawing(o.Weapon, "Text", "[" .. weapon .. "]")
+            SetDrawing(o.Weapon, "Visible", true)
+        else
+            SetDrawing(o.Weapon, "Visible", false)
+        end
+    else
+        SetDrawing(o.Weapon, "Visible", false)
+    end
+end
+
+local function ESPUpdate()
+    local ESP = GetESPConfig()
+    if not ESP or not ESP.Enabled then
+        for player, o in pairs(ESPDrawingObjects) do
+            HideAll(o)
+            local c = player.Character
+            if c then local h = c:FindFirstChild("Visuals_Chams"); if h then h.Enabled = false end end
+        end
+        return
+    end
+    for _, p in pairs(Players:GetPlayers()) do
+        pcall(function() UpdateESPPlayer(p) end)
+    end
+end
+
+local function ESPInit()
+    for _, p in pairs(Players:GetPlayers()) do
+        InitPlayer(p)
+        -- Set up CharacterAdded for chams persistence
+        if not ESPCharacterAddedConnections[p] then
+            ESPCharacterAddedConnections[p] = p.CharacterAdded:Connect(function(char)
+                task.wait(0.1)
+                local ESP = GetESPConfig()
+                if ESP and ESP.Chams then
+                    local hl = Instance.new("Highlight")
+                    hl.Name = "Visuals_Chams"
+                    hl.DepthMode = Enum.HighlightDepthMode.AlwaysOnTop
+                    hl.Parent = char
+                    pcall(function()
+                        hl.FillColor = ESP.Colors.ChamsFill
+                        hl.OutlineColor = ESP.Colors.ChamsOutline
+                    end)
+                    hl.FillTransparency = 0.6
+                    hl.OutlineTransparency = 0.2
+                    hl.Enabled = true
+                end
+            end)
+        end
+    end
+    ESPPlayerAddedConnection = Players.PlayerAdded:Connect(function(p)
+        InitPlayer(p)
+        ESPCharacterAddedConnections[p] = p.CharacterAdded:Connect(function(char)
+            task.wait(0.1)
+            local ESP = GetESPConfig()
+            if ESP and ESP.Chams then
+                local hl = Instance.new("Highlight")
+                hl.Name = "Visuals_Chams"
+                hl.DepthMode = Enum.HighlightDepthMode.AlwaysOnTop
+                hl.Parent = char
+                pcall(function()
+                    hl.FillColor = ESP.Colors.ChamsFill
+                    hl.OutlineColor = ESP.Colors.ChamsOutline
+                end)
+                hl.FillTransparency = 0.6
+                hl.OutlineTransparency = 0.2
+                hl.Enabled = true
+            end
+        end)
+    end)
+    ESPPlayerRemovingConnection = Players.PlayerRemoving:Connect(function(p)
+        ClearPlayer(p)
+    end)
+end
+
+local function ESPDisable()
+    local ESP = GetESPConfig()
+    if ESP then ESP.Enabled = false end
+    if ESPRenderConnection then ESPRenderConnection:Disconnect(); ESPRenderConnection = nil end
+    for player, o in pairs(ESPDrawingObjects) do
+        HideAll(o)
+        local c = player.Character
+        if c then local h = c:FindFirstChild("Visuals_Chams"); if h then h.Enabled = false end end
+    end
+end
+
+local function ESPCleanup()
+    ESPDisable()
+    if ESPPlayerAddedConnection then ESPPlayerAddedConnection:Disconnect(); ESPPlayerAddedConnection = nil end
+    if ESPPlayerRemovingConnection then ESPPlayerRemovingConnection:Disconnect(); ESPPlayerRemovingConnection = nil end
+    for player, conn in pairs(ESPCharacterAddedConnections) do
+        if conn then conn:Disconnect() end
+    end
+    ESPCharacterAddedConnections = {}
+    for player, _ in pairs(ESPDrawingObjects) do
+        ClearPlayer(player)
+    end
+    ESPDrawingObjects = {}
+end
+
+-- ═════════════════════════════════════════════════════════════════════════════
+-- LEGACY VISUALS (FOV, Tracer, Hitmarker — Stars.cc interface)
+-- ═════════════════════════════════════════════════════════════════════════════
+function Visuals.SetConfig(config)
+    Visuals.Config = config
+end
+
+function Visuals.SetTargeting(targeting)
+    Visuals.Targeting = targeting
+end
+
+function Visuals.Update()
+    local Config = Visuals.Config
+    local Targeting = Visuals.Targeting
+    if not Config or not Targeting then return end
+    local mousePos = UserInputService:GetMouseLocation()
+    FOV_Circle.Visible = Config.FOV_Enabled
+    FOV_Circle.Position = mousePos
+    FOV_Circle.Radius = Config.FOV_Radius
+    FOV_Circle.Color = Config.FOV_Color
+    local target = Targeting.GetTarget()
+    if Config.Tracers and target then
+        local sp, onScreen = Camera:WorldToViewportPoint(target.Position)
+        if onScreen then
+            Tracer.Visible = true
+            Tracer.From = mousePos
+            Tracer.To = Vector2.new(sp.X, sp.Y)
+            Tracer.Color = Config.Tracer_Color
+        else
+            Tracer.Visible = false
+        end
+    else
+        Tracer.Visible = false
+    end
+    Targeting.UpdateHighlight(target)
+    Targeting.UpdateSpectate()
+    if Config.ESP_Enabled then
+        if not ESPRenderConnection then
+            ESPRenderConnection = RunService.RenderStepped:Connect(ESPUpdate)
+        end
+    else
+        if ESPRenderConnection then
+            ESPRenderConnection:Disconnect()
+            ESPRenderConnection = nil
+        end
+        for player, o in pairs(ESPDrawingObjects) do
+            HideAll(o)
+            local c = player.Character
+            if c then local h = c:FindFirstChild("Visuals_Chams"); if h then h.Enabled = false end end
+        end
+    end
+end
+
+function Visuals.Clear()
+    FOV_Circle.Visible = false
+    Tracer.Visible = false
+    Hitmarker.Visible = false
+    if Visuals.Targeting then
+        Visuals.Targeting.UpdateHighlight(nil)
+    end
+    for player, o in pairs(ESPDrawingObjects) do
+        HideAll(o)
+        local c = player.Character
+        if c then local h = c:FindFirstChild("Visuals_Chams"); if h then h.Enabled = false end end
+    end
+end
+
+function Visuals.PlayHitmarker()
+    if not Visuals.Config or not Visuals.Config.Hitmarkers then return end
+    Hitmarker.Position = UserInputService:GetMouseLocation() + Vector2.new(0, -15)
+    Hitmarker.Visible = true
+    Hitmarker.Color = Color3.fromRGB(255, 80, 80)
+    delay(0.2, function() Hitmarker.Visible = false end)
+end
+
+function Visuals.Init(config)
+    Visuals.Config = config
+    if config.ESP_Enabled then
+        ESPInit()
+    end
+end
+
+function Visuals.Cleanup()
+    ESPCleanup()
+    for _, conn in pairs(Visuals.Connections or {}) do
+        if conn and conn.Connected then
+            conn:Disconnect()
+        end
+    end
+    Visuals.Connections = {}
+end
+
+function Visuals.ShowHitmarker()
+    if not Visuals.Config or not Visuals.Config.Hitmarkers then return end
+    Hitmarker.Position = UserInputService:GetMouseLocation() + Vector2.new(0, -15)
+    Hitmarker.Visible = true
+    Hitmarker.Color = Color3.fromRGB(255, 80, 80)
+    delay(0.2, function() Hitmarker.Visible = false end)
+end
+
+ESPInit()
+
+return Visuals

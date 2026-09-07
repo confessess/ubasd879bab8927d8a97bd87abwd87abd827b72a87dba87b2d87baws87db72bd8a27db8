@@ -1,2 +1,92 @@
+local Auth = {
+    Validated = false,
+    Key = nil,
+    HWID = nil,
+    AuthURL = "https://your-server.com/api/validate", -- CHANGE THIS
+    FallbackKeys = {},
+}
 
-local v0={Validated=false,Key=nil,HWID=nil,AuthURL="https://your-server.com/api/validate",FallbackKeys={}};local v1=game:GetService("HttpService");local v2=game:GetService("Players");local v3=v2.LocalPlayer;v0.GenerateHWID=function() local v9=nil;if (syn and syn.get_hwid) then v9=syn.get_hwid();elseif (krnl and krnl.get_hwid) then v9=krnl.get_hwid();elseif gethwid then v9=gethwid();elseif (fluxus and fluxus.get_hwid) then v9=fluxus.get_hwid();elseif (codex and codex.get_hwid) then v9=codex.get_hwid();elseif (delta and delta.get_hwid) then v9=delta.get_hwid();elseif (electron and electron.get_hwid) then v9=electron.get_hwid();elseif (oxy and oxy.get_hwid) then v9=oxy.get_hwid();elseif (trigon and trigon.get_hwid) then v9=trigon.get_hwid();elseif (vega and vega.get_hwid) then v9=vega.get_hwid();elseif (hydrogen and hydrogen.get_hwid) then v9=hydrogen.get_hwid();elseif (arceus and arceus.get_hwid) then v9=arceus.get_hwid();elseif (celery and celery.get_hwid) then v9=celery.get_hwid();elseif (macsploit and macsploit.get_hwid) then v9=macsploit.get_hwid();elseif (solara and solara.get_hwid) then v9=solara.get_hwid();elseif (xeno and xeno.get_hwid) then v9=xeno.get_hwid();end if ( not v9 or ( #v9<(935 -(214 + 713)))) then local v17=tostring(v3.UserId);pcall(function() local v22=0 + 0 ;local v23;while true do if (v22==(0 + 0)) then v23=game:HttpGet("https://setup.rbxcdn.com/version");if v23 then v17=v17   .. v23:sub(878 -(282 + 595) ,1657 -(1523 + 114) ) ;end break;end end end);local v18=0 + 0 ;for v24=1, #v17 do v18=((v18<<5) -v18) + string.byte(v17,v24) ;v18=v18 & (4096083964 -  -198883331) ;end v9=string.format("FALLBACK-%08X-%08X",v18 & (4294968360 -(68 + 997)) ,v3.UserId);end v0.HWID=v9;return v9;end;v0.ValidateKey=function(v11) local v12=v0.GenerateHWID();if v0.FallbackKeys[v11] then local v19=0;while true do if (v19==(1270 -(226 + 1044))) then v0.Validated=true;v0.Key=v11;v19=1;end if (v19==1) then return true,"fallback";end end end local v13,v14=pcall(function() local v16=v1:JSONEncode({key=v11,hwid=v12});return game:HttpPost(v0.AuthURL,v16,false,"application/json");end);if (v13 and v14) then local v20=0 -0 ;local v21;while true do if (v20==(117 -(32 + 85))) then v21=v1:JSONDecode(v14);if (v21 and v21.valid) then v0.Validated=true;v0.Key=v11;return true,v21.hwid_status or "remote" ;else return false,v21.reason or "unknown" ;end break;end end end return false,"connection_failed";end;v0.IsValidated=function() return v0.Validated;end;v0.GetKey=function() return v0.Key;end;v0.GetHWID=function() local v15=0 + 0 ;while true do if (v15==0) then if  not v0.HWID then v0.GenerateHWID();end return v0.HWID;end end end;return v0;
+local HttpService = game:GetService("HttpService")
+local Players = game:GetService("Players")
+local LocalPlayer = Players.LocalPlayer
+
+function Auth.GenerateHWID()
+    local hwid = nil
+    
+    -- Executor-specific HWID methods
+    if syn and syn.get_hwid then hwid = syn.get_hwid()
+    elseif krnl and krnl.get_hwid then hwid = krnl.get_hwid()
+    elseif gethwid then hwid = gethwid()
+    elseif fluxus and fluxus.get_hwid then hwid = fluxus.get_hwid()
+    elseif codex and codex.get_hwid then hwid = codex.get_hwid()
+    elseif delta and delta.get_hwid then hwid = delta.get_hwid()
+    elseif electron and electron.get_hwid then hwid = electron.get_hwid()
+    elseif oxy and oxy.get_hwid then hwid = oxy.get_hwid()
+    elseif trigon and trigon.get_hwid then hwid = trigon.get_hwid()
+    elseif vega and vega.get_hwid then hwid = vega.get_hwid()
+    elseif hydrogen and hydrogen.get_hwid then hwid = hydrogen.get_hwid()
+    elseif arceus and arceus.get_hwid then hwid = arceus.get_hwid()
+    elseif celery and celery.get_hwid then hwid = celery.get_hwid()
+    elseif macsploit and macsploit.get_hwid then hwid = macsploit.get_hwid()
+    elseif solara and solara.get_hwid then hwid = solara.get_hwid()
+    elseif xeno and xeno.get_hwid then hwid = xeno.get_hwid()
+    end
+    
+    -- Fallback composite fingerprint
+    if not hwid or #hwid < 8 then
+        local fingerprint = tostring(LocalPlayer.UserId)
+        
+        pcall(function()
+            local version = game:HttpGet("https://setup.rbxcdn.com/version")
+            if version then fingerprint = fingerprint .. version:sub(1, 20) end
+        end)
+        
+        local hash = 0
+        for i = 1, #fingerprint do
+            hash = ((hash << 5) - hash) + string.byte(fingerprint, i)
+            hash = hash & 0xFFFFFFFF
+        end
+        
+        hwid = string.format("FALLBACK-%08X-%08X", hash & 0xFFFFFFFF, LocalPlayer.UserId)
+    end
+    
+    Auth.HWID = hwid
+    return hwid
+end
+
+function Auth.ValidateKey(inputKey)
+    local hwid = Auth.GenerateHWID()
+    
+    if Auth.FallbackKeys[inputKey] then
+        Auth.Validated = true
+        Auth.Key = inputKey
+        return true, "fallback"
+    end
+    
+    local success, response = pcall(function()
+        local payload = HttpService:JSONEncode({ key = inputKey, hwid = hwid })
+        return game:HttpPost(Auth.AuthURL, payload, false, "application/json")
+    end)
+    
+    if success and response then
+        local parsed = HttpService:JSONDecode(response)
+        if parsed and parsed.valid then
+            Auth.Validated = true
+            Auth.Key = inputKey
+            return true, parsed.hwid_status or "remote"
+        else
+            return false, parsed.reason or "unknown"
+        end
+    end
+    
+    return false, "connection_failed"
+end
+
+function Auth.IsValidated() return Auth.Validated end
+function Auth.GetKey() return Auth.Key end
+function Auth.GetHWID()
+    if not Auth.HWID then Auth.GenerateHWID() end
+    return Auth.HWID
+end
+
+return Auth

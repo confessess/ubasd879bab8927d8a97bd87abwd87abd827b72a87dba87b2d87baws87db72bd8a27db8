@@ -1,2 +1,302 @@
+local Players = game:GetService("Players")
+local TweenService = game:GetService("TweenService")
+local UserInputService = game:GetService("UserInputService")
 
-local v0=game:GetService("Players");local v1=game:GetService("TweenService");local v2=game:GetService("UserInputService");local v3=v0.LocalPlayer;local v4=v3:WaitForChild("PlayerGui");local v5={ScreenGui=nil,OnSuccess=nil};local v6=Color3.fromRGB(145,204 -129 ,686 -431 );local function v7(v12,v13,v14) local v15=0 -0 ;local v16;while true do if (v15==(1 + 0)) then v16.Parent=v14;return v16;end if (v15==0) then v16=Instance.new(v12);for v63,v64 in pairs(v13 or {} ) do v16[v63]=v64;end v15=998 -(915 + 82) ;end end end local function v8(v17,v18) return v7("UICorner",{CornerRadius=UDim.new(0 -0 ,v18 or (4 + 2) )},v17);end local function v9(v19,v20,v21,v22) return v7("UIStroke",{Color=v22 or Color3.fromRGB(236 -56 ,1307 -(1069 + 118) ,578 -323 ) ,Transparency=v20 or 0.72 ,Thickness=v21 or 1 },v19);end local function v10(v23,v24,v25,v26,v27) local v28=TweenInfo.new(v25 or (0.3 -0) ,v26 or Enum.EasingStyle.Quint ,v27 or Enum.EasingDirection.Out );return v1:Create(v23,v28,v24);end v5.Build=function(v29,v30) v5.OnSuccess=v30;local v32=v4:FindFirstChild("ZeeHoodKeyGate");if v32 then v32:Destroy();end local v33=v7("ScreenGui",{Name="ZeeHoodKeyGate",ResetOnSpawn=false,IgnoreGuiInset=true,ZIndexBehavior=Enum.ZIndexBehavior.Sibling},v4);v5.ScreenGui=v33;local v35=v7("Frame",{Size=UDim2.fromScale(1 + 0 ,1 -0 ),BackgroundColor3=Color3.fromRGB(4 + 0 ,794 -(368 + 423) ,28 -19 ),BackgroundTransparency=18.02 -(10 + 8) ,BorderSizePixel=0 -0 ,ZIndex=443 -(416 + 26) },v33);v7("UIGradient",{Rotation=111 -76 ,Color=ColorSequence.new({ColorSequenceKeypoint.new(0 + 0 ,Color3.fromRGB(22,13 -5 ,476 -(145 + 293) )),ColorSequenceKeypoint.new(1486.5 -(998 + 488) ,Color3.fromRGB(2 + 3 ,3,9 + 1 )),ColorSequenceKeypoint.new(1139 -(116 + 1022) ,Color3.fromRGB(112 -85 ,5 + 2 ,164 -119 ))})},v35);local v36=v7("Frame",{Name="Stars",Size=UDim2.fromScale(3 -2 ,1),BackgroundTransparency=1,ClipsDescendants=true,ZIndex=2},v35);for v48=860 -(814 + 45) ,147 -87  do local v49=0;local v50;local v51;while true do if (v49==(0 + 0)) then v50=math.random(1 + 0 ,888 -(261 + 624) );v51=v7("Frame",{Size=UDim2.fromOffset(v50,v50),Position=UDim2.fromScale(math.random(),math.random()),BackgroundColor3=Color3.fromRGB(220,346 -151 ,255),BackgroundTransparency=math.random(20,1170 -(1020 + 60) )/(1523 -(630 + 793)) ,BorderSizePixel=0,ZIndex=6 -4 },v36);v49=4 -3 ;end if ((1 + 0)==v49) then v8(v51,v50);task.spawn(function() while v51.Parent do local v71=0;local v72;while true do if ((6 -4)==v71) then task.wait(v72 + (math.random(1,1762 -(760 + 987) )/10) );break;end if (v71==(1913 -(1789 + 124))) then v72=math.random(5,781 -(745 + 21) )/(4 + 6) ;v10(v51,{BackgroundTransparency=math.random(40 -25 ,55)/(392 -292) },v72,Enum.EasingStyle.Sine,Enum.EasingDirection.InOut):Play();v71=1;end if (v71==(1 + 0)) then task.wait(v72);v10(v51,{BackgroundTransparency=math.random(65,75 + 20 )/(1155 -(87 + 968)) },v72,Enum.EasingStyle.Sine,Enum.EasingDirection.InOut):Play();v71=2;end end end end);break;end end end local v37=v7("Frame",{Size=UDim2.fromOffset(1936 -1496 ,309 + 31 ),Position=UDim2.fromScale(0.5,0.5 -0 ),AnchorPoint=Vector2.new(1413.5 -(447 + 966) ,0.5 -0 ),BackgroundColor3=Color3.fromRGB(1826 -(1703 + 114) ,707 -(376 + 325) ,15),BackgroundTransparency=0.04,BorderSizePixel=0,ZIndex=10},v33);v8(v37,32 -12 );v9(v37,0.72 -0 ,1 + 0 );v7("Frame",{Size=UDim2.new(2 -1 , -40,14 -(9 + 5) ,1),Position=UDim2.fromOffset(396 -(85 + 291) ,1266 -(243 + 1022) ),BackgroundColor3=Color3.fromRGB(742 -547 ,116 + 24 ,255),BackgroundTransparency=0.5,BorderSizePixel=1180 -(1123 + 57) ,ZIndex=11},v37);v7("TextLabel",{Size=UDim2.fromOffset(400,27 + 5 ),Position=UDim2.fromOffset(274 -(163 + 91) ,1948 -(1869 + 61) ),BackgroundTransparency=1 + 0 ,Text="Stars.cc",TextColor3=Color3.fromRGB(862 -617 ,238,383 -133 ),TextSize=4 + 18 ,Font=Enum.Font.GothamBold,TextXAlignment=Enum.TextXAlignment.Left,ZIndex=15 -3 },v37);v7("TextLabel",{Size=UDim2.fromOffset(376 + 24 ,1494 -(1329 + 145) ),Position=UDim2.fromOffset(21,1021 -(140 + 831) ),BackgroundTransparency=1,Text="HWID-Locked Authentication",TextColor3=Color3.fromRGB(1995 -(1409 + 441) ,843 -(15 + 703) ,77 + 88 ),TextSize=10,Font=Enum.Font.GothamMedium,TextXAlignment=Enum.TextXAlignment.Left,ZIndex=450 -(262 + 176) },v37);local v38=(v29.GetHWID and v29.GetHWID()) or "unknown" ;local v39=(( #v38>24) and (v38:sub(1,1733 -(345 + 1376) )   .. "..."   .. v38:sub( -(696 -(198 + 490))))) or v38 ;v7("TextLabel",{Size=UDim2.new(4 -3 , -(95 -55),0,16),Position=UDim2.fromOffset(1226 -(696 + 510) ,74),BackgroundTransparency=1,Text="HWID: "   .. v39 ,TextColor3=Color3.fromRGB(209 -109 ,90,115),TextSize=1271 -(1091 + 171) ,Font=Enum.Font.Gotham,TextXAlignment=Enum.TextXAlignment.Left,ZIndex=2 + 10 },v37);local v40=v7("Frame",{Size=UDim2.new(1, -(125 -85),0,145 -101 ),Position=UDim2.fromOffset(394 -(123 + 251) ,496 -396 ),BackgroundColor3=Color3.fromRGB(18,11,725 -(208 + 490) ),BackgroundTransparency=0.1 + 0 ,BorderSizePixel=0,ZIndex=6 + 6 },v37);v8(v40,848 -(660 + 176) );v9(v40,0.85 + 0 ,203 -(14 + 188) ,Color3.fromRGB(140,765 -(534 + 141) ,81 + 119 ));local v41=v7("TextBox",{Size=UDim2.new(1, -(18 + 2),1 + 0 ,0 -0 ),Position=UDim2.fromOffset(15 -5 ,0 -0 ),BackgroundTransparency=1,Text="",PlaceholderText="Enter your access key...",TextColor3=Color3.fromRGB(220,116 + 99 ,150 + 85 ),PlaceholderColor3=Color3.fromRGB(100,486 -(115 + 281) ,267 -152 ),TextSize=13,Font=Enum.Font.GothamMedium,TextXAlignment=Enum.TextXAlignment.Left,ClearTextOnFocus=false,ZIndex=11 + 2 },v40);local v42=v7("TextLabel",{Size=UDim2.new(1, -(96 -56),0,73 -53 ),Position=UDim2.fromOffset(20,1019 -(550 + 317) ),BackgroundTransparency=1 -0 ,Text="",TextColor3=Color3.fromRGB(358 -103 ,223 -143 ,365 -(134 + 151) ),TextSize=1676 -(970 + 695) ,Font=Enum.Font.GothamMedium,TextXAlignment=Enum.TextXAlignment.Left,ZIndex=22 -10 },v37);local v43=v7("TextButton",{Size=UDim2.new(1991 -(582 + 1408) , -40,0 -0 ,40),Position=UDim2.fromOffset(20,232 -47 ),BackgroundColor3=v6,BackgroundTransparency=0.18 -0 ,BorderSizePixel=1824 -(1195 + 629) ,Text="Authenticate",TextColor3=Color3.fromRGB(255,330 -80 ,496 -(187 + 54) ),TextSize=13,Font=Enum.Font.GothamBold,AutoButtonColor=false,ZIndex=792 -(162 + 618) },v37);v8(v43,8 + 2 );local v44=v7("Frame",{Size=UDim2.new(1 + 0 , -(85 -45),0 -0 ,5 + 55 ),Position=UDim2.fromOffset(1656 -(1373 + 263) ,1238 -(451 + 549) ),BackgroundColor3=Color3.fromRGB(14,3 + 6 ,22),BackgroundTransparency=0.2 -0 ,BorderSizePixel=0,ZIndex=12},v37);v8(v44,10);v9(v44,0.9 -0 ,1385 -(746 + 638) ,Color3.fromRGB(100,27 + 43 ,227 -77 ));v7("TextLabel",{Size=UDim2.new(342 -(218 + 123) , -(1597 -(1535 + 46)),1, -8),Position=UDim2.fromOffset(8 + 0 ,1 + 3 ),BackgroundTransparency=561 -(306 + 254) ,Text="Your HWID is locked to this key. Each key supports a limited number of devices. Contact support to reset your device slots.",TextColor3=Color3.fromRGB(9 + 121 ,235 -115 ,1612 -(899 + 568) ),TextSize=6 + 3 ,Font=Enum.Font.GothamMedium,TextWrapped=true,TextXAlignment=Enum.TextXAlignment.Left,ZIndex=31 -18 },v44);v43.MouseEnter:Connect(function() v10(v43,{BackgroundTransparency=0.05},603.15 -(268 + 335) ):Play();end);v43.MouseLeave:Connect(function() v10(v43,{BackgroundTransparency=290.18 -(60 + 230) },572.15 -(426 + 146) ):Play();end);local function v45() local v52=0 + 0 ;local v53;while true do if (v52==(1456 -(282 + 1174))) then v53=v37.Position;for v68=812 -(569 + 242) ,22 -14  do local v69=0 + 0 ;local v70;while true do if (v69==0) then v70=math.sin(v68 * (1025.5 -(706 + 318)) ) * (1257 -(721 + 530)) ;v37.Position=v53 + UDim2.fromOffset(v70,0) ;v69=1272 -(945 + 326) ;end if (v69==(2 -1)) then task.wait(0.03 + 0 );break;end end end v52=701 -(271 + 429) ;end if (v52==(1 + 0)) then v37.Position=v53;break;end end end local function v46() local v54=v41.Text:gsub("^%s+",""):gsub("%s+$","");if ( #v54==(1500 -(1408 + 92))) then local v62=0;while true do if (v62==1) then v45();return;end if (v62==(1086 -(461 + 625))) then v42.Text="Please enter a key.";v42.TextColor3=Color3.fromRGB(1543 -(993 + 295) ,8 + 132 ,60);v62=1172 -(418 + 753) ;end end end v42.Text="Validating...";v42.TextColor3=Color3.fromRGB(69 + 111 ,18 + 152 ,200);task.spawn(function() local v58=0 + 0 ;local v59;local v60;while true do if (v58==(0 + 0)) then v59,v60=v29.ValidateKey(v54);if v59 then local v75=0;while true do if (v75==(532 -(406 + 123))) then if v5.OnSuccess then v5.OnSuccess(v54,v60);end break;end if (v75==(1770 -(1749 + 20))) then v10(v37,{BackgroundTransparency=1 + 0 },0.4):Play();v10(v35,{BackgroundTransparency=1},0.5):Play();v75=1324 -(1249 + 73) ;end if (v75==(0 + 0)) then v42.Text="Authenticated!";v42.TextColor3=Color3.fromRGB(1245 -(466 + 679) ,613 -358 ,400 -260 );v75=1;end if (v75==2) then task.wait(1900.5 -(106 + 1794) );v33:Destroy();v75=1 + 2 ;end end else local v76=0;local v77;while true do if (v76==(1 + 0)) then v42.TextColor3=Color3.fromRGB(752 -497 ,216 -136 ,194 -(4 + 110) );v45();break;end if (v76==0) then v77={invalid="Invalid key.",key_not_found="Key not found.",key_revoked="Key has been revoked.",key_expired="Key has expired.",no_uses_left="No uses remaining.",hwid_limit_reached="Device limit reached for this key.",connection_failed="Failed to reach auth server."};v42.Text=v77[v60] or ("Error: "   .. tostring(v60)) ;v76=1;end end end break;end end end);end v43.MouseButton1Click:Connect(v46);v41.FocusLost:Connect(function(v57) if v57 then v46();end end);v37.Size=UDim2.fromOffset(1024 -(57 + 527) ,0);v10(v37,{Size=UDim2.fromOffset(440,340)},0.5,Enum.EasingStyle.Quint,Enum.EasingDirection.Out):Play();return v33;end;return v5;
+local Player = Players.LocalPlayer
+local PlayerGui = Player:WaitForChild("PlayerGui")
+
+local KeyGate = { ScreenGui = nil, OnSuccess = nil }
+local PURPLE = Color3.fromRGB(145, 75, 255)
+
+local function New(className, properties, parent)
+    local object = Instance.new(className)
+    for property, value in pairs(properties or {}) do object[property] = value end
+    object.Parent = parent
+    return object
+end
+
+local function Corner(parent, radius)
+    return New("UICorner", {CornerRadius = UDim.new(0, radius or 6)}, parent)
+end
+
+local function Stroke(parent, transparency, thickness, color)
+    return New("UIStroke", {
+        Color = color or Color3.fromRGB(180, 120, 255),
+        Transparency = transparency or 0.72,
+        Thickness = thickness or 1,
+    }, parent)
+end
+
+local function Tween(object, properties, duration, style, direction)
+    local info = TweenInfo.new(duration or 0.3, style or Enum.EasingStyle.Quint, direction or Enum.EasingDirection.Out)
+    return TweenService:Create(object, info, properties)
+end
+
+function KeyGate.Build(authModule, onSuccessCallback)
+    KeyGate.OnSuccess = onSuccessCallback
+
+    local oldGui = PlayerGui:FindFirstChild("ZeeHoodKeyGate")
+    if oldGui then oldGui:Destroy() end
+
+    local ScreenGui = New("ScreenGui", {
+        Name = "ZeeHoodKeyGate",
+        ResetOnSpawn = false,
+        IgnoreGuiInset = true,
+        ZIndexBehavior = Enum.ZIndexBehavior.Sibling,
+    }, PlayerGui)
+    KeyGate.ScreenGui = ScreenGui
+
+    local Background = New("Frame", {
+        Size = UDim2.fromScale(1, 1),
+        BackgroundColor3 = Color3.fromRGB(4, 3, 9),
+        BackgroundTransparency = 0.02,
+        BorderSizePixel = 0,
+        ZIndex = 1,
+    }, ScreenGui)
+
+    New("UIGradient", {
+        Rotation = 35,
+        Color = ColorSequence.new({
+            ColorSequenceKeypoint.new(0, Color3.fromRGB(22, 8, 38)),
+            ColorSequenceKeypoint.new(0.5, Color3.fromRGB(5, 3, 10)),
+            ColorSequenceKeypoint.new(1, Color3.fromRGB(27, 7, 45)),
+        }),
+    }, Background)
+
+    local StarContainer = New("Frame", {
+        Name = "Stars",
+        Size = UDim2.fromScale(1, 1),
+        BackgroundTransparency = 1,
+        ClipsDescendants = true,
+        ZIndex = 2,
+    }, Background)
+
+    for i = 1, 60 do
+        local size = math.random(1, 3)
+        local star = New("Frame", {
+            Size = UDim2.fromOffset(size, size),
+            Position = UDim2.fromScale(math.random(), math.random()),
+            BackgroundColor3 = Color3.fromRGB(220, 195, 255),
+            BackgroundTransparency = math.random(20, 90) / 100,
+            BorderSizePixel = 0,
+            ZIndex = 2,
+        }, StarContainer)
+        Corner(star, size)
+        task.spawn(function()
+            while star.Parent do
+                local ft = math.random(5, 15) / 10
+                Tween(star, {BackgroundTransparency = math.random(15, 55) / 100}, ft, Enum.EasingStyle.Sine, Enum.EasingDirection.InOut):Play()
+                task.wait(ft)
+                Tween(star, {BackgroundTransparency = math.random(65, 95) / 100}, ft, Enum.EasingStyle.Sine, Enum.EasingDirection.InOut):Play()
+                task.wait(ft + math.random(1, 15) / 10)
+            end
+        end)
+    end
+
+    local Main = New("Frame", {
+        Size = UDim2.fromOffset(440, 340),
+        Position = UDim2.fromScale(0.5, 0.5),
+        AnchorPoint = Vector2.new(0.5, 0.5),
+        BackgroundColor3 = Color3.fromRGB(9, 6, 15),
+        BackgroundTransparency = 0.04,
+        BorderSizePixel = 0,
+        ZIndex = 10,
+    }, ScreenGui)
+    Corner(Main, 20)
+    Stroke(Main, 0.72, 1)
+
+    New("Frame", {
+        Size = UDim2.new(1, -40, 0, 1),
+        Position = UDim2.fromOffset(20, 1),
+        BackgroundColor3 = Color3.fromRGB(195, 140, 255),
+        BackgroundTransparency = 0.5,
+        BorderSizePixel = 0,
+        ZIndex = 11,
+    }, Main)
+
+    New("TextLabel", {
+        Size = UDim2.fromOffset(400, 32),
+        Position = UDim2.fromOffset(20, 18),
+        BackgroundTransparency = 1,
+        Text = "Stars.cc",
+        TextColor3 = Color3.fromRGB(245, 238, 250),
+        TextSize = 22,
+        Font = Enum.Font.GothamBold,
+        TextXAlignment = Enum.TextXAlignment.Left,
+        ZIndex = 12,
+    }, Main)
+
+    New("TextLabel", {
+        Size = UDim2.fromOffset(400, 20),
+        Position = UDim2.fromOffset(21, 50),
+        BackgroundTransparency = 1,
+        Text = "HWID-Locked Authentication",
+        TextColor3 = Color3.fromRGB(145, 125, 165),
+        TextSize = 10,
+        Font = Enum.Font.GothamMedium,
+        TextXAlignment = Enum.TextXAlignment.Left,
+        ZIndex = 12,
+    }, Main)
+
+    local hwid = authModule.GetHWID and authModule.GetHWID() or "unknown"
+    local shortHWID = #hwid > 24 and hwid:sub(1, 12) .. "..." .. hwid:sub(-8) or hwid
+    
+    New("TextLabel", {
+        Size = UDim2.new(1, -40, 0, 16),
+        Position = UDim2.fromOffset(20, 74),
+        BackgroundTransparency = 1,
+        Text = "HWID: " .. shortHWID,
+        TextColor3 = Color3.fromRGB(100, 90, 115),
+        TextSize = 9,
+        Font = Enum.Font.Gotham,
+        TextXAlignment = Enum.TextXAlignment.Left,
+        ZIndex = 12,
+    }, Main)
+
+    local InputFrame = New("Frame", {
+        Size = UDim2.new(1, -40, 0, 44),
+        Position = UDim2.fromOffset(20, 100),
+        BackgroundColor3 = Color3.fromRGB(18, 11, 27),
+        BackgroundTransparency = 0.1,
+        BorderSizePixel = 0,
+        ZIndex = 12,
+    }, Main)
+    Corner(InputFrame, 12)
+    Stroke(InputFrame, 0.85, 1, Color3.fromRGB(140, 90, 200))
+
+    local InputBox = New("TextBox", {
+        Size = UDim2.new(1, -20, 1, 0),
+        Position = UDim2.fromOffset(10, 0),
+        BackgroundTransparency = 1,
+        Text = "",
+        PlaceholderText = "Enter your access key...",
+        TextColor3 = Color3.fromRGB(220, 215, 235),
+        PlaceholderColor3 = Color3.fromRGB(100, 90, 115),
+        TextSize = 13,
+        Font = Enum.Font.GothamMedium,
+        TextXAlignment = Enum.TextXAlignment.Left,
+        ClearTextOnFocus = false,
+        ZIndex = 13,
+    }, InputFrame)
+
+    local StatusLabel = New("TextLabel", {
+        Size = UDim2.new(1, -40, 0, 20),
+        Position = UDim2.fromOffset(20, 152),
+        BackgroundTransparency = 1,
+        Text = "",
+        TextColor3 = Color3.fromRGB(255, 80, 80),
+        TextSize = 11,
+        Font = Enum.Font.GothamMedium,
+        TextXAlignment = Enum.TextXAlignment.Left,
+        ZIndex = 12,
+    }, Main)
+
+    local SubmitBtn = New("TextButton", {
+        Size = UDim2.new(1, -40, 0, 40),
+        Position = UDim2.fromOffset(20, 185),
+        BackgroundColor3 = PURPLE,
+        BackgroundTransparency = 0.18,
+        BorderSizePixel = 0,
+        Text = "Authenticate",
+        TextColor3 = Color3.fromRGB(255, 250, 255),
+        TextSize = 13,
+        Font = Enum.Font.GothamBold,
+        AutoButtonColor = false,
+        ZIndex = 12,
+    }, Main)
+    Corner(SubmitBtn, 10)
+
+    local InfoFrame = New("Frame", {
+        Size = UDim2.new(1, -40, 0, 60),
+        Position = UDim2.fromOffset(20, 238),
+        BackgroundColor3 = Color3.fromRGB(14, 9, 22),
+        BackgroundTransparency = 0.2,
+        BorderSizePixel = 0,
+        ZIndex = 12,
+    }, Main)
+    Corner(InfoFrame, 10)
+    Stroke(InfoFrame, 0.9, 1, Color3.fromRGB(100, 70, 150))
+
+    New("TextLabel", {
+        Size = UDim2.new(1, -16, 1, -8),
+        Position = UDim2.fromOffset(8, 4),
+        BackgroundTransparency = 1,
+        Text = "Your HWID is locked to this key. Each key supports a limited number of devices. Contact support to reset your device slots.",
+        TextColor3 = Color3.fromRGB(130, 120, 145),
+        TextSize = 9,
+        Font = Enum.Font.GothamMedium,
+        TextWrapped = true,
+        TextXAlignment = Enum.TextXAlignment.Left,
+        ZIndex = 13,
+    }, InfoFrame)
+
+    SubmitBtn.MouseEnter:Connect(function()
+        Tween(SubmitBtn, {BackgroundTransparency = 0.05}, 0.15):Play()
+    end)
+    SubmitBtn.MouseLeave:Connect(function()
+        Tween(SubmitBtn, {BackgroundTransparency = 0.18}, 0.15):Play()
+    end)
+
+    local function Shake()
+        local originalPos = Main.Position
+        for i = 1, 8 do
+            local offset = math.sin(i * 1.5) * 6
+            Main.Position = originalPos + UDim2.fromOffset(offset, 0)
+            task.wait(0.03)
+        end
+        Main.Position = originalPos
+    end
+
+    local function TryAuth()
+        local key = InputBox.Text:gsub("^%s+", ""):gsub("%s+$", "")
+        if #key == 0 then
+            StatusLabel.Text = "Please enter a key."
+            StatusLabel.TextColor3 = Color3.fromRGB(255, 140, 60)
+            Shake()
+            return
+        end
+
+        StatusLabel.Text = "Validating..."
+        StatusLabel.TextColor3 = Color3.fromRGB(180, 170, 200)
+
+        task.spawn(function()
+            local valid, source = authModule.ValidateKey(key)
+            if valid then
+                StatusLabel.Text = "Authenticated!"
+                StatusLabel.TextColor3 = Color3.fromRGB(100, 255, 140)
+                Tween(Main, {BackgroundTransparency = 1}, 0.4):Play()
+                Tween(Background, {BackgroundTransparency = 1}, 0.5):Play()
+                task.wait(0.5)
+                ScreenGui:Destroy()
+                if KeyGate.OnSuccess then
+                    KeyGate.OnSuccess(key, source)
+                end
+            else
+                local reasonMap = {
+                    invalid = "Invalid key.",
+                    key_not_found = "Key not found.",
+                    key_revoked = "Key has been revoked.",
+                    key_expired = "Key has expired.",
+                    no_uses_left = "No uses remaining.",
+                    hwid_limit_reached = "Device limit reached for this key.",
+                    connection_failed = "Failed to reach auth server.",
+                }
+                StatusLabel.Text = reasonMap[source] or ("Error: " .. tostring(source))
+                StatusLabel.TextColor3 = Color3.fromRGB(255, 80, 80)
+                Shake()
+            end
+        end)
+    end
+
+    SubmitBtn.MouseButton1Click:Connect(TryAuth)
+    InputBox.FocusLost:Connect(function(entered)
+        if entered then TryAuth() end
+    end)
+
+    Main.Size = UDim2.fromOffset(440, 0)
+    Tween(Main, {Size = UDim2.fromOffset(440, 340)}, 0.5, Enum.EasingStyle.Quint, Enum.EasingDirection.Out):Play()
+
+    return ScreenGui
+end
+
+return KeyGate

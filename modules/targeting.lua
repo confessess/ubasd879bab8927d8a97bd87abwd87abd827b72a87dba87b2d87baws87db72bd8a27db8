@@ -1,2 +1,254 @@
+local Players = game:GetService("Players")
+local Workspace = game:GetService("Workspace")
+local UserInputService = game:GetService("UserInputService")
+local LocalPlayer = Players.LocalPlayer
+local Camera = Workspace.CurrentCamera
 
-local v0=game:GetService("Players");local v1=game:GetService("Workspace");local v2=game:GetService("UserInputService");local v3=v0.LocalPlayer;local v4=v1.CurrentCamera;local v5={SelectedTarget=nil,SelectedTargets={},MultiTargetEnabled=false,CurrentTargetIndex=1070 -(842 + 228) ,HighlightBox=nil,Config=nil};v5.SetConfig=function(v19) v5.Config=v19;end;v5.AddTarget=function(v21) if  not v21 then return;end for v51,v52 in ipairs(v5.SelectedTargets) do if (v52==v21) then return;end end table.insert(v5.SelectedTargets,v21);end;v5.RemoveTarget=function(v22) for v53,v54 in ipairs(v5.SelectedTargets) do if (v54==v22) then table.remove(v5.SelectedTargets,v53);return;end end end;v5.IsTargetSelected=function(v23) local v24=1954 -(508 + 1446) ;while true do if (v24==(0 + 0)) then for v77,v78 in ipairs(v5.SelectedTargets) do if (v78==v23) then return true;end end return false;end end end;v5.ClearTargets=function() local v25=997 -(915 + 82) ;while true do if (v25==(0 -0)) then v5.SelectedTargets={};v5.CurrentTargetIndex=0 + 0 ;break;end end end;v5.GetNextValidTarget=function() local v26=0;local v27;while true do if (v26==(3 -0)) then return v27[v5.CurrentTargetIndex];end if (v26==(1189 -(1069 + 118))) then v5.CurrentTargetIndex=(v5.CurrentTargetIndex or (0 -0)) + (1 -0) ;if (v5.CurrentTargetIndex> #v27) then v5.CurrentTargetIndex=1 + 0 ;end v26=4 -1 ;end if (v26==(0 + 0)) then if ( not v5.MultiTargetEnabled or ( #v5.SelectedTargets==(791 -(368 + 423)))) then local v88=v5.SelectedTarget;if (v88 and v88.Parent and v88.Character) then local v113=0;local v114;while true do if (v113==(0 -0)) then v114=v88.Character:FindFirstChildOfClass("Humanoid");if (v114 and (v114.Health>(18 -(10 + 8)))) then return v88;end break;end end end return nil;end v27={};v26=3 -2 ;end if (v26==1) then for v79,v80 in ipairs(v5.SelectedTargets) do if (v80 and v80.Parent and v80.Character) then local v96=v80.Character:FindFirstChildOfClass("Humanoid");if (v96 and (v96.Health>(442 -(416 + 26)))) then table.insert(v27,v80);end end end if ( #v27==(0 -0)) then local v89=0 + 0 ;while true do if (v89==0) then v5.CurrentTargetIndex=0;return nil;end end end v26=3 -1 ;end end end;local function v12(v28,v29) local v30=438 -(145 + 293) ;local v31;while true do if (v30==(431 -(44 + 386))) then if (v29=="Torso") then return v28:FindFirstChild("UpperTorso") or v28:FindFirstChild("HumanoidRootPart") ;elseif (v29=="Head") then return v28:FindFirstChild("HumanoidRootPart");end return v28:FindFirstChild("HumanoidRootPart");end if (v30==0) then v31=v28:FindFirstChild(v29);if v31 then return v31;end v30=1487 -(998 + 488) ;end end end v5.GetTarget=function() local v32=v5.Config;if  not v32 then return nil;end if v5.MultiTargetEnabled then local v57=0 + 0 ;local v58;while true do if (v57==(0 + 0)) then v58=v5.GetNextValidTarget();if v58 then local v115=772 -(201 + 571) ;local v116;while true do if ((1138 -(116 + 1022))==v115) then v116=v58.Character;if v116 then local v134=v116:FindFirstChildOfClass("Humanoid");if (v134 and (v134.Health>(0 -0))) then return v12(v116,v32.TargetPart);end end break;end end end v57=1;end if (v57==(1 + 0)) then return nil;end end end if ((v32.TargetMode=="Selected") and v5.SelectedTarget) then local v59=0 -0 ;local v60;while true do if (0==v59) then v60=v5.SelectedTarget.Character;if v60 then local v117=0 -0 ;local v118;while true do if (v117==(859 -(814 + 45))) then v118=v60:FindFirstChildOfClass("Humanoid");if (v118 and (v118.Health>(0 -0))) then return v12(v60,v32.TargetPart);end break;end end end break;end end end local v33=v3.Character;if ( not v33 or  not v33:FindFirstChild("HumanoidRootPart")) then return nil;end local v34=v33.HumanoidRootPart.Position;local v35=nil;local v36=math.huge;for v55,v56 in ipairs(v0:GetPlayers()) do if ((v56~=v3) and v56.Character) then local v70=0 + 0 ;local v71;local v72;local v73;local v74;while true do if (v70==(1 + 1)) then v74=v71:FindFirstChild("HumanoidRootPart");if (v73 and v74) then local v125=(v34-v74.Position).Magnitude;local v126,v127=v4:WorldToViewportPoint(v73.Position);if v127 then local v132=0;local v133;while true do if (v132==(885 -(261 + 624))) then v133=(Vector2.new(v126.X,v126.Y) -v2:GetMouseLocation()).Magnitude;if ((v133<=v32.FOV_Radius) and (v125<v36)) then v36=v125;v35=v73;end break;end end end end break;end if (v70==1) then if ( not v72 or (v72.Health<=0)) then continue;end v73=v12(v71,v32.TargetPart);v70=2;end if (v70==(0 -0)) then v71=v56.Character;v72=v71:FindFirstChildOfClass("Humanoid");v70=1081 -(1020 + 60) ;end end end end return v35;end;v5.TeleportToTarget=function() local v37=v5.Config;if  not v37 then return;end local v38=v5.GetTarget();if ( not v38 or  not v38.Parent) then return;end local v39=v3.Character;if  not v39 then return;end local v40=v39:FindFirstChild("HumanoidRootPart");if  not v40 then return;end local v41=v38.Parent:FindFirstChild("HumanoidRootPart");if v41 then v40.CFrame=v41.CFrame + Vector3.new(1423 -(630 + 793) ,9 -6 ,0 -0 ) ;else v40.CFrame=v38.CFrame + Vector3.new(0,2 + 1 ,0 -0 ) ;end end;v5.UpdateHighlight=function(v42) local v43=1747 -(760 + 987) ;local v44;while true do if (v43==(1914 -(1789 + 124))) then if  not v44.Highlights then local v91=766 -(745 + 21) ;while true do if (v91==(0 + 0)) then if v5.HighlightBox then v5.HighlightBox:Destroy();end v5.HighlightBox=nil;v91=2 -1 ;end if (v91==1) then return;end end end if (v42 and v42.Parent) then if  not v5.HighlightBox then v5.HighlightBox=Instance.new("Highlight");v5.HighlightBox.FillColor=Color3.fromRGB(1000 -745 ,1 + 49 ,40 + 10 );v5.HighlightBox.OutlineColor=Color3.fromRGB(255,1310 -(87 + 968) ,1122 -867 );v5.HighlightBox.FillTransparency=0.5 + 0 ;v5.HighlightBox.OutlineTransparency=0 -0 ;end v5.HighlightBox.Parent=v42.Parent;v5.HighlightBox.Adornee=v42;else if v5.HighlightBox then v5.HighlightBox:Destroy();end v5.HighlightBox=nil;end break;end if (v43==(1413 -(447 + 966))) then v44=v5.Config;if  not v44 then return;end v43=2 -1 ;end end end;v5.UpdateSpectate=function() local v45=v5.Config;if ( not v45 or  not v45.Spectate) then return;end local v46=v5.GetTarget();if (v46 and v46.Parent and v46.Parent:FindFirstChild("Humanoid")) then v4.CameraSubject=v46.Parent.Humanoid;elseif (v3.Character and v3.Character:FindFirstChild("Humanoid")) then v4.CameraSubject=v3.Character.Humanoid;end end;v5.StopSpectate=function() if (v3.Character and v3.Character:FindFirstChild("Humanoid")) then v4.CameraSubject=v3.Character.Humanoid;end end;v5.RefreshPlayerList=function(v47,v48) local v49=1817 -(1703 + 114) ;local v50;while true do if (v49==0) then for v83,v84 in ipairs(v47:GetChildren()) do if v84:IsA("TextButton") then v84:Destroy();end end v50=701 -(376 + 325) ;v49=1 -0 ;end if (1==v49) then for v85,v86 in ipairs(v0:GetPlayers()) do if (v86~=v3) then local v98=Instance.new("TextButton");v98.Size=UDim2.new(2 -1 ,0 + 0 ,0 -0 ,38 -(9 + 5) );v98.Position=UDim2.fromOffset(376 -(85 + 291) ,v50);local v101=false;if v5.MultiTargetEnabled then v101=v5.IsTargetSelected(v86);else v101=v5.SelectedTarget==v86 ;end v98.BackgroundColor3=(v101 and Color3.fromRGB(1335 -(243 + 1022) ,380 -280 ,160)) or Color3.fromRGB(35,29 + 6 ,1225 -(1123 + 57) ) ;v98.Text=v86.DisplayName;v98.TextColor3=Color3.fromRGB(163 + 37 ,454 -(163 + 91) ,215);v98.TextSize=11;v98.Font=Enum.Font.Gotham;v98.Parent=v47;local v110=Instance.new("UICorner");v110.CornerRadius=UDim.new(1930 -(1869 + 61) ,2 + 2 );v110.Parent=v98;v98.MouseButton1Click:Connect(function() if v5.MultiTargetEnabled then if v5.IsTargetSelected(v86) then v5.RemoveTarget(v86);else v5.AddTarget(v86);end else v5.SelectedTarget=v86;v5.Config.TargetMode="Selected";end v48();end);v50=v50 + (91 -65) ;end end v47.CanvasSize=UDim2.new(0,0 -0 ,0 + 0 ,v50);break;end end end;return v5;
+local Targeting = {
+    SelectedTarget = nil,
+    SelectedTargets = {},
+    MultiTargetEnabled = false,
+    CurrentTargetIndex = 0,
+    HighlightBox = nil,
+    Config = nil,
+}
+
+function Targeting.SetConfig(config)
+    Targeting.Config = config
+end
+
+function Targeting.AddTarget(player)
+    if not player then return end
+    for _, p in ipairs(Targeting.SelectedTargets) do
+        if p == player then return end
+    end
+    table.insert(Targeting.SelectedTargets, player)
+end
+
+function Targeting.RemoveTarget(player)
+    for i, p in ipairs(Targeting.SelectedTargets) do
+        if p == player then
+            table.remove(Targeting.SelectedTargets, i)
+            return
+        end
+    end
+end
+
+function Targeting.IsTargetSelected(player)
+    for _, p in ipairs(Targeting.SelectedTargets) do
+        if p == player then return true end
+    end
+    return false
+end
+
+function Targeting.ClearTargets()
+    Targeting.SelectedTargets = {}
+    Targeting.CurrentTargetIndex = 0
+end
+
+function Targeting.GetNextValidTarget()
+    if not Targeting.MultiTargetEnabled or #Targeting.SelectedTargets == 0 then
+        local t = Targeting.SelectedTarget
+        if t and t.Parent and t.Character then
+            local hum = t.Character:FindFirstChildOfClass("Humanoid")
+            if hum and hum.Health > 0 then
+                return t
+            end
+        end
+        return nil
+    end
+    -- Build valid list WITHOUT mutating SelectedTargets
+    -- so dead/respawning players stay in the hit-list
+    local valid = {}
+    for _, plr in ipairs(Targeting.SelectedTargets) do
+        if plr and plr.Parent and plr.Character then
+            local hum = plr.Character:FindFirstChildOfClass("Humanoid")
+            if hum and hum.Health > 0 then
+                table.insert(valid, plr)
+            end
+        end
+    end
+    if #valid == 0 then
+        Targeting.CurrentTargetIndex = 0
+        return nil
+    end
+    Targeting.CurrentTargetIndex = (Targeting.CurrentTargetIndex or 0) + 1
+    if Targeting.CurrentTargetIndex > #valid then
+        Targeting.CurrentTargetIndex = 1
+    end
+    return valid[Targeting.CurrentTargetIndex]
+end
+
+local function getCharacterPart(char, partName)
+    local part = char:FindFirstChild(partName)
+    if part then return part end
+    if partName == "Torso" then
+        return char:FindFirstChild("UpperTorso") or char:FindFirstChild("HumanoidRootPart")
+    elseif partName == "Head" then
+        return char:FindFirstChild("HumanoidRootPart")
+    end
+    return char:FindFirstChild("HumanoidRootPart")
+end
+
+function Targeting.GetTarget()
+    local Config = Targeting.Config
+    if not Config then return nil end
+
+    if Targeting.MultiTargetEnabled then
+        local mt = Targeting.GetNextValidTarget()
+        if mt then
+            local char = mt.Character
+            if char then
+                local hum = char:FindFirstChildOfClass("Humanoid")
+                if hum and hum.Health > 0 then
+                    return getCharacterPart(char, Config.TargetPart)
+                end
+            end
+        end
+        return nil
+    end
+
+    if Config.TargetMode == "Selected" and Targeting.SelectedTarget then
+        local char = Targeting.SelectedTarget.Character
+        if char then
+            local hum = char:FindFirstChildOfClass("Humanoid")
+            if hum and hum.Health > 0 then
+                return getCharacterPart(char, Config.TargetPart)
+            end
+        end
+    end
+    local myChar = LocalPlayer.Character
+    if not myChar or not myChar:FindFirstChild("HumanoidRootPart") then return nil end
+    local myPos = myChar.HumanoidRootPart.Position
+    local closest = nil
+    local minDist = math.huge
+    for _, plr in ipairs(Players:GetPlayers()) do
+        if plr ~= LocalPlayer and plr.Character then
+            local char = plr.Character
+            local hum = char:FindFirstChildOfClass("Humanoid")
+            if not hum or hum.Health <= 0 then continue end
+            local part = getCharacterPart(char, Config.TargetPart)
+            local hrp = char:FindFirstChild("HumanoidRootPart")
+            if part and hrp then
+                local dist = (myPos - hrp.Position).Magnitude
+                local sp, onScreen = Camera:WorldToViewportPoint(part.Position)
+                if onScreen then
+                    local md = (Vector2.new(sp.X, sp.Y) - UserInputService:GetMouseLocation()).Magnitude
+                    if md <= Config.FOV_Radius and dist < minDist then
+                        minDist = dist
+                        closest = part
+                    end
+                end
+            end
+        end
+    end
+    return closest
+end
+
+function Targeting.TeleportToTarget()
+    local Config = Targeting.Config
+    if not Config then return end
+    local target = Targeting.GetTarget()
+    if not target or not target.Parent then return end
+    local myChar = LocalPlayer.Character
+    if not myChar then return end
+    local hrp = myChar:FindFirstChild("HumanoidRootPart")
+    if not hrp then return end
+    local targetHrp = target.Parent:FindFirstChild("HumanoidRootPart")
+    if targetHrp then
+        hrp.CFrame = targetHrp.CFrame + Vector3.new(0, 3, 0)
+    else
+        hrp.CFrame = target.CFrame + Vector3.new(0, 3, 0)
+    end
+end
+
+function Targeting.UpdateHighlight(target)
+    local Config = Targeting.Config
+    if not Config then return end
+    if not Config.Highlights then
+        if Targeting.HighlightBox then Targeting.HighlightBox:Destroy() end
+        Targeting.HighlightBox = nil
+        return
+    end
+    if target and target.Parent then
+        if not Targeting.HighlightBox then
+            Targeting.HighlightBox = Instance.new("Highlight")
+            Targeting.HighlightBox.FillColor = Color3.fromRGB(255, 50, 50)
+            Targeting.HighlightBox.OutlineColor = Color3.fromRGB(255, 255, 255)
+            Targeting.HighlightBox.FillTransparency = 0.5
+            Targeting.HighlightBox.OutlineTransparency = 0
+        end
+        Targeting.HighlightBox.Parent = target.Parent
+        Targeting.HighlightBox.Adornee = target
+    else
+        if Targeting.HighlightBox then Targeting.HighlightBox:Destroy() end
+        Targeting.HighlightBox = nil
+    end
+end
+
+function Targeting.UpdateSpectate()
+    local Config = Targeting.Config
+    if not Config or not Config.Spectate then return end
+    local target = Targeting.GetTarget()
+    if target and target.Parent and target.Parent:FindFirstChild("Humanoid") then
+        Camera.CameraSubject = target.Parent.Humanoid
+    else
+        if LocalPlayer.Character and LocalPlayer.Character:FindFirstChild("Humanoid") then
+            Camera.CameraSubject = LocalPlayer.Character.Humanoid
+        end
+    end
+end
+
+function Targeting.StopSpectate()
+    if LocalPlayer.Character and LocalPlayer.Character:FindFirstChild("Humanoid") then
+        Camera.CameraSubject = LocalPlayer.Character.Humanoid
+    end
+end
+
+function Targeting.RefreshPlayerList(container, onSelect)
+    for _, c in ipairs(container:GetChildren()) do
+        if c:IsA("TextButton") then c:Destroy() end
+    end
+    local y = 0
+    for _, plr in ipairs(Players:GetPlayers()) do
+        if plr ~= LocalPlayer then
+            local btn = Instance.new("TextButton")
+            btn.Size = UDim2.new(1, 0, 0, 24)
+            btn.Position = UDim2.fromOffset(0, y)
+
+            local isSelected = false
+            if Targeting.MultiTargetEnabled then
+                isSelected = Targeting.IsTargetSelected(plr)
+            else
+                isSelected = (Targeting.SelectedTarget == plr)
+            end
+
+            btn.BackgroundColor3 = isSelected and Color3.fromRGB(70, 100, 160) or Color3.fromRGB(35, 35, 45)
+            btn.Text = plr.DisplayName
+            btn.TextColor3 = Color3.fromRGB(200, 200, 215)
+            btn.TextSize = 11
+            btn.Font = Enum.Font.Gotham
+            btn.Parent = container
+            local corner = Instance.new("UICorner")
+            corner.CornerRadius = UDim.new(0, 4)
+            corner.Parent = btn
+            btn.MouseButton1Click:Connect(function()
+                if Targeting.MultiTargetEnabled then
+                    if Targeting.IsTargetSelected(plr) then
+                        Targeting.RemoveTarget(plr)
+                    else
+                        Targeting.AddTarget(plr)
+                    end
+                else
+                    Targeting.SelectedTarget = plr
+                    Targeting.Config.TargetMode = "Selected"
+                end
+                onSelect()
+            end)
+            y = y + 26
+        end
+    end
+    container.CanvasSize = UDim2.new(0, 0, 0, y)
+end
+
+return Targeting

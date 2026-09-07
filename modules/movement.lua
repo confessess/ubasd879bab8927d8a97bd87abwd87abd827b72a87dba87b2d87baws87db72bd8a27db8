@@ -1,2 +1,594 @@
+local Players = game:GetService("Players")
+local RunService = game:GetService("RunService")
+local Workspace = game:GetService("Workspace")
+local UserInputService = game:GetService("UserInputService")
 
-local v0=game:GetService("Players");local v1=game:GetService("RunService");local v2=game:GetService("Workspace");local v3=game:GetService("UserInputService");local v4=v0.LocalPlayer;local v5=v2.CurrentCamera;local v6={Config=nil,Connection=nil,OriginalValues={},State={Flying=false,NoClipping=false},FlyInstances={}};v6.SetConfig=function(v50) v6.Config=v50;end;local function v8() local v52=v6.Config;if  not v52.Move_SpeedEnabled then return;end local v53=v4.Character;if  not v53 then return;end local v54=v53:FindFirstChildOfClass("Humanoid");if  not v54 then return;end if (v6.OriginalValues.WalkSpeed==nil) then v6.OriginalValues.WalkSpeed=v54.WalkSpeed;end v54.WalkSpeed=v52.Move_Speed or (220 -170) ;end local function v9() local v56=0 + 0 ;local v57;local v58;while true do if (v56==(2 -1)) then v58=v57:FindFirstChildOfClass("Humanoid");if  not v58 then return;end v56=1415 -(447 + 966) ;end if (v56==(0 -0)) then v57=v4.Character;if  not v57 then return;end v56=1818 -(1703 + 114) ;end if (v56==(703 -(376 + 325))) then if (v6.OriginalValues.WalkSpeed~=nil) then v58.WalkSpeed=v6.OriginalValues.WalkSpeed;end break;end end end v6.SetSpeedEnabled=function(v59) if v6.Config then v6.Config.Move_SpeedEnabled=v59;end end;local function v11() local v60=0 -0 ;local v61;local v62;local v63;while true do if (v60==(2 -1)) then v62=v4.Character;if  not v62 then return;end v60=1 + 1 ;end if (v60==(0 -0)) then v61=v6.Config;if  not v61.Move_HighJumpEnabled then return;end v60=15 -(9 + 5) ;end if (v60==(379 -(85 + 291))) then if (v6.OriginalValues.JumpPower==nil) then v6.OriginalValues.JumpPower=v63.JumpPower;end v63.JumpPower=v61.Move_JumpPower or (1365 -(243 + 1022)) ;break;end if (v60==(7 -5)) then v63=v62:FindFirstChildOfClass("Humanoid");if  not v63 then return;end v60=3 + 0 ;end end end local function v12() local v64=1180 -(1123 + 57) ;local v65;local v66;while true do if (v64==(2 + 0)) then if (v6.OriginalValues.JumpPower~=nil) then v66.JumpPower=v6.OriginalValues.JumpPower;end break;end if (v64==(255 -(163 + 91))) then v66=v65:FindFirstChildOfClass("Humanoid");if  not v66 then return;end v64=1932 -(1869 + 61) ;end if (v64==0) then v65=v4.Character;if  not v65 then return;end v64=1 + 0 ;end end end v6.SetHighJumpEnabled=function(v67) if v6.Config then v6.Config.Move_HighJumpEnabled=v67;end end;local v14=0 -0 ;local v15=0 -0 ;local v16=0 + 0 ;local v17=false;local v18=nil;local v19=nil;local v20=true;local function v21(v68,v69) local v70=0;local v71;local v72;local v73;local v74;local v75;while true do if (v70==(1 -0)) then v73=math.sqrt((2 + 0) * v71 * v72 );v74=(math.random() -0.5) * (1474.02 -(1329 + 145)) ;v70=2;end if ((971 -(140 + 831))==v70) then v71=v2.Gravity or (2046.2 -(1409 + 441)) ;v72=725.2 -(15 + 703) ;v70=1;end if (v70==2) then v75=(math.random() -0.5) * 0.02 ;v68.AssemblyLinearVelocity=Vector3.new(v68.AssemblyLinearVelocity.X + v74 ,v73,v68.AssemblyLinearVelocity.Z + v75 );break;end end end local function v22() local v76=0 + 0 ;local v77;local v78;local v79;local v80;local v81;local v82;while true do if (v76==(438 -(262 + 176))) then v77=v6.Config;v78=v4.Character;if  not v78 then return;end v76=1722 -(345 + 1376) ;end if (v76==3) then if  not v17 then v79.JumpHeight=688 -(198 + 490) ;v79.JumpPower=0 -0 ;v17=true;end v81=v79.FloorMaterial~=Enum.Material.Air ;v82=v3:IsKeyDown(Enum.KeyCode.Space);v76=9 -5 ;end if (v76==(1208 -(696 + 510))) then if (v18==nil) then local v218=0;while true do if (v218==0) then v18=v79.JumpHeight;v19=v79.JumpPower;break;end end end if  not v77.Move_NoJumpCooldown then local v219=0 -0 ;while true do if (v219==(1262 -(1091 + 171))) then if v17 then local v260=0 + 0 ;while true do if (v260==0) then v79.JumpHeight=v18;v79.JumpPower=v19;v260=3 -2 ;end if (v260==(3 -2)) then v17=false;break;end end end return;end end end if (v79.Health<=(374 -(123 + 251))) then return;end v76=14 -11 ;end if (v76==(699 -(208 + 490))) then v79=v78:FindFirstChildOfClass("Humanoid");v80=v78:FindFirstChild("HumanoidRootPart");if ( not v79 or  not v80) then return;end v76=2;end if (v76==(1 + 3)) then if (v82 and v81 and v20) then local v220=tick();if ((v220-v16)>0.03) then local v244=0 + 0 ;while true do if (v244==1) then v20=false;break;end if (v244==(836 -(660 + 176))) then v21(v80,v79);v16=v220;v244=1 + 0 ;end end end elseif  not v82 then v20=true;v16=202 -(14 + 188) ;end if (v81 and v82 and  not v20) then local v221=675 -(534 + 141) ;local v222;while true do if (v221==0) then v222=tick();if ((v222-v16)>(0.1 + 0)) then local v261=0;while true do if (v261==0) then v21(v80,v79);v16=v222;break;end end end break;end end end break;end end end local function v23() local v83=v4.Character;if  not v83 then return;end local v84=v83:FindFirstChildOfClass("Humanoid");local v85=v83:FindFirstChild("HumanoidRootPart");if ( not v84 or  not v85) then return;end if (v84.Health<=0) then return;end if (v84.FloorMaterial==Enum.Material.Air) then return;end v85.AssemblyLinearVelocity=Vector3.new(v85.AssemblyLinearVelocity.X,v84.JumpPower,v85.AssemblyLinearVelocity.Z);v84:ChangeState(Enum.HumanoidStateType.Jumping);end local function v24() local v87=0 + 0 ;local v88;local v89;local v90;local v91;local v92;local v93;while true do if (v87==(0 + 0)) then v88=v6.Config;if  not v88.Move_BunnyHop then return;end v89=v4.Character;v87=1 -0 ;end if (v87==(4 -1)) then if  not v92 then return;end if (v90.FloorMaterial~=Enum.Material.Air) then local v223=tick();if ((v223-v14)>(0.05 -0)) then local v245=0;while true do if ((0 + 0)==v245) then v21(v91,v90);v14=v223;break;end end end end v93=v88.Move_BunnyHopSpeed or (39 + 21) ;v87=400 -(115 + 281) ;end if (v87==1) then if  not v89 then return;end v90=v89:FindFirstChildOfClass("Humanoid");v91=v89:FindFirstChild("HumanoidRootPart");v87=4 -2 ;end if (v87==2) then if ( not v90 or  not v91) then return;end if (v90.Health<=0) then return;end v92=v3:IsKeyDown(Enum.KeyCode.W) or v3:IsKeyDown(Enum.KeyCode.A) or v3:IsKeyDown(Enum.KeyCode.S) or v3:IsKeyDown(Enum.KeyCode.D) ;v87=3 + 0 ;end if (v87==(9 -5)) then if (v90.WalkSpeed<v93) then v90.WalkSpeed=v93;end break;end end end v6.SetNoJumpCooldown=function(v94) if v6.Config then v6.Config.Move_NoJumpCooldown=v94;end end;v6.SetBunnyHop=function(v95) if v6.Config then v6.Config.Move_BunnyHop=v95;end end;local function v27() local v96=v6.Config;if  not v96.Move_InfiniteJump then return;end if v3:IsKeyDown(Enum.KeyCode.Space) then local v160=0 -0 ;local v161;local v162;local v163;while true do if ((867 -(550 + 317))==v160) then v161=v4.Character;if  not v161 then return;end v160=1;end if (v160==1) then v162=v161:FindFirstChildOfClass("Humanoid");if  not v162 then return;end v160=2;end if (v160==3) then if (v162.FloorMaterial==Enum.Material.Air) then v163.Velocity=Vector3.new(v163.Velocity.X,v96.Move_JumpPower or 100 ,v163.Velocity.Z);end break;end if (v160==(2 -0)) then v163=v161:FindFirstChild("HumanoidRootPart");if  not v163 then return;end v160=3;end end end end v6.SetInfiniteJump=function(v97) if v6.Config then v6.Config.Move_InfiniteJump=v97;end end;local v29={};local function v30() local v98=0 -0 ;local v99;local v100;while true do if (v98==(2 -1)) then v100=v4.Character;if  not v100 then return;end v98=287 -(134 + 151) ;end if (v98==(1665 -(970 + 695))) then v99=v6.Config;if  not v99.Move_NoClip then return;end v98=1 -0 ;end if (v98==(1992 -(582 + 1408))) then for v201,v202 in pairs(v100:GetDescendants()) do if v202:IsA("BasePart") then if (v29[v202]==nil) then v29[v202]=v202.CanCollide;end if v202.CanCollide then v202.CanCollide=false;end end end for v203,v204 in pairs(v100:GetChildren()) do if (v204:IsA("BasePart") and (v29[v204]==nil)) then local v242=0 -0 ;while true do if ((0 -0)==v242) then v29[v204]=v204.CanCollide;v204.CanCollide=false;break;end end end end break;end end end local function v31() local v101=0;while true do if (v101==0) then for v205,v206 in pairs(v29) do if (v205 and v205.Parent) then v205.CanCollide=v206;end end v29={};break;end end end v6.SetNoClip=function(v102) if v6.Config then v6.Config.Move_NoClip=v102;end end;local function v33() local v103=v6.Config;local v104=v103.Move_FlySpeed or 50 ;local v105=Vector3.new(0 -0 ,0,0);if v3:IsKeyDown(Enum.KeyCode.W) then v105=v105 + (v5.CFrame.LookVector * v104) ;end if v3:IsKeyDown(Enum.KeyCode.S) then v105=v105-(v5.CFrame.LookVector * v104) ;end if v3:IsKeyDown(Enum.KeyCode.A) then v105=v105-(v5.CFrame.RightVector * v104) ;end if v3:IsKeyDown(Enum.KeyCode.D) then v105=v105 + (v5.CFrame.RightVector * v104) ;end if v3:IsKeyDown(Enum.KeyCode.Space) then v105=v105 + Vector3.new(0,v104,1824 -(1195 + 629) ) ;end if v3:IsKeyDown(Enum.KeyCode.LeftShift) then v105=v105-Vector3.new(0 -0 ,v104,241 -(187 + 54) ) ;end return v105;end local function v34() local v106=0;local v107;local v108;local v109;while true do if (v106==0) then if v6.State.Flying then return;end v107=v4.Character;v106=1;end if (v106==(782 -(162 + 618))) then if  not v108 then return;end v109=v107:FindFirstChildOfClass("Humanoid");v106=3 + 0 ;end if (v106==1) then if  not v107 then return;end v108=v107:FindFirstChild("HumanoidRootPart");v106=2;end if (v106==3) then if v109 then local v226=0;while true do if (v226==(0 + 0)) then v109.PlatformStand=true;v109.AutoRotate=false;break;end end end v6.State.Flying=true;break;end end end local function v35() local v110=0 -0 ;local v111;local v112;local v113;while true do if (v110==(2 -0)) then if  not v112 then return;end v113=v33();v110=3;end if (v110==(0 + 0)) then if  not v6.State.Flying then return;end v111=v4.Character;v110=1637 -(1373 + 263) ;end if (v110==(1003 -(451 + 549))) then if (v113.Magnitude>(0 + 0)) then local v227=0;local v228;while true do if (v227==(0 -0)) then v228=v112.Position + (v113 * (0.016 -0)) ;v112.CFrame=CFrame.new(v112.Position:Lerp(v228,1384.3 -(746 + 638) ));break;end end end v112.Velocity=Vector3.new(0,0 + 0 ,0);v110=4;end if (v110==(5 -1)) then v112.RotVelocity=Vector3.new(0,341 -(218 + 123) ,1581 -(1535 + 46) );break;end if (v110==1) then if  not v111 then return;end v112=v111:FindFirstChild("HumanoidRootPart");v110=2 + 0 ;end end end local function v36() local v114=0;local v115;while true do if (v114==(0 + 0)) then if  not v6.State.Flying then return;end v115=v4.Character;v114=1;end if ((561 -(306 + 254))==v114) then if v115 then local v229=v115:FindFirstChildOfClass("Humanoid");if v229 then v229.PlatformStand=false;v229.AutoRotate=true;end end v6.State.Flying=false;break;end end end local function v37() if v6.State.Flying then return;end local v116=v4.Character;if  not v116 then return;end local v117=v116:FindFirstChildOfClass("Humanoid");if v117 then local v166=0 + 0 ;while true do if (v166==0) then v117.PlatformStand=true;v117.AutoRotate=false;break;end end end v6.State.Flying=true;end local function v38() if  not v6.State.Flying then return;end local v119=v4.Character;if  not v119 then return;end local v120=v119:FindFirstChild("HumanoidRootPart");if  not v120 then return;end local v121=v33();if (v121.Magnitude>0) then v120.AssemblyLinearVelocity=v121;v120.RotVelocity=Vector3.new(0 -0 ,1467 -(899 + 568) ,0);else local v169=0 + 0 ;while true do if (v169==(0 -0)) then v120.AssemblyLinearVelocity=Vector3.new(603 -(268 + 335) ,0.1,290 -(60 + 230) );v120.RotVelocity=Vector3.new(572 -(426 + 146) ,0,0 + 0 );break;end end end end local function v39() local v122=1456 -(282 + 1174) ;local v123;while true do if (v122==(812 -(569 + 242))) then if v123 then local v234=0;local v235;local v236;while true do if (v234==(2 -1)) then v236=v123:FindFirstChild("HumanoidRootPart");if v236 then v236.AssemblyLinearVelocity=Vector3.new(0 + 0 ,1024 -(706 + 318) ,0);end break;end if (v234==0) then v235=v123:FindFirstChildOfClass("Humanoid");if v235 then v235.PlatformStand=false;v235.AutoRotate=true;end v234=1;end end end v6.State.Flying=false;break;end if (v122==(1251 -(721 + 530))) then if  not v6.State.Flying then return;end v123=v4.Character;v122=1272 -(945 + 326) ;end end end local function v40() local v124=0;local v125;local v126;while true do if (v124==(0 -0)) then if v6.State.Flying then return;end v125=v4.Character;v124=1 + 0 ;end if (v124==(702 -(271 + 429))) then if v126 then v126.PlatformStand=true;v126.AutoRotate=false;end v6.State.Flying=true;break;end if (v124==(1 + 0)) then if  not v125 then return;end v126=v125:FindFirstChildOfClass("Humanoid");v124=1502 -(1408 + 92) ;end end end local function v41() if  not v6.State.Flying then return;end local v127=v4.Character;if  not v127 then return;end local v128=v127:FindFirstChild("HumanoidRootPart");if  not v128 then return;end local v129=v33();if (v129.Magnitude>(1086 -(461 + 625))) then v128.CFrame=v128.CFrame + (v129 * (1288.016 -(993 + 295))) ;end v128.Velocity=Vector3.new(0 + 0 ,0,1171 -(418 + 753) );v128.RotVelocity=Vector3.new(0 + 0 ,0 + 0 ,0 + 0 );end local function v42() local v132=0;local v133;while true do if (v132==(0 + 0)) then if  not v6.State.Flying then return;end v133=v4.Character;v132=1;end if ((530 -(406 + 123))==v132) then if v133 then local v239=0;local v240;while true do if ((1769 -(1749 + 20))==v239) then v240=v133:FindFirstChildOfClass("Humanoid");if v240 then v240.PlatformStand=false;v240.AutoRotate=true;end break;end end end v6.State.Flying=false;break;end end end local function v43() local v134=0 + 0 ;local v135;while true do if (v134==(1322 -(1249 + 73))) then v135=v6.Config;if (v135.Move_FlyMethod=="Tween") then v34();elseif (v135.Move_FlyMethod=="Velocity") then v37();elseif (v135.Move_FlyMethod=="CFrame") then v40();end break;end end end local function v44() local v136=0;local v137;while true do if (v136==(0 + 0)) then v137=v6.Config;if  not v137.Move_Fly then return;end v136=1146 -(466 + 679) ;end if (v136==1) then if (v137.Move_FlyMethod=="Tween") then v35();elseif (v137.Move_FlyMethod=="Velocity") then v38();elseif (v137.Move_FlyMethod=="CFrame") then v41();end break;end end end local function v45() local v138=0 -0 ;local v139;while true do if (0==v138) then v139=v6.Config;if (v139.Move_FlyMethod=="Tween") then v36();elseif (v139.Move_FlyMethod=="Velocity") then v39();elseif (v139.Move_FlyMethod=="CFrame") then v42();end break;end end end v6.SetFly=function(v140) if v6.Config then v6.Config.Move_Fly=v140;if v140 then local v207=0;local v208;while true do if (v207==0) then v208=v6.Config;if (v208.Move_FlyMethod=="Tween") then v34();elseif (v208.Move_FlyMethod=="Velocity") then v37();elseif (v208.Move_FlyMethod=="CFrame") then v40();end break;end end else local v209=v6.Config;if (v209.Move_FlyMethod=="Tween") then v36();elseif (v209.Move_FlyMethod=="Velocity") then v39();elseif (v209.Move_FlyMethod=="CFrame") then v42();end end end end;local function v47() local v141=v6.Config;if  not v141 then return;end if v141.Move_SpeedEnabled then v8();else v9();end if v141.Move_HighJumpEnabled then v11();else v12();end v24();v22();v27();if v141.Move_Fly then v44();elseif v6.State.Flying then v45();end if v141.Move_NoClip then v30();else v31();end end v3.InputBegan:Connect(function(v142,v143) if v143 then return;end local v144=v6.Config;if  not v144 then return;end local v145=v144.Move_FlyKey or Enum.KeyCode.F ;local v146=(v142.KeyCode==v145) or (v142.UserInputType==v145) ;if (v146 and v144.Move_Fly) then if v6.State.Flying then v45();else v43();end end end);v6.Init=function() if v6.Connection then return;end v6.Connection=v1.RenderStepped:Connect(v47);v4.CharacterAdded:Connect(function(v149) task.wait(0.3 -0 );v6.OriginalValues.WalkSpeed=nil;v6.OriginalValues.JumpPower=nil;v6.State.Flying=false;v6.State.NoClipping=false;end);end;v6.Cleanup=function() if v6.Connection then local v172=1900 -(106 + 1794) ;while true do if (v172==(0 + 0)) then v6.Connection:Disconnect();v6.Connection=nil;break;end end end v45();v31();v9();v12();v6.OriginalValues={};end;return v6;
+local LocalPlayer = Players.LocalPlayer
+local Camera = Workspace.CurrentCamera
+
+local Movement = {
+    Config = nil,
+    Connection = nil,
+    OriginalValues = {},
+    State = {
+        Flying = false,
+        NoClipping = false,
+    },
+    FlyInstances = {},
+}
+
+function Movement.SetConfig(config)
+    Movement.Config = config
+end
+
+-- ═════════════════════════════════════════════════════════════════════════════
+-- SPEED
+-- ═════════════════════════════════════════════════════════════════════════════
+
+local function DoSpeed()
+    local Config = Movement.Config
+    if not Config.Move_SpeedEnabled then return end
+    local char = LocalPlayer.Character
+    if not char then return end
+    local hum = char:FindFirstChildOfClass("Humanoid")
+    if not hum then return end
+    if Movement.OriginalValues.WalkSpeed == nil then
+        Movement.OriginalValues.WalkSpeed = hum.WalkSpeed
+    end
+    hum.WalkSpeed = Config.Move_Speed or 50
+end
+
+local function ResetSpeed()
+    local char = LocalPlayer.Character
+    if not char then return end
+    local hum = char:FindFirstChildOfClass("Humanoid")
+    if not hum then return end
+    if Movement.OriginalValues.WalkSpeed ~= nil then
+        hum.WalkSpeed = Movement.OriginalValues.WalkSpeed
+    end
+end
+
+function Movement.SetSpeedEnabled(enabled)
+    if Movement.Config then
+        Movement.Config.Move_SpeedEnabled = enabled
+    end
+end
+
+-- ═════════════════════════════════════════════════════════════════════════════
+-- HIGH JUMP
+-- ═════════════════════════════════════════════════════════════════════════════
+
+local function DoHighJump()
+    local Config = Movement.Config
+    if not Config.Move_HighJumpEnabled then return end
+    local char = LocalPlayer.Character
+    if not char then return end
+    local hum = char:FindFirstChildOfClass("Humanoid")
+    if not hum then return end
+    if Movement.OriginalValues.JumpPower == nil then
+        Movement.OriginalValues.JumpPower = hum.JumpPower
+    end
+    hum.JumpPower = Config.Move_JumpPower or 100
+end
+
+local function ResetHighJump()
+    local char = LocalPlayer.Character
+    if not char then return end
+    local hum = char:FindFirstChildOfClass("Humanoid")
+    if not hum then return end
+    if Movement.OriginalValues.JumpPower ~= nil then
+        hum.JumpPower = Movement.OriginalValues.JumpPower
+    end
+end
+
+function Movement.SetHighJumpEnabled(enabled)
+    if Movement.Config then
+        Movement.Config.Move_HighJumpEnabled = enabled
+    end
+end
+
+-- ═════════════════════════════════════════════════════════════════════════════
+-- BUNNY HOP
+-- ═════════════════════════════════════════════════════════════════════════════
+
+local LastBhopJump = 0
+
+local LastManualJump = 0
+
+local LastNoJumpCD = 0
+local CooldownWasDisabled = false
+local OriginalJumpHeight = nil
+local OriginalJumpPower = nil
+local WasOnGround = true
+
+local function DoRealisticJump(root, hum)
+    -- Roblox default jump: JumpPower 50 = ~7.2 studs height
+    -- Velocity = sqrt(2 * gravity * height)
+    local gravity = Workspace.Gravity or 196.2
+    local jumpHeight = 7.2
+    local jumpVelocity = math.sqrt(2 * gravity * jumpHeight)
+
+    -- Minimal randomization — just enough to feel natural
+    local randomX = (math.random() - 0.5) * 0.02
+    local randomZ = (math.random() - 0.5) * 0.02
+
+    -- Preserve horizontal momentum, apply vertical jump
+    root.AssemblyLinearVelocity = Vector3.new(
+        root.AssemblyLinearVelocity.X + randomX,
+        jumpVelocity,
+        root.AssemblyLinearVelocity.Z + randomZ
+    )
+end
+
+local function DoNoJumpCooldown()
+    local Config = Movement.Config
+    local char = LocalPlayer.Character
+    if not char then return end
+    local hum = char:FindFirstChildOfClass("Humanoid")
+    local root = char:FindFirstChild("HumanoidRootPart")
+    if not hum or not root then return end
+
+    -- Save original values on first run
+    if OriginalJumpHeight == nil then
+        OriginalJumpHeight = hum.JumpHeight
+        OriginalJumpPower = hum.JumpPower
+    end
+
+    if not Config.Move_NoJumpCooldown then
+        -- Restore original jump feel
+        if CooldownWasDisabled then
+            hum.JumpHeight = OriginalJumpHeight
+            hum.JumpPower = OriginalJumpPower
+            CooldownWasDisabled = false
+        end
+        return
+    end
+
+    if hum.Health <= 0 then return end
+
+    -- Disable default jump, use custom
+    if not CooldownWasDisabled then
+        hum.JumpHeight = 0
+        hum.JumpPower = 0
+        CooldownWasDisabled = true
+    end
+
+    -- Detect ground state
+    local onGround = hum.FloorMaterial ~= Enum.Material.Air
+
+    -- Detect Space press with edge detection (only on new press)
+    local spacePressed = UserInputService:IsKeyDown(Enum.KeyCode.Space)
+
+    if spacePressed and onGround and WasOnGround then
+        local now = tick()
+        if now - LastNoJumpCD > 0.03 then -- Small buffer
+            DoRealisticJump(root, hum)
+            LastNoJumpCD = now
+            WasOnGround = false -- Prevent double jump while holding
+        end
+    elseif not spacePressed then
+        WasOnGround = true -- Reset when Space released
+        LastNoJumpCD = 0
+    end
+
+    -- If landed and still holding space, jump again (for held space)
+    if onGround and spacePressed and not WasOnGround then
+        local now = tick()
+        if now - LastNoJumpCD > 0.1 then -- Slightly longer for held space
+            DoRealisticJump(root, hum)
+            LastNoJumpCD = now
+        end
+    end
+end
+
+local function ForceJump()
+    local char = LocalPlayer.Character
+    if not char then return end
+    local hum = char:FindFirstChildOfClass("Humanoid")
+    local root = char:FindFirstChild("HumanoidRootPart")
+    if not hum or not root then return end
+    if hum.Health <= 0 then return end
+
+    -- Check if on ground
+    if hum.FloorMaterial == Enum.Material.Air then return end
+
+    -- Method 1: Direct velocity impulse (always works)
+    root.AssemblyLinearVelocity = Vector3.new(root.AssemblyLinearVelocity.X, hum.JumpPower, root.AssemblyLinearVelocity.Z)
+
+    -- Method 2: Also try state change as backup
+    hum:ChangeState(Enum.HumanoidStateType.Jumping)
+end
+
+local function DoBunnyHop()
+    local Config = Movement.Config
+    if not Config.Move_BunnyHop then return end
+    local char = LocalPlayer.Character
+    if not char then return end
+    local hum = char:FindFirstChildOfClass("Humanoid")
+    local root = char:FindFirstChild("HumanoidRootPart")
+    if not hum or not root then return end
+    if hum.Health <= 0 then return end
+
+    -- Check if moving (WASD pressed)
+    local isMoving = UserInputService:IsKeyDown(Enum.KeyCode.W) 
+        or UserInputService:IsKeyDown(Enum.KeyCode.A)
+        or UserInputService:IsKeyDown(Enum.KeyCode.S)
+        or UserInputService:IsKeyDown(Enum.KeyCode.D)
+
+    if not isMoving then return end
+
+    -- Auto jump when on ground — realistic feel, no cooldown
+    if hum.FloorMaterial ~= Enum.Material.Air then
+        local now = tick()
+        if now - LastBhopJump > 0.05 then
+            DoRealisticJump(root, hum)
+            LastBhopJump = now
+        end
+    end
+
+    -- Speed boost while bunny hopping
+    local bhopSpeed = Config.Move_BunnyHopSpeed or 60
+    if hum.WalkSpeed < bhopSpeed then
+        hum.WalkSpeed = bhopSpeed
+    end
+end
+
+function Movement.SetNoJumpCooldown(enabled)
+    if Movement.Config then
+        Movement.Config.Move_NoJumpCooldown = enabled
+    end
+end
+
+function Movement.SetBunnyHop(enabled)
+    if Movement.Config then
+        Movement.Config.Move_BunnyHop = enabled
+    end
+end
+
+-- ═════════════════════════════════════════════════════════════════════════════
+-- INFINITE JUMP
+-- ═════════════════════════════════════════════════════════════════════════════
+
+local function DoInfiniteJump()
+    local Config = Movement.Config
+    if not Config.Move_InfiniteJump then return end
+    if UserInputService:IsKeyDown(Enum.KeyCode.Space) then
+        local char = LocalPlayer.Character
+        if not char then return end
+        local hum = char:FindFirstChildOfClass("Humanoid")
+        if not hum then return end
+        local root = char:FindFirstChild("HumanoidRootPart")
+        if not root then return end
+        if hum.FloorMaterial == Enum.Material.Air then
+            root.Velocity = Vector3.new(root.Velocity.X, Config.Move_JumpPower or 100, root.Velocity.Z)
+        end
+    end
+end
+
+function Movement.SetInfiniteJump(enabled)
+    if Movement.Config then
+        Movement.Config.Move_InfiniteJump = enabled
+    end
+end
+
+-- ═════════════════════════════════════════════════════════════════════════════
+-- NOCLIP
+-- ═════════════════════════════════════════════════════════════════════════════
+
+local NoClipModifiedParts = {}
+
+local function DoNoClip()
+    local Config = Movement.Config
+    if not Config.Move_NoClip then return end
+    local char = LocalPlayer.Character
+    if not char then return end
+
+    -- Force CanCollide = false EVERY frame — game might reset it
+    for _, part in pairs(char:GetDescendants()) do
+        if part:IsA("BasePart") then
+            -- Save original once
+            if NoClipModifiedParts[part] == nil then
+                NoClipModifiedParts[part] = part.CanCollide
+            end
+            -- Force false every frame
+            if part.CanCollide then
+                part.CanCollide = false
+            end
+        end
+    end
+
+    -- Also check for new parts added to character
+    for _, part in pairs(char:GetChildren()) do
+        if part:IsA("BasePart") and NoClipModifiedParts[part] == nil then
+            NoClipModifiedParts[part] = part.CanCollide
+            part.CanCollide = false
+        end
+    end
+end
+
+local function ResetNoClip()
+    for part, originalCanCollide in pairs(NoClipModifiedParts) do
+        if part and part.Parent then
+            part.CanCollide = originalCanCollide
+        end
+    end
+    NoClipModifiedParts = {}
+end
+
+function Movement.SetNoClip(enabled)
+    if Movement.Config then
+        Movement.Config.Move_NoClip = enabled
+    end
+end
+
+-- ═════════════════════════════════════════════════════════════════════════════
+-- FLY — Input helper
+-- ═════════════════════════════════════════════════════════════════════════════
+
+local function GetFlyInput()
+    local Config = Movement.Config
+    local speed = Config.Move_FlySpeed or 50
+    local move = Vector3.new(0, 0, 0)
+    if UserInputService:IsKeyDown(Enum.KeyCode.W) then move = move + (Camera.CFrame.LookVector * speed) end
+    if UserInputService:IsKeyDown(Enum.KeyCode.S) then move = move - (Camera.CFrame.LookVector * speed) end
+    if UserInputService:IsKeyDown(Enum.KeyCode.A) then move = move - (Camera.CFrame.RightVector * speed) end
+    if UserInputService:IsKeyDown(Enum.KeyCode.D) then move = move + (Camera.CFrame.RightVector * speed) end
+    if UserInputService:IsKeyDown(Enum.KeyCode.Space) then move = move + Vector3.new(0, speed, 0) end
+    if UserInputService:IsKeyDown(Enum.KeyCode.LeftShift) then move = move - Vector3.new(0, speed, 0) end
+    return move
+end
+
+-- ── Method 1: Tween ──
+local function StartFly_Tween()
+    if Movement.State.Flying then return end
+    local char = LocalPlayer.Character
+    if not char then return end
+    local root = char:FindFirstChild("HumanoidRootPart")
+    if not root then return end
+    local hum = char:FindFirstChildOfClass("Humanoid")
+    if hum then
+        hum.PlatformStand = true
+        hum.AutoRotate = false
+    end
+    Movement.State.Flying = true
+end
+
+local function DoFly_Tween()
+    if not Movement.State.Flying then return end
+    local char = LocalPlayer.Character
+    if not char then return end
+    local root = char:FindFirstChild("HumanoidRootPart")
+    if not root then return end
+    local move = GetFlyInput()
+    if move.Magnitude > 0 then
+        local targetPos = root.Position + move * 0.016
+        root.CFrame = CFrame.new(root.Position:Lerp(targetPos, 0.3))
+    end
+    root.Velocity = Vector3.new(0, 0, 0)
+    root.RotVelocity = Vector3.new(0, 0, 0)
+end
+
+local function StopFly_Tween()
+    if not Movement.State.Flying then return end
+    local char = LocalPlayer.Character
+    if char then
+        local hum = char:FindFirstChildOfClass("Humanoid")
+        if hum then
+            hum.PlatformStand = false
+            hum.AutoRotate = true
+        end
+    end
+    Movement.State.Flying = false
+end
+
+-- ── Method 2: Velocity ──
+local function StartFly_Velocity()
+    if Movement.State.Flying then return end
+    local char = LocalPlayer.Character
+    if not char then return end
+    local hum = char:FindFirstChildOfClass("Humanoid")
+    if hum then
+        hum.PlatformStand = true
+        hum.AutoRotate = false
+    end
+    Movement.State.Flying = true
+end
+
+local function DoFly_Velocity()
+    if not Movement.State.Flying then return end
+    local char = LocalPlayer.Character
+    if not char then return end
+    local root = char:FindFirstChild("HumanoidRootPart")
+    if not root then return end
+    local move = GetFlyInput()
+    if move.Magnitude > 0 then
+        root.AssemblyLinearVelocity = move
+        root.RotVelocity = Vector3.new(0, 0, 0)
+    else
+        root.AssemblyLinearVelocity = Vector3.new(0, 0.1, 0)
+        root.RotVelocity = Vector3.new(0, 0, 0)
+    end
+end
+
+local function StopFly_Velocity()
+    if not Movement.State.Flying then return end
+    local char = LocalPlayer.Character
+    if char then
+        local hum = char:FindFirstChildOfClass("Humanoid")
+        if hum then
+            hum.PlatformStand = false
+            hum.AutoRotate = true
+        end
+        local root = char:FindFirstChild("HumanoidRootPart")
+        if root then root.AssemblyLinearVelocity = Vector3.new(0, 0, 0) end
+    end
+    Movement.State.Flying = false
+end
+
+-- ── Method 3: CFrame ──
+local function StartFly_CFrame()
+    if Movement.State.Flying then return end
+    local char = LocalPlayer.Character
+    if not char then return end
+    local hum = char:FindFirstChildOfClass("Humanoid")
+    if hum then
+        hum.PlatformStand = true
+        hum.AutoRotate = false
+    end
+    Movement.State.Flying = true
+end
+
+local function DoFly_CFrame()
+    if not Movement.State.Flying then return end
+    local char = LocalPlayer.Character
+    if not char then return end
+    local root = char:FindFirstChild("HumanoidRootPart")
+    if not root then return end
+    local move = GetFlyInput()
+    if move.Magnitude > 0 then
+        root.CFrame = root.CFrame + move * 0.016
+    end
+    root.Velocity = Vector3.new(0, 0, 0)
+    root.RotVelocity = Vector3.new(0, 0, 0)
+end
+
+local function StopFly_CFrame()
+    if not Movement.State.Flying then return end
+    local char = LocalPlayer.Character
+    if char then
+        local hum = char:FindFirstChildOfClass("Humanoid")
+        if hum then
+            hum.PlatformStand = false
+            hum.AutoRotate = true
+        end
+    end
+    Movement.State.Flying = false
+end
+
+-- ═════════════════════════════════════════════════════════════════════════════
+-- FLY dispatcher
+-- ═════════════════════════════════════════════════════════════════════════════
+
+local function StartFly()
+    local Config = Movement.Config
+    if Config.Move_FlyMethod == "Tween" then StartFly_Tween()
+    elseif Config.Move_FlyMethod == "Velocity" then StartFly_Velocity()
+    elseif Config.Move_FlyMethod == "CFrame" then StartFly_CFrame() end
+end
+
+local function DoFly()
+    local Config = Movement.Config
+    if not Config.Move_Fly then return end
+    if Config.Move_FlyMethod == "Tween" then DoFly_Tween()
+    elseif Config.Move_FlyMethod == "Velocity" then DoFly_Velocity()
+    elseif Config.Move_FlyMethod == "CFrame" then DoFly_CFrame() end
+end
+
+local function StopFly()
+    local Config = Movement.Config
+    if Config.Move_FlyMethod == "Tween" then StopFly_Tween()
+    elseif Config.Move_FlyMethod == "Velocity" then StopFly_Velocity()
+    elseif Config.Move_FlyMethod == "CFrame" then StopFly_CFrame() end
+end
+
+function Movement.SetFly(enabled)
+    if Movement.Config then
+        Movement.Config.Move_Fly = enabled
+        if enabled then
+            -- Start fly immediately
+            local Config = Movement.Config
+            if Config.Move_FlyMethod == "Tween" then StartFly_Tween()
+            elseif Config.Move_FlyMethod == "Velocity" then StartFly_Velocity()
+            elseif Config.Move_FlyMethod == "CFrame" then StartFly_CFrame() end
+        else
+            -- Stop fly immediately
+            local Config = Movement.Config
+            if Config.Move_FlyMethod == "Tween" then StopFly_Tween()
+            elseif Config.Move_FlyMethod == "Velocity" then StopFly_Velocity()
+            elseif Config.Move_FlyMethod == "CFrame" then StopFly_CFrame() end
+        end
+    end
+end
+
+-- ═════════════════════════════════════════════════════════════════════════════
+-- RENDER LOOP
+-- ═════════════════════════════════════════════════════════════════════════════
+
+local function OnRender()
+    local Config = Movement.Config
+    if not Config then return end
+
+    if Config.Move_SpeedEnabled then
+        DoSpeed()
+    else
+        ResetSpeed()
+    end
+
+    if Config.Move_HighJumpEnabled then
+        DoHighJump()
+    else
+        ResetHighJump()
+    end
+
+    DoBunnyHop()
+    DoNoJumpCooldown()
+    DoInfiniteJump()
+    if Config.Move_Fly then
+        DoFly()
+    elseif Movement.State.Flying then
+        StopFly()
+    end
+
+    if Config.Move_NoClip then
+        DoNoClip()
+    else
+        ResetNoClip()
+    end
+end
+
+-- ═════════════════════════════════════════════════════════════════════════════
+-- INPUT
+-- ═════════════════════════════════════════════════════════════════════════════
+
+UserInputService.InputBegan:Connect(function(input, gp)
+    if gp then return end
+    local Config = Movement.Config
+    if not Config then return end
+
+    local flyKey = Config.Move_FlyKey or Enum.KeyCode.F
+    local matched = (input.KeyCode == flyKey) or (input.UserInputType == flyKey)
+    if matched and Config.Move_Fly then
+        if Movement.State.Flying then StopFly() else StartFly() end
+    end
+end)
+
+-- ═════════════════════════════════════════════════════════════════════════════
+-- LIFECYCLE
+-- ═════════════════════════════════════════════════════════════════════════════
+
+function Movement.Init()
+    if Movement.Connection then return end
+    Movement.Connection = RunService.RenderStepped:Connect(OnRender)
+
+    LocalPlayer.CharacterAdded:Connect(function(char)
+        task.wait(0.3)
+        Movement.OriginalValues.WalkSpeed = nil
+        Movement.OriginalValues.JumpPower = nil
+        Movement.State.Flying = false
+        Movement.State.NoClipping = false
+    end)
+end
+
+function Movement.Cleanup()
+    if Movement.Connection then
+        Movement.Connection:Disconnect()
+        Movement.Connection = nil
+    end
+    StopFly()
+    ResetNoClip()
+    ResetSpeed()
+    ResetHighJump()
+    Movement.OriginalValues = {}
+end
+
+return Movement

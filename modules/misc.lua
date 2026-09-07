@@ -1,2 +1,669 @@
+local Players = game:GetService("Players")
+local RunService = game:GetService("RunService")
+local LocalPlayer = Players.LocalPlayer
+local Workspace = game:GetService("Workspace")
+local ReplicatedStorage = game:GetService("ReplicatedStorage")
 
-local v0=game:GetService("Players");local v1=game:GetService("RunService");local v2=v0.LocalPlayer;local v3=game:GetService("Workspace");local v4=game:GetService("ReplicatedStorage");math.randomseed(tick());local v5={Config=nil,SpamConnection=nil,HeartbeatConnection=nil,HealthChangedConnection=nil,Character=nil,Humanoid=nil,HRP=nil,LastHealth=1230 -(87 + 1043) ,AntiStompTriggered=false,LastArmorTime=0,CachedClickDetector=nil,CachedPrompt=nil,CachedTouchPart=nil,NotificationGui=nil,AutoStompConnection=nil,AutoStompLastStomp={},AutoStompMainRemote=nil};v5.Notify=function(v32,v33) local v34=448 -(10 + 438) ;local v35;local v36;local v37;local v38;while true do if (v34==(2 + 0)) then v35.BorderSizePixel=0;v35.Parent=v5.NotificationGui;v36=Instance.new("UICorner");v34=3;end if (v34==(30 -22)) then v38.Parent=v35;v35:TweenPosition(UDim2.new(0.5 + 0 , -(1320 -(1123 + 57)),0,20),Enum.EasingDirection.Out,Enum.EasingStyle.Quad,0.3,true);task.delay(2.5,function() v35:TweenPosition(UDim2.new(0.5 + 0 , -(394 -(163 + 91)),0, -(1970 -(1869 + 61))),Enum.EasingDirection.In,Enum.EasingStyle.Quad,0.3 + 0 ,true);task.wait(0.35 -0 );if v35 then v35:Destroy();end end);break;end if (v34==(7 -2)) then v38=Instance.new("TextLabel");v38.Size=UDim2.new(1 + 0 , -20,1 -0 ,0 + 0 );v38.Position=UDim2.new(1474 -(1329 + 145) ,981 -(140 + 831) ,1850 -(1409 + 441) ,0);v34=724 -(15 + 703) ;end if (v34==(0 + 0)) then v33=v33 or Color3.fromRGB(100,200,588 -(262 + 176) ) ;if  not v5.NotificationGui then local v188=Instance.new("ScreenGui");v188.Name="StarsNotifications";v188.ResetOnSpawn=false;v188.Parent=game.CoreGui;v5.NotificationGui=v188;end v35=Instance.new("Frame");v34=1722 -(345 + 1376) ;end if (v34==(691 -(198 + 490))) then v36.CornerRadius=UDim.new(0,8);v36.Parent=v35;v37=Instance.new("UIStroke");v34=4;end if (v34==(26 -20)) then v38.BackgroundTransparency=2 -1 ;v38.Text=v32;v38.TextColor3=Color3.fromRGB(235,235,1461 -(696 + 510) );v34=14 -7 ;end if (v34==(1263 -(1091 + 171))) then v35.Size=UDim2.new(0,46 + 234 ,0 -0 ,119 -83 );v35.Position=UDim2.new(374.5 -(123 + 251) , -(695 -555),698 -(208 + 490) , -(4 + 36));v35.BackgroundColor3=Color3.fromRGB(14 + 16 ,30,876 -(660 + 176) );v34=2;end if (v34==7) then v38.Font=Enum.Font.GothamBold;v38.TextSize=2 + 10 ;v38.TextXAlignment=Enum.TextXAlignment.Left;v34=210 -(14 + 188) ;end if (v34==(679 -(534 + 141))) then v37.Color=v33;v37.Thickness=1 + 0 ;v37.Parent=v35;v34=5 + 0 ;end end end;v5.SetConfig=function(v39) local v40=0 + 0 ;while true do if (v40==1) then v5.EvaluateHealthHook();v5.EvaluateHeartbeat();break;end if (0==v40) then v5.Config=v39;v5.CacheArmorDetector();v40=1 -0 ;end end end;v5.RefreshCharacter=function() local v41=0 -0 ;while true do if (v41==(2 -1)) then v5.HRP=v5.Character:WaitForChild("HumanoidRootPart");v5.LastHealth=v5.Humanoid.Health;v41=2 + 0 ;end if (v41==(2 + 0)) then v5.AntiStompTriggered=false;v5.EvaluateHealthHook();break;end if (v41==0) then v5.Character=v2.Character or v2.CharacterAdded:Wait() ;v5.Humanoid=v5.Character:WaitForChild("Humanoid");v41=1;end end end;v5.GetLiveHumanoid=function() local v42=396 -(115 + 281) ;local v43;while true do if (v42==0) then v43=v2.Character;if  not v43 then return nil;end v42=2 -1 ;end if (v42==(1 + 0)) then return v43:FindFirstChildOfClass("Humanoid");end end end;v5.GetLiveHRP=function() local v44=v2.Character;if  not v44 then return nil;end return v44:FindFirstChild("HumanoidRootPart");end;v5.CacheArmorDetector=function() local v45=0 -0 ;local v46;while true do if (v45==(3 -2)) then v5.CachedTouchPart=nil;if ( not v5.Config or  not v5.Config.AutoArmorPos) then return;end v45=2;end if ((867 -(550 + 317))==v45) then v5.CachedClickDetector=nil;v5.CachedPrompt=nil;v45=1 -0 ;end if (v45==(2 -0)) then v46=v5.Config.AutoArmorPos;for v169,v170 in pairs(workspace:GetDescendants()) do local v171=0 -0 ;local v172;while true do if (v171==1) then if v170.Parent:IsA("BasePart") then v172=v170.Parent.Position;elseif (v170.Parent:IsA("Model") and v170.Parent:FindFirstChild("HumanoidRootPart")) then v172=v170.Parent.HumanoidRootPart.Position;elseif (v170.Parent:IsA("Model") and v170.Parent:FindFirstChild("Head")) then v172=v170.Parent.Head.Position;end if  not v172 then continue;end v171=287 -(134 + 151) ;end if (v171==0) then if  not v170.Parent then continue;end v172=nil;v171=1666 -(970 + 695) ;end if (v171==(3 -1)) then if ((v172-v46).Magnitude>(2015 -(582 + 1408))) then continue;end if v170:IsA("ClickDetector") then local v222=0 -0 ;while true do if (v222==(0 -0)) then v5.CachedClickDetector=v170;print("[Stars] Cached ClickDetector for armor at "   .. tostring(v172) );break;end end elseif v170:IsA("ProximityPrompt") then local v235=0;while true do if (v235==0) then v5.CachedPrompt=v170;print("[Stars] Cached ProximityPrompt for armor at "   .. tostring(v172) );break;end end elseif v170:IsA("TouchInterest") then local v240=0;while true do if (v240==(0 -0)) then v5.CachedTouchPart=v170.Parent;print("[Stars] Cached TouchInterest for armor at "   .. tostring(v172) );break;end end end break;end end end break;end end end;v5.EvaluateHealthHook=function() if v5.HealthChangedConnection then v5.HealthChangedConnection:Disconnect();v5.HealthChangedConnection=nil;end local v47=v5.GetLiveHumanoid();if  not v47 then return;end if  not v5.Config then return;end local v48=v5.Config.AntiStomp or (v5.Config.AutoArmor and v5.Config.AutoArmorOnDamage) ;if  not v48 then return;end v5.HealthChangedConnection=v47.HealthChanged:Connect(function(v100) local v101=0;local v102;while true do if (v101==(1824 -(1195 + 629))) then if (v100<=(0 -0)) then v5.LastHealth=v100;return;end v102=v5.Config.AntiStompThreshold or (291 -(187 + 54)) ;v101=781 -(162 + 618) ;end if (v101==1) then if (v5.Config.AntiStomp and  not v5.AntiStompTriggered) then if (v100<=v102) then v5.TriggerAntiStomp();end end if (v5.Config.AutoArmor and v5.Config.AutoArmorOnDamage) then if (v100<v5.LastHealth) then v5.AutoArmorFast();end end v101=2;end if (v101==(2 + 0)) then v5.LastHealth=v100;break;end end end);end;v5.TriggerAntiStomp=function() if ( not v5.Config or  not v5.Config.AntiStomp) then return;end if v5.AntiStompTriggered then return;end v5.AntiStompTriggered=true;local v51=v2.Character;local v52=v5.GetLiveHumanoid();local v53=v5.GetLiveHRP();if (v5.Config.AntiStompMode=="Void") then if v53 then v53.CFrame=CFrame.new(0 + 0 , -(106635 -56635),0);v53.Velocity=Vector3.new(0 -0 ,0 + 0 ,1636 -(1373 + 263) );v53.AssemblyLinearVelocity=Vector3.new(0,1000 -(451 + 549) ,0);end if v52 then v52.Health=0 + 0 ;end if v51 then pcall(function() v51:BreakJoints();end);end pcall(function() v2:LoadCharacter();end);elseif (v5.Config.AntiStompMode=="Force Reset") then local v178=0;while true do if (v178==2) then pcall(function() v2:LoadCharacter();end);break;end if (v178==(1 -0)) then if v51 then pcall(function() v51:BreakJoints();end);end task.wait(0.05 -0 );v178=1386 -(746 + 638) ;end if (v178==0) then if v53 then v53.Velocity=Vector3.new(0 + 0 ,0 -0 ,341 -(218 + 123) );v53.AssemblyLinearVelocity=Vector3.new(1581 -(1535 + 46) ,0 + 0 ,0);end if v52 then v52.Health=0 + 0 ;end v178=561 -(306 + 254) ;end end end end;v5.CheckAntiStomp=function() local v54=0;local v55;local v56;local v57;local v58;while true do if (v54==(1 + 0)) then v55=v5.GetLiveHumanoid();if  not v55 then return;end v54=2;end if ((3 -1)==v54) then v56=v5.Config.AntiStompThreshold or (1517 -(899 + 568)) ;v57=v55.Health;v54=2 + 1 ;end if (v54==4) then if v58 then local v194=0 -0 ;local v195;while true do if (v194==(603 -(268 + 335))) then v195=v58:FindFirstChild("Knocked");if (v195 and ((v195:IsA("BoolValue") and (v195.Value==true)) or (v195:IsA("NumberValue") and (v195.Value>(290 -(60 + 230)))))) then local v231=572 -(426 + 146) ;while true do if (v231==(0 + 0)) then v5.TriggerAntiStomp();return;end end end break;end end end v5.LastHealth=v57;break;end if (v54==(1456 -(282 + 1174))) then if ( not v5.Config or  not v5.Config.AntiStomp) then local v196=811 -(569 + 242) ;while true do if (v196==0) then v5.AntiStompTriggered=false;return;end end end if v5.AntiStompTriggered then return;end v54=2 -1 ;end if (3==v54) then if ((v57>(0 + 0)) and (v57<=v56)) then v5.TriggerAntiStomp();return;end v58=v2.Character;v54=4;end end end;v5.AutoArmorFast=function() if ( not v5.Config or  not v5.Config.AutoArmor) then return;end if  not v5.Config.AutoArmorPos then local v115=1024 -(706 + 318) ;while true do if (v115==0) then v5.Notify("Armor position not set!",Color3.fromRGB(1451 -(721 + 530) ,1331 -(945 + 326) ,60));return;end end end local v59=tick();local v60=v5.Config.AutoArmorCooldown or (2 -1) ;if ((v59-v5.LastArmorTime)<v60) then return;end local v61=v5.GetLiveHRP();local v62=v5.GetLiveHumanoid();if ( not v61 or  not v62) then return;end if (v62.Health<=0) then return;end v5.LastArmorTime=v59;local v64=v5.Config.SpamEnabled;if v64 then v5.StopSpam();end local v65=v61.CFrame;local v66=v5.Config.AutoArmorPos;local v67=v3.CurrentCamera;local v68=v67.CFrame;task.spawn(function() v5.CacheArmorDetector();v61.CFrame=CFrame.new(v66 + Vector3.new(0 + 0 ,704 -(271 + 429) ,0 + 0 ) );v61.Velocity=Vector3.new(1500 -(1408 + 92) ,0,0);v61.AssemblyLinearVelocity=Vector3.new(1086 -(461 + 625) ,1288 -(993 + 295) ,0 + 0 );v67.CFrame=CFrame.new(v66 + Vector3.new(1171 -(418 + 753) ,3 + 3 ,5) ,v66);for v116=1 + 0 ,3 + 7  do v1.Heartbeat:Wait();end local v107=false;if  not v107 then local v156=0 + 0 ;while true do if (v156==(529 -(406 + 123))) then if v5.CachedPrompt then pcall(function() if fireproximityprompt then fireproximityprompt(v5.CachedPrompt);v107=true;else local v236=1769 -(1749 + 20) ;while true do if (v236==(1 + 0)) then v5.CachedPrompt:InputHoldEnd();v107=true;break;end if (v236==0) then v5.CachedPrompt:InputHoldBegin();task.wait(v5.CachedPrompt.HoldDuration + 0.1 );v236=1;end end end end);end if  not v107 then for v226,v227 in pairs(workspace:GetDescendants()) do if v227:IsA("ProximityPrompt") then local v237=v227.Parent;if (v237 and v237:IsA("BasePart")) then if ((v237.Position-v66).Magnitude<=(1342 -(1249 + 73))) then pcall(function() local v245=0 + 0 ;while true do if (v245==(1145 -(466 + 679))) then if fireproximityprompt then fireproximityprompt(v227);else local v246=0 -0 ;while true do if (v246==0) then v227:InputHoldBegin();task.wait(v227.HoldDuration + 0.1 );v246=2 -1 ;end if (v246==(1901 -(106 + 1794))) then v227:InputHoldEnd();break;end end end v107=true;break;end end end);if v107 then break;end end end end end end break;end end end if  not v107 then if v5.CachedClickDetector then pcall(function() local v202=0;while true do if (v202==(0 + 0)) then if fireclickdetector then fireclickdetector(v5.CachedClickDetector);else v5.CachedClickDetector.MouseClick:Fire();end v107=true;break;end end end);end if  not v107 then for v203,v204 in pairs(workspace:GetDescendants()) do if v204:IsA("ClickDetector") then local v216=v204.Parent;if (v216 and v216:IsA("BasePart")) then if ((v216.Position-v66).Magnitude<=(6 + 14)) then pcall(function() local v241=0 -0 ;while true do if (v241==0) then if fireclickdetector then fireclickdetector(v204);else v204.MouseClick:Fire();end v107=true;break;end end end);if v107 then break;end end end end end end end if ( not v107 and v5.CachedTouchPart) then pcall(function() local v179=0 -0 ;local v180;while true do if (v179==(114 -(4 + 110))) then v180=v5.CachedTouchPart;if v180.Touched then local v228=584 -(57 + 527) ;while true do if (v228==(1427 -(41 + 1386))) then v180.Touched:Fire(v61);v107=true;break;end end end break;end end end);end if  not v107 then local v157=game:GetService("VirtualInputManager");local v158=v67.ViewportSize;for v181=104 -(17 + 86) ,3 do local v182=0 + 0 ;while true do if (v182==0) then pcall(function() local v217=0;while true do if (v217==(0 -0)) then v157:SendKeyEvent(true,Enum.KeyCode.E,false,game);task.wait(0.1);v217=1;end if (v217==(2 -1)) then v157:SendKeyEvent(false,Enum.KeyCode.E,false,game);break;end end end);v1.Heartbeat:Wait();break;end end end for v183=1,169 -(122 + 44)  do local v184=0 -0 ;while true do if (v184==0) then pcall(function() local v218=0 -0 ;while true do if (v218==(1 + 0)) then v157:SendMouseButtonEvent(v158.X/(1 + 1) ,v158.Y/(3 -1) ,65 -(30 + 35) ,false,game,1 + 0 );break;end if (v218==(1257 -(1043 + 214))) then v157:SendMouseButtonEvent(v158.X/2 ,v158.Y/(7 -5) ,1212 -(323 + 889) ,true,game,2 -1 );task.wait(580.05 -(361 + 219) );v218=1;end end end);v1.Heartbeat:Wait();break;end end end v107=true;end for v117=1,8 do v1.Heartbeat:Wait();end local v108=v2.Character;local v109=false;if v108 then local v159=v108:FindFirstChild("Armor") or v108:FindFirstChild("BodyArmor") or v108:FindFirstChild("BulletProof") ;if ( not v159 and v62) then v159=v62:FindFirstChild("Armor") or v62:FindFirstChild("BodyArmor") ;end if v159 then if (v159:IsA("NumberValue") and (v159.Value>(320 -(53 + 267)))) then v109=true;elseif (v159:IsA("IntValue") and (v159.Value>(0 + 0))) then v109=true;end end local v160=v108:FindFirstChild("HasArmor") or v108:FindFirstChild("WearingArmor") ;if (v160 and v160:IsA("BoolValue") and v160.Value) then v109=true;end end if v109 then v5.Notify("Armor grabbed!",Color3.fromRGB(513 -(15 + 398) ,1182 -(18 + 964) ,564 -414 ));elseif v107 then v5.Notify("Armor interaction sent",Color3.fromRGB(150,87 + 63 ,127 + 73 ));else v5.Notify("Failed to grab armor - set position closer to stand",Color3.fromRGB(1050 -(20 + 830) ,60,60));end v61.CFrame=v65;v61.Velocity=Vector3.new(0 + 0 ,126 -(116 + 10) ,0);v67.CFrame=v68;if v5.Config.SpamEnabled then v5.StartSpam();end end);end;v5.TeleportSpam=function() local v69=0 + 0 ;local v70;local v71;while true do if (v69==2) then for v185=739 -(542 + 196) ,v71 do if (v70.SpamRange=="Close") then local v205=0 -0 ;local v206;while true do if (v205==(0 + 0)) then v206=Vector3.new(math.random( -v70.SpamCloseRadius,v70.SpamCloseRadius),v70.SpamCloseHeight + math.random( -v70.SpamCloseVerticalJitter,v70.SpamCloseVerticalJitter) ,math.random( -v70.SpamCloseRadius,v70.SpamCloseRadius));v5.HRP.CFrame=CFrame.new(v206);break;end end else local v207=0 + 0 ;local v208;local v209;local v210;while true do if (v207==0) then v208=v70.SpamFarBase or Vector3.new(500000,179984 + 320016 ,1317545 -817545 ) ;v209=v70.SpamFarJitter or (12818 -7818) ;v207=1;end if (v207==(1552 -(1126 + 425))) then v210=v208 + Vector3.new(math.random( -v209,v209),math.random( -v209,v209),math.random( -v209,v209)) ;v5.HRP.CFrame=CFrame.new(v210);break;end end end end break;end if (v69==(406 -(118 + 287))) then v70=v5.Config;v71=math.clamp(v70.SpamSpeed or (3 -2) ,1122 -(118 + 1003) ,29 -19 );v69=2;end if (v69==(377 -(142 + 235))) then if ( not v5.HRP or  not v5.HRP.Parent) then return;end if ( not v5.Config or  not v5.Config.SpamEnabled) then return;end v69=4 -3 ;end end end;v5.StartSpam=function() local v72=0 + 0 ;while true do if ((977 -(553 + 424))==v72) then if v5.SpamConnection then v5.SpamConnection:Disconnect();end v5.SpamConnection=v1.RenderStepped:Connect(v5.TeleportSpam);break;end end end;v5.StopSpam=function() if v5.SpamConnection then local v118=0;while true do if (v118==0) then v5.SpamConnection:Disconnect();v5.SpamConnection=nil;break;end end end end;v5.ToggleSpam=function(v73) if  not v5.Config then return;end v5.Config.SpamEnabled=v73;if v73 then v5.StartSpam();else v5.StopSpam();end end;local function v20() local v75={v4:FindFirstChild("GameRemotes") and v4.GameRemotes:FindFirstChild("MainGameEvent") ,v4:FindFirstChild("MainRemotes") and v4.MainRemotes:FindFirstChild("MainRemoteEvent") ,v4:FindFirstChild("MainGameEvent",true),v4:FindFirstChild("MainRemoteEvent",true)};for v110,v111 in pairs(v75) do if (v111 and v111:IsA("RemoteEvent")) then return v111;end end for v112,v113 in pairs(v4:GetDescendants()) do if (v113:IsA("RemoteEvent") and (v113.Name:lower():find("main") or v113.Name:lower():find("game") or v113.Name:lower():find("shoot"))) then return v113;end end return nil;end local function v21(v76) local v77=0 + 0 ;local v78;local v79;local v80;while true do if (v77==(0 + 0)) then v78=v76 and v76.Character ;if  not v78 then return false;end v77=1 + 0 ;end if (1==v77) then v79=v78:FindFirstChild("BodyEffects");if  not v79 then return false;end v77=1 + 1 ;end if (v77==2) then v80=v79:FindFirstChild("K.O") or v79:FindFirstChild("Knocked") ;return v80 and (v80.Value==true) ;end end end local function v22() local v81=0;local v82;local v83;local v84;local v85;while true do if (v81==(1 + 0)) then v82=v2.Character;if  not v82 then return;end v81=4 -2 ;end if (v81==(0 -0)) then if ( not v5.Config or  not v5.Config.AutoStompEnabled) then return;end if  not v5.AutoStompMainRemote then return;end v81=2 -1 ;end if ((2 + 2)==v81) then for v186,v187 in ipairs(v0:GetPlayers()) do if ((v187~=v2) and v187.Character) then local v211=v187.Character:FindFirstChild("HumanoidRootPart");if v211 then local v219=(v85-v211.Position).Magnitude;if v21(v187) then if (v5.AutoStompLastStomp[v187] and ((v84-v5.AutoStompLastStomp[v187])<(0.05 -0))) then continue;end v5.AutoStompLastStomp[v187]=v84;pcall(function() if v5.AutoStompMainRemote then v5.AutoStompMainRemote:FireServer("Stomp");v5.AutoStompMainRemote:FireServer("StompPlayer",v187.Character);v5.AutoStompMainRemote:FireServer("Stomp",v187.Character);end end);break;end end end end break;end if (v81==(755 -(239 + 514))) then v83=v82:FindFirstChild("HumanoidRootPart");if  not v83 then return;end v81=2 + 1 ;end if (v81==3) then v84=tick();v85=v83.Position;v81=1333 -(797 + 532) ;end end end v5.StartAutoStomp=function() if v5.AutoStompConnection then return;end v5.AutoStompMainRemote=v20();v5.AutoStompConnection=v1.Heartbeat:Connect(v22);end;v5.StopAutoStomp=function() local v88=0 + 0 ;while true do if (v88==0) then if v5.AutoStompConnection then local v198=0 + 0 ;while true do if (v198==0) then v5.AutoStompConnection:Disconnect();v5.AutoStompConnection=nil;break;end end end v5.AutoStompLastStomp={};break;end end end;v5.SetAutoStompEnabled=function(v89) if  not v5.Config then return;end v5.Config.AutoStompEnabled=v89;if v89 then v5.StartAutoStomp();else v5.StopAutoStomp();end end;v5.EvaluateHeartbeat=function() local v91=0 -0 ;local v92;while true do if (v91==(1202 -(373 + 829))) then v92=false;if v5.Config then if v5.Config.AntiStomp then v92=true;end if (v5.Config.AutoArmor and  not v5.Config.AutoArmorOnDamage) then v92=true;end end v91=1;end if (v91==(732 -(476 + 255))) then if (v92 and  not v5.HeartbeatConnection) then v5.HeartbeatConnection=v1.Heartbeat:Connect(v5.OnHeartbeat);elseif ( not v92 and v5.HeartbeatConnection) then local v213=1130 -(369 + 761) ;while true do if (v213==(0 + 0)) then v5.HeartbeatConnection:Disconnect();v5.HeartbeatConnection=nil;break;end end end break;end end end;v5.OnHeartbeat=function() local v93=0 -0 ;while true do if (v93==0) then if (v5.Config and v5.Config.AntiStomp) then v5.CheckAntiStomp();end if (v5.Config and v5.Config.AutoArmor and  not v5.Config.AutoArmorOnDamage) then local v200=v5.GetLiveHumanoid();if v200 then local v214=v5.Config.AutoArmorTriggerHealth or 50 ;if ((v200.Health<v214) and (v200.Health>0)) then v5.AutoArmorFast();end end end break;end end end;v5.SetAntiStomp=function(v94) local v95=0;while true do if (v95==(0 -0)) then if  not v5.Config then return;end v5.Config.AntiStomp=v94;v95=1;end if (v95==2) then v5.EvaluateHeartbeat();break;end if (v95==1) then v5.AntiStompTriggered=false;v5.EvaluateHealthHook();v95=2;end end end;v5.SetAutoArmor=function(v96) local v97=238 -(64 + 174) ;while true do if ((0 + 0)==v97) then if  not v5.Config then return;end v5.Config.AutoArmor=v96;v97=1;end if (v97==1) then v5.EvaluateHealthHook();v5.EvaluateHeartbeat();break;end end end;v5.Start=function() v5.EvaluateHeartbeat();if (v5.Config and v5.Config.SpamEnabled) then v5.StartSpam();end if (v5.Config and v5.Config.AutoStompEnabled) then v5.StartAutoStomp();end end;v5.Reset=function() v5.StopSpam();v5.StopAutoStomp();v5.AntiStompTriggered=false;v5.LastHealth=100;v5.RefreshCharacter();if (v5.Config and v5.Config.SpamEnabled) then v5.StartSpam();end if (v5.Config and v5.Config.AutoStompEnabled) then v5.StartAutoStomp();end end;v5.RefreshCharacter();v2.CharacterAdded:Connect(function() task.wait(0.5 -0 );v5.RefreshCharacter();v5.Reset();end);return v5;
+math.randomseed(tick())
+
+local Misc = {
+    Config = nil,
+    SpamConnection = nil,
+    HeartbeatConnection = nil,
+    HealthChangedConnection = nil,
+    Character = nil,
+    Humanoid = nil,
+    HRP = nil,
+    LastHealth = 100,
+    AntiStompTriggered = false,
+    LastArmorTime = 0,
+    CachedClickDetector = nil,
+    CachedPrompt = nil,
+    CachedTouchPart = nil,
+    NotificationGui = nil,
+    AutoStompConnection = nil,
+    AutoStompLastStomp = {},
+    AutoStompMainRemote = nil,
+}
+
+--// ==================== NOTIFICATIONS ====================
+function Misc.Notify(text, color)
+    color = color or Color3.fromRGB(100, 200, 150)
+
+    if not Misc.NotificationGui then
+        local sg = Instance.new("ScreenGui")
+        sg.Name = "StarsNotifications"
+        sg.ResetOnSpawn = false
+        sg.Parent = game.CoreGui
+        Misc.NotificationGui = sg
+    end
+
+    local frame = Instance.new("Frame")
+    frame.Size = UDim2.new(0, 280, 0, 36)
+    frame.Position = UDim2.new(0.5, -140, 0, -40)
+    frame.BackgroundColor3 = Color3.fromRGB(30, 30, 40)
+    frame.BorderSizePixel = 0
+    frame.Parent = Misc.NotificationGui
+
+    local corner = Instance.new("UICorner")
+    corner.CornerRadius = UDim.new(0, 8)
+    corner.Parent = frame
+
+    local stroke = Instance.new("UIStroke")
+    stroke.Color = color
+    stroke.Thickness = 1
+    stroke.Parent = frame
+
+    local label = Instance.new("TextLabel")
+    label.Size = UDim2.new(1, -20, 1, 0)
+    label.Position = UDim2.new(0, 10, 0, 0)
+    label.BackgroundTransparency = 1
+    label.Text = text
+    label.TextColor3 = Color3.fromRGB(235, 235, 255)
+    label.Font = Enum.Font.GothamBold
+    label.TextSize = 12
+    label.TextXAlignment = Enum.TextXAlignment.Left
+    label.Parent = frame
+
+    frame:TweenPosition(UDim2.new(0.5, -140, 0, 20), Enum.EasingDirection.Out, Enum.EasingStyle.Quad, 0.3, true)
+
+    task.delay(2.5, function()
+        frame:TweenPosition(UDim2.new(0.5, -140, 0, -40), Enum.EasingDirection.In, Enum.EasingStyle.Quad, 0.3, true)
+        task.wait(0.35)
+        if frame then frame:Destroy() end
+    end)
+end
+
+function Misc.SetConfig(config)
+    Misc.Config = config
+    Misc.CacheArmorDetector()
+    Misc.EvaluateHealthHook()
+    Misc.EvaluateHeartbeat()
+end
+
+function Misc.RefreshCharacter()
+    Misc.Character = LocalPlayer.Character or LocalPlayer.CharacterAdded:Wait()
+    Misc.Humanoid = Misc.Character:WaitForChild("Humanoid")
+    Misc.HRP = Misc.Character:WaitForChild("HumanoidRootPart")
+    Misc.LastHealth = Misc.Humanoid.Health
+    Misc.AntiStompTriggered = false
+    Misc.EvaluateHealthHook()
+end
+
+function Misc.GetLiveHumanoid()
+    local char = LocalPlayer.Character
+    if not char then return nil end
+    return char:FindFirstChildOfClass("Humanoid")
+end
+
+function Misc.GetLiveHRP()
+    local char = LocalPlayer.Character
+    if not char then return nil end
+    return char:FindFirstChild("HumanoidRootPart")
+end
+
+--// ==================== ARMOR DETECTOR CACHE ====================
+function Misc.CacheArmorDetector()
+    Misc.CachedClickDetector = nil
+    Misc.CachedPrompt = nil
+    Misc.CachedTouchPart = nil
+
+    if not Misc.Config or not Misc.Config.AutoArmorPos then return end
+    local pos = Misc.Config.AutoArmorPos
+
+    for _, obj in pairs(workspace:GetDescendants()) do
+        if not obj.Parent then continue end
+        local parentPos = nil
+        if obj.Parent:IsA("BasePart") then
+            parentPos = obj.Parent.Position
+        elseif obj.Parent:IsA("Model") and obj.Parent:FindFirstChild("HumanoidRootPart") then
+            parentPos = obj.Parent.HumanoidRootPart.Position
+        elseif obj.Parent:IsA("Model") and obj.Parent:FindFirstChild("Head") then
+            parentPos = obj.Parent.Head.Position
+        end
+
+        if not parentPos then continue end
+        if (parentPos - pos).Magnitude > 25 then continue end
+
+        if obj:IsA("ClickDetector") then
+            Misc.CachedClickDetector = obj
+            print("[Stars] Cached ClickDetector for armor at " .. tostring(parentPos))
+        elseif obj:IsA("ProximityPrompt") then
+            Misc.CachedPrompt = obj
+            print("[Stars] Cached ProximityPrompt for armor at " .. tostring(parentPos))
+        elseif obj:IsA("TouchInterest") then
+            Misc.CachedTouchPart = obj.Parent
+            print("[Stars] Cached TouchInterest for armor at " .. tostring(parentPos))
+        end
+    end
+end
+
+--// ==================== ANTI-STOMP ====================
+function Misc.EvaluateHealthHook()
+    if Misc.HealthChangedConnection then
+        Misc.HealthChangedConnection:Disconnect()
+        Misc.HealthChangedConnection = nil
+    end
+
+    local humanoid = Misc.GetLiveHumanoid()
+    if not humanoid then return end
+    if not Misc.Config then return end
+
+    local needHook = Misc.Config.AntiStomp or (Misc.Config.AutoArmor and Misc.Config.AutoArmorOnDamage)
+    if not needHook then return end
+
+    Misc.HealthChangedConnection = humanoid.HealthChanged:Connect(function(newHealth)
+        if newHealth <= 0 then 
+            Misc.LastHealth = newHealth
+            return 
+        end
+
+        local threshold = Misc.Config.AntiStompThreshold or 50
+
+        if Misc.Config.AntiStomp and not Misc.AntiStompTriggered then
+            if newHealth <= threshold then
+                Misc.TriggerAntiStomp()
+            end
+        end
+
+        if Misc.Config.AutoArmor and Misc.Config.AutoArmorOnDamage then
+            if newHealth < Misc.LastHealth then
+                Misc.AutoArmorFast()
+            end
+        end
+
+        Misc.LastHealth = newHealth
+    end)
+end
+
+function Misc.TriggerAntiStomp()
+    if not Misc.Config or not Misc.Config.AntiStomp then return end
+    if Misc.AntiStompTriggered then return end
+    Misc.AntiStompTriggered = true
+
+    local char = LocalPlayer.Character
+    local humanoid = Misc.GetLiveHumanoid()
+    local hrp = Misc.GetLiveHRP()
+
+    if Misc.Config.AntiStompMode == "Void" then
+        if hrp then
+            hrp.CFrame = CFrame.new(0, -50000, 0)
+            hrp.Velocity = Vector3.new(0, 0, 0)
+            hrp.AssemblyLinearVelocity = Vector3.new(0, 0, 0)
+        end
+        if humanoid then
+            humanoid.Health = 0
+        end
+        if char then
+            pcall(function() char:BreakJoints() end)
+        end
+        pcall(function() LocalPlayer:LoadCharacter() end)
+
+    elseif Misc.Config.AntiStompMode == "Force Reset" then
+        if hrp then
+            hrp.Velocity = Vector3.new(0, 0, 0)
+            hrp.AssemblyLinearVelocity = Vector3.new(0, 0, 0)
+        end
+        if humanoid then
+            humanoid.Health = 0
+        end
+        if char then
+            pcall(function() char:BreakJoints() end)
+        end
+        task.wait(0.05)
+        pcall(function() LocalPlayer:LoadCharacter() end)
+    end
+end
+
+function Misc.CheckAntiStomp()
+    if not Misc.Config or not Misc.Config.AntiStomp then
+        Misc.AntiStompTriggered = false
+        return
+    end
+    if Misc.AntiStompTriggered then return end
+
+    local humanoid = Misc.GetLiveHumanoid()
+    if not humanoid then return end
+
+    local threshold = Misc.Config.AntiStompThreshold or 50
+    local currentHealth = humanoid.Health
+
+    if currentHealth > 0 and currentHealth <= threshold then
+        Misc.TriggerAntiStomp()
+        return
+    end
+
+    local char = LocalPlayer.Character
+    if char then
+        local knocked = char:FindFirstChild("Knocked")
+        if knocked and (knocked:IsA("BoolValue") and knocked.Value == true or knocked:IsA("NumberValue") and knocked.Value > 0) then
+            Misc.TriggerAntiStomp()
+            return
+        end
+    end
+
+    Misc.LastHealth = currentHealth
+end
+
+--// ==================== AUTO ARMOR (ROBUST) ====================
+function Misc.AutoArmorFast()
+    if not Misc.Config or not Misc.Config.AutoArmor then return end
+    if not Misc.Config.AutoArmorPos then 
+        Misc.Notify("Armor position not set!", Color3.fromRGB(200, 60, 60))
+        return 
+    end
+
+    local now = tick()
+    local cooldown = Misc.Config.AutoArmorCooldown or 1
+    if (now - Misc.LastArmorTime) < cooldown then return end
+
+    local hrp = Misc.GetLiveHRP()
+    local humanoid = Misc.GetLiveHumanoid()
+    if not hrp or not humanoid then return end
+    if humanoid.Health <= 0 then return end
+
+    Misc.LastArmorTime = now
+
+    local wasSpamming = Misc.Config.SpamEnabled
+    if wasSpamming then
+        Misc.StopSpam()
+    end
+
+    local origCF = hrp.CFrame
+    local armorPos = Misc.Config.AutoArmorPos
+    local cam = Workspace.CurrentCamera
+    local origCam = cam.CFrame
+
+    task.spawn(function()
+        Misc.CacheArmorDetector()
+
+        hrp.CFrame = CFrame.new(armorPos + Vector3.new(0, 4, 0))
+        hrp.Velocity = Vector3.new(0, 0, 0)
+        hrp.AssemblyLinearVelocity = Vector3.new(0, 0, 0)
+
+        cam.CFrame = CFrame.new(armorPos + Vector3.new(0, 6, 5), armorPos)
+
+        for i = 1, 10 do
+            RunService.Heartbeat:Wait()
+        end
+
+        local success = false
+
+        if not success then
+            if Misc.CachedPrompt then
+                pcall(function()
+                    if fireproximityprompt then
+                        fireproximityprompt(Misc.CachedPrompt)
+                        success = true
+                    else
+                        Misc.CachedPrompt:InputHoldBegin()
+                        task.wait(Misc.CachedPrompt.HoldDuration + 0.1)
+                        Misc.CachedPrompt:InputHoldEnd()
+                        success = true
+                    end
+                end)
+            end
+
+            if not success then
+                for _, obj in pairs(workspace:GetDescendants()) do
+                    if obj:IsA("ProximityPrompt") then
+                        local parent = obj.Parent
+                        if parent and parent:IsA("BasePart") then
+                            if (parent.Position - armorPos).Magnitude <= 20 then
+                                pcall(function()
+                                    if fireproximityprompt then
+                                        fireproximityprompt(obj)
+                                    else
+                                        obj:InputHoldBegin()
+                                        task.wait(obj.HoldDuration + 0.1)
+                                        obj:InputHoldEnd()
+                                    end
+                                    success = true
+                                end)
+                                if success then break end
+                            end
+                        end
+                    end
+                end
+            end
+        end
+
+        if not success then
+            if Misc.CachedClickDetector then
+                pcall(function()
+                    if fireclickdetector then
+                        fireclickdetector(Misc.CachedClickDetector)
+                    else
+                        Misc.CachedClickDetector.MouseClick:Fire()
+                    end
+                    success = true
+                end)
+            end
+
+            if not success then
+                for _, obj in pairs(workspace:GetDescendants()) do
+                    if obj:IsA("ClickDetector") then
+                        local parent = obj.Parent
+                        if parent and parent:IsA("BasePart") then
+                            if (parent.Position - armorPos).Magnitude <= 20 then
+                                pcall(function()
+                                    if fireclickdetector then
+                                        fireclickdetector(obj)
+                                    else
+                                        obj.MouseClick:Fire()
+                                    end
+                                    success = true
+                                end)
+                                if success then break end
+                            end
+                        end
+                    end
+                end
+            end
+        end
+
+        if not success and Misc.CachedTouchPart then
+            pcall(function()
+                local touchPart = Misc.CachedTouchPart
+                if touchPart.Touched then
+                    touchPart.Touched:Fire(hrp)
+                    success = true
+                end
+            end)
+        end
+
+        if not success then
+            local vim = game:GetService("VirtualInputManager")
+            local screenSize = cam.ViewportSize
+
+            for i = 1, 3 do
+                pcall(function()
+                    vim:SendKeyEvent(true, Enum.KeyCode.E, false, game)
+                    task.wait(0.1)
+                    vim:SendKeyEvent(false, Enum.KeyCode.E, false, game)
+                end)
+                RunService.Heartbeat:Wait()
+            end
+
+            for i = 1, 3 do
+                pcall(function()
+                    vim:SendMouseButtonEvent(screenSize.X/2, screenSize.Y/2, 0, true, game, 1)
+                    task.wait(0.05)
+                    vim:SendMouseButtonEvent(screenSize.X/2, screenSize.Y/2, 0, false, game, 1)
+                end)
+                RunService.Heartbeat:Wait()
+            end
+            success = true
+        end
+
+        for i = 1, 8 do
+            RunService.Heartbeat:Wait()
+        end
+
+        local char = LocalPlayer.Character
+        local gotArmor = false
+        if char then
+            local armorVal = char:FindFirstChild("Armor") or char:FindFirstChild("BodyArmor") or char:FindFirstChild("BulletProof")
+            if not armorVal and humanoid then
+                armorVal = humanoid:FindFirstChild("Armor") or humanoid:FindFirstChild("BodyArmor")
+            end
+            if armorVal then
+                if armorVal:IsA("NumberValue") and armorVal.Value > 0 then
+                    gotArmor = true
+                elseif armorVal:IsA("IntValue") and armorVal.Value > 0 then
+                    gotArmor = true
+                end
+            end
+            local armorBool = char:FindFirstChild("HasArmor") or char:FindFirstChild("WearingArmor")
+            if armorBool and armorBool:IsA("BoolValue") and armorBool.Value then
+                gotArmor = true
+            end
+        end
+
+        if gotArmor then
+            Misc.Notify("Armor grabbed!", Color3.fromRGB(100, 200, 150))
+        elseif success then
+            Misc.Notify("Armor interaction sent", Color3.fromRGB(150, 150, 200))
+        else
+            Misc.Notify("Failed to grab armor - set position closer to stand", Color3.fromRGB(200, 60, 60))
+        end
+
+        hrp.CFrame = origCF
+        hrp.Velocity = Vector3.new(0, 0, 0)
+        cam.CFrame = origCam
+
+        if Misc.Config.SpamEnabled then
+            Misc.StartSpam()
+        end
+    end)
+end
+
+--// ==================== TELEPORT SPAM ====================
+function Misc.TeleportSpam()
+    if not Misc.HRP or not Misc.HRP.Parent then return end
+    if not Misc.Config or not Misc.Config.SpamEnabled then return end
+
+    local Config = Misc.Config
+    local speed = math.clamp(Config.SpamSpeed or 1, 1, 10)
+
+    for i = 1, speed do
+        if Config.SpamRange == "Close" then
+            local newPos = Vector3.new(
+                math.random(-Config.SpamCloseRadius, Config.SpamCloseRadius),
+                Config.SpamCloseHeight + math.random(-Config.SpamCloseVerticalJitter, Config.SpamCloseVerticalJitter),
+                math.random(-Config.SpamCloseRadius, Config.SpamCloseRadius)
+            )
+            Misc.HRP.CFrame = CFrame.new(newPos)
+        else
+            local base = Config.SpamFarBase or Vector3.new(500000, 500000, 500000)
+            local jitter = Config.SpamFarJitter or 5000
+            local newPos = base + Vector3.new(
+                math.random(-jitter, jitter),
+                math.random(-jitter, jitter),
+                math.random(-jitter, jitter)
+            )
+            Misc.HRP.CFrame = CFrame.new(newPos)
+        end
+    end
+end
+
+function Misc.StartSpam()
+    if Misc.SpamConnection then Misc.SpamConnection:Disconnect() end
+    Misc.SpamConnection = RunService.RenderStepped:Connect(Misc.TeleportSpam)
+end
+
+function Misc.StopSpam()
+    if Misc.SpamConnection then
+        Misc.SpamConnection:Disconnect()
+        Misc.SpamConnection = nil
+    end
+end
+
+function Misc.ToggleSpam(enabled)
+    if not Misc.Config then return end
+    Misc.Config.SpamEnabled = enabled
+    if enabled then
+        Misc.StartSpam()
+    else
+        Misc.StopSpam()
+    end
+end
+
+
+--// ==================== AUTO STOMP ====================
+
+local function AutoStompFindRemote()
+    local possible = {
+        ReplicatedStorage:FindFirstChild("GameRemotes") and ReplicatedStorage.GameRemotes:FindFirstChild("MainGameEvent"),
+        ReplicatedStorage:FindFirstChild("MainRemotes") and ReplicatedStorage.MainRemotes:FindFirstChild("MainRemoteEvent"),
+        ReplicatedStorage:FindFirstChild("MainGameEvent", true),
+        ReplicatedStorage:FindFirstChild("MainRemoteEvent", true),
+    }
+
+    for _, rem in pairs(possible) do
+        if rem and rem:IsA("RemoteEvent") then
+            return rem
+        end
+    end
+
+    for _, v in pairs(ReplicatedStorage:GetDescendants()) do
+        if v:IsA("RemoteEvent") and (v.Name:lower():find("main") or v.Name:lower():find("game") or v.Name:lower():find("shoot")) then
+            return v
+        end
+    end
+    return nil
+end
+
+local function AutoStompIsKnocked(plr)
+    local char = plr and plr.Character
+    if not char then return false end
+    local be = char:FindFirstChild("BodyEffects")
+    if not be then return false end
+    local ko = be:FindFirstChild("K.O") or be:FindFirstChild("Knocked")
+    return ko and ko.Value == true
+end
+
+local function AutoStompTryStomp()
+    if not Misc.Config or not Misc.Config.AutoStompEnabled then return end
+    if not Misc.AutoStompMainRemote then return end
+
+    local myChar = LocalPlayer.Character
+    if not myChar then return end
+
+    local myHRP = myChar:FindFirstChild("HumanoidRootPart")
+    if not myHRP then return end
+
+    local now = tick()
+    local myPos = myHRP.Position
+
+    for _, plr in ipairs(Players:GetPlayers()) do
+        if plr ~= LocalPlayer and plr.Character then
+            local targetHRP = plr.Character:FindFirstChild("HumanoidRootPart")
+            if targetHRP then
+                local distance = (myPos - targetHRP.Position).Magnitude
+
+                if AutoStompIsKnocked(plr) then
+                    if Misc.AutoStompLastStomp[plr] and now - Misc.AutoStompLastStomp[plr] < 0.05 then
+                        continue
+                    end
+                    Misc.AutoStompLastStomp[plr] = now
+
+                    pcall(function()
+                        if Misc.AutoStompMainRemote then
+                            Misc.AutoStompMainRemote:FireServer("Stomp")
+                            Misc.AutoStompMainRemote:FireServer("StompPlayer", plr.Character)
+                            Misc.AutoStompMainRemote:FireServer("Stomp", plr.Character)
+                        end
+                    end)
+
+                    break
+                end
+            end
+        end
+    end
+end
+
+function Misc.StartAutoStomp()
+    if Misc.AutoStompConnection then return end
+    Misc.AutoStompMainRemote = AutoStompFindRemote()
+    Misc.AutoStompConnection = RunService.Heartbeat:Connect(AutoStompTryStomp)
+end
+
+function Misc.StopAutoStomp()
+    if Misc.AutoStompConnection then
+        Misc.AutoStompConnection:Disconnect()
+        Misc.AutoStompConnection = nil
+    end
+    Misc.AutoStompLastStomp = {}
+end
+
+function Misc.SetAutoStompEnabled(enabled)
+    if not Misc.Config then return end
+    Misc.Config.AutoStompEnabled = enabled
+    if enabled then
+        Misc.StartAutoStomp()
+    else
+        Misc.StopAutoStomp()
+    end
+end
+
+--// ==================== CONNECTION MANAGEMENT ====================
+function Misc.EvaluateHeartbeat()
+    local needHeartbeat = false
+    if Misc.Config then
+        if Misc.Config.AntiStomp then needHeartbeat = true end
+        if Misc.Config.AutoArmor and not Misc.Config.AutoArmorOnDamage then needHeartbeat = true end
+    end
+
+    if needHeartbeat and not Misc.HeartbeatConnection then
+        Misc.HeartbeatConnection = RunService.Heartbeat:Connect(Misc.OnHeartbeat)
+    elseif not needHeartbeat and Misc.HeartbeatConnection then
+        Misc.HeartbeatConnection:Disconnect()
+        Misc.HeartbeatConnection = nil
+    end
+end
+
+function Misc.OnHeartbeat()
+    if Misc.Config and Misc.Config.AntiStomp then
+        Misc.CheckAntiStomp()
+    end
+
+    if Misc.Config and Misc.Config.AutoArmor and not Misc.Config.AutoArmorOnDamage then
+        local humanoid = Misc.GetLiveHumanoid()
+        if humanoid then
+            local triggerHealth = Misc.Config.AutoArmorTriggerHealth or 50
+            if humanoid.Health < triggerHealth and humanoid.Health > 0 then
+                Misc.AutoArmorFast()
+            end
+        end
+    end
+end
+
+function Misc.SetAntiStomp(enabled)
+    if not Misc.Config then return end
+    Misc.Config.AntiStomp = enabled
+    Misc.AntiStompTriggered = false
+    Misc.EvaluateHealthHook()
+    Misc.EvaluateHeartbeat()
+end
+
+function Misc.SetAutoArmor(enabled)
+    if not Misc.Config then return end
+    Misc.Config.AutoArmor = enabled
+    Misc.EvaluateHealthHook()
+    Misc.EvaluateHeartbeat()
+end
+
+function Misc.Start()
+    Misc.EvaluateHeartbeat()
+    if Misc.Config and Misc.Config.SpamEnabled then
+        Misc.StartSpam()
+    end
+    if Misc.Config and Misc.Config.AutoStompEnabled then
+        Misc.StartAutoStomp()
+    end
+end
+
+function Misc.Reset()
+    Misc.StopSpam()
+    Misc.StopAutoStomp()
+    Misc.AntiStompTriggered = false
+    Misc.LastHealth = 100
+    Misc.RefreshCharacter()
+    if Misc.Config and Misc.Config.SpamEnabled then
+        Misc.StartSpam()
+    end
+    if Misc.Config and Misc.Config.AutoStompEnabled then
+        Misc.StartAutoStomp()
+    end
+end
+
+--// ==================== INIT ====================
+Misc.RefreshCharacter()
+LocalPlayer.CharacterAdded:Connect(function()
+    task.wait(0.5)
+    Misc.RefreshCharacter()
+    Misc.Reset()
+end)
+
+return Misc

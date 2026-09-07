@@ -1,2 +1,710 @@
+local Lighting = game:GetService("Lighting")
+local RunService = game:GetService("RunService")
+local Workspace = game:GetService("Workspace")
+local Players = game:GetService("Players")
+local LocalPlayer = Players.LocalPlayer
 
-local v0=game:GetService("Lighting");local v1=game:GetService("RunService");local v2=game:GetService("Workspace");local v3=game:GetService("Players");local v4=v3.LocalPlayer;local v5={Config=nil,Connection=nil,OriginalValues={},ActiveSky=nil,LastSkyTheme=nil,OriginalSky=nil,LowGFXApplied=false,NoShadowsApplied=false};v5.SetConfig=function(v33) v5.Config=v33;end;local function v7(v35,v36) if (v5.OriginalValues[v35]==nil) then v5.OriginalValues[v35]=v36();end end local function v8(v37,v38) if (v5.OriginalValues[v37]~=nil) then v38(v5.OriginalValues[v37]);end end local function v9() local v39=0 + 0 ;local v40;while true do if (v39==(1424 -(630 + 793))) then v7("OutdoorAmbient",function() return v0.OutdoorAmbient;end);v7("ClockTime",function() return v0.ClockTime;end);v0.Brightness=v40.World_Brightness or 10 ;v0.GlobalShadows=false;v39=6 -4 ;end if (v39==(0 -0)) then v40=v5.Config;v7("Brightness",function() return v0.Brightness;end);v7("GlobalShadows",function() return v0.GlobalShadows;end);v7("Ambient",function() return v0.Ambient;end);v39=1;end if (v39==(1 + 1)) then v0.Ambient=Color3.fromRGB(877 -622 ,2002 -(760 + 987) ,2168 -(1789 + 124) );v0.OutdoorAmbient=Color3.fromRGB(1021 -(745 + 21) ,255,88 + 167 );v0.ClockTime=12;break;end end end local function v10() local v41=0;while true do if (v41==(2 -1)) then v8("Ambient",function(v166) v0.Ambient=v166;end);v8("OutdoorAmbient",function(v168) v0.OutdoorAmbient=v168;end);v41=2;end if (v41==(7 -5)) then v8("ClockTime",function(v170) v0.ClockTime=v170;end);break;end if (v41==(0 + 0)) then v8("Brightness",function(v172) v0.Brightness=v172;end);v8("GlobalShadows",function(v174) v0.GlobalShadows=v174;end);v41=1 + 0 ;end end end local function v11() v7("FogStart",function() return v0.FogStart;end);v7("FogEnd",function() return v0.FogEnd;end);v7("FogColor",function() return v0.FogColor;end);v0.FogStart=1055 -(87 + 968) ;v0.FogEnd=4401938 -3401939 ;v0.FogColor=Color3.fromRGB(255,232 + 23 ,255);end local function v12() v8("FogStart",function(v75) v0.FogStart=v75;end);v8("FogEnd",function(v77) v0.FogEnd=v77;end);v8("FogColor",function(v79) v0.FogColor=v79;end);end local function v13() local v45=0;local v46;while true do if (v45==(2 -1)) then v0.ClockTime=v46.World_TimeOfDay or 12 ;break;end if (v45==0) then v46=v5.Config;v7("ClockTime",function() return v0.ClockTime;end);v45=1414 -(447 + 966) ;end end end local function v14() v8("ClockTime",function(v81) v0.ClockTime=v81;end);end local function v15() if v5.NoShadowsApplied then return;end v5.NoShadowsApplied=true;v7("GlobalShadows",function() return v0.GlobalShadows;end);v0.GlobalShadows=false;for v83,v84 in pairs(v2:GetDescendants()) do if v84:IsA("BasePart") then if  not v84:GetAttribute("ZeeHoodOldCastShadow") then v84:SetAttribute("ZeeHoodOldCastShadow",part.CastShadow);end v84.CastShadow=false;end end end local function v16() local v49=0 -0 ;while true do if (v49==(1817 -(1703 + 114))) then if  not v5.NoShadowsApplied then return;end v5.NoShadowsApplied=false;v49=702 -(376 + 325) ;end if (v49==(1 -0)) then v8("GlobalShadows",function(v176) v0.GlobalShadows=v176;end);for v178,v179 in pairs(v2:GetDescendants()) do if (v179:IsA("BasePart") and (v179:GetAttribute("ZeeHoodOldCastShadow")~=nil)) then v179.CastShadow=v179:GetAttribute("ZeeHoodOldCastShadow");v179:SetAttribute("ZeeHoodOldCastShadow",nil);end end break;end end end local function v17() for v85,v86 in pairs(v0:GetDescendants()) do if v86:IsA("Atmosphere") then if  not v86:GetAttribute("ZeeHoodHidden") then local v182=0;while true do if ((2 -1)==v182) then v86.Density=0;break;end if ((0 + 0)==v182) then v86:SetAttribute("ZeeHoodHidden",true);v86:SetAttribute("ZeeHoodOldDensity",v86.Density);v182=2 -1 ;end end end end end end local function v18() for v87,v88 in pairs(v0:GetDescendants()) do if (v88:IsA("Atmosphere") and v88:GetAttribute("ZeeHoodHidden")) then local v136=14 -(9 + 5) ;while true do if (v136==(377 -(85 + 291))) then v88:SetAttribute("ZeeHoodOldDensity",nil);break;end if (v136==(1265 -(243 + 1022))) then v88.Density=v88:GetAttribute("ZeeHoodOldDensity") or v88.Density ;v88:SetAttribute("ZeeHoodHidden",nil);v136=3 -2 ;end end end end end local function v19() for v89,v90 in pairs(v0:GetDescendants()) do if v90:IsA("SunRaysEffect") then if  not v90:GetAttribute("ZeeHoodHidden") then v90:SetAttribute("ZeeHoodHidden",true);v90:SetAttribute("ZeeHoodOldEnabled",v90.Enabled);v90.Enabled=false;end end end end local function v20() for v91,v92 in pairs(v0:GetDescendants()) do if (v92:IsA("SunRaysEffect") and v92:GetAttribute("ZeeHoodHidden")) then v92.Enabled=v92:GetAttribute("ZeeHoodOldEnabled") or v92.Enabled ;v92:SetAttribute("ZeeHoodHidden",nil);v92:SetAttribute("ZeeHoodOldEnabled",nil);end end end local function v21() for v93,v94 in pairs(v0:GetDescendants()) do if v94:IsA("ColorCorrectionEffect") then if  not v94:GetAttribute("ZeeHoodHidden") then v94:SetAttribute("ZeeHoodHidden",true);v94:SetAttribute("ZeeHoodOldEnabled",v94.Enabled);v94.Enabled=false;end end end end local function v22() for v95,v96 in pairs(v0:GetDescendants()) do if (v96:IsA("ColorCorrectionEffect") and v96:GetAttribute("ZeeHoodHidden")) then v96.Enabled=v96:GetAttribute("ZeeHoodOldEnabled") or v96.Enabled ;v96:SetAttribute("ZeeHoodHidden",nil);v96:SetAttribute("ZeeHoodOldEnabled",nil);end end end local function v23() if v5.LowGFXApplied then return;end v5.LowGFXApplied=true;settings().Rendering.QualityLevel=Enum.QualityLevel.Level01;v7("GlobalShadows",function() return v0.GlobalShadows;end);v7("Brightness",function() return v0.Brightness;end);v0.GlobalShadows=false;v0.Brightness=3 + 0 ;for v97,v98 in pairs(v0:GetDescendants()) do local v99=1180 -(1123 + 57) ;while true do if (0==v99) then if v98:IsA("PostEffect") then if  not v98:GetAttribute("ZeeHoodLowGFX") then local v208=0 + 0 ;while true do if (v208==(254 -(163 + 91))) then v98:SetAttribute("ZeeHoodLowGFX",true);v98:SetAttribute("ZeeHoodOldEnabled",v98.Enabled);v208=1931 -(1869 + 61) ;end if (v208==(1 + 0)) then v98.Enabled=false;break;end end end end if v98:IsA("Atmosphere") then if  not v98:GetAttribute("ZeeHoodLowGFX") then local v209=0 -0 ;while true do if (v209==(0 -0)) then v98:SetAttribute("ZeeHoodLowGFX",true);v98:SetAttribute("ZeeHoodOldDensity",v98.Density);v209=1;end if (v209==1) then v98.Density=0 + 0 ;break;end end end end break;end end end for v100,v101 in pairs(v2:GetDescendants()) do local v102=0 -0 ;while true do if (v102==0) then if v101:IsA("BasePart") then if  not v101:GetAttribute("ZeeHoodLowGFX") then v101:SetAttribute("ZeeHoodLowGFX",true);v101:SetAttribute("ZeeHoodOldCastShadow",v101.CastShadow);v101:SetAttribute("ZeeHoodOldReflectance",v101.Reflectance);v101:SetAttribute("ZeeHoodOldMaterial",v101.Material.Name);v101.CastShadow=false;v101.Reflectance=0 + 0 ;v101.Material=Enum.Material.SmoothPlastic;end end if v101:IsA("ParticleEmitter") then if  not v101:GetAttribute("ZeeHoodLowGFX") then local v214=1474 -(1329 + 145) ;while true do if (v214==0) then v101:SetAttribute("ZeeHoodLowGFX",true);v101:SetAttribute("ZeeHoodOldEnabled",v101.Enabled);v214=1;end if (v214==1) then v101.Enabled=false;break;end end end end v102=1;end if (v102==(974 -(140 + 831))) then if v101:IsA("Light") then if  not v101:GetAttribute("ZeeHoodLowGFX") then v101:SetAttribute("ZeeHoodLowGFX",true);v101:SetAttribute("ZeeHoodOldEnabled",v101.Enabled);v101.Enabled=false;end end if (v101:IsA("Fire") or v101:IsA("Smoke") or v101:IsA("Sparkles")) then if  not v101:GetAttribute("ZeeHoodLowGFX") then local v216=1850 -(1409 + 441) ;while true do if ((718 -(15 + 703))==v216) then v101:SetAttribute("ZeeHoodLowGFX",true);v101:SetAttribute("ZeeHoodOldEnabled",v101.Enabled);v216=1;end if (v216==1) then v101.Enabled=false;break;end end end end break;end if (v102==2) then if (v101:IsA("Decal") or v101:IsA("Texture")) then if  not v101:GetAttribute("ZeeHoodLowGFX") then local v217=0 + 0 ;while true do if (v217==(438 -(262 + 176))) then v101:SetAttribute("ZeeHoodLowGFX",true);v101:SetAttribute("ZeeHoodOldTransparency",v101.Transparency);v217=1722 -(345 + 1376) ;end if (v217==(689 -(198 + 490))) then v101.Transparency=4 -3 ;break;end end end end if v101:IsA("SurfaceAppearance") then if  not v101:GetAttribute("ZeeHoodLowGFX") then local v218=0 -0 ;while true do if (1==v218) then v101.AlphaMode=Enum.AlphaMode.Opaque;break;end if (v218==(1206 -(696 + 510))) then v101:SetAttribute("ZeeHoodLowGFX",true);v101:SetAttribute("ZeeHoodOldAlphaMode",v101.AlphaMode.Name);v218=1 -0 ;end end end end v102=1265 -(1091 + 171) ;end if (v102==(1 + 0)) then if v101:IsA("Trail") then if  not v101:GetAttribute("ZeeHoodLowGFX") then local v219=0;while true do if (v219==(3 -2)) then v101.Enabled=false;break;end if ((0 -0)==v219) then v101:SetAttribute("ZeeHoodLowGFX",true);v101:SetAttribute("ZeeHoodOldEnabled",v101.Enabled);v219=375 -(123 + 251) ;end end end end if v101:IsA("Beam") then if  not v101:GetAttribute("ZeeHoodLowGFX") then local v220=0;while true do if (v220==(4 -3)) then v101.Enabled=false;break;end if (v220==(698 -(208 + 490))) then v101:SetAttribute("ZeeHoodLowGFX",true);v101:SetAttribute("ZeeHoodOldEnabled",v101.Enabled);v220=1 + 0 ;end end end end v102=2;end end end v7("WaterWaveSize",function() return v2.Terrain.WaterWaveSize;end);v7("WaterWaveSpeed",function() return v2.Terrain.WaterWaveSpeed;end);v7("WaterTransparency",function() return v2.Terrain.WaterTransparency;end);v2.Terrain.WaterWaveSize=0 + 0 ;v2.Terrain.WaterWaveSpeed=0;v2.Terrain.WaterTransparency=1;local v58=v4.Character;if v58 then for v139,v140 in pairs(v58:GetDescendants()) do if (v140:IsA("ParticleEmitter") or v140:IsA("Trail") or v140:IsA("Beam")) then if  not v140:GetAttribute("ZeeHoodLowGFX") then v140:SetAttribute("ZeeHoodLowGFX",true);v140:SetAttribute("ZeeHoodOldEnabled",v140.Enabled);v140.Enabled=false;end end end end end local function v24() if  not v5.LowGFXApplied then return;end v5.LowGFXApplied=false;settings().Rendering.QualityLevel=Enum.QualityLevel.Automatic;v8("GlobalShadows",function(v103) v0.GlobalShadows=v103;end);v8("Brightness",function(v105) v0.Brightness=v105;end);for v107,v108 in pairs(v0:GetDescendants()) do if v108:GetAttribute("ZeeHoodLowGFX") then local v141=836 -(660 + 176) ;while true do if (v141==1) then v108:SetAttribute("ZeeHoodOldEnabled",nil);v108:SetAttribute("ZeeHoodOldDensity",nil);break;end if (0==v141) then if v108:IsA("PostEffect") then v108.Enabled=v108:GetAttribute("ZeeHoodOldEnabled") or v108.Enabled ;elseif v108:IsA("Atmosphere") then v108.Density=v108:GetAttribute("ZeeHoodOldDensity") or v108.Density ;end v108:SetAttribute("ZeeHoodLowGFX",nil);v141=1 + 0 ;end end end end for v109,v110 in pairs(v2:GetDescendants()) do if v110:GetAttribute("ZeeHoodLowGFX") then local v142=0;while true do if (v142==(202 -(14 + 188))) then if v110:IsA("BasePart") then local v222=0;local v223;while true do if (v222==(677 -(534 + 141))) then v110:SetAttribute("ZeeHoodOldCastShadow",nil);v110:SetAttribute("ZeeHoodOldReflectance",nil);v222=2 + 1 ;end if (0==v222) then v110.CastShadow=v110:GetAttribute("ZeeHoodOldCastShadow") or v110.CastShadow ;v110.Reflectance=v110:GetAttribute("ZeeHoodOldReflectance") or v110.Reflectance ;v222=1 + 0 ;end if (v222==(1 + 0)) then v223=v110:GetAttribute("ZeeHoodOldMaterial");if v223 then v110.Material=Enum.Material[v223];end v222=3 -1 ;end if (v222==(4 -1)) then v110:SetAttribute("ZeeHoodOldMaterial",nil);break;end end elseif (v110:IsA("ParticleEmitter") or v110:IsA("Trail") or v110:IsA("Beam") or v110:IsA("Light") or v110:IsA("Fire") or v110:IsA("Smoke") or v110:IsA("Sparkles")) then v110.Enabled=v110:GetAttribute("ZeeHoodOldEnabled") or v110.Enabled ;v110:SetAttribute("ZeeHoodOldEnabled",nil);elseif (v110:IsA("Decal") or v110:IsA("Texture")) then local v237=0;while true do if (v237==(0 -0)) then v110.Transparency=v110:GetAttribute("ZeeHoodOldTransparency") or v110.Transparency ;v110:SetAttribute("ZeeHoodOldTransparency",nil);break;end end elseif v110:IsA("SurfaceAppearance") then local v240=v110:GetAttribute("ZeeHoodOldAlphaMode");if v240 then v110.AlphaMode=Enum.AlphaMode[v240];end v110:SetAttribute("ZeeHoodOldAlphaMode",nil);end v110:SetAttribute("ZeeHoodLowGFX",nil);break;end end end end v8("WaterWaveSize",function(v111) v2.Terrain.WaterWaveSize=v111;end);v8("WaterWaveSpeed",function(v113) v2.Terrain.WaterWaveSpeed=v113;end);v8("WaterTransparency",function(v115) v2.Terrain.WaterTransparency=v115;end);local v62=v4.Character;if v62 then for v143,v144 in pairs(v62:GetDescendants()) do if v144:GetAttribute("ZeeHoodLowGFX") then v144.Enabled=v144:GetAttribute("ZeeHoodOldEnabled") or v144.Enabled ;v144:SetAttribute("ZeeHoodLowGFX",nil);v144:SetAttribute("ZeeHoodOldEnabled",nil);end end end end local v25={Default=nil,Night={SkyboxBk="rbxassetid://9425220156",SkyboxDn="rbxassetid://9425220156",SkyboxFt="rbxassetid://9425220156",SkyboxLf="rbxassetid://9425220156",SkyboxRt="rbxassetid://9425220156",SkyboxUp="rbxassetid://9425220156",MoonTextureId="rbxassetid://9343303339",MoonAngularSize=11,StarCount=1611 + 1389 ,SunAngularSize=0 + 0 ,ClockTime=0,Brightness=2},Light={SkyboxBk="rbxassetid://15391855678",SkyboxDn="rbxassetid://15391855678",SkyboxFt="rbxassetid://15391855678",SkyboxLf="rbxassetid://15391855678",SkyboxRt="rbxassetid://15391855678",SkyboxUp="rbxassetid://15391855678",StarCount=396 -(115 + 281) ,SunAngularSize=34 -19 ,ClockTime=12,Brightness=7 + 1 },Blood={SkyboxBk="rbxassetid://98490421374360",SkyboxDn="rbxassetid://98490421374360",SkyboxFt="rbxassetid://98490421374360",SkyboxLf="rbxassetid://98490421374360",SkyboxRt="rbxassetid://98490421374360",SkyboxUp="rbxassetid://98490421374360",StarCount=0 -0 ,SunAngularSize=0 -0 ,ClockTime=0,Brightness=3},Gray={SkyboxBk="rbxassetid://105118232158923",SkyboxDn="rbxassetid://105118232158923",SkyboxFt="rbxassetid://105118232158923",SkyboxLf="rbxassetid://105118232158923",SkyboxRt="rbxassetid://105118232158923",SkyboxUp="rbxassetid://105118232158923",StarCount=867 -(550 + 317) ,SunAngularSize=0 -0 ,ClockTime=10,Brightness=4},DarkNight={SkyboxBk="rbxassetid://163208827",SkyboxDn="rbxassetid://163208726",SkyboxFt="rbxassetid://163208689",SkyboxLf="rbxassetid://163208661",SkyboxRt="rbxassetid://163208590",SkyboxUp="rbxassetid://163208536",StarCount=7027 -2027 ,SunAngularSize=0,ClockTime=0 -0 ,Brightness=1},Space={SkyboxBk="rbxassetid://2489005061",SkyboxDn="rbxassetid://2489005061",SkyboxFt="rbxassetid://2489004059",SkyboxLf="rbxassetid://2489051347",SkyboxRt="rbxassetid://2489052475",SkyboxUp="rbxassetid://2489053637",StarCount=10285 -(134 + 151) ,SunAngularSize=1665 -(970 + 695) ,ClockTime=0,Brightness=1 -0 },Test={SkyboxBk="rbxassetid://4662930572",SkyboxDn="rbxassetid://4662930572",SkyboxFt="rbxassetid://4662930572",SkyboxLf="rbxassetid://4662930572",SkyboxRt="rbxassetid://4662930572",SkyboxUp="rbxassetid://4662930572",StarCount=0,SunAngularSize=0,ClockTime=2002 -(582 + 1408) ,Brightness=5},Clouds={SkyboxBk="rbxassetid://6412253255",SkyboxDn="rbxassetid://6412253255",SkyboxFt="rbxassetid://6412253255",SkyboxLf="rbxassetid://6412253255",SkyboxRt="rbxassetid://6412253255",SkyboxUp="rbxassetid://6412253255",StarCount=0 -0 ,SunAngularSize=18 -3 ,ClockTime=52 -38 ,Brightness=6},Sunset2={SkyboxBk="rbxassetid://6444695118",SkyboxDn="rbxassetid://6444695118",SkyboxFt="rbxassetid://6444695118",SkyboxLf="rbxassetid://6444695118",SkyboxRt="rbxassetid://6444695118",SkyboxUp="rbxassetid://6444695118",StarCount=1824 -(1195 + 629) ,SunAngularSize=18,ClockTime=22 -5 ,Brightness=246 -(187 + 54) },Galaxy2={SkyboxBk="rbxassetid://8139677359",SkyboxDn="rbxassetid://8139677359",SkyboxFt="rbxassetid://8139677359",SkyboxLf="rbxassetid://8139677359",SkyboxRt="rbxassetid://8139677359",SkyboxUp="rbxassetid://8139677359",StarCount=5000,SunAngularSize=0,ClockTime=780 -(162 + 618) ,Brightness=2},Nebula={SkyboxBk="rbxassetid://8139677203",SkyboxDn="rbxassetid://8139677203",SkyboxFt="rbxassetid://8139677203",SkyboxLf="rbxassetid://8139677203",SkyboxRt="rbxassetid://8139677203",SkyboxUp="rbxassetid://8139677203",StarCount=2103 + 897 ,SunAngularSize=0,ClockTime=0,Brightness=3},Storm2={SkyboxBk="rbxassetid://8139676933",SkyboxDn="rbxassetid://8139676933",SkyboxFt="rbxassetid://8139676933",SkyboxLf="rbxassetid://8139676933",SkyboxRt="rbxassetid://8139676933",SkyboxUp="rbxassetid://8139676933",StarCount=0,SunAngularSize=0 + 0 ,ClockTime=8,Brightness=3 -1 }};local function v26() if (v5.OriginalSky~=nil) then return;end for v117,v118 in pairs(v0:GetChildren()) do if v118:IsA("Sky") then v5.OriginalSky=v118:Clone();break;end end end local function v27() if v5.ActiveSky then v5.ActiveSky:Destroy();v5.ActiveSky=nil;end for v119,v120 in pairs(v0:GetChildren()) do if ((v120.Name=="ZeeHoodSky") and v120:IsA("Sky")) then v120:Destroy();end end end local function v28() v27();if v5.OriginalSky then local v123=0;local v124;while true do if (v123==1) then if  not v124 then v5.OriginalSky:Clone().Parent=v0;end v5.OriginalSky=nil;break;end if (v123==0) then v124=false;for v202,v203 in pairs(v0:GetChildren()) do if (v203:IsA("Sky") and (v203.Name==v5.OriginalSky.Name)) then v124=true;break;end end v123=1 -0 ;end end end end local function v29() local v63=0 + 0 ;local v64;local v65;local v66;local v67;while true do if (v63==(1642 -(1373 + 263))) then if v66.ClockTime then v0.ClockTime=v66.ClockTime;end if v66.Brightness then v0.Brightness=v66.Brightness;end break;end if (v63==1) then if (v65=="Default") then v28();return;end v66=v25[v65];if  not v66 then return;end v26();v63=1002 -(451 + 549) ;end if (v63==0) then v64=v5.Config;v65=v64.World_SkyTheme or "Default" ;if (v5.LastSkyTheme==v65) then return;end v5.LastSkyTheme=v65;v63=1;end if ((2 + 3)==v63) then if v66.StarCount then v67.StarCount=v66.StarCount;end if v66.SunAngularSize then v67.SunAngularSize=v66.SunAngularSize;end v67.Parent=v0;v5.ActiveSky=v67;v63=6;end if (v63==(4 -1)) then v67.SkyboxBk=v66.SkyboxBk;v67.SkyboxDn=v66.SkyboxDn;v67.SkyboxFt=v66.SkyboxFt;v67.SkyboxLf=v66.SkyboxLf;v63=6 -2 ;end if (v63==2) then v27();for v180,v181 in pairs(v0:GetChildren()) do if (v181:IsA("Sky") and (v181.Name~="ZeeHoodSky")) then v181.Parent=nil;end end v67=Instance.new("Sky");v67.Name="ZeeHoodSky";v63=1387 -(746 + 638) ;end if (v63==(2 + 2)) then v67.SkyboxRt=v66.SkyboxRt;v67.SkyboxUp=v66.SkyboxUp;if v66.MoonTextureId then v67.MoonTextureId=v66.MoonTextureId;end if v66.MoonAngularSize then v67.MoonAngularSize=v66.MoonAngularSize;end v63=7 -2 ;end end end local function v30() local v68=0;local v69;while true do if (v68==(341 -(218 + 123))) then v69=v5.Config;if  not v69 then return;end if v69.World_Fullbright then v9();else v10();end v68=1582 -(1535 + 46) ;end if (v68==(3 + 0)) then if v69.World_LowGFX then v23();else v24();end v29();break;end if (v68==(1 + 1)) then if v69.World_NoAtmosphere then v17();else v18();end if v69.World_NoSunRays then v19();else v20();end if v69.World_NoColorCorrection then v21();else v22();end v68=3;end if (v68==1) then if v69.World_NoFog then v11();else v12();end if v69.World_CustomTime then v13();else v14();end if v69.World_NoShadows then v15();else v16();end v68=2;end end end v5.Init=function() local v70=560 -(306 + 254) ;while true do if (v70==(0 + 0)) then if v5.Connection then return;end v5.Connection=v1.RenderStepped:Connect(v30);break;end end end;v5.Cleanup=function() if v5.Connection then local v125=0;while true do if (v125==(0 -0)) then v5.Connection:Disconnect();v5.Connection=nil;break;end end end v5.LastSkyTheme=nil;v5.LowGFXApplied=false;v5.NoShadowsApplied=false;v28();v10();v12();v14();v16();v18();v20();v22();v24();v5.OriginalValues={};end;return v5;
+local World = {
+    Config = nil,
+    Connection = nil,
+    OriginalValues = {},
+    ActiveSky = nil,
+    LastSkyTheme = nil,
+    OriginalSky = nil,
+    LowGFXApplied = false,
+    NoShadowsApplied = false,
+}
+
+function World.SetConfig(config)
+    World.Config = config
+end
+
+local function SaveOriginal(name, getter)
+    if World.OriginalValues[name] == nil then
+        World.OriginalValues[name] = getter()
+    end
+end
+
+local function RestoreOriginal(name, setter)
+    if World.OriginalValues[name] ~= nil then
+        setter(World.OriginalValues[name])
+    end
+end
+
+-- ═════════════════════════════════════════════════════════════════════════════
+-- FULL BRIGHT
+-- ═════════════════════════════════════════════════════════════════════════════
+
+local function ApplyFullbright()
+    local Config = World.Config
+    SaveOriginal("Brightness", function() return Lighting.Brightness end)
+    SaveOriginal("GlobalShadows", function() return Lighting.GlobalShadows end)
+    SaveOriginal("Ambient", function() return Lighting.Ambient end)
+    SaveOriginal("OutdoorAmbient", function() return Lighting.OutdoorAmbient end)
+    SaveOriginal("ClockTime", function() return Lighting.ClockTime end)
+
+    Lighting.Brightness = Config.World_Brightness or 10
+    Lighting.GlobalShadows = false
+    Lighting.Ambient = Color3.fromRGB(255, 255, 255)
+    Lighting.OutdoorAmbient = Color3.fromRGB(255, 255, 255)
+    Lighting.ClockTime = 12
+end
+
+local function RemoveFullbright()
+    RestoreOriginal("Brightness", function(v) Lighting.Brightness = v end)
+    RestoreOriginal("GlobalShadows", function(v) Lighting.GlobalShadows = v end)
+    RestoreOriginal("Ambient", function(v) Lighting.Ambient = v end)
+    RestoreOriginal("OutdoorAmbient", function(v) Lighting.OutdoorAmbient = v end)
+    RestoreOriginal("ClockTime", function(v) Lighting.ClockTime = v end)
+end
+
+-- ═════════════════════════════════════════════════════════════════════════════
+-- NO FOG
+-- ═════════════════════════════════════════════════════════════════════════════
+
+local function ApplyNoFog()
+    SaveOriginal("FogStart", function() return Lighting.FogStart end)
+    SaveOriginal("FogEnd", function() return Lighting.FogEnd end)
+    SaveOriginal("FogColor", function() return Lighting.FogColor end)
+
+    Lighting.FogStart = 0
+    Lighting.FogEnd = 999999
+    Lighting.FogColor = Color3.fromRGB(255, 255, 255)
+end
+
+local function RemoveNoFog()
+    RestoreOriginal("FogStart", function(v) Lighting.FogStart = v end)
+    RestoreOriginal("FogEnd", function(v) Lighting.FogEnd = v end)
+    RestoreOriginal("FogColor", function(v) Lighting.FogColor = v end)
+end
+
+-- ═════════════════════════════════════════════════════════════════════════════
+-- CUSTOM TIME
+-- ═════════════════════════════════════════════════════════════════════════════
+
+local function ApplyCustomTime()
+    local Config = World.Config
+    SaveOriginal("ClockTime", function() return Lighting.ClockTime end)
+    Lighting.ClockTime = Config.World_TimeOfDay or 12
+end
+
+local function RemoveCustomTime()
+    RestoreOriginal("ClockTime", function(v) Lighting.ClockTime = v end)
+end
+
+-- ═════════════════════════════════════════════════════════════════════════════
+-- NO SHADOWS — Runs ONCE
+-- ═════════════════════════════════════════════════════════════════════════════
+
+local function ApplyNoShadows()
+    if World.NoShadowsApplied then return end
+    World.NoShadowsApplied = true
+
+    SaveOriginal("GlobalShadows", function() return Lighting.GlobalShadows end)
+    Lighting.GlobalShadows = false
+
+    -- Scan once, cache results
+    for _, v in pairs(Workspace:GetDescendants()) do
+        if v:IsA("BasePart") then
+            if not v:GetAttribute("ZeeHoodOldCastShadow") then
+                v:SetAttribute("ZeeHoodOldCastShadow", part.CastShadow)
+            end
+            v.CastShadow = false
+        end
+    end
+end
+
+local function RemoveNoShadows()
+    if not World.NoShadowsApplied then return end
+    World.NoShadowsApplied = false
+
+    RestoreOriginal("GlobalShadows", function(v) Lighting.GlobalShadows = v end)
+
+    for _, part in pairs(Workspace:GetDescendants()) do
+        if part:IsA("BasePart") and part:GetAttribute("ZeeHoodOldCastShadow") ~= nil then
+            part.CastShadow = part:GetAttribute("ZeeHoodOldCastShadow")
+            part:SetAttribute("ZeeHoodOldCastShadow", nil)
+        end
+    end
+end
+
+-- ═════════════════════════════════════════════════════════════════════════════
+-- NO ATMOSPHERE
+-- ═════════════════════════════════════════════════════════════════════════════
+
+local function ApplyNoAtmosphere()
+    for _, v in pairs(Lighting:GetDescendants()) do
+        if v:IsA("Atmosphere") then
+            if not v:GetAttribute("ZeeHoodHidden") then
+                v:SetAttribute("ZeeHoodHidden", true)
+                v:SetAttribute("ZeeHoodOldDensity", v.Density)
+                v.Density = 0
+            end
+        end
+    end
+end
+
+local function RemoveNoAtmosphere()
+    for _, v in pairs(Lighting:GetDescendants()) do
+        if v:IsA("Atmosphere") and v:GetAttribute("ZeeHoodHidden") then
+            v.Density = v:GetAttribute("ZeeHoodOldDensity") or v.Density
+            v:SetAttribute("ZeeHoodHidden", nil)
+            v:SetAttribute("ZeeHoodOldDensity", nil)
+        end
+    end
+end
+
+-- ═════════════════════════════════════════════════════════════════════════════
+-- NO SUN RAYS
+-- ═════════════════════════════════════════════════════════════════════════════
+
+local function ApplyNoSunRays()
+    for _, v in pairs(Lighting:GetDescendants()) do
+        if v:IsA("SunRaysEffect") then
+            if not v:GetAttribute("ZeeHoodHidden") then
+                v:SetAttribute("ZeeHoodHidden", true)
+                v:SetAttribute("ZeeHoodOldEnabled", v.Enabled)
+                v.Enabled = false
+            end
+        end
+    end
+end
+
+local function RemoveNoSunRays()
+    for _, v in pairs(Lighting:GetDescendants()) do
+        if v:IsA("SunRaysEffect") and v:GetAttribute("ZeeHoodHidden") then
+            v.Enabled = v:GetAttribute("ZeeHoodOldEnabled") or v.Enabled
+            v:SetAttribute("ZeeHoodHidden", nil)
+            v:SetAttribute("ZeeHoodOldEnabled", nil)
+        end
+    end
+end
+
+-- ═════════════════════════════════════════════════════════════════════════════
+-- NO COLOR CORRECTION
+-- ═════════════════════════════════════════════════════════════════════════════
+
+local function ApplyNoColorCorrection()
+    for _, v in pairs(Lighting:GetDescendants()) do
+        if v:IsA("ColorCorrectionEffect") then
+            if not v:GetAttribute("ZeeHoodHidden") then
+                v:SetAttribute("ZeeHoodHidden", true)
+                v:SetAttribute("ZeeHoodOldEnabled", v.Enabled)
+                v.Enabled = false
+            end
+        end
+    end
+end
+
+local function RemoveNoColorCorrection()
+    for _, v in pairs(Lighting:GetDescendants()) do
+        if v:IsA("ColorCorrectionEffect") and v:GetAttribute("ZeeHoodHidden") then
+            v.Enabled = v:GetAttribute("ZeeHoodOldEnabled") or v.Enabled
+            v:SetAttribute("ZeeHoodHidden", nil)
+            v:SetAttribute("ZeeHoodOldEnabled", nil)
+        end
+    end
+end
+
+-- ═════════════════════════════════════════════════════════════════════════════
+-- LOW GFX — Da Hood style, runs ONCE
+-- Disables: shadows, particles, decals, textures, beams, trails, lighting effects
+-- Lowers: render quality, water quality, particle quality
+-- ═════════════════════════════════════════════════════════════════════════════
+
+local function ApplyLowGFX()
+    if World.LowGFXApplied then return end
+    World.LowGFXApplied = true
+
+    -- 1. Force lowest render quality
+    settings().Rendering.QualityLevel = Enum.QualityLevel.Level01
+
+    -- 2. Disable all shadows globally
+    SaveOriginal("GlobalShadows", function() return Lighting.GlobalShadows end)
+    SaveOriginal("Brightness", function() return Lighting.Brightness end)
+    Lighting.GlobalShadows = false
+    Lighting.Brightness = 3
+
+    -- 3. Disable all Lighting effects
+    for _, v in pairs(Lighting:GetDescendants()) do
+        if v:IsA("PostEffect") then
+            if not v:GetAttribute("ZeeHoodLowGFX") then
+                v:SetAttribute("ZeeHoodLowGFX", true)
+                v:SetAttribute("ZeeHoodOldEnabled", v.Enabled)
+                v.Enabled = false
+            end
+        end
+        if v:IsA("Atmosphere") then
+            if not v:GetAttribute("ZeeHoodLowGFX") then
+                v:SetAttribute("ZeeHoodLowGFX", true)
+                v:SetAttribute("ZeeHoodOldDensity", v.Density)
+                v.Density = 0
+            end
+        end
+    end
+
+    -- 4. Scan Workspace ONCE — disable everything expensive
+    for _, obj in pairs(Workspace:GetDescendants()) do
+        -- Disable shadows on all parts
+        if obj:IsA("BasePart") then
+            if not obj:GetAttribute("ZeeHoodLowGFX") then
+                obj:SetAttribute("ZeeHoodLowGFX", true)
+                obj:SetAttribute("ZeeHoodOldCastShadow", obj.CastShadow)
+                obj:SetAttribute("ZeeHoodOldReflectance", obj.Reflectance)
+                obj:SetAttribute("ZeeHoodOldMaterial", obj.Material.Name)
+                obj.CastShadow = false
+                obj.Reflectance = 0
+                -- Force smooth plastic (cheapest material)
+                obj.Material = Enum.Material.SmoothPlastic
+            end
+        end
+
+        -- Disable all particle emitters
+        if obj:IsA("ParticleEmitter") then
+            if not obj:GetAttribute("ZeeHoodLowGFX") then
+                obj:SetAttribute("ZeeHoodLowGFX", true)
+                obj:SetAttribute("ZeeHoodOldEnabled", obj.Enabled)
+                obj.Enabled = false
+            end
+        end
+
+        -- Disable all trails
+        if obj:IsA("Trail") then
+            if not obj:GetAttribute("ZeeHoodLowGFX") then
+                obj:SetAttribute("ZeeHoodLowGFX", true)
+                obj:SetAttribute("ZeeHoodOldEnabled", obj.Enabled)
+                obj.Enabled = false
+            end
+        end
+
+        -- Disable all beams
+        if obj:IsA("Beam") then
+            if not obj:GetAttribute("ZeeHoodLowGFX") then
+                obj:SetAttribute("ZeeHoodLowGFX", true)
+                obj:SetAttribute("ZeeHoodOldEnabled", obj.Enabled)
+                obj.Enabled = false
+            end
+        end
+
+        -- Disable all decals and textures
+        if obj:IsA("Decal") or obj:IsA("Texture") then
+            if not obj:GetAttribute("ZeeHoodLowGFX") then
+                obj:SetAttribute("ZeeHoodLowGFX", true)
+                obj:SetAttribute("ZeeHoodOldTransparency", obj.Transparency)
+                obj.Transparency = 1
+            end
+        end
+
+        -- Disable surface appearances
+        if obj:IsA("SurfaceAppearance") then
+            if not obj:GetAttribute("ZeeHoodLowGFX") then
+                obj:SetAttribute("ZeeHoodLowGFX", true)
+                obj:SetAttribute("ZeeHoodOldAlphaMode", obj.AlphaMode.Name)
+                obj.AlphaMode = Enum.AlphaMode.Opaque
+            end
+        end
+
+        -- Disable light objects
+        if obj:IsA("Light") then
+            if not obj:GetAttribute("ZeeHoodLowGFX") then
+                obj:SetAttribute("ZeeHoodLowGFX", true)
+                obj:SetAttribute("ZeeHoodOldEnabled", obj.Enabled)
+                obj.Enabled = false
+            end
+        end
+
+        -- Disable fire, smoke, sparkles
+        if obj:IsA("Fire") or obj:IsA("Smoke") or obj:IsA("Sparkles") then
+            if not obj:GetAttribute("ZeeHoodLowGFX") then
+                obj:SetAttribute("ZeeHoodLowGFX", true)
+                obj:SetAttribute("ZeeHoodOldEnabled", obj.Enabled)
+                obj.Enabled = false
+            end
+        end
+    end
+
+    -- 5. Disable water waves
+    SaveOriginal("WaterWaveSize", function() return Workspace.Terrain.WaterWaveSize end)
+    SaveOriginal("WaterWaveSpeed", function() return Workspace.Terrain.WaterWaveSpeed end)
+    SaveOriginal("WaterTransparency", function() return Workspace.Terrain.WaterTransparency end)
+    Workspace.Terrain.WaterWaveSize = 0
+    Workspace.Terrain.WaterWaveSpeed = 0
+    Workspace.Terrain.WaterTransparency = 1
+
+    -- 6. Disable humanoid state effects on local player
+    local char = LocalPlayer.Character
+    if char then
+        for _, obj in pairs(char:GetDescendants()) do
+            if obj:IsA("ParticleEmitter") or obj:IsA("Trail") or obj:IsA("Beam") then
+                if not obj:GetAttribute("ZeeHoodLowGFX") then
+                    obj:SetAttribute("ZeeHoodLowGFX", true)
+                    obj:SetAttribute("ZeeHoodOldEnabled", obj.Enabled)
+                    obj.Enabled = false
+                end
+            end
+        end
+    end
+end
+
+local function RemoveLowGFX()
+    if not World.LowGFXApplied then return end
+    World.LowGFXApplied = false
+
+    -- Restore render quality
+    settings().Rendering.QualityLevel = Enum.QualityLevel.Automatic
+
+    -- Restore lighting
+    RestoreOriginal("GlobalShadows", function(v) Lighting.GlobalShadows = v end)
+    RestoreOriginal("Brightness", function(v) Lighting.Brightness = v end)
+
+    -- Restore all Lighting effects
+    for _, v in pairs(Lighting:GetDescendants()) do
+        if v:GetAttribute("ZeeHoodLowGFX") then
+            if v:IsA("PostEffect") then
+                v.Enabled = v:GetAttribute("ZeeHoodOldEnabled") or v.Enabled
+            elseif v:IsA("Atmosphere") then
+                v.Density = v:GetAttribute("ZeeHoodOldDensity") or v.Density
+            end
+            v:SetAttribute("ZeeHoodLowGFX", nil)
+            v:SetAttribute("ZeeHoodOldEnabled", nil)
+            v:SetAttribute("ZeeHoodOldDensity", nil)
+        end
+    end
+
+    -- Restore Workspace objects
+    for _, obj in pairs(Workspace:GetDescendants()) do
+        if obj:GetAttribute("ZeeHoodLowGFX") then
+            if obj:IsA("BasePart") then
+                obj.CastShadow = obj:GetAttribute("ZeeHoodOldCastShadow") or obj.CastShadow
+                obj.Reflectance = obj:GetAttribute("ZeeHoodOldReflectance") or obj.Reflectance
+                local matName = obj:GetAttribute("ZeeHoodOldMaterial")
+                if matName then
+                    obj.Material = Enum.Material[matName]
+                end
+                obj:SetAttribute("ZeeHoodOldCastShadow", nil)
+                obj:SetAttribute("ZeeHoodOldReflectance", nil)
+                obj:SetAttribute("ZeeHoodOldMaterial", nil)
+            elseif obj:IsA("ParticleEmitter") or obj:IsA("Trail") or obj:IsA("Beam")
+                or obj:IsA("Light") or obj:IsA("Fire") or obj:IsA("Smoke") or obj:IsA("Sparkles") then
+                obj.Enabled = obj:GetAttribute("ZeeHoodOldEnabled") or obj.Enabled
+                obj:SetAttribute("ZeeHoodOldEnabled", nil)
+            elseif obj:IsA("Decal") or obj:IsA("Texture") then
+                obj.Transparency = obj:GetAttribute("ZeeHoodOldTransparency") or obj.Transparency
+                obj:SetAttribute("ZeeHoodOldTransparency", nil)
+            elseif obj:IsA("SurfaceAppearance") then
+                local alphaMode = obj:GetAttribute("ZeeHoodOldAlphaMode")
+                if alphaMode then
+                    obj.AlphaMode = Enum.AlphaMode[alphaMode]
+                end
+                obj:SetAttribute("ZeeHoodOldAlphaMode", nil)
+            end
+            obj:SetAttribute("ZeeHoodLowGFX", nil)
+        end
+    end
+
+    -- Restore water
+    RestoreOriginal("WaterWaveSize", function(v) Workspace.Terrain.WaterWaveSize = v end)
+    RestoreOriginal("WaterWaveSpeed", function(v) Workspace.Terrain.WaterWaveSpeed = v end)
+    RestoreOriginal("WaterTransparency", function(v) Workspace.Terrain.WaterTransparency = v end)
+
+    -- Restore character effects
+    local char = LocalPlayer.Character
+    if char then
+        for _, obj in pairs(char:GetDescendants()) do
+            if obj:GetAttribute("ZeeHoodLowGFX") then
+                obj.Enabled = obj:GetAttribute("ZeeHoodOldEnabled") or obj.Enabled
+                obj:SetAttribute("ZeeHoodLowGFX", nil)
+                obj:SetAttribute("ZeeHoodOldEnabled", nil)
+            end
+        end
+    end
+end
+
+-- ═════════════════════════════════════════════════════════════════════════════
+-- SKY THEMES — User-provided + verified working skyboxes
+-- ═════════════════════════════════════════════════════════════════════════════
+
+local SkyThemes = {
+    Default = nil,
+    -- User themes
+    Night = {
+        SkyboxBk = "rbxassetid://9425220156",
+        SkyboxDn = "rbxassetid://9425220156",
+        SkyboxFt = "rbxassetid://9425220156",
+        SkyboxLf = "rbxassetid://9425220156",
+        SkyboxRt = "rbxassetid://9425220156",
+        SkyboxUp = "rbxassetid://9425220156",
+        MoonTextureId = "rbxassetid://9343303339",
+        MoonAngularSize = 11,
+        StarCount = 3000,
+        SunAngularSize = 0,
+        ClockTime = 0,
+        Brightness = 2,
+    },
+    Light = {
+        SkyboxBk = "rbxassetid://15391855678",
+        SkyboxDn = "rbxassetid://15391855678",
+        SkyboxFt = "rbxassetid://15391855678",
+        SkyboxLf = "rbxassetid://15391855678",
+        SkyboxRt = "rbxassetid://15391855678",
+        SkyboxUp = "rbxassetid://15391855678",
+        StarCount = 0,
+        SunAngularSize = 15,
+        ClockTime = 12,
+        Brightness = 8,
+    },
+    Blood = {
+        SkyboxBk = "rbxassetid://98490421374360",
+        SkyboxDn = "rbxassetid://98490421374360",
+        SkyboxFt = "rbxassetid://98490421374360",
+        SkyboxLf = "rbxassetid://98490421374360",
+        SkyboxRt = "rbxassetid://98490421374360",
+        SkyboxUp = "rbxassetid://98490421374360",
+        StarCount = 0,
+        SunAngularSize = 0,
+        ClockTime = 0,
+        Brightness = 3,
+    },
+    Gray = {
+        SkyboxBk = "rbxassetid://105118232158923",
+        SkyboxDn = "rbxassetid://105118232158923",
+        SkyboxFt = "rbxassetid://105118232158923",
+        SkyboxLf = "rbxassetid://105118232158923",
+        SkyboxRt = "rbxassetid://105118232158923",
+        SkyboxUp = "rbxassetid://105118232158923",
+        StarCount = 0,
+        SunAngularSize = 0,
+        ClockTime = 10,
+        Brightness = 4,
+    },
+    DarkNight = {
+        SkyboxBk = "rbxassetid://163208827",
+        SkyboxDn = "rbxassetid://163208726",
+        SkyboxFt = "rbxassetid://163208689",
+        SkyboxLf = "rbxassetid://163208661",
+        SkyboxRt = "rbxassetid://163208590",
+        SkyboxUp = "rbxassetid://163208536",
+        StarCount = 5000,
+        SunAngularSize = 0,
+        ClockTime = 0,
+        Brightness = 1,
+    },
+    Space = {
+        SkyboxBk = "rbxassetid://2489005061",
+        SkyboxDn = "rbxassetid://2489005061",
+        SkyboxFt = "rbxassetid://2489004059",
+        SkyboxLf = "rbxassetid://2489051347",
+        SkyboxRt = "rbxassetid://2489052475",
+        SkyboxUp = "rbxassetid://2489053637",
+        StarCount = 10000,
+        SunAngularSize = 0,
+        ClockTime = 0,
+        Brightness = 1,
+    },
+    Test = {
+        SkyboxBk = "rbxassetid://4662930572",
+        SkyboxDn = "rbxassetid://4662930572",
+        SkyboxFt = "rbxassetid://4662930572",
+        SkyboxLf = "rbxassetid://4662930572",
+        SkyboxRt = "rbxassetid://4662930572",
+        SkyboxUp = "rbxassetid://4662930572",
+        StarCount = 0,
+        SunAngularSize = 0,
+        ClockTime = 12,
+        Brightness = 5,
+    },
+    -- Random verified working skyboxes (same ID all sides)
+    Clouds = {
+        SkyboxBk = "rbxassetid://6412253255",
+        SkyboxDn = "rbxassetid://6412253255",
+        SkyboxFt = "rbxassetid://6412253255",
+        SkyboxLf = "rbxassetid://6412253255",
+        SkyboxRt = "rbxassetid://6412253255",
+        SkyboxUp = "rbxassetid://6412253255",
+        StarCount = 0,
+        SunAngularSize = 15,
+        ClockTime = 14,
+        Brightness = 6,
+    },
+    Sunset2 = {
+        SkyboxBk = "rbxassetid://6444695118",
+        SkyboxDn = "rbxassetid://6444695118",
+        SkyboxFt = "rbxassetid://6444695118",
+        SkyboxLf = "rbxassetid://6444695118",
+        SkyboxRt = "rbxassetid://6444695118",
+        SkyboxUp = "rbxassetid://6444695118",
+        StarCount = 0,
+        SunAngularSize = 18,
+        ClockTime = 17,
+        Brightness = 5,
+    },
+    Galaxy2 = {
+        SkyboxBk = "rbxassetid://8139677359",
+        SkyboxDn = "rbxassetid://8139677359",
+        SkyboxFt = "rbxassetid://8139677359",
+        SkyboxLf = "rbxassetid://8139677359",
+        SkyboxRt = "rbxassetid://8139677359",
+        SkyboxUp = "rbxassetid://8139677359",
+        StarCount = 5000,
+        SunAngularSize = 0,
+        ClockTime = 0,
+        Brightness = 2,
+    },
+    Nebula = {
+        SkyboxBk = "rbxassetid://8139677203",
+        SkyboxDn = "rbxassetid://8139677203",
+        SkyboxFt = "rbxassetid://8139677203",
+        SkyboxLf = "rbxassetid://8139677203",
+        SkyboxRt = "rbxassetid://8139677203",
+        SkyboxUp = "rbxassetid://8139677203",
+        StarCount = 3000,
+        SunAngularSize = 0,
+        ClockTime = 0,
+        Brightness = 3,
+    },
+    Storm2 = {
+        SkyboxBk = "rbxassetid://8139676933",
+        SkyboxDn = "rbxassetid://8139676933",
+        SkyboxFt = "rbxassetid://8139676933",
+        SkyboxLf = "rbxassetid://8139676933",
+        SkyboxRt = "rbxassetid://8139676933",
+        SkyboxUp = "rbxassetid://8139676933",
+        StarCount = 0,
+        SunAngularSize = 0,
+        ClockTime = 8,
+        Brightness = 2,
+    },
+}
+
+local function SaveOriginalSky()
+    if World.OriginalSky ~= nil then return end
+    for _, child in pairs(Lighting:GetChildren()) do
+        if child:IsA("Sky") then
+            World.OriginalSky = child:Clone()
+            break
+        end
+    end
+end
+
+local function RemoveCustomSky()
+    if World.ActiveSky then
+        World.ActiveSky:Destroy()
+        World.ActiveSky = nil
+    end
+    for _, child in pairs(Lighting:GetChildren()) do
+        if child.Name == "ZeeHoodSky" and child:IsA("Sky") then
+            child:Destroy()
+        end
+    end
+end
+
+local function RestoreOriginalSky()
+    RemoveCustomSky()
+    if World.OriginalSky then
+        local already = false
+        for _, child in pairs(Lighting:GetChildren()) do
+            if child:IsA("Sky") and child.Name == World.OriginalSky.Name then
+                already = true
+                break
+            end
+        end
+        if not already then
+            World.OriginalSky:Clone().Parent = Lighting
+        end
+        World.OriginalSky = nil
+    end
+end
+
+local function ApplyCustomSky()
+    local Config = World.Config
+    local themeName = Config.World_SkyTheme or "Default"
+
+    if World.LastSkyTheme == themeName then return end
+    World.LastSkyTheme = themeName
+
+    if themeName == "Default" then
+        RestoreOriginalSky()
+        return
+    end
+
+    local theme = SkyThemes[themeName]
+    if not theme then return end
+
+    SaveOriginalSky()
+    RemoveCustomSky()
+
+    -- Hide existing sky objects
+    for _, child in pairs(Lighting:GetChildren()) do
+        if child:IsA("Sky") and child.Name ~= "ZeeHoodSky" then
+            child.Parent = nil
+        end
+    end
+
+    local sky = Instance.new("Sky")
+    sky.Name = "ZeeHoodSky"
+    sky.SkyboxBk = theme.SkyboxBk
+    sky.SkyboxDn = theme.SkyboxDn
+    sky.SkyboxFt = theme.SkyboxFt
+    sky.SkyboxLf = theme.SkyboxLf
+    sky.SkyboxRt = theme.SkyboxRt
+    sky.SkyboxUp = theme.SkyboxUp
+    if theme.MoonTextureId then sky.MoonTextureId = theme.MoonTextureId end
+    if theme.MoonAngularSize then sky.MoonAngularSize = theme.MoonAngularSize end
+    if theme.StarCount then sky.StarCount = theme.StarCount end
+    if theme.SunAngularSize then sky.SunAngularSize = theme.SunAngularSize end
+    sky.Parent = Lighting
+    World.ActiveSky = sky
+
+    if theme.ClockTime then Lighting.ClockTime = theme.ClockTime end
+    if theme.Brightness then Lighting.Brightness = theme.Brightness end
+end
+
+-- ═════════════════════════════════════════════════════════════════════════════
+-- RENDER LOOP
+-- ═════════════════════════════════════════════════════════════════════════════
+
+local function OnRender()
+    local Config = World.Config
+    if not Config then return end
+
+    if Config.World_Fullbright then ApplyFullbright() else RemoveFullbright() end
+    if Config.World_NoFog then ApplyNoFog() else RemoveNoFog() end
+    if Config.World_CustomTime then ApplyCustomTime() else RemoveCustomTime() end
+    if Config.World_NoShadows then ApplyNoShadows() else RemoveNoShadows() end
+    if Config.World_NoAtmosphere then ApplyNoAtmosphere() else RemoveNoAtmosphere() end
+    if Config.World_NoSunRays then ApplyNoSunRays() else RemoveNoSunRays() end
+    if Config.World_NoColorCorrection then ApplyNoColorCorrection() else RemoveNoColorCorrection() end
+    if Config.World_LowGFX then ApplyLowGFX() else RemoveLowGFX() end
+    ApplyCustomSky()
+end
+
+-- ═════════════════════════════════════════════════════════════════════════════
+-- LIFECYCLE
+-- ═════════════════════════════════════════════════════════════════════════════
+
+function World.Init()
+    if World.Connection then return end
+    World.Connection = RunService.RenderStepped:Connect(OnRender)
+end
+
+function World.Cleanup()
+    if World.Connection then
+        World.Connection:Disconnect()
+        World.Connection = nil
+    end
+    World.LastSkyTheme = nil
+    World.LowGFXApplied = false
+    World.NoShadowsApplied = false
+    RestoreOriginalSky()
+    RemoveFullbright()
+    RemoveNoFog()
+    RemoveCustomTime()
+    RemoveNoShadows()
+    RemoveNoAtmosphere()
+    RemoveNoSunRays()
+    RemoveNoColorCorrection()
+    RemoveLowGFX()
+    World.OriginalValues = {}
+end
+
+return World

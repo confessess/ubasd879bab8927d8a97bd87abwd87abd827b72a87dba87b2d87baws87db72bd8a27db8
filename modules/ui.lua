@@ -1,2 +1,3175 @@
+local Players = game:GetService("Players")
+local UserInputService = game:GetService("UserInputService")
+local TweenService = game:GetService("TweenService")
+local Lighting = game:GetService("Lighting")
 
-local v0=game:GetService("Players");local v1=game:GetService("UserInputService");local v2=game:GetService("TweenService");local v3=game:GetService("Lighting");local v4=v0.LocalPlayer;local v5=v4:WaitForChild("PlayerGui");local v6={Config=nil,Targeting=nil,Combat=nil,ScreenGui=nil,Main=nil,HotkeyDisplay=nil,GUIVisible=false,ListeningKey=nil,ToggleCallbacks={},KeybindButtons={},Connections={}};local v7={Palettes={Purple={Accent=Color3.fromRGB(624 -(83 + 396) ,53 + 22 ,255),AccentLight=Color3.fromRGB(257 -62 ,140,37 + 218 ),BgMain=Color3.fromRGB(9,6,15),BgCard=Color3.fromRGB(578 -(306 + 254) ,1 + 10 ,52 -25 ),BgSidebar=Color3.fromRGB(16,1477 -(899 + 568) ,24),BgBackdrop=Color3.fromRGB(3 + 1 ,7 -4 ,612 -(268 + 335) ),BgHotkey=Color3.fromRGB(305 -(60 + 230) ,581 -(426 + 146) ,3 + 20 ),BgPicker=Color3.fromRGB(1470 -(282 + 1174) ,820 -(569 + 242) ,63 -41 ),BgList=Color3.fromRGB(1 + 11 ,1032 -(706 + 318) ,1269 -(721 + 530) ),TextTitle=Color3.fromRGB(1516 -(945 + 326) ,594 -356 ,223 + 27 ),TextSubtitle=Color3.fromRGB(845 -(271 + 429) ,115 + 10 ,165),TextPageTitle=Color3.fromRGB(245,1740 -(1408 + 92) ,250),TextPageDesc=Color3.fromRGB(1221 -(461 + 625) ,1408 -(993 + 295) ,150),TextLabel=Color3.fromRGB(200,10 + 180 ,1386 -(418 + 753) ),TextSection=Color3.fromRGB(245,220,98 + 157 ),TextTabInactive=Color3.fromRGB(145,135,17 + 143 ),TextTabActive=Color3.fromRGB(235,220,255),TextHotkey=Color3.fromRGB(58 + 137 ,175,56 + 164 ),StrokeMain=Color3.fromRGB(709 -(406 + 123) ,1889 -(1749 + 20) ,61 + 194 ),StrokeCard=Color3.fromRGB(1462 -(1249 + 73) ,33 + 57 ,1345 -(466 + 679) ),StrokeInput=Color3.fromRGB(80,144 -84 ,100),ToggleOff=Color3.fromRGB(143 -93 ,1950 -(106 + 1794) ,19 + 41 ),SliderTrack=Color3.fromRGB(40,40,13 + 37 ),CloseBtn=Color3.fromRGB(427 -282 ,45,175),PanicBtn=Color3.fromRGB(541 -341 ,50,50),KeybindBg=Color3.fromRGB(159 -(4 + 110) ,649 -(57 + 527) ,110),UnbindBg=Color3.fromRGB(1507 -(41 + 1386) ,183 -(17 + 86) ,90),DropdownBg=Color3.fromRGB(15 + 7 ,14,32),DropdownItem=Color3.fromRGB(66 -36 ,57 -37 ,42),Gradient0=Color3.fromRGB(22,174 -(122 + 44) ,38),Gradient50=Color3.fromRGB(8 -3 ,9 -6 ,9 + 1 ),Gradient100=Color3.fromRGB(4 + 23 ,13 -6 ,110 -(30 + 35) ),Stars=Color3.fromRGB(220,195,176 + 79 ),Scrollbar=Color3.fromRGB(145,1332 -(1043 + 214) ,255),Separator=Color3.fromRGB(226 -166 ,40,80),DropdownText=Color3.fromRGB(1432 -(323 + 889) ,215,632 -397 ),DropdownOption=Color3.fromRGB(760 -(361 + 219) ,490 -(53 + 267) ,46 + 154 ),DropdownHover=Color3.fromRGB(648 -(15 + 398) ,220,255),PickerLabel=Color3.fromRGB(1142 -(18 + 964) ,564 -414 ,102 + 73 ),ArmorPos=Color3.fromRGB(82 + 48 ,130,150),SetPosBtn=Color3.fromRGB(80,60,970 -(20 + 830) ),ActionBtnText=Color3.fromRGB(200 + 55 ,376 -(116 + 10) ,255),CloseBtnText=Color3.fromRGB(19 + 236 ,983 -(542 + 196) ,546 -291 ),KeybindText=Color3.fromRGB(53 + 127 ,92 + 88 ,200),UnbindText=Color3.fromRGB(72 + 128 ,200,553 -343 ),HelpText=Color3.fromRGB(140,130,397 -242 ),ErrorRed=Color3.fromRGB(1806 -(1126 + 425) ,485 -(118 + 287) ,80),SuccessGreen=Color3.fromRGB(313 -233 ,1376 -(118 + 1003) ,234 -154 )},Monochrome={Accent=Color3.fromRGB(632 -(142 + 235) ,255,255),AccentLight=Color3.fromRGB(1156 -901 ,56 + 199 ,255),BgMain=Color3.fromRGB(977 -(553 + 424) ,0 -0 ,0),BgCard=Color3.fromRGB(0 + 0 ,0 + 0 ,0),BgSidebar=Color3.fromRGB(0,0 + 0 ,0 + 0 ),BgBackdrop=Color3.fromRGB(0,0 + 0 ,0 -0 ),BgHotkey=Color3.fromRGB(0 -0 ,0,0 -0 ),BgPicker=Color3.fromRGB(0 + 0 ,0 -0 ,753 -(239 + 514) ),BgList=Color3.fromRGB(0,0 + 0 ,1329 -(797 + 532) ),TextTitle=Color3.fromRGB(255,186 + 69 ,87 + 168 ),TextSubtitle=Color3.fromRGB(352 -202 ,150,1352 -(373 + 829) ),TextPageTitle=Color3.fromRGB(986 -(476 + 255) ,1385 -(369 + 761) ,148 + 107 ),TextPageDesc=Color3.fromRGB(150,272 -122 ,150),TextLabel=Color3.fromRGB(379 -179 ,438 -(64 + 174) ,29 + 171 ),TextSection=Color3.fromRGB(377 -122 ,591 -(144 + 192) ,255),TextTabInactive=Color3.fromRGB(376 -(42 + 174) ,160,160),TextTabActive=Color3.fromRGB(192 + 63 ,212 + 43 ,109 + 146 ),TextHotkey=Color3.fromRGB(180,180,1684 -(363 + 1141) ),StrokeMain=Color3.fromRGB(255,255,255),StrokeCard=Color3.fromRGB(1780 -(1183 + 397) ,200,608 -408 ),StrokeInput=Color3.fromRGB(88 + 32 ,90 + 30 ,2095 -(1913 + 62) ),ToggleOff=Color3.fromRGB(51 + 29 ,80,211 -131 ),SliderTrack=Color3.fromRGB(50,50,1983 -(565 + 1368) ),CloseBtn=Color3.fromRGB(958 -703 ,1916 -(1477 + 184) ,255),PanicBtn=Color3.fromRGB(200,68 -18 ,47 + 3 ),KeybindBg=Color3.fromRGB(1111 -(564 + 292) ,255,439 -184 ),UnbindBg=Color3.fromRGB(361 -241 ,424 -(244 + 60) ,120),DropdownBg=Color3.fromRGB(0 + 0 ,476 -(41 + 435) ,1001 -(938 + 63) ),DropdownItem=Color3.fromRGB(0 + 0 ,1125 -(936 + 189) ,0 + 0 ),Gradient0=Color3.fromRGB(0,1613 -(1565 + 48) ,0 + 0 ),Gradient50=Color3.fromRGB(1138 -(782 + 356) ,267 -(176 + 91) ,0 -0 ),Gradient100=Color3.fromRGB(0 -0 ,1092 -(975 + 117) ,1875 -(157 + 1718) ),Stars=Color3.fromRGB(207 + 48 ,255,905 -650 ),Scrollbar=Color3.fromRGB(255,871 -616 ,255),Separator=Color3.fromRGB(255,1273 -(697 + 321) ,694 -439 ),DropdownText=Color3.fromRGB(539 -284 ,587 -332 ,100 + 155 ),DropdownOption=Color3.fromRGB(337 -157 ,482 -302 ,1407 -(322 + 905) ),DropdownHover=Color3.fromRGB(866 -(602 + 9) ,255,1444 -(449 + 740) ),PickerLabel=Color3.fromRGB(160,1032 -(826 + 46) ,1107 -(245 + 702) ),ArmorPos=Color3.fromRGB(442 -302 ,140,46 + 94 ),SetPosBtn=Color3.fromRGB(2153 -(260 + 1638) ,255,255),ActionBtnText=Color3.fromRGB(440 -(382 + 58) ,0 -0 ,0 + 0 ),CloseBtnText=Color3.fromRGB(0 -0 ,0 -0 ,0),KeybindText=Color3.fromRGB(1205 -(902 + 303) ,0 -0 ,0 -0 ),UnbindText=Color3.fromRGB(0 + 0 ,1690 -(1121 + 569) ,214 -(22 + 192) ),HelpText=Color3.fromRGB(150,833 -(483 + 200) ,1613 -(1404 + 59) ),ErrorRed=Color3.fromRGB(255,218 -138 ,107 -27 ),SuccessGreen=Color3.fromRGB(845 -(468 + 297) ,255,80)}},Names={"Purple","Monochrome"}};v7.Get=function(v28) return v7.Palettes[v28] or v7.Palettes.Purple ;end;local v9={None=nil,["Catgirl Black"]="rbxassetid://100444103656384",["Catgirl Pink"]="rbxassetid://74265591038566",["2 Catgirls"]="rbxassetid://135809148867647"};local v10={"None","Catgirl Black","Catgirl Pink","2 Catgirls"};local v11=nil;local function v12(v29,v30,v31) local v32=0 + 0 ;local v33;while true do if (v32==(237 -(141 + 95))) then v33.Parent=v31;return v33;end if (v32==(0 + 0)) then v33=Instance.new(v29);for v778,v779 in pairs(v30 or {} ) do v33[v778]=v779;end v32=2 -1 ;end end end local function v13(v34,v35) return v12("UICorner",{CornerRadius=UDim.new(0,v35 or (14 -8) )},v34);end local function v14(v36,v37,v38,v39) return v12("UIStroke",{Color=v39 or v11.StrokeMain ,Transparency=v37 or (0.72 + 0) ,Thickness=v38 or 1 },v36);end local function v15(v40,v41,v42,v43,v44) local v45=TweenInfo.new(v42 or (0.3 -0) ,v43 or Enum.EasingStyle.Quint ,v44 or Enum.EasingDirection.Out );return v2:Create(v40,v45,v41);end local function v16(v46) local v47=0 + 0 ;while true do if (v47==(1 + 0)) then return tostring(v46);end if (v47==(0 -0)) then if  not v46 then return "—";end if (typeof(v46)=="EnumItem") then if (v46.EnumType==Enum.KeyCode) then return v46.Name;elseif (v46.EnumType==Enum.UserInputType) then if (v46==Enum.UserInputType.MouseButton1) then return "MB1";elseif (v46==Enum.UserInputType.MouseButton2) then return "MB2";elseif (v46==Enum.UserInputType.MouseButton3) then return "MB3";else return v46.Name;end end end v47=1 + 0 ;end end end local function v17(v48,v49) if  not v49 then return false;end if ((typeof(v49)=="EnumItem") and (v49.EnumType==Enum.KeyCode)) then return v48.KeyCode==v49 ;elseif ((typeof(v49)=="EnumItem") and (v49.EnumType==Enum.UserInputType)) then return v48.UserInputType==v49 ;end return false;end v6.SetConfig=function(v50) v6.Config=v50;end;v6.SetTargeting=function(v52) v6.Targeting=v52;end;v6.SetCombat=function(v54) v6.Combat=v54;end;v6.SetMisc=function(v56) v6.Misc=v56;end;v6.SetFarm=function(v58) v6.Farm=v58;end;v6.SetMovement=function(v60) v6.Movement=v60;end;v6.SetVisuals=function(v62) v6.Visuals=v62;end;v6.UpdateHotkeyDisplay=function() local v64=163 -(92 + 71) ;local v65;local v66;local v67;local v68;while true do if (v64==1) then if  not v65.ShowHotkeys then v6.HotkeyDisplay.Visible=false;return;end v6.HotkeyDisplay.Visible= not v6.GUIVisible;v66=6;v64=1 + 1 ;end if (v64==(2 -0)) then v67=nil;function v67(v781) local v782=765 -(574 + 191) ;while true do if (v782==(0 + 0)) then v12("TextLabel",{Size=UDim2.new(1, -(39 -23),0,10 + 8 ),Position=UDim2.fromOffset(8,v66),BackgroundTransparency=850 -(254 + 595) ,Text=v781,TextColor3=v11.TextHotkey,TextSize=10,Font=Enum.Font.GothamMedium,TextXAlignment=Enum.TextXAlignment.Left,ZIndex=177 -(55 + 71) },v6.HotkeyDisplay);v66=v66 + 16 ;break;end end end v67("MENU  •  "   .. v65.ToggleKey.Name );v64=3 -0 ;end if (v64==0) then v65=v6.Config;if ( not v65 or  not v6.HotkeyDisplay) then return;end for v783,v784 in ipairs(v6.HotkeyDisplay:GetChildren()) do if v784:IsA("TextLabel") then v784:Destroy();end end v64=1791 -(573 + 1217) ;end if (v64==(10 -6)) then v6.HotkeyDisplay.Size=UDim2.fromOffset(155,math.max(3 + 33 ,v66 + (5 -1) ));break;end if (v64==(942 -(714 + 225))) then for v785,v786 in pairs(v6.ToggleCallbacks) do local v787=v65[v785   .. "Key" ];if v787 then local v832=0;local v833;while true do if ((2 -1)==v832) then v833=string.upper(v833):sub(1 -0 ,2 + 10 );v67(v833   .. "  •  "   .. v16(v787) );break;end if (v832==0) then v833=v785:gsub("([A-Z])"," %1");v833=v833:gsub("^%s","");v832=1;end end end end v68=v65.Aimbot_EnabledKey;if v68 then v67("AIMBOT  •  "   .. v16(v68) );end v64=5 -1 ;end end end;v6.Build=function() local v69=v6.Config;v11=v7.Get(v69.GUIThemeName or "Purple" );if  not v69 then return;end v6.ToggleCallbacks={};v6.KeybindButtons={};local v72=v5:FindFirstChild("ZeeHoodUI");if v72 then v72:Destroy();end local v73=v3:FindFirstChild("ZeeHoodBlur");if v73 then v73:Destroy();end local v74=v12("ScreenGui",{Name="ZeeHoodUI",ResetOnSpawn=false,IgnoreGuiInset=true,ZIndexBehavior=Enum.ZIndexBehavior.Sibling},v5);v6.ScreenGui=v74;local v76=v12("Frame",{Name="Background",Size=UDim2.fromScale(807 -(118 + 688) ,1),BackgroundColor3=v11.BgBackdrop,BackgroundTransparency=0.08,BorderSizePixel=48 -(25 + 23) ,ZIndex=1,Visible=false},v74);v12("UIGradient",{Rotation=7 + 28 ,Color=ColorSequence.new({ColorSequenceKeypoint.new(0 -0 ,v11.Gradient0),ColorSequenceKeypoint.new(0.5,v11.Gradient50),ColorSequenceKeypoint.new(1 -0 ,v11.Gradient100)})},v76);local v77=v12("Frame",{Name="Stars",Size=UDim2.fromScale(1,98 -(11 + 86) ),BackgroundTransparency=2 -1 ,ClipsDescendants=true,ZIndex=2},v76);for v266=286 -(175 + 110) ,151 -91  do local v267=0 -0 ;local v268;local v269;while true do if (v267==(1796 -(503 + 1293))) then v268=math.random(2 -1 ,3);v269=v12("Frame",{Size=UDim2.fromOffset(v268,v268),Position=UDim2.fromScale(math.random(),math.random()),BackgroundColor3=v11.Stars,BackgroundTransparency=math.random(20,90)/100 ,BorderSizePixel=0 + 0 ,ZIndex=2},v77);v267=1062 -(810 + 251) ;end if (v267==1) then v13(v269,v268);task.spawn(function() while v269.Parent do local v834=math.random(4 + 1 ,15)/10 ;v15(v269,{BackgroundTransparency=math.random(5 + 10 ,50 + 5 )/(633 -(43 + 490)) },v834,Enum.EasingStyle.Sine,Enum.EasingDirection.InOut):Play();task.wait(v834);v15(v269,{BackgroundTransparency=math.random(798 -(711 + 22) ,367 -272 )/(959 -(240 + 619)) },v834,Enum.EasingStyle.Sine,Enum.EasingDirection.InOut):Play();task.wait(v834 + (math.random(1 + 0 ,15)/(15 -5)) );end end);break;end end end local v78=v12("BlurEffect",{Name="ZeeHoodBlur",Size=0 + 0 },v3);local v79,v80=2504 -(1344 + 400) ,540;local v81=v12("Frame",{Name="Main",Size=UDim2.fromOffset(v79,v80),Position=UDim2.fromScale(405.5 -(255 + 150) ,0.5 + 0 ),AnchorPoint=Vector2.new(0.5 + 0 ,0.5),BackgroundColor3=v11.BgMain,BackgroundTransparency=0.04,BorderSizePixel=0,ZIndex=42 -32 ,Visible=false,ClipsDescendants=true},v74);v6.Main=v81;v6.Background=v76;v13(v81,64 -44 );v14(v81,1739.72 -(404 + 1335) ,407 -(183 + 223) );v12("Frame",{Size=UDim2.new(1 -0 , -40,0,1 + 0 ),Position=UDim2.fromOffset(8 + 12 ,338 -(10 + 327) ),BackgroundColor3=v11.AccentLight,BackgroundTransparency=0.5 + 0 ,BorderSizePixel=338 -(118 + 220) ,ZIndex=11},v81);local v84=v12("Frame",{Size=UDim2.new(1 + 0 , -30,0,511 -(108 + 341) ),Position=UDim2.fromOffset(7 + 8 ,42 -32 ),BackgroundTransparency=1,ZIndex=1505 -(711 + 782) ,Active=true},v81);local v85=false;local v86=nil;local v87=nil;v84.InputBegan:Connect(function(v270) if ((v270.UserInputType==Enum.UserInputType.MouseButton1) and v69.GUIWindow) then local v711=0 -0 ;while true do if (v711==(470 -(270 + 199))) then v87=v81.Position;break;end if ((0 + 0)==v711) then v85=true;v86=v270.Position;v711=1820 -(580 + 1239) ;end end end end);v84.InputChanged:Connect(function(v271) if (v85 and (v271.UserInputType==Enum.UserInputType.MouseMovement)) then local v712=0 -0 ;local v713;while true do if (v712==(0 + 0)) then v713=v271.Position-v86 ;v81.Position=UDim2.new(v87.X.Scale,v87.X.Offset + v713.X ,v87.Y.Scale,v87.Y.Offset + v713.Y );break;end end end end);v84.InputEnded:Connect(function(v272) if (v272.UserInputType==Enum.UserInputType.MouseButton1) then v85=false;end end);v12("TextLabel",{Size=UDim2.fromOffset(15 + 385 ,12 + 15 ),Position=UDim2.fromOffset(20 -12 ,2 + 1 ),BackgroundTransparency=1168 -(645 + 522) ,Text="Stars.cc",TextColor3=v11.TextTitle,TextSize=1810 -(1010 + 780) ,Font=Enum.Font.GothamBold,TextXAlignment=Enum.TextXAlignment.Left,ZIndex=13 + 0 },v84);v12("TextLabel",{Size=UDim2.fromOffset(1905 -1505 ,20),Position=UDim2.fromOffset(9,30),BackgroundTransparency=2 -1 ,Text="Made by confess",TextColor3=v11.TextSubtitle,TextSize=1845 -(1045 + 791) ,Font=Enum.Font.GothamMedium,TextXAlignment=Enum.TextXAlignment.Left,ZIndex=13},v84);local v88=v12("TextButton",{Size=UDim2.fromOffset(85 -51 ,34),Position=UDim2.new(1, -34,0 -0 ,512 -(351 + 154) ),BackgroundColor3=v11.CloseBtn,BackgroundTransparency=0.2,BorderSizePixel=1574 -(1281 + 293) ,Text="×",TextColor3=v11.CloseBtnText,TextSize=286 -(28 + 238) ,Font=Enum.Font.GothamBold,AutoButtonColor=false,ZIndex=33 -18 },v84);v13(v88,1568 -(1381 + 178) );local v89=v12("Frame",{Size=UDim2.new(1 + 0 , -30,1 + 0 , -(35 + 47)),Position=UDim2.fromOffset(15,248 -176 ),BackgroundTransparency=1 + 0 ,ZIndex=12},v81);local v90=v12("Frame",{Size=UDim2.new(0,645 -(381 + 89) ,1 + 0 ,0 + 0 ),Position=UDim2.fromOffset(0 -0 ,1156 -(1074 + 82) ),BackgroundColor3=v11.BgSidebar,BackgroundTransparency=0.1,BorderSizePixel=0,ZIndex=28 -15 },v89);v13(v90,15);v14(v90,1784.91 -(214 + 1570) ,1456 -(990 + 465) );local v91=v12("Frame",{Size=UDim2.new(1 + 0 , -(83 + 107),1,0 + 0 ),Position=UDim2.fromOffset(747 -557 ,1726 -(1668 + 58) ),BackgroundTransparency=1,ClipsDescendants=true,ZIndex=639 -(512 + 114) },v89);local v92={"Combat","Visuals","Target","Farm","Misc","World","Movement","Settings"};local v93={};local v94={};for v273,v274 in ipairs(v92) do local v275=0;local v276;local v277;local v278;while true do if (v275==2) then v13(v277,10 -7 );v93[v274]={Button=v276,Indicator=v277};v275=3;end if (v275==0) then v276=v12("TextButton",{Size=UDim2.new(1995 -(109 + 1885) , -(1501 -(1269 + 200)),0,82 -39 ),Position=UDim2.fromOffset(837 -(98 + 717) ,(838 -(802 + 24)) + ((v273-(1 -0)) * (63 -13)) ),BackgroundColor3=v11.Accent,BackgroundTransparency=1 + 0 ,BorderSizePixel=0,Text=v274,TextColor3=v11.TextTabInactive,TextSize=10 + 2 ,Font=Enum.Font.GothamMedium,TextXAlignment=Enum.TextXAlignment.Left,AutoButtonColor=false,ZIndex=3 + 12 },v90);v13(v276,10);v275=1 + 0 ;end if (v275==(2 -1)) then v12("UIPadding",{PaddingLeft=UDim.new(0,16)},v276);v277=v12("Frame",{Size=UDim2.fromOffset(3,18),Position=UDim2.new(0 -0 ,3 + 5 ,0 + 0 ,21 + 4 + ((v273-(1 + 0)) * (24 + 26)) ),BackgroundColor3=v11.AccentLight,BackgroundTransparency=1434 -(797 + 636) ,BorderSizePixel=0 -0 ,ZIndex=1639 -(1427 + 192) },v90);v275=2;end if (v275==3) then v278=v12("Frame",{Name=v274,Size=UDim2.fromScale(1 + 0 ,2 -1 ),BackgroundTransparency=1 + 0 ,Visible=false,ZIndex=7 + 7 },v91);v94[v274]=v278;break;end end end local function v95() local v279=v69.GUIBackgroundImage or "None" ;local v280=v9[v279];for v670,v671 in pairs(v94) do local v672=0;local v673;while true do if (v672==(326 -(192 + 134))) then v673=v671:FindFirstChild("BGImage");if v673 then v673:Destroy();end v672=1;end if (v672==(1277 -(316 + 960))) then if v280 then v12("ImageLabel",{Name="BGImage",Size=UDim2.fromScale(1 + 0 ,1),BackgroundTransparency=1 + 0 ,Image=v280,ImageTransparency=0.6 + 0 ,ImageColor3=Color3.fromRGB(974 -719 ,806 -(83 + 468) ,2061 -(1202 + 604) ),ScaleType=Enum.ScaleType.Stretch,ZIndex=1},v671);end break;end end end end v6.ApplyBackgroundImage=v95;local function v97(v281,v282,v283) v12("TextLabel",{Size=UDim2.new(4 -3 , -(33 -13),0 -0 ,353 -(45 + 280) ),Position=UDim2.fromOffset(10 + 0 ,7),BackgroundTransparency=1 + 0 ,Text=v282,TextColor3=v11.TextPageTitle,TextSize=8 + 13 ,Font=Enum.Font.GothamBold,TextXAlignment=Enum.TextXAlignment.Left,ZIndex=15},v281);v12("TextLabel",{Size=UDim2.new(1 + 0 , -(4 + 16),0 -0 ,22),Position=UDim2.fromOffset(1921 -(340 + 1571) ,14 + 21 ),BackgroundTransparency=1773 -(1733 + 39) ,Text=v283,TextColor3=v11.TextPageDesc,TextSize=27 -17 ,Font=Enum.Font.GothamMedium,TextXAlignment=Enum.TextXAlignment.Left,ZIndex=15},v281);end local function v98(v284,v285) v12("Frame",{Size=UDim2.new(1, -(1054 -(125 + 909)),1948 -(1096 + 852) ,1),Position=UDim2.fromOffset(5 + 5 ,v285),BackgroundColor3=v11.Separator,BackgroundTransparency=0.5 -0 ,BorderSizePixel=0 + 0 ,ZIndex=16},v284);end local function v99(v286,v287,v288) local v289=512 -(409 + 103) ;local v290;while true do if (v289==1) then v14(v290,0.91,237 -(46 + 190) );return v290;end if (v289==(95 -(51 + 44))) then v290=v12("Frame",{Size=v288,Position=v287,BackgroundColor3=v11.BgCard,BackgroundTransparency=0.35,BorderSizePixel=0 + 0 ,ZIndex=15},v286);v13(v290,1330 -(1114 + 203) );v289=1;end end end local function v100(v291,v292,v293,v294,v295,v296,v297) local v298=v12("Frame",{Size=UDim2.new(1, -(746 -(228 + 498)),0,7 + 25 ),Position=UDim2.fromOffset(10,v292),BackgroundTransparency=1 + 0 ,ZIndex=679 -(174 + 489) },v291);local v299=(v296 and (437 -269)) or 120 ;v12("TextLabel",{Size=UDim2.new(1, -v299,1,1905 -(830 + 1075) ),BackgroundTransparency=525 -(303 + 221) ,Text=v293,TextColor3=v11.TextLabel,TextSize=1281 -(231 + 1038) ,Font=Enum.Font.GothamMedium,TextXAlignment=Enum.TextXAlignment.Left,ZIndex=15 + 2 },v298);if (v296 and v295) then local v714=1162 -(171 + 991) ;local v715;local v716;local v717;while true do if (v714==(4 -3)) then v13(v716,13 -8 );v716.MouseButton1Click:Connect(function() if v6.ListeningKey then return;end v6.ListeningKey=v295;v716.Text="...";v15(v716,{BackgroundTransparency=0 -0 },0.2):Play();end);v714=2;end if (v714==(0 + 0)) then v715=v69[v295   .. "Key" ];v716=v12("TextButton",{Size=UDim2.fromOffset(154 -110 ,57 -37 ),Position=UDim2.new(1, -102,0.5, -10),BackgroundColor3=v11.KeybindBg,BackgroundTransparency=0.2,BorderSizePixel=0,Text=(v715 and v16(v715)) or "—" ,TextColor3=v11.KeybindText,TextSize=16 -6 ,Font=Enum.Font.GothamBold,AutoButtonColor=false,ZIndex=52 -35 },v298);v714=1249 -(111 + 1137) ;end if (v714==3) then v13(v717,5);v717.MouseButton1Click:Connect(function() v69[v295   .. "Key" ]=nil;v716.Text="—";v6.UpdateHotkeyDisplay();end);break;end if (v714==(160 -(91 + 67))) then v6.KeybindButtons[v295]=v716;v717=v12("TextButton",{Size=UDim2.fromOffset(20,59 -39 ),Position=UDim2.new(1, -(32 + 94),523.5 -(423 + 100) , -(1 + 9)),BackgroundColor3=v11.UnbindBg,BackgroundTransparency=0.3 -0 ,BorderSizePixel=0 + 0 ,Text="−",TextColor3=v11.UnbindText,TextSize=785 -(326 + 445) ,Font=Enum.Font.GothamBold,AutoButtonColor=false,ZIndex=74 -57 },v298);v714=6 -3 ;end end end local v300=v12("TextButton",{Size=UDim2.fromOffset(102 -58 ,733 -(530 + 181) ),Position=UDim2.new(882 -(614 + 267) , -(82 -(19 + 13)),0.5 -0 , -(25 -14)),BackgroundColor3=(v294 and v11.Accent) or v11.ToggleOff ,BorderSizePixel=0 -0 ,Text="",AutoButtonColor=false,ZIndex=17},v298);v13(v300,3 + 8 );local v301=v12("Frame",{Size=UDim2.fromOffset(18,31 -13 ),Position=(v294 and UDim2.new(1, -(41 -21),1812.5 -(1293 + 519) , -(17 -8))) or UDim2.new(0,4 -2 ,0.5 -0 , -(38 -29)) ,BackgroundColor3=Color3.fromRGB(600 -345 ,136 + 119 ,53 + 202 ),BorderSizePixel=0,ZIndex=18},v300);v13(v301,46 -26 );local v302=v294;local function v303(v674) v302=v674;v15(v300,{BackgroundColor3=(v302 and v11.Accent) or v11.ToggleOff },0.2 + 0 ):Play();v15(v301,{Position=(v302 and UDim2.new(1, -20,0.5 + 0 , -(6 + 3))) or UDim2.new(0,2,1096.5 -(709 + 387) , -9) },1858.2 -(673 + 1185) ):Play();v297(v302);end v300.MouseButton1Click:Connect(function() v303( not v302);end);if v295 then v6.ToggleCallbacks[v295]=v303;end return v303;end local function v101(v304,v305,v306,v307,v308,v309,v310) local v311=v12("Frame",{Size=UDim2.new(1, -(58 -38),0,154 -106 ),Position=UDim2.fromOffset(16 -6 ,v305),BackgroundTransparency=1 + 0 ,ZIndex=12 + 4 },v304);local v312=v12("TextLabel",{Size=UDim2.new(1,0,0,27 -7 ),BackgroundTransparency=1 + 0 ,Text=v306   .. " ["   .. v309   .. "]" ,TextColor3=v11.TextLabel,TextSize=23 -11 ,Font=Enum.Font.GothamMedium,TextXAlignment=Enum.TextXAlignment.Left,ZIndex=17},v311);local v313=v12("Frame",{Size=UDim2.new(1 -0 ,1880 -(446 + 1434) ,1283 -(1040 + 243) ,14 -9 ),Position=UDim2.new(1847 -(559 + 1288) ,1931 -(609 + 1322) ,0,484 -(13 + 441) ),BackgroundColor3=v11.SliderTrack,BorderSizePixel=0,ZIndex=17},v311);v13(v313,3);local v314=v12("Frame",{Size=UDim2.new((v309-v307)/(v308-v307) ,0 -0 ,1,0 -0 ),BackgroundColor3=v11.Accent,BorderSizePixel=0 -0 ,ZIndex=1 + 17 },v313);v13(v314,10 -7 );local v315=false;local function v316(v675) local v676=0 + 0 ;local v677;local v678;while true do if (v676==1) then v314.Size=UDim2.new(v677,0 + 0 ,2 -1 ,0 + 0 );v312.Text=v306   .. " ["   .. v678   .. "]" ;v676=3 -1 ;end if (v676==2) then v310(v678);break;end if (v676==(0 + 0)) then v677=math.clamp((v675.Position.X-v313.AbsolutePosition.X)/v313.AbsoluteSize.X ,0 + 0 ,1);v678=math.floor(v307 + (v677 * (v308-v307)) );v676=1 + 0 ;end end end v313.InputBegan:Connect(function(v679) if (v679.UserInputType==Enum.UserInputType.MouseButton1) then v315=true;v316(v679);end end);v1.InputChanged:Connect(function(v680) if (v315 and (v680.UserInputType==Enum.UserInputType.MouseMovement)) then v316(v680);end end);v1.InputEnded:Connect(function(v681) if (v681.UserInputType==Enum.UserInputType.MouseButton1) then v315=false;end end);end local function v102(v317,v318,v319,v320) local v321=v12("TextButton",{Size=UDim2.new(1, -20,0,30),Position=UDim2.fromOffset(9 + 1 ,v318),BackgroundColor3=v11.Accent,BackgroundTransparency=0.18,BorderSizePixel=0,Text=v319,TextColor3=v11.ActionBtnText,TextSize=12 + 0 ,Font=Enum.Font.GothamBold,AutoButtonColor=false,ZIndex=449 -(153 + 280) },v317);v13(v321,8);v321.MouseButton1Click:Connect(v320);v321.MouseEnter:Connect(function() v15(v321,{BackgroundTransparency=0.05 -0 },0.15):Play();end);v321.MouseLeave:Connect(function() v15(v321,{BackgroundTransparency=0.18 + 0 },0.15 + 0 ):Play();end);return v321;end local function v103(v322,v323,v324,v325,v326,v327) v12("TextLabel",{Size=UDim2.new(1, -20,0,11 + 9 ),Position=UDim2.fromOffset(10,v323),BackgroundTransparency=1,Text=v324,TextColor3=v11.TextLabel,TextSize=12,Font=Enum.Font.GothamMedium,TextXAlignment=Enum.TextXAlignment.Left,ZIndex=15 + 1 },v322);local v328=v12("Frame",{Size=UDim2.new(1 + 0 , -(30 -10),0,20 + 12 ),Position=UDim2.fromOffset(677 -(89 + 578) ,v323 + 24 ),BackgroundColor3=v11.DropdownBg,BackgroundTransparency=0.15 + 0 ,BorderSizePixel=0 -0 ,ZIndex=1065 -(572 + 477) },v322);v13(v328,8);v14(v328,0.85,1 + 0 ,v11.StrokeCard);local v329=v12("TextButton",{Size=UDim2.new(1 + 0 ,0 + 0 ,86 -(84 + 2) ,52 -20 ),BackgroundColor3=v11.DropdownBg,BackgroundTransparency=0,BorderSizePixel=0 + 0 ,Text="  "   .. v325   .. "  ▼" ,TextColor3=v11.DropdownText,TextSize=12,Font=Enum.Font.GothamMedium,TextXAlignment=Enum.TextXAlignment.Left,AutoButtonColor=false,ZIndex=17},v328);v13(v329,8);local v330=false;local v331=878 -(497 + 345) ;local v332=1 + 2 ;local v333=math.min( #v326,v332) * v331 ;local v334=v12("ScrollingFrame",{Size=UDim2.new(1, -(4 + 16),1333 -(605 + 728) ,0),Position=UDim2.fromOffset(8 + 2 ,v323 + 24 + (70 -38) + 1 + 1 ),BackgroundColor3=v11.BgCard,BackgroundTransparency=0.02 -0 ,BorderSizePixel=0,ZIndex=91 + 9 ,ClipsDescendants=true,Visible=false,ScrollBarThickness=7 -4 ,ScrollBarImageColor3=v11.Accent,CanvasSize=UDim2.new(0,0 + 0 ,489 -(457 + 32) , #v326 * v331 )},v322);v13(v334,8);v14(v334,0.85 + 0 ,1403 -(832 + 570) ,v11.StrokeCard);local v335={};for v682,v683 in ipairs(v326) do local v684=v12("TextButton",{Size=UDim2.new(1 + 0 , -(5 + 11),0 -0 ,v331-2 ),Position=UDim2.fromOffset(2 + 2 ,4 + ((v682-1) * v331) ),BackgroundColor3=v11.DropdownItem,BackgroundTransparency=797 -(588 + 208) ,BorderSizePixel=0,Text="  "   .. v683 ,TextColor3=v11.DropdownOption,TextSize=29 -18 ,Font=Enum.Font.GothamMedium,TextXAlignment=Enum.TextXAlignment.Left,AutoButtonColor=false,ZIndex=101},v334);v13(v684,1804 -(884 + 916) );v684.MouseEnter:Connect(function() v15(v684,{BackgroundTransparency=0.3 -0 ,TextColor3=v11.TextTabActive},0.15):Play();end);v684.MouseLeave:Connect(function() v15(v684,{BackgroundTransparency=1 + 0 ,TextColor3=v11.DropdownOption},0.15):Play();end);v684.MouseButton1Click:Connect(function() v327(v683);v329.Text="  "   .. v683   .. "  ▼" ;v330=false;v15(v334,{Size=UDim2.new(654 -(232 + 421) , -(1909 -(1569 + 320)),0 + 0 ,0 + 0 )},0.2 -0 ):Play();task.delay(605.2 -(316 + 289) ,function() if  not v330 then v334.Visible=false;end end);end);v335[v682]=v684;end v329.MouseButton1Click:Connect(function() v330= not v330;if v330 then v334.Visible=true;v329.Text="  "   .. v325   .. "  ▲" ;v15(v334,{Size=UDim2.new(1, -(52 -32),0 + 0 ,v333)},1453.2 -(666 + 787) ):Play();else v329.Text="  "   .. v325   .. "  ▼" ;v15(v334,{Size=UDim2.new(1, -(445 -(360 + 65)),0 + 0 ,254 -(79 + 175) )},0.2 -0 ):Play();task.delay(0.2 + 0 ,function() if  not v330 then v334.Visible=false;end end);end end);return {Container=v328,Header=v329,List=v334,IsOpen=function() return v330;end,Close=function() local v686=0 -0 ;while true do if ((1 -0)==v686) then v15(v334,{Size=UDim2.new(900 -(503 + 396) , -(201 -(92 + 89)),0 -0 ,0)},0.2 + 0 ):Play();task.delay(0.2,function() if  not v330 then v334.Visible=false;end end);break;end if (v686==(0 + 0)) then v330=false;v329.Text="  "   .. v325   .. "  ▼" ;v686=3 -2 ;end end end,SetValue=function(v687) local v688=0 + 0 ;while true do if (v688==0) then v325=v687;v329.Text="  "   .. v687   .. "  ▼" ;break;end end end};end local v104=nil;local v105=v12("Frame",{Name="ColorPicker",Size=UDim2.fromOffset(684 -384 ,262 + 38 ),Position=UDim2.new(0.5, -(72 + 78),0.5 -0 , -(19 + 131)),BackgroundColor3=v11.BgPicker,BackgroundTransparency=0.03,BorderSizePixel=0 -0 ,Visible=false,ZIndex=1444 -(485 + 759) },v74);v13(v105,36 -20 );v14(v105,0.85,1190.5 -(442 + 747) ,v11.StrokeCard);v12("Frame",{Size=UDim2.fromScale(1136 -(832 + 303) ,947 -(88 + 858) ),BackgroundColor3=Color3.fromRGB(78 + 177 ,212 + 43 ,11 + 244 ),BackgroundTransparency=789.92 -(766 + 23) ,BorderSizePixel=0 -0 ,ZIndex=0},v105);local v106=v12("TextLabel",{Size=UDim2.new(1 -0 , -48,0 -0 ,30),Position=UDim2.fromOffset(61 -43 ,10),BackgroundTransparency=1,Text="Color",TextColor3=v11.TextPageTitle,TextSize=1087 -(1036 + 37) ,Font=Enum.Font.GothamBold,TextXAlignment=Enum.TextXAlignment.Left,ZIndex=201},v105);local v107=v12("TextButton",{Size=UDim2.fromOffset(22 + 8 ,30),Position=UDim2.new(1, -(73 -35),0 + 0 ,1490 -(641 + 839) ),BackgroundTransparency=1,Text="×",TextColor3=v11.DropdownOption,TextSize=24,Font=Enum.Font.GothamBold,ZIndex=1114 -(910 + 3) },v105);local v108={Hue=0,Sat=2 -1 ,Val=1,Callback=nil,IsOpen=false,JustOpened=false,Dragging=nil};local v109=false;local v110={};local function v111(v336) local v337=1684 -(1466 + 218) ;local v338;while true do if ((1 + 1)==v337) then if v110.ValGrad then v110.ValGrad.Color=ColorSequence.new({ColorSequenceKeypoint.new(0,Color3.fromHSV(v108.Hue,v108.Sat,0 + 0 )),ColorSequenceKeypoint.new(855 -(174 + 680) ,Color3.fromHSV(v108.Hue,v108.Sat,1))});end if ( not v336 and v108.Callback) then v108.Callback(v338);end break;end if (0==v337) then v338=Color3.fromHSV(v108.Hue,v108.Sat,v108.Val);if v110.Preview then v110.Preview.BackgroundColor3=v338;end v337=3 -2 ;end if (v337==(1 -0)) then if (v110.HexBox and  not v109) then v109=true;local v843=math.floor((v338.R * (183 + 72)) + (739.5 -(396 + 343)) );local v844=math.floor((v338.G * 255) + 0.5 );local v845=math.floor((v338.B * (23 + 232)) + 0.5 );v110.HexBox.Text=string.format("#%02X%02X%02X",v843,v844,v845);v109=false;end if v110.SatGrad then v110.SatGrad.Color=ColorSequence.new({ColorSequenceKeypoint.new(1389 -(135 + 1254) ,Color3.fromHSV(v108.Hue,0,v108.Val)),ColorSequenceKeypoint.new(4 -3 ,Color3.fromHSV(v108.Hue,1 + 0 ,v108.Val))});end v337=1529 -(389 + 1138) ;end end end local function v112(v339,v340) local v341=574 -(102 + 472) ;local v342;local v343;local v344;local v345;while true do if (v341==(1 + 0)) then v13(v342,2 + 1 );v343=v12("UIGradient",{},v342);v341=2;end if (v341==(3 + 0)) then v12("UIStroke",{Color=v11.Accent,Thickness=2.5},v344);v345=nil;v341=4;end if ((1549 -(320 + 1225))==v341) then function v345(v828) v344.Position=UDim2.new(math.clamp(v828,0 -0 ,1 + 0 ), -(1471 -(157 + 1307)),1859.5 -(821 + 1038) , -(17 -10));end return v343,v345,v342;end if (v341==0) then v12("TextLabel",{Size=UDim2.fromOffset(100,2 + 14 ),Position=UDim2.fromOffset(31 -13 ,v339),BackgroundTransparency=1,Text=v340,TextColor3=v11.PickerLabel,TextSize=5 + 6 ,Font=Enum.Font.Gotham,ZIndex=201},v105);v342=v12("Frame",{Size=UDim2.new(1, -(89 -53),1026 -(834 + 192) ,6),Position=UDim2.fromOffset(18,v339 + 2 + 16 ),BackgroundColor3=v11.SliderTrack,BackgroundTransparency=0.4,BorderSizePixel=0 + 0 ,ZIndex=201},v105);v341=1 + 0 ;end if (v341==2) then v344=v12("Frame",{Size=UDim2.fromOffset(14,21 -7 ),Position=UDim2.new(304 -(300 + 4) , -7,0.5, -(2 + 5)),BackgroundColor3=Color3.fromRGB(667 -412 ,617 -(112 + 250) ,102 + 153 ),BorderSizePixel=0 -0 ,ZIndex=203},v342);v13(v344,5 + 2 );v341=3;end end end local v113,v114,v115=v112(46,"Hue");v113.Color=ColorSequence.new({ColorSequenceKeypoint.new(0 + 0 ,Color3.fromRGB(191 + 64 ,0 + 0 ,0)),ColorSequenceKeypoint.new(0.1667,Color3.fromRGB(190 + 65 ,255,1414 -(1001 + 413) )),ColorSequenceKeypoint.new(0.3333,Color3.fromRGB(0,1137 -(244 + 638) ,0)),ColorSequenceKeypoint.new(693.5 -(627 + 66) ,Color3.fromRGB(0,759 -504 ,255)),ColorSequenceKeypoint.new(0.6667,Color3.fromRGB(602 -(512 + 90) ,1906 -(1665 + 241) ,255)),ColorSequenceKeypoint.new(0.8333,Color3.fromRGB(116 + 139 ,0 + 0 ,255)),ColorSequenceKeypoint.new(1 -0 ,Color3.fromRGB(1354 -(35 + 1064) ,0,0 + 0 ))});local v117,v118,v119=v112(187 -99 ,"Saturation");local v120,v121,v122=v112(130,"Brightness");v110.SatGrad=v117;v110.ValGrad=v120;v12("TextLabel",{Size=UDim2.fromOffset(60,16),Position=UDim2.fromOffset(1 + 17 ,1410 -(298 + 938) ),BackgroundTransparency=1260 -(233 + 1026) ,Text="Preview",TextColor3=v11.PickerLabel,TextSize=1677 -(636 + 1030) ,Font=Enum.Font.Gotham,ZIndex=103 + 98 },v105);local v125=v12("Frame",{Size=UDim2.fromOffset(55 + 1 ,9 + 19 ),Position=UDim2.fromOffset(2 + 16 ,413 -(55 + 166) ),BackgroundColor3=Color3.fromHSV(0,1 + 0 ,1 + 0 ),BorderSizePixel=0 -0 ,ZIndex=498 -(36 + 261) },v105);v13(v125,13 -5 );v14(v125,1368.2 -(34 + 1334) ,1 + 0 ,v11.StrokeCard);v110.Preview=v125;v12("TextLabel",{Size=UDim2.fromOffset(47 + 13 ,1299 -(1035 + 248) ),Position=UDim2.fromOffset(109 -(20 + 1) ,174),BackgroundTransparency=1 + 0 ,Text="Hex",TextColor3=v11.PickerLabel,TextSize=330 -(134 + 185) ,Font=Enum.Font.Gotham,ZIndex=1334 -(549 + 584) },v105);local v127=v12("TextBox",{Size=UDim2.fromOffset(815 -(314 + 371) ,96 -68 ),Position=UDim2.fromOffset(1056 -(478 + 490) ,102 + 90 ),BackgroundColor3=v11.DropdownItem,BackgroundTransparency=1172.25 -(786 + 386) ,BorderSizePixel=0 -0 ,Text="#FF69B4",TextColor3=v11.TextPageTitle,TextSize=1391 -(1055 + 324) ,Font=Enum.Font.Gotham,ClearTextOnFocus=false,ZIndex=1541 -(1093 + 247) },v105);v13(v127,8);v14(v127,0.6 + 0 ,1 + 0 ,v11.StrokeInput);v110.HexBox=v127;local function v129(v346) local v347=v346.AbsoluteSize.X;if (v347<=0) then return nil;end local v348=v1:GetMouseLocation();return math.clamp((v348.X-v346.AbsolutePosition.X)/v347 ,0 -0 ,3 -2 );end local function v130() if (v108.Sat<(0.05 -0)) then local v720=0 -0 ;while true do if (v720==(0 + 0)) then v108.Sat=0.5 -0 ;v118(0.5 -0 );break;end end end end local v131=nil;local function v132(v349) local v350=0 + 0 ;while true do if (v350==(2 -1)) then v131=game:GetService("RunService").RenderStepped:Connect(function() if (v108.Dragging=="hue") then local v874=0;local v875;while true do if (v874==0) then v875=v129(v115);if v875 then v108.Hue=v875;v114(v875);v130();v111();end break;end end elseif (v108.Dragging=="sat") then local v904=v129(v119);if v904 then v108.Sat=v904;v118(v904);v111();end elseif (v108.Dragging=="val") then local v928=0;local v929;while true do if (v928==(688 -(364 + 324))) then v929=v129(v122);if v929 then v108.Val=v929;v121(v929);v111();end break;end end end end);break;end if (v350==(0 -0)) then v108.Dragging=v349;if v131 then v131:Disconnect();end v350=1;end end end local function v133() v108.Dragging=nil;if v131 then v131:Disconnect();v131=nil;end end v115.InputBegan:Connect(function(v352) if (v352.UserInputType==Enum.UserInputType.MouseButton1) then v132("hue");end end);v119.InputBegan:Connect(function(v353) if (v353.UserInputType==Enum.UserInputType.MouseButton1) then v132("sat");end end);v122.InputBegan:Connect(function(v354) if (v354.UserInputType==Enum.UserInputType.MouseButton1) then v132("val");end end);v1.InputEnded:Connect(function(v355) if (v355.UserInputType==Enum.UserInputType.MouseButton1) then v133();end end);local function v134() local v356=v127.Text:gsub("#",""):upper();if ( #v356==3) then v356=v356:sub(2 -1 ,1 + 0 ):rep(8 -6 )   .. v356:sub(2,2 -0 ):rep(5 -3 )   .. v356:sub(3,1271 -(1249 + 19) ):rep(2 + 0 ) ;end if ( #v356~=(23 -17)) then return nil;end local v357=tonumber(v356:sub(1,1088 -(686 + 400) ),13 + 3 );local v358=tonumber(v356:sub(3,233 -(73 + 156) ),16);local v359=tonumber(v356:sub(1 + 4 ,817 -(721 + 90) ),1 + 15 );if ( not v357 or  not v358 or  not v359) then return nil;end return Color3.fromRGB(v357,v358,v359);end local function v135() local v360=v134();if  not v360 then local v721=0 -0 ;while true do if (v721==(470 -(224 + 246))) then v127:FindFirstChildOfClass("UIStroke").Color=Color3.fromRGB(413 -158 ,147 -67 ,15 + 65 );task.delay(0.3,function() local v876=v127:FindFirstChildOfClass("UIStroke");if v876 then v876.Color=v11.StrokeInput;end end);v721=1;end if (v721==(1 + 0)) then return;end end end local v361,v362,v363=Color3.toHSV(v360);v108.Hue,v108.Sat,v108.Val=v361,v362,v363;v114(v361);v118(v362);v121(v363);v111();v127:FindFirstChildOfClass("UIStroke").Color=Color3.fromRGB(59 + 21 ,506 -251 ,266 -186 );task.delay(0.3,function() local v689=513 -(203 + 310) ;local v690;while true do if (v689==0) then v690=v127:FindFirstChildOfClass("UIStroke");if v690 then v690.Color=v11.StrokeInput;end break;end end end);end v127.FocusLost:Connect(v135);local v136=nil;v127:GetPropertyChangedSignal("Text"):Connect(function() local v368=1993 -(1238 + 755) ;while true do if (v368==(1 + 0)) then v136=task.delay(0.5,function() v136=nil;v135();end);break;end if ((1534 -(709 + 825))==v368) then if v109 then return;end if v136 then v136:Disconnect();end v368=1 -0 ;end end end);v107.MouseButton1Click:Connect(function() v105.Visible=false;v108.IsOpen=false;v133();v104=nil;end);v1.InputBegan:Connect(function(v371,v372) local v373=0;while true do if (v373==(0 -0)) then if v372 then return;end if v108.JustOpened then return;end v373=865 -(196 + 668) ;end if (v373==(3 -2)) then if ((v371.UserInputType==Enum.UserInputType.MouseButton1) and v108.IsOpen) then local v850=0 -0 ;local v851;local v852;local v853;while true do if (v850==(834 -(171 + 662))) then v853=v105.AbsoluteSize;if ((v851.X<v852.X) or (v851.X>(v852.X + v853.X)) or (v851.Y<v852.Y) or (v851.Y>(v852.Y + v853.Y))) then local v930=93 -(4 + 89) ;while true do if (v930==(0 -0)) then v105.Visible=false;v108.IsOpen=false;v930=1;end if (v930==(1 + 0)) then v133();v104=nil;break;end end end break;end if (v850==0) then v851=v1:GetMouseLocation();v852=v105.AbsolutePosition;v850=4 -3 ;end end end break;end end end);v1.InputBegan:Connect(function(v374,v375) local v376=0 + 0 ;while true do if (v376==(1486 -(35 + 1451))) then if v375 then return;end if ((v374.KeyCode==Enum.KeyCode.Escape) and v108.IsOpen) then local v854=1453 -(28 + 1425) ;while true do if (v854==(1993 -(941 + 1052))) then v105.Visible=false;v108.IsOpen=false;v854=1 + 0 ;end if ((1515 -(822 + 692))==v854) then v133();v104=nil;break;end end end break;end end end);local function v137(v377,v378,v379) v108.Callback=v377;v106.Text=v379 or "Color" ;if v378 then local v722=0 -0 ;local v723;local v724;local v725;while true do if (0==v722) then v723,v724,v725=Color3.toHSV(v378);v108.Hue,v108.Sat,v108.Val=v723,v724,v725;break;end end end v114(v108.Hue);v118(v108.Sat);v121(v108.Val);v111(true);v105.Visible=true;v108.IsOpen=true;v108.JustOpened=true;v104=v105;task.delay(0.2,function() v108.JustOpened=false;end);end local function v138(v385,v386,v387,v388) local v389=0;local v390;local v391;while true do if (v389==(1 + 0)) then v13(v391,8);v14(v391,297.3 -(45 + 252) ,1.5 + 0 ,Color3.fromRGB(88 + 167 ,255,255));v389=2;end if ((0 -0)==v389) then v390=v69.ESP_Colors[v387] or Color3.fromRGB(688 -(114 + 319) ,365 -110 ,326 -71 ) ;v391=v12("TextButton",{Size=UDim2.fromOffset(11 + 5 ,23 -7 ),Position=UDim2.new(1 -0 , -(2053 -(556 + 1407)),1206 -(741 + 465) ,v386 + (473 -(170 + 295)) ),BackgroundColor3=v390,BorderSizePixel=0 + 0 ,Text="",AutoButtonColor=false,ZIndex=17},v385);v389=1 + 0 ;end if (v389==2) then v391.MouseButton1Click:Connect(function() if (v108.IsOpen and (v104==v105)) then v105.Visible=false;v108.IsOpen=false;v133();v104=nil;else v137(function(v891) v69.ESP_Colors[v387]=v891;v391.BackgroundColor3=v891;end,v391.BackgroundColor3,v388   .. " Color" );end end);return v391;end end end local v139=v94.Combat;v97(v139,"Combat","Silent aim, hitbox expander, frame TP, and rapid fire.");local v140=v12("ScrollingFrame",{Size=UDim2.new(2 -1 , -(17 + 3),1 + 0 , -(41 + 31)),Position=UDim2.fromOffset(1240 -(957 + 273) ,72),BackgroundTransparency=1 + 0 ,BorderSizePixel=0 + 0 ,ScrollBarThickness=19 -14 ,ScrollBarImageColor3=v11.Accent,CanvasSize=UDim2.new(0 -0 ,0,0 -0 ,0 -0 ),ZIndex=1794 -(389 + 1391) },v139);local v141=v99(v140,UDim2.fromOffset(0 + 0 ,0 + 0 ),UDim2.new(2 -1 ,951 -(783 + 168) ,0,1350));v140.CanvasSize=UDim2.new(0 -0 ,0 + 0 ,0,1681 -(309 + 2) );v12("TextLabel",{Size=UDim2.new(2 -1 , -20,1212 -(1090 + 122) ,7 + 13 ),Position=UDim2.fromOffset(33 -23 ,10),BackgroundTransparency=1 + 0 ,Text="Aimbot",TextColor3=v11.TextSection,TextSize=1132 -(628 + 490) ,Font=Enum.Font.GothamBold,TextXAlignment=Enum.TextXAlignment.Left,ZIndex=16},v141);v100(v141,7 + 27 ,"Enable Aimbot",v69.Aimbot_Enabled,"Aimbot_Enabled",true,function(v392) v69.Aimbot_Enabled=v392;end);v6.ToggleCallbacks['Aimbot_Enabled']=nil;v100(v141,173 -103 ,"Toggle Mode",v69.Aimbot_ToggleMode,"Aimbot_ToggleMode",false,function(v394) v69.Aimbot_ToggleMode=v394;end);v100(v141,484 -378 ,"Sticky Target",v69.Aimbot_StickyTarget,"Aimbot_StickyTarget",false,function(v396) v69.Aimbot_StickyTarget=v396;end);v100(v141,916 -(431 + 343) ,"Team Check",v69.Aimbot_TeamCheck,"Aimbot_TeamCheck",false,function(v398) v69.Aimbot_TeamCheck=v398;end);v100(v141,359 -181 ,"Wall Check",v69.Aimbot_WallCheck,"Aimbot_WallCheck",false,function(v400) v69.Aimbot_WallCheck=v400;end);v100(v141,214,"Show FOV",v69.Aimbot_ShowFOV,"Aimbot_ShowFOV",false,function(v402) v69.Aimbot_ShowFOV=v402;end);v101(v141,723 -473 ,"Smoothness",0 + 0 ,13 + 87 ,v69.Aimbot_Smoothness,function(v404) v69.Aimbot_Smoothness=v404;end);v101(v141,296,"FOV",1705 -(556 + 1139) ,315 -(6 + 9) ,v69.Aimbot_FOV,function(v406) v69.Aimbot_FOV=v406;end);local v144=v103(v141,342,"Target Part",v69.Aimbot_TargetPart or "Head" ,{"Head","HumanoidRootPart","Torso","UpperTorso","LowerTorso","LeftLeg","RightLeg"},function(v408) v69.Aimbot_TargetPart=v408;end);local v145=v103(v141,155 + 245 ,"Priority",v69.Aimbot_Priority or "Closest to Mouse" ,{"Closest to Mouse","Closest to Player","Lowest HP","Highest HP"},function(v410) v69.Aimbot_Priority=v410;end);v98(v141,1186 -730 );v12("TextLabel",{Size=UDim2.new(3 -2 , -(4 + 16),0 -0 ,1283 -(668 + 595) ),Position=UDim2.fromOffset(9 + 1 ,94 + 372 ),BackgroundTransparency=1,Text="Silent Aim",TextColor3=v11.TextSection,TextSize=38 -24 ,Font=Enum.Font.GothamBold,TextXAlignment=Enum.TextXAlignment.Left,ZIndex=16},v141);v100(v141,490,"Enable Silent Aim",v69.RealSilentAim_Enabled,"RealSilentAim",true,function(v412) local v413=290 -(23 + 267) ;while true do if (v413==(1944 -(1129 + 815))) then v69.RealSilentAim_Enabled=v412;if v6.Combat then v6.Combat.SetRealSilentAimEnabled(v412);end break;end end end);v101(v141,526,"FOV Radius",50,687 -(371 + 16) ,v69.RealSilentAim_FOV or (1880 -(1326 + 424)) ,function(v414) v69.RealSilentAim_FOV=v414;end);v101(v141,1082 -510 ,"Hit Chance %",3 -2 ,100,v69.RealSilentAim_HitChance or 100 ,function(v416) v69.RealSilentAim_HitChance=v416;end);local v146=v103(v141,618,"Target Part",v69.RealSilentAim_TargetPart or "Head" ,{"Head","HumanoidRootPart","Torso","UpperTorso"},function(v418) v69.RealSilentAim_TargetPart=v418;end);v100(v141,1503 -827 ,"Wall Check",v69.RealSilentAim_WallCheck,"RealSilentAim_WallCheck",false,function(v420) v69.RealSilentAim_WallCheck=v420;end);v100(v141,2488 -(421 + 1355) ,"Team Check",v69.RealSilentAim_TeamCheck,"RealSilentAim_TeamCheck",false,function(v422) v69.RealSilentAim_TeamCheck=v422;end);v100(v141,1233 -485 ,"Show FOV",v69.RealSilentAim_ShowFOV,"RealSilentAim_ShowFOV",false,function(v424) v69.RealSilentAim_ShowFOV=v424;end);v98(v141,386 + 398 );v12("TextLabel",{Size=UDim2.new(1084 -(286 + 797) , -20,0,73 -53 ),Position=UDim2.fromOffset(16 -6 ,1233 -(397 + 42) ),BackgroundTransparency=1 + 0 ,Text="Hitbox Expander",TextColor3=v11.TextSection,TextSize=814 -(24 + 776) ,Font=Enum.Font.GothamBold,TextXAlignment=Enum.TextXAlignment.Left,ZIndex=24 -8 },v141);v100(v141,818,"Enable Hitbox Expander",v69.HitboxExpander_Enabled,"HitboxExpander",true,function(v426) v69.HitboxExpander_Enabled=v426;if v6.Combat then v6.Combat.SetHitboxExpanderEnabled(v426);end end);v101(v141,1639 -(222 + 563) ,"FOV Radius",50,661 -361 ,v69.HitboxExpander_FOV or 120 ,function(v428) v69.HitboxExpander_FOV=v428;end);v101(v141,900,"Hit Chance %",1 + 0 ,290 -(23 + 167) ,v69.HitboxExpander_HitChance or (1898 -(690 + 1108)) ,function(v430) v69.HitboxExpander_HitChance=v430;end);local v147=v103(v141,946,"Target Part",v69.HitboxExpander_TargetPart or "Head" ,{"Head","HumanoidRootPart","Torso","UpperTorso"},function(v432) v69.HitboxExpander_TargetPart=v432;end);v100(v141,166 + 838 ,"Wall Check",v69.HitboxExpander_WallCheck,"HitboxExpander_WallCheck",false,function(v434) v69.HitboxExpander_WallCheck=v434;end);v100(v141,3976 -2936 ,"Team Check",v69.HitboxExpander_TeamCheck,"HitboxExpander_TeamCheck",false,function(v436) v69.HitboxExpander_TeamCheck=v436;end);v100(v141,1029 + 47 ,"Show FOV",v69.HitboxExpander_ShowFOV,"HitboxExpander_ShowFOV",false,function(v438) v69.HitboxExpander_ShowFOV=v438;end);v98(v141,589 + 523 );v12("TextLabel",{Size=UDim2.new(1, -(11 + 9),571 -(47 + 524) ,13 + 7 ),Position=UDim2.fromOffset(27 -17 ,1676 -554 ),BackgroundTransparency=1,Text="Combat Utilities",TextColor3=v11.TextSection,TextSize=14,Font=Enum.Font.GothamBold,TextXAlignment=Enum.TextXAlignment.Left,ZIndex=36 -20 },v141);v100(v141,2872 -(1165 + 561) ,"Frame TP Shoot",v69.FrameTP,"FrameTP",true,function(v440) v69.FrameTP=v440;end);v100(v141,36 + 1146 ,"One-Frame Delay",v69.OneFrameDelay,"OneFrameDelay",true,function(v442) v69.OneFrameDelay=v442;end);v100(v141,3772 -2554 ,"Rapid Fire",v69.RapidFire,"RapidFire",true,function(v444) v69.RapidFire=v444;end);v100(v141,479 + 775 ,"Karma",v69.Karma_Enabled,"Karma_Enabled",true,function(v446) v69.Karma_Enabled=v446;if v6.Combat then v6.Combat.SetKarmaEnabled(v446);end end);local v148=v94.Visuals;v97(v148,"Visuals","FOV, ESP suite, tracers, hitmarkers, and target highlighting.");local v149=v12("ScrollingFrame",{Size=UDim2.new(1, -20,480 -(341 + 138) , -72),Position=UDim2.fromOffset(3 + 7 ,148 -76 ),BackgroundTransparency=327 -(89 + 237) ,BorderSizePixel=0 -0 ,ScrollBarThickness=10 -5 ,ScrollBarImageColor3=v11.Accent,CanvasSize=UDim2.new(881 -(581 + 300) ,1220 -(855 + 365) ,0 -0 ,0),ZIndex=5 + 9 },v148);local v150=v99(v149,UDim2.fromOffset(1235 -(1030 + 205) ,0 + 0 ),UDim2.new(1,0 + 0 ,286 -(156 + 130) ,2272 -1272 ));v149.CanvasSize=UDim2.new(0 -0 ,0,0 -0 ,269 + 751 );v100(v150,14,"FOV Circle",v69.FOV_Enabled,"FOV_Enabled",false,function(v448) v69.FOV_Enabled=v448;end);v101(v150,30 + 20 ,"FOV Radius",119 -(10 + 59) ,600,v69.FOV_Radius,function(v450) v69.FOV_Radius=v450;end);v100(v150,32 + 78 ,"Tracers",v69.Tracers,"Tracers",false,function(v452) v69.Tracers=v452;end);v100(v150,146,"Highlights",v69.Highlights,"Highlights",false,function(v454) v69.Highlights=v454;end);v100(v150,896 -714 ,"Hitmarkers",v69.Hitmarkers,"Hitmarkers",false,function(v456) v69.Hitmarkers=v456;end);v98(v150,1389 -(671 + 492) );v12("TextLabel",{Size=UDim2.new(1 + 0 , -20,0,1235 -(369 + 846) ),Position=UDim2.fromOffset(3 + 7 ,202 + 34 ),BackgroundTransparency=1,Text="ESP Suite",TextColor3=v11.TextSection,TextSize=1959 -(1036 + 909) ,Font=Enum.Font.GothamBold,TextXAlignment=Enum.TextXAlignment.Left,ZIndex=16},v150);v100(v150,264,"ESP Master",v69.ESP_Enabled,"ESP_Enabled",false,function(v458) v69.ESP_Enabled=v458;end);v100(v150,239 + 61 ,"Boxes",v69.ESP_Boxes,"ESP_Boxes",false,function(v460) v69.ESP_Boxes=v460;end);v138(v150,300,"Box","Box");v100(v150,336,"3D Boxes",v69.ESP_Box3D,"ESP_Box3D",false,function(v462) v69.ESP_Box3D=v462;end);v100(v150,623 -251 ,"Names",v69.ESP_Names,"ESP_Names",false,function(v464) v69.ESP_Names=v464;end);v138(v150,575 -(11 + 192) ,"Name","Name");v100(v150,207 + 201 ,"Distance Text",v69.ESP_Distance,"ESP_Distance",false,function(v466) v69.ESP_Distance=v466;end);v138(v150,408,"Distance","Distance");v100(v150,444,"Health Bar",v69.ESP_Health,"ESP_Health",false,function(v468) v69.ESP_Health=v468;end);v138(v150,619 -(135 + 40) ,"Health","Health");v100(v150,480,"Skeleton",v69.ESP_Skeleton,"ESP_Skeleton",false,function(v470) v69.ESP_Skeleton=v470;end);v138(v150,1162 -682 ,"Skeleton","Skeleton");v100(v150,516,"Chams",v69.ESP_Chams,"ESP_Chams",false,function(v472) v69.ESP_Chams=v472;end);v138(v150,312 + 204 ,"ChamsFill","Chams");v100(v150,1215 -663 ,"Head Dot",v69.ESP_HeadDot,"ESP_HeadDot",false,function(v474) v69.ESP_HeadDot=v474;end);v138(v150,552,"HeadDot","Head Dot");v100(v150,588,"Weapon Names",v69.ESP_WeaponNames,"ESP_WeaponNames",false,function(v476) v69.ESP_WeaponNames=v476;end);v100(v150,624,"Team Check",v69.ESP_TeamCheck,"ESP_TeamCheck",false,function(v478) v69.ESP_TeamCheck=v478;end);v100(v150,989 -329 ,"Target Mode Only",v69.ESP_TargetMode,"ESP_TargetMode",false,function(v480) v69.ESP_TargetMode=v480;end);v100(v150,696,"Distance Limit",v69.ESP_DistanceToggle,"ESP_DistanceToggle",false,function(v482) v69.ESP_DistanceToggle=v482;end);v101(v150,732,"Max ESP Distance",226 -(50 + 126) ,13922 -8922 ,v69.ESP_MaxDistance,function(v484) v69.ESP_MaxDistance=v484;end);v101(v150,788,"Box Thickness",1 + 0 ,5,v69.ESP_BoxThickness,function(v486) v69.ESP_BoxThickness=v486;end);v101(v150,2257 -(1233 + 180) ,"Head Dot Size",1,999 -(522 + 447) ,math.floor(v69.ESP_HeadDotSize * 10 ),function(v488) v69.ESP_HeadDotSize=v488/(1431 -(107 + 1314)) ;end);local v152,v153,v154;local v155=v94.Target;v97(v155,"Target","Player selection, part targeting, and spectate.");local v156=v99(v155,UDim2.fromOffset(10,34 + 38 ),UDim2.new(1, -(60 -40),0 + 0 ,814 -404 ));local v157=v103(v156,55 -41 ,"Target Part",v69.TargetPart,{"Head","HumanoidRootPart","Torso","UpperTorso","LowerTorso","LeftLeg","RightLeg"},function(v490) v69.TargetPart=v490;end);v102(v156,76,"TP to Target",function() if (v6.Targeting and v6.Targeting.TeleportToTarget) then v6.Targeting.TeleportToTarget();end end);v100(v156,219 -105 ,"Spectate Target",v69.Spectate,"Spectate",true,function(v492) v69.Spectate=v492;if  not v492 then v6.Targeting.StopSpectate();end end);v100(v156,75 + 75 ,"Multi Target",v69.MultiTarget or false ,"MultiTarget",false,function(v494) v69.MultiTarget=v494;if v6.Targeting then v6.Targeting.MultiTargetEnabled=v494;if  not v494 then v6.Targeting.ClearTargets();end v6.Targeting.RefreshPlayerList(v152,v154);v6.Targeting.RefreshPlayerList(v153,v154);end end);v102(v156,186,"Clear All Targets",function() if v6.Targeting then v6.Targeting.ClearTargets();v6.Targeting.RefreshPlayerList(v152,v154);v6.Targeting.RefreshPlayerList(v153,v154);end end);v12("TextLabel",{Size=UDim2.new(2 -1 , -(15 + 5),0 -0 ,18),Position=UDim2.fromOffset(24 -14 ,224),BackgroundTransparency=434 -(279 + 154) ,Text="Player List (Click to select / deselect)",TextColor3=v11.PickerLabel,TextSize=788 -(454 + 324) ,Font=Enum.Font.GothamBold,TextXAlignment=Enum.TextXAlignment.Left,ZIndex=13 + 3 },v156);v152=v12("ScrollingFrame",{Size=UDim2.new(18 -(12 + 5) , -(11 + 9),0,160),Position=UDim2.fromOffset(25 -15 ,91 + 155 ),BackgroundColor3=v11.BgList,BackgroundTransparency=1093.3 -(277 + 816) ,BorderSizePixel=0,ScrollBarThickness=5,ScrollBarImageColor3=v11.Accent,CanvasSize=UDim2.new(0 -0 ,1183 -(1058 + 125) ,0 + 0 ,975 -(815 + 160) ),ZIndex=68 -52 },v156);v13(v152,18 -10 );v12("UIListLayout",{Padding=UDim.new(0 + 0 ,2),Parent=v152});local v158=v94.Farm;v97(v158,"Farm","Pull selected target to your crosshair aim point.");local v159=v12("ScrollingFrame",{Size=UDim2.new(2 -1 , -20,1, -72),Position=UDim2.fromOffset(1908 -(41 + 1857) ,72),BackgroundTransparency=1894 -(1222 + 671) ,BorderSizePixel=0 -0 ,ScrollBarThickness=6 -1 ,ScrollBarImageColor3=v11.Accent,CanvasSize=UDim2.new(1182 -(229 + 953) ,1774 -(1111 + 663) ,1579 -(874 + 705) ,66 + 404 ),ZIndex=10 + 4 },v158);local v160=v99(v159,UDim2.fromOffset(0 -0 ,0 + 0 ),UDim2.new(1,679 -(642 + 37) ,0,103 + 347 ));v100(v160,3 + 11 ,"Enable Farm",v69.FarmEnabled,"FarmEnabled",true,function(v496) local v497=0 -0 ;while true do if (v497==(454 -(233 + 221))) then v69.FarmEnabled=v496;if v6.Farm then v6.Farm.SetEnabled(v496);end break;end end end);v101(v160,115 -65 ,"Distance (studs)",3,27 + 3 ,v69.FarmDistance or (1553 -(718 + 823)) ,function(v498) v69.FarmDistance=v498;end);v101(v160,96,"Vertical Offset", -(7 + 3),815 -(266 + 539) ,v69.FarmVerticalOffset or (0 -0) ,function(v500) v69.FarmVerticalOffset=v500;end);v101(v160,142,"Pull Speed",1226 -(636 + 589) ,47 -27 ,v69.FarmPullSpeed or (1 -0) ,function(v502) v69.FarmPullSpeed=v502;end);v98(v160,184);v100(v160,196,"Ragebot",v69.RagebotEnabled,"RagebotEnabled",true,function(v504) v69.RagebotEnabled=v504;if v6.Farm then v6.Farm.SetRagebotEnabled(v504);end end);local v161=v103(v160,184 + 48 ,"Ragebot Method",v69.RagebotMethod or "FarmVoid" ,{"FarmVoid","FrameTPStomp","AntiBulletTP"},function(v506) v69.RagebotMethod=v506;if v6.Farm then v6.Farm.SetRagebotMethod(v506);end end);v12("TextLabel",{Size=UDim2.new(1, -(52 -32),0,91 -51 ),Position=UDim2.fromOffset(1197 -(1151 + 36) ,290 + 10 ),BackgroundTransparency=1 + 0 ,Text="Select a target in the Target tab first. Their head will align to your crosshair when Farm is ON. Toggle OFF to restore them.",TextColor3=v11.HelpText,TextSize=10,Font=Enum.Font.GothamMedium,TextWrapped=true,TextXAlignment=Enum.TextXAlignment.Left,ZIndex=47 -31 },v160);local v162=v94.Misc;v97(v162,"Misc","AntiStomp, teleport spam, auto armor, and utility features.");local v163=v12("ScrollingFrame",{Size=UDim2.new(1, -20,1833 -(1552 + 280) , -(906 -(64 + 770))),Position=UDim2.fromOffset(7 + 3 ,163 -91 ),BackgroundTransparency=1 + 0 ,BorderSizePixel=1243 -(157 + 1086) ,ScrollBarThickness=5,ScrollBarImageColor3=v11.Accent,CanvasSize=UDim2.new(0,0 -0 ,0 -0 ,1380 -480 ),ZIndex=14},v162);local v164=v99(v163,UDim2.fromOffset(0 -0 ,0),UDim2.new(820 -(599 + 220) ,0 -0 ,1931 -(1813 + 118) ,644 + 236 ));v100(v164,14,"AntiStomp",v69.AntiStomp,"AntiStomp",true,function(v508) v69.AntiStomp=v508;if v6.Misc then v6.Misc.SetAntiStomp(v508);end end);local v165=v103(v164,1267 -(841 + 376) ,"AntiStomp Mode",v69.AntiStompMode or "Void" ,{"Void","Force Reset"},function(v510) v69.AntiStompMode=v510;end);v98(v164,122);v100(v164,32 + 102 ,"Auto Stomp",v69.AutoStompEnabled,"AutoStompEnabled",true,function(v512) v69.AutoStompEnabled=v512;if v6.Misc then v6.Misc.SetAutoStompEnabled(v512);end end);v98(v164,474 -300 );v100(v164,1045 -(464 + 395) ,"Teleport Spam",v69.SpamEnabled,"SpamEnabled",true,function(v514) local v515=0 -0 ;while true do if (v515==(0 + 0)) then v69.SpamEnabled=v514;if v6.Misc then v6.Misc.ToggleSpam(v514);end break;end end end);local v166=v103(v164,1063 -(467 + 370) ,"Spam Range",v69.SpamRange or "Close" ,{"Close","Far"},function(v516) v69.SpamRange=v516;end);v101(v164,290,"Close Height",50,735 + 265 ,v69.SpamCloseHeight or (1199 -849) ,function(v518) v69.SpamCloseHeight=v518;end);v101(v164,54 + 292 ,"Close Radius",50,2326 -1326 ,v69.SpamCloseRadius or (770 -(150 + 370)) ,function(v520) v69.SpamCloseRadius=v520;end);v101(v164,1684 -(74 + 1208) ,"Far Jitter",0 -0 ,50000,v69.SpamFarJitter or 5000 ,function(v522) v69.SpamFarJitter=v522;end);v101(v164,2172 -1714 ,"Spam Speed",1 + 0 ,10,v69.SpamSpeed or (391 -(14 + 376)) ,function(v524) v69.SpamSpeed=v524;end);v98(v164,514);v100(v164,526,"Auto Armor",v69.AutoArmor,"AutoArmor",true,function(v526) v69.AutoArmor=v526;if v6.Misc then v6.Misc.SetAutoArmor(v526);end end);v100(v164,981 -415 ,"Armor On Any Damage",v69.AutoArmorOnDamage,"AutoArmorOnDamage",true,function(v528) v69.AutoArmorOnDamage=v528;if v6.Misc then v6.Misc.EvaluateHealthHook();end end);local v167=v69.AutoArmorPos or Vector3.new(0 + 0 ,0 + 0 ,0 + 0 ) ;local v168=Instance.new("TextLabel");v168.Size=UDim2.new(0.6 -0 ,0 + 0 ,78 -(23 + 55) ,37 -21 );v168.Position=UDim2.new(0.05 + 0 ,0,0 + 0 ,600);v168.BackgroundTransparency=1;v168.Text=string.format("Pos: %.0f, %.0f, %.0f",v167.X,v167.Y,v167.Z);v168.TextColor3=v11.ArmorPos;v168.Font=Enum.Font.Gotham;v168.TextSize=15 -5 ;v168.TextXAlignment=Enum.TextXAlignment.Left;v168.Parent=v164;local v181=Instance.new("TextButton");v181.Size=UDim2.new(0.3 + 0 ,901 -(652 + 249) ,0 -0 ,1888 -(708 + 1160) );v181.Position=UDim2.new(0.65,0,0 -0 ,1090 -492 );v181.BackgroundColor3=v11.SetPosBtn;v181.Text="Set Pos";v181.TextColor3=Color3.fromRGB(282 -(10 + 17) ,58 + 197 ,255);v181.Font=Enum.Font.GothamBold;v181.TextSize=10;v181.Parent=v164;local v192=Instance.new("UICorner");v192.CornerRadius=UDim.new(1732 -(1400 + 332) ,11 -5 );v192.Parent=v181;v181.MouseButton1Click:Connect(function() local v530=LocalPlayer.Character;if v530 then local v727=1908 -(242 + 1666) ;local v728;while true do if ((0 + 0)==v727) then v728=v530:FindFirstChild("HumanoidRootPart");if v728 then local v894=0 + 0 ;local v895;while true do if ((0 + 0)==v894) then v895=v728.Position;v69.AutoArmorPos=v895;v894=1;end if (v894==1) then v168.Text=string.format("Pos: %.0f, %.0f, %.0f",v895.X,v895.Y,v895.Z);if v6.Misc then v6.Misc.CacheArmorDetector();end break;end end end break;end end end end);v101(v164,1566 -(850 + 90) ,"Trigger Health",1 -0 ,100,v69.AutoArmorTriggerHealth or (1440 -(360 + 1030)) ,function(v531) v69.AutoArmorTriggerHealth=v531;end);v101(v164,682,"Cooldown",1 + 0 ,84 -54 ,v69.AutoArmorCooldown or (6 -1) ,function(v533) v69.AutoArmorCooldown=v533;end);v12("Frame",{Size=UDim2.new(1662 -(909 + 752) ,0,0,40),Position=UDim2.fromOffset(1223 -(109 + 1114) ,1354 -614 ),BackgroundTransparency=1 + 0 ,ZIndex=258 -(6 + 236) },v164);local v195=v12("Frame",{Size=UDim2.fromOffset(200,320),Position=UDim2.new(1, -220,0.5, -(101 + 59)),BackgroundColor3=v11.BgMain,BackgroundTransparency=0.04 + 0 ,BorderSizePixel=0,ZIndex=141 -81 ,Visible=false},v74);v13(v195,16);v14(v195,0.72,1);v12("TextLabel",{Size=UDim2.new(1 -0 , -(1153 -(1076 + 57)),0,4 + 20 ),Position=UDim2.fromOffset(10,699 -(579 + 110) ),BackgroundTransparency=1 + 0 ,Text="SPECTATE",TextColor3=v11.TextPageTitle,TextSize=15 + 1 ,Font=Enum.Font.GothamBold,TextXAlignment=Enum.TextXAlignment.Left,ZIndex=61},v195);v100(v195,23 + 19 ,"Spectate Target",v69.Spectate,"SpectatePanel",false,function(v535) v69.Spectate=v535;if  not v535 then v6.Targeting.StopSpectate();v195.Visible=false;SetGUIVisible(true);end if v6.ToggleCallbacks['Spectate'] then v6.ToggleCallbacks['Spectate'](v535);end end);v12("TextLabel",{Size=UDim2.new(408 -(174 + 233) , -(55 -35),0 -0 ,18),Position=UDim2.fromOffset(5 + 5 ,1256 -(663 + 511) ),BackgroundTransparency=1,Text="Player List",TextColor3=v11.PickerLabel,TextSize=10,Font=Enum.Font.GothamBold,TextXAlignment=Enum.TextXAlignment.Left,ZIndex=55 + 6 },v195);v153=v12("ScrollingFrame",{Size=UDim2.new(1 + 0 , -(61 -41),1 + 0 , -108),Position=UDim2.fromOffset(10,239 -137 ),BackgroundColor3=v11.BgList,BackgroundTransparency=0.3 -0 ,BorderSizePixel=0,ScrollBarThickness=5,ScrollBarImageColor3=v11.Accent,CanvasSize=UDim2.new(0 + 0 ,0 -0 ,0 + 0 ,0 + 0 ),ZIndex=783 -(478 + 244) },v195);v13(v153,525 -(440 + 77) );v12("UIListLayout",{Padding=UDim.new(0,2),Parent=v153});function v154() local v537=0;while true do if (v537==(0 + 0)) then v6.Targeting.RefreshPlayerList(v152,v154);v6.Targeting.RefreshPlayerList(v153,v154);break;end end end v154();v0.PlayerAdded:Connect(v154);v0.PlayerRemoving:Connect(v154);local function v196(v538) local v539=0 -0 ;while true do if (1==v539) then if v6.ToggleCallbacks['Spectate'] then v6.ToggleCallbacks['Spectate'](v538);end if v6.ToggleCallbacks['SpectatePanel'] then v6.ToggleCallbacks['SpectatePanel'](v538);end break;end if (v539==(1556 -(655 + 901))) then v69.Spectate=v538;if v538 then local v858=0;while true do if (v858==(0 + 0)) then SetGUIVisible(false);v195.Visible=true;break;end end else v6.Targeting.StopSpectate();v195.Visible=false;SetGUIVisible(true);end v539=1;end end end local v197=v6.ToggleCallbacks['Spectate'];v6.ToggleCallbacks['Spectate']=function(v540) local v541=0;while true do if (v541==(0 + 0)) then v197(v540);if (v540~=v195.Visible) then v196(v540);end break;end end end;local v199=v94.World;v97(v199,"World","Lighting, atmosphere, and visual modifiers.");local v200=v12("ScrollingFrame",{Size=UDim2.new(1, -(14 + 6),3 -2 , -(1517 -(695 + 750))),Position=UDim2.fromOffset(34 -24 ,110 -38 ),BackgroundTransparency=3 -2 ,BorderSizePixel=351 -(285 + 66) ,ScrollBarThickness=11 -6 ,ScrollBarImageColor3=v11.Accent,CanvasSize=UDim2.new(1310 -(682 + 628) ,0 + 0 ,299 -(176 + 123) ,0 + 0 ),ZIndex=14},v199);local v201=v99(v200,UDim2.fromOffset(0 + 0 ,269 -(239 + 30) ),UDim2.new(1,0,0,169 + 451 ));v200.CanvasSize=UDim2.new(0,0 + 0 ,0 -0 ,640);v100(v201,43 -29 ,"Full Bright",v69.World_Fullbright,"World_Fullbright",false,function(v542) v69.World_Fullbright=v542;end);v100(v201,365 -(306 + 9) ,"No Fog",v69.World_NoFog,"World_NoFog",false,function(v544) v69.World_NoFog=v544;end);v100(v201,300 -214 ,"No Shadows",v69.World_NoShadows,"World_NoShadows",false,function(v546) v69.World_NoShadows=v546;end);v100(v201,22 + 100 ,"No Atmosphere",v69.World_NoAtmosphere,"World_NoAtmosphere",false,function(v548) v69.World_NoAtmosphere=v548;end);v100(v201,97 + 61 ,"No Sun Rays",v69.World_NoSunRays,"World_NoSunRays",false,function(v550) v69.World_NoSunRays=v550;end);v100(v201,94 + 100 ,"No Color Correction",v69.World_NoColorCorrection,"World_NoColorCorrection",false,function(v552) v69.World_NoColorCorrection=v552;end);v100(v201,230,"Low GFX",v69.World_LowGFX,"World_LowGFX",false,function(v554) v69.World_LowGFX=v554;end);v100(v201,760 -494 ,"Custom Time",v69.World_CustomTime,"World_CustomTime",false,function(v556) v69.World_CustomTime=v556;end);v101(v201,1677 -(1140 + 235) ,"Time of Day",0,16 + 8 ,v69.World_TimeOfDay,function(v558) v69.World_TimeOfDay=v558;end);v101(v201,320 + 28 ,"Brightness",1 + 0 ,72 -(33 + 19) ,v69.World_Brightness,function(v560) v69.World_Brightness=v560;end);local v203=v103(v201,143 + 251 ,"Sky Theme",v69.World_SkyTheme or "Default" ,{"Default","Night","Light","Blood","Gray","DarkNight","Space","Test","Clouds","Sunset2","Galaxy2","Nebula","Storm2"},function(v562) v69.World_SkyTheme=v562;end);local v204=v94.Movement;v97(v204,"Movement","Speed, fly, jump, and collision modifiers.");local v205=v12("ScrollingFrame",{Size=UDim2.new(1 + 0 , -20,1, -(193 -121)),Position=UDim2.fromOffset(8 + 2 ,72),BackgroundTransparency=1 -0 ,BorderSizePixel=0 -0 ,ScrollBarThickness=614 -(295 + 314) ,ScrollBarImageColor3=v11.Accent,CanvasSize=UDim2.new(0,0 -0 ,1962 -(1300 + 662) ,750),ZIndex=43 -29 },v204);local v206=v99(v205,UDim2.fromOffset(0,1755 -(1178 + 577) ),UDim2.new(1,0 + 0 ,0 -0 ,740));v100(v206,1419 -(851 + 554) ,"Speed",v69.Move_SpeedEnabled,"Move_SpeedEnabled",true,function(v564) local v565=0 + 0 ;while true do if (v565==(0 -0)) then v69.Move_SpeedEnabled=v564;if v6.Movement then v6.Movement.SetSpeedEnabled(v564);end break;end end end);v12("TextLabel",{Size=UDim2.new(1 -0 , -(442 -(115 + 187)),0 + 0 ,20),Position=UDim2.fromOffset(10,48 + 2 ),BackgroundTransparency=3 -2 ,Text="Walk Speed",TextColor3=v11.TextLabel,TextSize=1173 -(160 + 1001) ,Font=Enum.Font.GothamMedium,TextXAlignment=Enum.TextXAlignment.Left,ZIndex=16},v206);local v207=v12("Frame",{Size=UDim2.new(1, -160,0 + 0 ,4 + 1 ),Position=UDim2.fromOffset(10,163 -83 ),BackgroundColor3=v11.SliderTrack,BorderSizePixel=0,ZIndex=374 -(237 + 121) },v206);v13(v207,900 -(525 + 372) );local v208=v12("Frame",{Size=UDim2.new(math.clamp((v69.Move_Speed-(29 -13))/(932 -648) ,0,143 -(96 + 46) ),0,1,777 -(643 + 134) ),BackgroundColor3=v11.Accent,BorderSizePixel=0 + 0 ,ZIndex=40 -23 },v207);v13(v208,11 -8 );local v209=v12("TextBox",{Size=UDim2.fromOffset(58 + 2 ,46 -22 ),Position=UDim2.new(1 -0 , -70,719 -(316 + 403) ,34 + 16 ),BackgroundColor3=v11.DropdownItem,BackgroundTransparency=0.25,BorderSizePixel=0 -0 ,Text=tostring(v69.Move_Speed or (19 + 31) ),TextColor3=v11.TextPageTitle,TextSize=27 -16 ,Font=Enum.Font.Gotham,ClearTextOnFocus=false,ZIndex=12 + 4 },v206);v13(v209,2 + 4 );v14(v209,0.6 -0 ,1,v11.StrokeInput);local v210=false;local function v211(v566) v566=math.max(math.floor(v566),16);v69.Move_Speed=v566;v208.Size=UDim2.new(math.clamp((v566-(76 -60))/(589 -305) ,0 + 0 ,1 -0 ),0 + 0 ,2 -1 ,0);v209.Text=tostring(v566);end v207.InputBegan:Connect(function(v570) if (v570.UserInputType==Enum.UserInputType.MouseButton1) then local v730=17 -(12 + 5) ;local v731;while true do if (0==v730) then v210=true;v731=math.clamp((v570.Position.X-v207.AbsolutePosition.X)/v207.AbsoluteSize.X ,0 -0 ,1 -0 );v730=1 -0 ;end if (v730==(2 -1)) then v211(16 + (v731 * (58 + 226)) );break;end end end end);v1.InputChanged:Connect(function(v571) if (v210 and (v571.UserInputType==Enum.UserInputType.MouseMovement)) then local v732=1973 -(1656 + 317) ;local v733;while true do if ((0 + 0)==v732) then v733=math.clamp((v571.Position.X-v207.AbsolutePosition.X)/v207.AbsoluteSize.X ,0 + 0 ,2 -1 );v211((78 -62) + (v733 * (638 -(5 + 349))) );break;end end end end);v1.InputEnded:Connect(function(v572) if (v572.UserInputType==Enum.UserInputType.MouseButton1) then v210=false;end end);v209.FocusLost:Connect(function() local v573=tonumber(v209.Text);if v573 then v211(v573);end end);v209:GetPropertyChangedSignal("Text"):Connect(function() local v574=tonumber(v209.Text);if v574 then local v734=0 -0 ;while true do if (v734==(1271 -(266 + 1005))) then v69.Move_Speed=math.max(math.floor(v574),16);v208.Size=UDim2.new(math.clamp((v69.Move_Speed-(11 + 5))/(968 -684) ,0 -0 ,1697 -(561 + 1135) ),0 -0 ,3 -2 ,0);break;end end end end);v100(v206,1172 -(507 + 559) ,"High Jump",v69.Move_HighJumpEnabled,"Move_HighJumpEnabled",true,function(v575) v69.Move_HighJumpEnabled=v575;if v6.Movement then v6.Movement.SetHighJumpEnabled(v575);end end);v12("TextLabel",{Size=UDim2.new(1, -(351 -211),0 -0 ,408 -(212 + 176) ),Position=UDim2.fromOffset(10,142),BackgroundTransparency=906 -(250 + 655) ,Text="Jump Power",TextColor3=v11.TextLabel,TextSize=32 -20 ,Font=Enum.Font.GothamMedium,TextXAlignment=Enum.TextXAlignment.Left,ZIndex=16},v206);local v212=v12("Frame",{Size=UDim2.new(1 -0 , -160,0 -0 ,1961 -(1869 + 87) ),Position=UDim2.fromOffset(34 -24 ,2073 -(484 + 1417) ),BackgroundColor3=v11.SliderTrack,BorderSizePixel=0 -0 ,ZIndex=16},v206);v13(v212,4 -1 );local v213=v12("Frame",{Size=UDim2.new(math.clamp((v69.Move_JumpPower-(823 -(48 + 725)))/250 ,0,1 -0 ),0 -0 ,1 + 0 ,0 -0 ),BackgroundColor3=v11.Accent,BorderSizePixel=0,ZIndex=5 + 12 },v212);v13(v213,1 + 2 );local v214=v12("TextBox",{Size=UDim2.fromOffset(913 -(152 + 701) ,1335 -(430 + 881) ),Position=UDim2.new(1, -(27 + 43),895 -(557 + 338) ,42 + 100 ),BackgroundColor3=v11.DropdownItem,BackgroundTransparency=0.25 -0 ,BorderSizePixel=0,Text=tostring(v69.Move_JumpPower or (350 -250) ),TextColor3=v11.TextPageTitle,TextSize=11,Font=Enum.Font.Gotham,ClearTextOnFocus=false,ZIndex=16},v206);v13(v214,15 -9 );v14(v214,0.6 -0 ,802 -(499 + 302) ,v11.StrokeInput);local v215=false;local function v216(v577) local v578=866 -(39 + 827) ;while true do if (v578==1) then v213.Size=UDim2.new(math.clamp((v577-(138 -88))/(558 -308) ,0 -0 ,1 -0 ),0,1 + 0 ,0 -0 );v214.Text=tostring(v577);break;end if (v578==0) then v577=math.max(math.floor(v577),8 + 42 );v69.Move_JumpPower=v577;v578=1 -0 ;end end end v212.InputBegan:Connect(function(v579) if (v579.UserInputType==Enum.UserInputType.MouseButton1) then local v735=104 -(103 + 1) ;local v736;while true do if (v735==1) then v216((604 -(475 + 79)) + (v736 * (540 -290)) );break;end if (v735==0) then v215=true;v736=math.clamp((v579.Position.X-v212.AbsolutePosition.X)/v212.AbsoluteSize.X ,0 -0 ,1);v735=1 + 0 ;end end end end);v1.InputChanged:Connect(function(v580) if (v215 and (v580.UserInputType==Enum.UserInputType.MouseMovement)) then local v737=math.clamp((v580.Position.X-v212.AbsolutePosition.X)/v212.AbsoluteSize.X ,0,1 + 0 );v216((1553 -(1395 + 108)) + (v737 * 250) );end end);v1.InputEnded:Connect(function(v581) if (v581.UserInputType==Enum.UserInputType.MouseButton1) then v215=false;end end);v214.FocusLost:Connect(function() local v582=tonumber(v214.Text);if v582 then v216(v582);end end);v214:GetPropertyChangedSignal("Text"):Connect(function() local v583=tonumber(v214.Text);if v583 then v69.Move_JumpPower=math.max(math.floor(v583),145 -95 );v213.Size=UDim2.new(math.clamp((v69.Move_JumpPower-50)/250 ,0,1205 -(7 + 1197) ),0 + 0 ,1,0 + 0 );end end);v100(v206,198,"Bunny Hop",v69.Move_BunnyHop,"Move_BunnyHop",true,function(v584) local v585=0;while true do if (v585==0) then v69.Move_BunnyHop=v584;if v6.Movement then v6.Movement.SetBunnyHop(v584);end break;end end end);v12("TextLabel",{Size=UDim2.new(320 -(27 + 292) , -(410 -270),0,25 -5 ),Position=UDim2.fromOffset(41 -31 ,461 -227 ),BackgroundTransparency=1 -0 ,Text="Bunny Hop Speed",TextColor3=v11.TextLabel,TextSize=12,Font=Enum.Font.GothamMedium,TextXAlignment=Enum.TextXAlignment.Left,ZIndex=16},v206);local v217=v12("Frame",{Size=UDim2.new(140 -(43 + 96) , -(652 -492),0,11 -6 ),Position=UDim2.fromOffset(9 + 1 ,75 + 189 ),BackgroundColor3=v11.SliderTrack,BorderSizePixel=0 -0 ,ZIndex=7 + 9 },v206);v13(v217,5 -2 );local v218=v12("Frame",{Size=UDim2.new(math.clamp(((v69.Move_BunnyHopSpeed or (19 + 41)) -(2 + 14))/(2035 -(1414 + 337)) ,1940 -(1642 + 298) ,1),0,2 -1 ,0 -0 ),BackgroundColor3=v11.Accent,BorderSizePixel=0,ZIndex=50 -33 },v217);v13(v218,3);local v219=v12("TextBox",{Size=UDim2.fromOffset(20 + 40 ,19 + 5 ),Position=UDim2.new(1, -(1042 -(357 + 615)),0,165 + 69 ),BackgroundColor3=v11.DropdownItem,BackgroundTransparency=0.25,BorderSizePixel=0 -0 ,Text=tostring(v69.Move_BunnyHopSpeed or 60 ),TextColor3=v11.TextPageTitle,TextSize=11,Font=Enum.Font.Gotham,ClearTextOnFocus=false,ZIndex=14 + 2 },v206);v13(v219,12 -6 );v14(v219,0.6 + 0 ,1 + 0 ,v11.StrokeInput);local v220=false;local function v221(v586) local v587=0;while true do if (v587==(0 + 0)) then v586=math.max(math.floor(v586),1317 -(384 + 917) );v69.Move_BunnyHopSpeed=v586;v587=698 -(128 + 569) ;end if (v587==(1544 -(1407 + 136))) then v218.Size=UDim2.new(math.clamp((v586-(1903 -(687 + 1200)))/284 ,0,1711 -(556 + 1154) ),0,3 -2 ,95 -(9 + 86) );v219.Text=tostring(v586);break;end end end v217.InputBegan:Connect(function(v588) if (v588.UserInputType==Enum.UserInputType.MouseButton1) then v220=true;local v740=math.clamp((v588.Position.X-v217.AbsolutePosition.X)/v217.AbsoluteSize.X ,421 -(275 + 146) ,1);v221(3 + 13 + (v740 * (348 -(29 + 35))) );end end);v1.InputChanged:Connect(function(v589) if (v220 and (v589.UserInputType==Enum.UserInputType.MouseMovement)) then local v741=math.clamp((v589.Position.X-v217.AbsolutePosition.X)/v217.AbsoluteSize.X ,0 -0 ,2 -1 );v221(16 + (v741 * (1253 -969)) );end end);v1.InputEnded:Connect(function(v590) if (v590.UserInputType==Enum.UserInputType.MouseButton1) then v220=false;end end);v219.FocusLost:Connect(function() local v591=tonumber(v219.Text);if v591 then v221(v591);end end);v219:GetPropertyChangedSignal("Text"):Connect(function() local v592=tonumber(v219.Text);if v592 then local v742=0 + 0 ;while true do if (v742==0) then v69.Move_BunnyHopSpeed=math.max(math.floor(v592),16);v218.Size=UDim2.new(math.clamp((v69.Move_BunnyHopSpeed-(1028 -(53 + 959)))/(692 -(312 + 96)) ,0 -0 ,286 -(147 + 138) ),899 -(813 + 86) ,1 + 0 ,0 -0 );break;end end end end);v100(v206,782 -(18 + 474) ,"No Jump Cooldown",v69.Move_NoJumpCooldown,"Move_NoJumpCooldown",true,function(v593) v69.Move_NoJumpCooldown=v593;if v6.Movement then v6.Movement.SetNoJumpCooldown(v593);end end);v100(v206,110 + 216 ,"Infinite Jump",v69.Move_InfiniteJump,"Move_InfiniteJump",true,function(v595) v69.Move_InfiniteJump=v595;if v6.Movement then v6.Movement.SetInfiniteJump(v595);end end);v100(v206,1181 -819 ,"NoClip",v69.Move_NoClip,"Move_NoClip",true,function(v597) v69.Move_NoClip=v597;if v6.Movement then v6.Movement.SetNoClip(v597);end end);v98(v206,1492 -(860 + 226) );v100(v206,721 -(121 + 182) ,"Enable Fly",v69.Move_Fly,"Move_Fly",true,function(v599) local v600=0 + 0 ;while true do if (v600==0) then v69.Move_Fly=v599;if v6.Movement then v6.Movement.SetFly(v599);end break;end end end);local v222=v103(v206,1694 -(988 + 252) ,"Fly Method",v69.Move_FlyMethod or "Tween" ,{"Tween","Velocity","CFrame"},function(v601) v69.Move_FlyMethod=v601;end);v12("TextLabel",{Size=UDim2.new(1, -(2110 -(49 + 1921)),890 -(223 + 667) ,20),Position=UDim2.fromOffset(62 -(51 + 1) ,905 -379 ),BackgroundTransparency=1,Text="Fly Speed",TextColor3=v11.TextLabel,TextSize=12,Font=Enum.Font.GothamMedium,TextXAlignment=Enum.TextXAlignment.Left,ZIndex=16},v206);local v223=v12("Frame",{Size=UDim2.new(1 -0 , -(1285 -(146 + 979)),0 + 0 ,5),Position=UDim2.fromOffset(10,556),BackgroundColor3=v11.SliderTrack,BorderSizePixel=0,ZIndex=621 -(311 + 294) },v206);v13(v223,3);local v224=v12("Frame",{Size=UDim2.new(math.clamp((v69.Move_FlySpeed-10)/(808 -518) ,0 + 0 ,1444 -(496 + 947) ),1358 -(1233 + 125) ,1 + 0 ,0),BackgroundColor3=v11.Accent,BorderSizePixel=0 + 0 ,ZIndex=4 + 13 },v223);v13(v224,1648 -(963 + 682) );local v225=v12("TextBox",{Size=UDim2.fromOffset(51 + 9 ,1528 -(504 + 1000) ),Position=UDim2.new(1 + 0 , -(64 + 6),0 + 0 ,775 -249 ),BackgroundColor3=v11.DropdownItem,BackgroundTransparency=0.25,BorderSizePixel=0 + 0 ,Text=tostring(v69.Move_FlySpeed or (30 + 20) ),TextColor3=v11.TextPageTitle,TextSize=193 -(156 + 26) ,Font=Enum.Font.Gotham,ClearTextOnFocus=false,ZIndex=10 + 6 },v206);v13(v225,6);v14(v225,0.6,1,v11.StrokeInput);local v226=false;local function v227(v603) v603=math.max(math.floor(v603),1 -0 );v69.Move_FlySpeed=v603;v224.Size=UDim2.new(math.clamp((v603-(174 -(149 + 15)))/(1250 -(890 + 70)) ,117 -(39 + 78) ,483 -(14 + 468) ),0 -0 ,2 -1 ,0 + 0 );v225.Text=tostring(v603);end v223.InputBegan:Connect(function(v607) if (v607.UserInputType==Enum.UserInputType.MouseButton1) then local v743=0 + 0 ;local v744;while true do if ((1 + 0)==v743) then v227(5 + 5 + (v744 * (76 + 214)) );break;end if (v743==0) then v226=true;v744=math.clamp((v607.Position.X-v223.AbsolutePosition.X)/v223.AbsoluteSize.X ,0,1 -0 );v743=1 + 0 ;end end end end);v1.InputChanged:Connect(function(v608) if (v226 and (v608.UserInputType==Enum.UserInputType.MouseMovement)) then local v745=math.clamp((v608.Position.X-v223.AbsolutePosition.X)/v223.AbsoluteSize.X ,0 -0 ,1 + 0 );v227((61 -(12 + 39)) + (v745 * (270 + 20)) );end end);v1.InputEnded:Connect(function(v609) if (v609.UserInputType==Enum.UserInputType.MouseButton1) then v226=false;end end);v225.FocusLost:Connect(function() local v610=0 -0 ;local v611;while true do if (v610==(0 -0)) then v611=tonumber(v225.Text);if v611 then v227(v611);end break;end end end);v225:GetPropertyChangedSignal("Text"):Connect(function() local v612=tonumber(v225.Text);if v612 then v69.Move_FlySpeed=math.max(math.floor(v612),1);v224.Size=UDim2.new(math.clamp((v69.Move_FlySpeed-10)/(86 + 204) ,0 + 0 ,1),0 -0 ,1 + 0 ,0);end end);v12("TextLabel",{Size=UDim2.new(1, -(96 -76),0,1726 -(1596 + 114) ),Position=UDim2.fromOffset(10,1503 -927 ),BackgroundTransparency=714 -(164 + 549) ,Text="WASD to move, Space up, Shift down",TextColor3=v11.HelpText,TextSize=1448 -(1059 + 379) ,Font=Enum.Font.GothamMedium,TextXAlignment=Enum.TextXAlignment.Left,ZIndex=16},v206);v12("Frame",{Size=UDim2.new(1 -0 ,0 + 0 ,0 + 0 ,432 -(145 + 247) ),Position=UDim2.fromOffset(0 + 0 ,282 + 328 ),BackgroundTransparency=2 -1 ,ZIndex=16},v206);local v228=v94.Settings;v97(v228,"Settings","Interface customization, config management, and safety options.");local v229=v12("ScrollingFrame",{Size=UDim2.new(1 + 0 , -20,1 + 0 , -(116 -44)),Position=UDim2.fromOffset(10,792 -(254 + 466) ),BackgroundTransparency=561 -(544 + 16) ,BorderSizePixel=0 -0 ,ScrollBarThickness=5,ScrollBarImageColor3=v11.Accent,CanvasSize=UDim2.new(628 -(294 + 334) ,253 -(236 + 17) ,0,522 + 688 ),ZIndex=11 + 3 },v228);local v230=v99(v229,UDim2.fromOffset(0 -0 ,0),UDim2.new(4 -3 ,0 + 0 ,0 + 0 ,1994 -(413 + 381) ));v12("TextLabel",{Size=UDim2.new(1, -(1 + 19),0 -0 ,20),Position=UDim2.fromOffset(25 -15 ,10),BackgroundTransparency=1971 -(582 + 1388) ,Text="Keybinds",TextColor3=v11.TextSection,TextSize=23 -9 ,Font=Enum.Font.GothamBold,TextXAlignment=Enum.TextXAlignment.Left,ZIndex=12 + 4 },v230);v12("TextLabel",{Size=UDim2.new(365 -(326 + 38) , -(414 -274),0 -0 ,25),Position=UDim2.fromOffset(635 -(47 + 573) ,13 + 23 ),BackgroundTransparency=4 -3 ,Text="Menu Toggle Key",TextColor3=v11.TextTabActive,TextSize=19 -7 ,Font=Enum.Font.GothamBold,TextXAlignment=Enum.TextXAlignment.Left,ZIndex=16},v230);local v231=v12("TextButton",{Size=UDim2.fromOffset(115,1694 -(1269 + 395) ),Position=UDim2.new(1, -(622 -(76 + 416)),0,477 -(319 + 124) ),BackgroundColor3=v11.Accent,BackgroundTransparency=0.18 -0 ,BorderSizePixel=1007 -(564 + 443) ,Text=v16(v69.ToggleKey),TextColor3=v11.ActionBtnText,TextSize=30 -19 ,Font=Enum.Font.GothamBold,AutoButtonColor=false,ZIndex=475 -(337 + 121) },v230);v13(v231,23 -15 );v12("TextLabel",{Size=UDim2.new(3 -2 , -(2051 -(1261 + 650)),0 + 0 ,39 -14 ),Position=UDim2.fromOffset(1832 -(772 + 1045) ,10 + 60 ),BackgroundTransparency=145 -(102 + 42) ,Text="Panic Key (disable all)",TextColor3=v11.TextTabActive,TextSize=1856 -(1524 + 320) ,Font=Enum.Font.GothamBold,TextXAlignment=Enum.TextXAlignment.Left,ZIndex=16},v230);local v232=v12("TextButton",{Size=UDim2.fromOffset(115,30),Position=UDim2.new(1271 -(1049 + 221) , -(286 -(18 + 138)),0,166 -98 ),BackgroundColor3=v11.PanicBtn,BackgroundTransparency=1102.18 -(67 + 1035) ,BorderSizePixel=0,Text=(v69.PanicKey and v16(v69.PanicKey)) or "—" ,TextColor3=v11.ActionBtnText,TextSize=359 -(136 + 212) ,Font=Enum.Font.GothamBold,AutoButtonColor=false,ZIndex=72 -55 },v230);v13(v232,8);v232.MouseButton1Click:Connect(function() local v613=0;while true do if (v613==(1 + 0)) then v232.Text="PRESS KEY";v15(v232,{BackgroundTransparency=0 + 0 },1604.2 -(240 + 1364) ):Play();break;end if ((1082 -(1050 + 32))==v613) then if v6.ListeningKey then return;end v6.ListeningKey="PanicKey";v613=3 -2 ;end end end);v98(v230,64 + 44 );v12("TextLabel",{Size=UDim2.new(1, -20,0,1075 -(331 + 724) ),Position=UDim2.fromOffset(1 + 9 ,120),BackgroundTransparency=645 -(269 + 375) ,Text="GUI Customization",TextColor3=v11.TextSection,TextSize=14,Font=Enum.Font.GothamBold,TextXAlignment=Enum.TextXAlignment.Left,ZIndex=741 -(267 + 458) },v230);v12("TextLabel",{Size=UDim2.new(1 + 0 , -(269 -129),818 -(667 + 151) ,20),Position=UDim2.fromOffset(10,1641 -(1410 + 87) ),BackgroundTransparency=1898 -(1504 + 393) ,Text="GUI Scale",TextColor3=v11.TextLabel,TextSize=12,Font=Enum.Font.GothamMedium,TextXAlignment=Enum.TextXAlignment.Left,ZIndex=43 -27 },v230);local v233=v12("Frame",{Size=UDim2.new(2 -1 , -(956 -(461 + 335)),0 + 0 ,5),Position=UDim2.fromOffset(10,1935 -(1730 + 31) ),BackgroundColor3=v11.SliderTrack,BorderSizePixel=1667 -(728 + 939) ,ZIndex=56 -40 },v230);v13(v233,3);local v234=v12("Frame",{Size=UDim2.new((v69.GUIScale-(0.5 -0))/(2.5 -1) ,1068 -(138 + 930) ,1 + 0 ,0 + 0 ),BackgroundColor3=v11.Accent,BorderSizePixel=0 + 0 ,ZIndex=69 -52 },v233);v13(v234,1769 -(459 + 1307) );local v235=v12("TextBox",{Size=UDim2.fromOffset(1930 -(474 + 1396) ,41 -17 ),Position=UDim2.new(1 + 0 , -(1 + 69),0 -0 ,19 + 125 ),BackgroundColor3=v11.DropdownItem,BackgroundTransparency=0.25 -0 ,BorderSizePixel=0,Text=string.format("%.1f",v69.GUIScale or (4 -3) ),TextColor3=v11.TextPageTitle,TextSize=602 -(562 + 29) ,Font=Enum.Font.Gotham,ClearTextOnFocus=false,ZIndex=14 + 2 },v230);v13(v235,1425 -(374 + 1045) );v14(v235,0.6 + 0 ,2 -1 ,v11.StrokeInput);local v236=false;local function v237(v614) local v615=638 -(448 + 190) ;while true do if ((0 + 0)==v615) then v614=math.clamp(v614,0.5,2);v69.GUIScale=v614;v615=1;end if (v615==(1 + 0)) then v234.Size=UDim2.new((v614-(0.5 + 0))/(3.5 -2) ,0 -0 ,1495 -(1307 + 187) ,0 -0 );v235.Text=string.format("%.1f",v614);v615=2;end if (v615==(4 -2)) then if v6.Main then v6.Main.Size=UDim2.fromOffset(760 * v614 ,540 * v614 );end break;end end end v233.InputBegan:Connect(function(v616) if (v616.UserInputType==Enum.UserInputType.MouseButton1) then local v748=0 -0 ;local v749;while true do if (v748==(684 -(232 + 451))) then v237(0.5 + 0 + (v749 * 1.5) );break;end if ((0 + 0)==v748) then v236=true;v749=math.clamp((v616.Position.X-v233.AbsolutePosition.X)/v233.AbsoluteSize.X ,0,565 -(510 + 54) );v748=1 -0 ;end end end end);v1.InputChanged:Connect(function(v617) if (v236 and (v617.UserInputType==Enum.UserInputType.MouseMovement)) then local v750=math.clamp((v617.Position.X-v233.AbsolutePosition.X)/v233.AbsoluteSize.X ,36 -(13 + 23) ,1 -0 );v237((0.5 -0) + (v750 * 1.5) );end end);v1.InputEnded:Connect(function(v618) if (v618.UserInputType==Enum.UserInputType.MouseButton1) then v236=false;end end);v235.FocusLost:Connect(function() local v619=0 -0 ;local v620;while true do if (v619==(1088 -(830 + 258))) then v620=tonumber(v235.Text);if v620 then v237(v620);end break;end end end);v100(v230,663 -475 ,"Show Hotkeys",v69.ShowHotkeys,"ShowHotkeys",false,function(v621) local v622=0;while true do if (v622==(0 + 0)) then v69.ShowHotkeys=v621;v6.UpdateHotkeyDisplay();break;end end end);v100(v230,191 + 33 ,"Auto-hide on Screenshot",v69.AutoHideOnScreenshot,"AutoHideOnScreenshot",false,function(v623) v69.AutoHideOnScreenshot=v623;end);v100(v230,1701 -(860 + 581) ,"GUI Window Mode",v69.GUIWindow,"GUIWindow",false,function(v625) local v626=0 -0 ;while true do if (v626==(0 + 0)) then v69.GUIWindow=v625;if v6.Main then if v625 then local v896=241 -(237 + 4) ;while true do if (v896==(2 -1)) then v6.Main.AnchorPoint=Vector2.new(0,0 -0 );break;end if (v896==0) then v6.Main.Size=UDim2.fromOffset((948 -448) * (v69.GUIScale or (1 + 0)) ,(230 + 170) * (v69.GUIScale or 1) );v6.Main.Position=UDim2.new(0.5, -(943 -693) * (v69.GUIScale or (1 + 0)) ,0.5, -(109 + 91) * (v69.GUIScale or 1) );v896=1;end end else local v897=0;while true do if (v897==(1427 -(85 + 1341))) then v6.Main.AnchorPoint=Vector2.new(0.5,0.5 -0 );break;end if (v897==0) then v6.Main.Size=UDim2.fromOffset((2146 -1386) * (v69.GUIScale or 1) ,(912 -(45 + 327)) * (v69.GUIScale or (1 -0)) );v6.Main.Position=UDim2.fromScale(0.5,502.5 -(444 + 58) );v897=1 + 0 ;end end end end v626=1;end if (v626==(1 + 0)) then if v6.Background then v6.Background.Visible= not v625 and v6.GUIVisible ;end break;end end end);v98(v230,146 + 152 );v12("TextLabel",{Size=UDim2.new(2 -1 , -20,0,20),Position=UDim2.fromOffset(1742 -(64 + 1668) ,2283 -(1227 + 746) ),BackgroundTransparency=2 -1 ,Text="Performance",TextColor3=v11.TextSection,TextSize=14,Font=Enum.Font.GothamBold,TextXAlignment=Enum.TextXAlignment.Left,ZIndex=29 -13 },v230);v12("TextLabel",{Size=UDim2.new(495 -(415 + 79) , -140,0 + 0 ,20),Position=UDim2.fromOffset(501 -(142 + 349) ,144 + 190 ),BackgroundTransparency=1,Text="FPS Cap (0 = uncapped)",TextColor3=v11.TextLabel,TextSize=15 -3 ,Font=Enum.Font.GothamMedium,TextXAlignment=Enum.TextXAlignment.Left,ZIndex=16},v230);local v238=v12("Frame",{Size=UDim2.new(1 + 0 , -(113 + 47),0 -0 ,1869 -(1710 + 154) ),Position=UDim2.fromOffset(328 -(200 + 118) ,145 + 219 ),BackgroundColor3=v11.SliderTrack,BorderSizePixel=0 -0 ,ZIndex=23 -7 },v230);v13(v238,3 + 0 );local v239=v12("Frame",{Size=UDim2.new(math.clamp((v69.FPSCap or 0)/(475 + 5) ,0 + 0 ,1),0 + 0 ,2 -1 ,1250 -(363 + 887) ),BackgroundColor3=v11.Accent,BorderSizePixel=0,ZIndex=28 -11 },v238);v13(v239,14 -11 );local v240=v12("TextBox",{Size=UDim2.fromOffset(60,24),Position=UDim2.new(1 + 0 , -(163 -93),0 + 0 ,1998 -(674 + 990) ),BackgroundColor3=v11.DropdownItem,BackgroundTransparency=0.25 + 0 ,BorderSizePixel=0 + 0 ,Text=tostring(v69.FPSCap or 0 ),TextColor3=v11.TextPageTitle,TextSize=11,Font=Enum.Font.Gotham,ClearTextOnFocus=false,ZIndex=24 -8 },v230);v13(v240,6);v14(v240,1055.6 -(507 + 548) ,838 -(289 + 548) ,v11.StrokeInput);local v241=false;local function v242(v627) v627=math.clamp(math.floor(v627),0,2298 -(821 + 997) );v69.FPSCap=v627;v239.Size=UDim2.new(v627/(735 -(195 + 60)) ,0 + 0 ,1,0);v240.Text=tostring(v627);if setfpscap then setfpscap(((v627>(1501 -(251 + 1250))) and v627) or 480 );end end v238.InputBegan:Connect(function(v631) if (v631.UserInputType==Enum.UserInputType.MouseButton1) then local v751=0 -0 ;local v752;while true do if (v751==0) then v241=true;v752=math.clamp((v631.Position.X-v238.AbsolutePosition.X)/v238.AbsoluteSize.X ,0,1 + 0 );v751=1033 -(809 + 223) ;end if (v751==(1 -0)) then v242(v752 * (1441 -961) );break;end end end end);v1.InputChanged:Connect(function(v632) if (v241 and (v632.UserInputType==Enum.UserInputType.MouseMovement)) then local v753=0;local v754;while true do if (v753==(0 -0)) then v754=math.clamp((v632.Position.X-v238.AbsolutePosition.X)/v238.AbsoluteSize.X ,0,1 + 0 );v242(v754 * (252 + 228) );break;end end end end);v1.InputEnded:Connect(function(v633) if (v633.UserInputType==Enum.UserInputType.MouseButton1) then v241=false;end end);v240.FocusLost:Connect(function() local v634=tonumber(v240.Text);if v634 then v242(v634);end end);v98(v230,995 -(14 + 603) );v12("TextLabel",{Size=UDim2.new(130 -(118 + 11) , -20,0,4 + 16 ),Position=UDim2.fromOffset(10,390),BackgroundTransparency=1 + 0 ,Text="Notifications",TextColor3=v11.TextSection,TextSize=40 -26 ,Font=Enum.Font.GothamBold,TextXAlignment=Enum.TextXAlignment.Left,ZIndex=965 -(551 + 398) },v230);v100(v230,414,"Show Notifications",v69.ShowNotifications,"ShowNotifications",false,function(v635) v69.ShowNotifications=v635;end);v12("TextLabel",{Size=UDim2.new(1 + 0 , -(50 + 90),0 + 0 ,74 -54 ),Position=UDim2.fromOffset(23 -13 ,146 + 304 ),BackgroundTransparency=3 -2 ,Text="Notification Duration",TextColor3=v11.TextLabel,TextSize=4 + 8 ,Font=Enum.Font.GothamMedium,TextXAlignment=Enum.TextXAlignment.Left,ZIndex=105 -(40 + 49) },v230);local v243=v12("Frame",{Size=UDim2.new(3 -2 , -160,490 -(99 + 391) ,5 + 0 ),Position=UDim2.fromOffset(43 -33 ,480),BackgroundColor3=v11.SliderTrack,BorderSizePixel=0 -0 ,ZIndex=16 + 0 },v230);v13(v243,7 -4 );local v244=v12("Frame",{Size=UDim2.new(math.clamp((v69.NotificationDuration or (1606.5 -(1032 + 572)))/10 ,417 -(203 + 214) ,1818 -(568 + 1249) ),0 + 0 ,2 -1 ,0),BackgroundColor3=v11.Accent,BorderSizePixel=0 -0 ,ZIndex=1323 -(913 + 393) },v243);v13(v244,8 -5 );local v245=v12("TextBox",{Size=UDim2.fromOffset(60,24),Position=UDim2.new(1 -0 , -70,410 -(269 + 141) ,1000 -550 ),BackgroundColor3=v11.DropdownItem,BackgroundTransparency=1981.25 -(362 + 1619) ,BorderSizePixel=0,Text=string.format("%.1f",v69.NotificationDuration or (1627.5 -(950 + 675)) ),TextColor3=v11.TextPageTitle,TextSize=5 + 6 ,Font=Enum.Font.Gotham,ClearTextOnFocus=false,ZIndex=16},v230);v13(v245,6);v14(v245,1179.6 -(216 + 963) ,1288 -(485 + 802) ,v11.StrokeInput);local v246=false;local function v247(v637) local v638=559 -(432 + 127) ;while true do if (v638==(1074 -(1065 + 8))) then v244.Size=UDim2.new(v637/(6 + 4) ,1601 -(635 + 966) ,1,0 + 0 );v245.Text=string.format("%.1f",v637);break;end if (v638==(42 -(5 + 37))) then v637=math.clamp(v637,0.5 -0 ,5 + 5 );v69.NotificationDuration=v637;v638=1;end end end v243.InputBegan:Connect(function(v639) if (v639.UserInputType==Enum.UserInputType.MouseButton1) then local v755=0 -0 ;local v756;while true do if (v755==1) then v247(0.5 + 0 + (v756 * (18.5 -9)) );break;end if (v755==0) then v246=true;v756=math.clamp((v639.Position.X-v243.AbsolutePosition.X)/v243.AbsoluteSize.X ,0 -0 ,1);v755=1 -0 ;end end end end);v1.InputChanged:Connect(function(v640) if (v246 and (v640.UserInputType==Enum.UserInputType.MouseMovement)) then local v757=math.clamp((v640.Position.X-v243.AbsolutePosition.X)/v243.AbsoluteSize.X ,0 -0 ,1 + 0 );v247(0.5 + (v757 * (538.5 -(318 + 211))) );end end);v1.InputEnded:Connect(function(v641) if (v641.UserInputType==Enum.UserInputType.MouseButton1) then v246=false;end end);v245.FocusLost:Connect(function() local v642=0 -0 ;local v643;while true do if (v642==0) then v643=tonumber(v245.Text);if v643 then v247(v643);end break;end end end);v98(v230,2081 -(963 + 624) );v12("TextLabel",{Size=UDim2.new(1 + 0 , -(866 -(518 + 328)),0 -0 ,20),Position=UDim2.fromOffset(15 -5 ,823 -(301 + 16) ),BackgroundTransparency=2 -1 ,Text="Config Management",TextColor3=v11.TextSection,TextSize=39 -25 ,Font=Enum.Font.GothamBold,TextXAlignment=Enum.TextXAlignment.Left,ZIndex=41 -25 },v230);local function v248(v644,v645) local v646=0 + 0 ;local v647;local v648;while true do if (v646==(2 + 1)) then task.delay(v69.NotificationDuration or 2.5 ,function() v15(v647,{Position=UDim2.new(0.5 -0 , -150,1 + 0 , -40)},0.3 + 0 ):Play();task.delay(0.3 -0 ,function() v647:Destroy();end);end);break;end if ((0 + 0)==v646) then if  not v69.ShowNotifications then return;end v647=v12("Frame",{Size=UDim2.new(0,1319 -(829 + 190) ,0 -0 ,45 -9 ),Position=UDim2.new(0.5 -0 , -150,2 -1 , -(15 + 45)),BackgroundColor3=v11.BgCard,BackgroundTransparency=0.15 + 0 ,BorderSizePixel=0,ZIndex=607 -407 },v74);v646=1;end if (v646==(2 + 0)) then v648=v12("TextLabel",{Size=UDim2.new(614 -(520 + 93) , -(296 -(259 + 17)),1 + 0 ,0 + 0 ),Position=UDim2.fromOffset(33 -23 ,0),BackgroundTransparency=592 -(396 + 195) ,Text=v644,TextColor3=v645 or v11.TextLabel ,TextSize=34 -22 ,Font=Enum.Font.GothamMedium,TextXAlignment=Enum.TextXAlignment.Left,ZIndex=1962 -(440 + 1321) },v647);v15(v647,{Position=UDim2.new(0.5, -150,1830 -(1059 + 770) , -(462 -362))},545.3 -(424 + 121) ):Play();v646=1 + 2 ;end if (v646==(1348 -(641 + 706))) then v13(v647,8);v14(v647,0.6 + 0 ,441 -(249 + 191) ,v645 or v11.Accent );v646=2;end end end v102(v230,530,"Save Config",function() if writefile then local v758=0;local v759;local v760;local v761;while true do if (v758==(0 -0)) then v759={};for v881,v882 in pairs(v69) do if (typeof(v882)=="EnumItem") then v759[v881]={type="Enum",value=v882.Name};elseif (typeof(v882)=="Color3") then v759[v881]={type="Color3",r=v882.R,g=v882.G,b=v882.B};elseif (typeof(v882)=="Vector3") then v759[v881]={type="Vector3",x=v882.X,y=v882.Y,z=v882.Z};else v759[v881]={type=typeof(v882),value=v882};end end v758=1;end if (v758==(1 + 0)) then v760,v761=pcall(function() writefile("starscc_config.json",game:GetService("HttpService"):JSONEncode(v759));end);if v760 then v248("Config saved successfully!",v11.SuccessGreen);else v248("Failed to save: "   .. tostring(v761) ,v11.ErrorRed);end break;end end else v248("writefile not supported by your executor",v11.ErrorRed);end end);v102(v230,2181 -1615 ,"Load Config",function() if readfile then local v762=427 -(183 + 244) ;local v763;local v764;while true do if (v762==0) then v763,v764=pcall(function() local v883=readfile("starscc_config.json");local v884=game:GetService("HttpService"):JSONDecode(v883);for v898,v899 in pairs(v884) do if (v899.type=="Enum") then v69[v898]=Enum.KeyCode[v899.value];elseif (v899.type=="Color3") then v69[v898]=Color3.new(v899.r,v899.g,v899.b);elseif (v899.type=="Vector3") then v69[v898]=Vector3.new(v899.x,v899.y,v899.z);else v69[v898]=v899.value;end end end);if v763 then if v69.GUIThemeName then v6.ApplyTheme(v69.GUIThemeName);end if v69.GUIBackgroundImage then v6.ApplyBackgroundImage();end v248("Config loaded and applied!",v11.SuccessGreen);else v248("Failed to load: "   .. tostring(v764) ,v11.ErrorRed);end break;end end else v248("readfile not supported by your executor",v11.ErrorRed);end end);v102(v230,30 + 572 ,"Reset to Defaults",function() for v692,v693 in pairs(v69) do if (typeof(v693)=="boolean") then v69[v692]=false;elseif (typeof(v693)=="number") then if (v692=="Aimbot_FOV") then v69[v692]=60;elseif (v692=="Aimbot_Smoothness") then v69[v692]=15;elseif (v692=="FOV_Radius") then v69[v692]=250;elseif (v692=="ESP_MaxDistance") then v69[v692]=2730 -(434 + 296) ;elseif (v692=="Move_Speed") then v69[v692]=50;elseif (v692=="Move_JumpPower") then v69[v692]=319 -219 ;elseif (v692=="Move_FlySpeed") then v69[v692]=562 -(169 + 343) ;elseif (v692=="Move_BunnyHopSpeed") then v69[v692]=60;elseif (v692=="FarmDistance") then v69[v692]=11 + 1 ;elseif (v692=="GUIScale") then v69[v692]=1 -0 ;elseif (v692=="FPSCap") then v69[v692]=0 -0 ;elseif (v692=="NotificationDuration") then v69[v692]=2.5 + 0 ;else v69[v692]=0 -0 ;end elseif (typeof(v693)=="string") then if (v692=="Aimbot_TargetPart") then v69[v692]="Head";elseif (v692=="Aimbot_Priority") then v69[v692]="Closest to Mouse";elseif (v692=="TargetPart") then v69[v692]="Head";elseif (v692=="AntiStompMode") then v69[v692]="Void";elseif (v692=="SpamRange") then v69[v692]="Close";elseif (v692=="Move_FlyMethod") then v69[v692]="Tween";elseif (v692=="World_SkyTheme") then v69[v692]="Default";elseif (v692=="RagebotMethod") then v69[v692]="FarmVoid";else v69[v692]="";end end end v69.ToggleKey=Enum.KeyCode.RightShift;v69.PanicKey=nil;v69.GUIThemeName="Purple";v69.GUIBackgroundImage="None";v6.ApplyTheme("Purple");v6.ApplyBackgroundImage();v248("Config reset to defaults!",v11.SuccessGreen);end);v98(v230,1763 -(651 + 472) );v12("TextLabel",{Size=UDim2.new(1 + 0 , -(9 + 11),0 -0 ,503 -(397 + 86) ),Position=UDim2.fromOffset(886 -(423 + 453) ,652),BackgroundTransparency=1 + 0 ,Text="Theme",TextColor3=v11.TextSection,TextSize=2 + 12 ,Font=Enum.Font.GothamBold,TextXAlignment=Enum.TextXAlignment.Left,ZIndex=14 + 2 },v230);local v249=v103(v230,676,"GUI Theme",v69.GUIThemeName or "Purple" ,{"Purple","Monochrome"},function(v654) local v655=0 + 0 ;while true do if (v655==(1190 -(50 + 1140))) then v69.GUIThemeName=v654;v6.ApplyTheme(v654);break;end end end);v98(v230,736);v12("TextLabel",{Size=UDim2.new(1 + 0 , -(12 + 8),0 + 0 ,20),Position=UDim2.fromOffset(14 -4 ,748),BackgroundTransparency=1 + 0 ,Text="Background Image",TextColor3=v11.TextSection,TextSize=610 -(157 + 439) ,Font=Enum.Font.GothamBold,TextXAlignment=Enum.TextXAlignment.Left,ZIndex=16},v230);local v250=v103(v230,1341 -569 ,"Texture",v69.GUIBackgroundImage or "None" ,v10,function(v656) v69.GUIBackgroundImage=v656;v95();end);v12("Frame",{Size=UDim2.new(3 -2 ,0,0,40),Position=UDim2.fromOffset(0,832),BackgroundTransparency=2 -1 ,ZIndex=934 -(782 + 136) },v230);local v251=v12("Frame",{Name="HotkeyDisplay",Size=UDim2.fromOffset(1010 -(112 + 743) ,1207 -(1026 + 145) ),AnchorPoint=Vector2.new(1 + 0 ,718 -(493 + 225) ),Position=UDim2.new(3 -2 , -(13 + 7),0,53 -33 ),BackgroundColor3=v11.BgHotkey,BackgroundTransparency=0.08 + 0 ,BorderSizePixel=0 -0 ,Visible=false,ZIndex=15 + 35 },v74);v13(v251,16 -6 );v14(v251,0.88,1596 -(210 + 1385) );v6.HotkeyDisplay=v251;local v253=nil;local function v254(v658) v253=v658;for v694,v695 in pairs(v93) do local v696=v694==v658 ;v15(v695.Button,{BackgroundTransparency=(v696 and 0.84) or (1690 -(1201 + 488)) ,TextColor3=(v696 and v11.TextTabActive) or v11.TextTabInactive },0.2 + 0 ):Play();v15(v695.Indicator,{BackgroundTransparency=(v696 and (0 -0)) or (1 -0) },0.2):Play();end for v697,v698 in pairs(v94) do v698.Visible=v697==v658 ;end if (v157 and v157.IsOpen()) then v157.Close();end if (v144 and v144.IsOpen()) then v144.Close();end if (v145 and v145.IsOpen()) then v145.Close();end if (v146 and v146.IsOpen()) then v146.Close();end if (v147 and v147.IsOpen()) then v147.Close();end if (v222 and v222.IsOpen()) then v222.Close();end if (v203 and v203.IsOpen()) then v203.Close();end if (v165 and v165.IsOpen()) then v165.Close();end if (v166 and v166.IsOpen()) then v166.Close();end end for v659,v660 in pairs(v93) do v660.Button.MouseButton1Click:Connect(function() v254(v659);end);v660.Button.MouseEnter:Connect(function() if (v253~=v659) then v15(v660.Button,{BackgroundTransparency=0.94},0.15):Play();end end);v660.Button.MouseLeave:Connect(function() if (v253~=v659) then v15(v660.Button,{BackgroundTransparency=586 -(352 + 233) },0.15 -0 ):Play();end end);end v254("Combat");v6.ListeningKey=nil;v231.MouseButton1Click:Connect(function() local v661=0;while true do if (v661==0) then if v6.ListeningKey then return;end v6.ListeningKey="Toggle";v661=1 + 0 ;end if (1==v661) then v231.Text="PRESS KEY";v15(v231,{BackgroundTransparency=0},0.2 -0 ):Play();break;end end end);if  not v69.ToggleKey then v69.ToggleKey=Enum.KeyCode.RightShift;end v231.Text=v16(v69.ToggleKey);local function v257(v662) v6.GUIVisible=v662;if v662 then v81.Visible=true;v76.Visible=true;v89.Visible=true;v90.Visible=true;v91.Visible=true;if v253 then v254(v253);end v15(v81,{Size=UDim2.fromOffset(v79,v80),BackgroundTransparency=574.04 -(489 + 85) },0.4):Play();v15(v78,{Size=12},1501.35 -(277 + 1224) ):Play();else v15(v81,{Size=UDim2.fromOffset(v79 * (v69.GUIScale or (1494 -(663 + 830))) ,0 + 0 ),BackgroundTransparency=1},0.25 -0 ,Enum.EasingStyle.Quint,Enum.EasingDirection.In):Play();v15(v78,{Size=875 -(461 + 414) },0.25 + 0 ):Play();task.delay(0.25 + 0 ,function() if  not v6.GUIVisible then local v866=0 + 0 ;while true do if (v866==(0 + 0)) then v81.Visible=false;v76.Visible=false;v866=1;end if (v866==2) then v91.Visible=false;for v924,v925 in pairs(v94) do v925.Visible=false;end break;end if (v866==1) then v89.Visible=false;v90.Visible=false;v866=2;end end end end);end v6.UpdateHotkeyDisplay();end v6.SetGUIVisible=v257;local v259=v1.InputBegan:Connect(function(v664,v665) if v665 then return;end if v6.ListeningKey then local v770=nil;if ((v664.UserInputType==Enum.UserInputType.Keyboard) and (v664.KeyCode~=Enum.KeyCode.Unknown)) then if ((v664.KeyCode==Enum.KeyCode.Delete) or (v664.KeyCode==Enum.KeyCode.Backspace)) then v770="clear";else v770=v664.KeyCode;end elseif ((v664.UserInputType==Enum.UserInputType.MouseButton1) or (v664.UserInputType==Enum.UserInputType.MouseButton2) or (v664.UserInputType==Enum.UserInputType.MouseButton3)) then v770=v664.UserInputType;end if v770 then if (v770=="clear") then if (v6.ListeningKey=="Toggle") then elseif (v6.ListeningKey=="PanicKey") then local v941=250 -(172 + 78) ;while true do if ((0 -0)==v941) then v69.PanicKey=nil;v232.Text="—";break;end end else local v942=0 + 0 ;local v943;while true do if (0==v942) then v69[v6.ListeningKey   .. "Key" ]=nil;v943=v6.KeybindButtons[v6.ListeningKey];v942=1;end if (1==v942) then if v943 then v943.Text="—";end break;end end end elseif (v6.ListeningKey=="Toggle") then v69.ToggleKey=v770;v231.Text=v16(v770);elseif (v6.ListeningKey=="PanicKey") then v69.PanicKey=v770;v232.Text=v16(v770);elseif (v6.ToggleCallbacks[v6.ListeningKey] or v6.KeybindButtons[v6.ListeningKey]) then v69[v6.ListeningKey   .. "Key" ]=v770;local v955=v6.KeybindButtons[v6.ListeningKey];if v955 then v955.Text=v16(v770);end end v6.ListeningKey=nil;v15(v231,{BackgroundTransparency=0.18 -0 },0.2 + 0 ):Play();for v867,v868 in pairs(v6.KeybindButtons) do v15(v868,{BackgroundTransparency=0.2},0.2 + 0 ):Play();end v6.UpdateHotkeyDisplay();end return;end if v17(v664,v69.ToggleKey) then v257( not v6.GUIVisible);return;end if (v69.PanicKey and v17(v664,v69.PanicKey)) then local v771=0 -0 ;while true do if (v771==0) then for v887,v888 in pairs(v6.ToggleCallbacks) do if v69[v887] then v888(false);end end v257(false);v771=1;end if (v771==(1 -0)) then print("[Stars.cc] PANIC — All features disabled!");return;end end end if (v69.AutoHideOnScreenshot and (v664.KeyCode==Enum.KeyCode.PrintScreen)) then local v772=0 + 0 ;while true do if (v772==1) then return;end if (0==v772) then v257(false);task.delay(0.1 + 0 ,function() v257(true);end);v772=1 + 0 ;end end end for v702,v703 in pairs(v6.ToggleCallbacks) do local v704=0 -0 ;local v705;while true do if (v704==(0 -0)) then v705=v69[v702   .. "Key" ];if (v705 and v17(v664,v705)) then local v889=0 + 0 ;while true do if (v889==0) then v703( not v69[v702]);return;end end end break;end end end if (v664.UserInputType==Enum.UserInputType.MouseButton1) then local v773=0 + 0 ;local v774;while true do if (v773==(447 -(133 + 314))) then v774=v1:GetMouseLocation();if (v108.IsOpen and v105.Visible) then local v901=0 + 0 ;local v902;local v903;while true do if (v901==0) then v902=v105.AbsolutePosition;v903=v105.AbsoluteSize;v901=214 -(199 + 14) ;end if (v901==(3 -2)) then if ((v774.X<v902.X) or (v774.X>(v902.X + v903.X)) or (v774.Y<v902.Y) or (v774.Y>(v902.Y + v903.Y))) then v105.Visible=false;v108.IsOpen=false;v133();v104=nil;end break;end end end break;end end end end);table.insert(v6.Connections,v259);v88.MouseButton1Click:Connect(function() v257( not v6.GUIVisible);end);local function v260(v666,v667,v668) local v669=1549 -(647 + 902) ;while true do if (v669==(0 -0)) then v666.MouseEnter:Connect(function() v15(v666,{BackgroundTransparency=v668},233.15 -(85 + 148) ):Play();end);v666.MouseLeave:Connect(function() v15(v666,{BackgroundTransparency=v667},0.15):Play();end);break;end end end v260(v88,0.2,1289.05 -(426 + 863) );v260(v231,0.18,0.05 -0 );v95();v81.Size=UDim2.fromOffset(v79,1654 -(873 + 781) );v257(true);return v74;end;v6.ApplyTheme=function(v262) local v263=0 -0 ;local v264;local v265;while true do if (v263==0) then v264=v6.Config;if  not v264 then return;end v263=2 -1 ;end if (v263==4) then if v265 then v265:Destroy();end v6.Build();break;end if (3==v263) then if v6.ScreenGui then v6.ScreenGui:Destroy();end v265=v3:FindFirstChild("ZeeHoodBlur");v263=4;end if (v263==2) then for v821,v822 in pairs(v6.Connections) do if (v822 and v822.Connected) then v822:Disconnect();end end v6.Connections={};v263=2 + 1 ;end if (v263==(3 -2)) then v264.GUIThemeName=v262;v11=v7.Get(v262);v263=2 -0 ;end end end;return v6;
+local Player = Players.LocalPlayer
+local PlayerGui = Player:WaitForChild("PlayerGui")
+
+local UI = {
+    Config = nil,
+    Targeting = nil,
+    Combat = nil,
+    ScreenGui = nil,
+    Main = nil,
+    HotkeyDisplay = nil,
+    GUIVisible = false,
+    ListeningKey = nil,
+    ToggleCallbacks = {},
+    KeybindButtons = {},
+    Connections = {},
+}
+
+local Themes = {
+    Palettes = {
+        Purple = {
+            Accent = Color3.fromRGB(145, 75, 255),
+            AccentLight = Color3.fromRGB(195, 140, 255),
+            BgMain = Color3.fromRGB(9, 6, 15),
+            BgCard = Color3.fromRGB(18, 11, 27),
+            BgSidebar = Color3.fromRGB(16, 10, 24),
+            BgBackdrop = Color3.fromRGB(4, 3, 9),
+            BgHotkey = Color3.fromRGB(15, 9, 23),
+            BgPicker = Color3.fromRGB(14, 9, 22),
+            BgList = Color3.fromRGB(12, 8, 18),
+            TextTitle = Color3.fromRGB(245, 238, 250),
+            TextSubtitle = Color3.fromRGB(145, 125, 165),
+            TextPageTitle = Color3.fromRGB(245, 240, 250),
+            TextPageDesc = Color3.fromRGB(135, 120, 150),
+            TextLabel = Color3.fromRGB(200, 190, 215),
+            TextSection = Color3.fromRGB(245, 220, 255),
+            TextTabInactive = Color3.fromRGB(145, 135, 160),
+            TextTabActive = Color3.fromRGB(235, 220, 255),
+            TextHotkey = Color3.fromRGB(195, 175, 220),
+            StrokeMain = Color3.fromRGB(180, 120, 255),
+            StrokeCard = Color3.fromRGB(140, 90, 200),
+            StrokeInput = Color3.fromRGB(80, 60, 100),
+            ToggleOff = Color3.fromRGB(50, 50, 60),
+            SliderTrack = Color3.fromRGB(40, 40, 50),
+            CloseBtn = Color3.fromRGB(145, 45, 175),
+            PanicBtn = Color3.fromRGB(200, 50, 50),
+            KeybindBg = Color3.fromRGB(45, 65, 110),
+            UnbindBg = Color3.fromRGB(80, 80, 90),
+            DropdownBg = Color3.fromRGB(22, 14, 32),
+            DropdownItem = Color3.fromRGB(30, 20, 42),
+            Gradient0 = Color3.fromRGB(22, 8, 38),
+            Gradient50 = Color3.fromRGB(5, 3, 10),
+            Gradient100 = Color3.fromRGB(27, 7, 45),
+            Stars = Color3.fromRGB(220, 195, 255),
+            Scrollbar = Color3.fromRGB(145, 75, 255),
+            Separator = Color3.fromRGB(60, 40, 80),
+            DropdownText = Color3.fromRGB(220, 215, 235),
+            DropdownOption = Color3.fromRGB(180, 170, 200),
+            DropdownHover = Color3.fromRGB(235, 220, 255),
+            PickerLabel = Color3.fromRGB(160, 150, 175),
+            ArmorPos = Color3.fromRGB(130, 130, 150),
+            SetPosBtn = Color3.fromRGB(80, 60, 120),
+            ActionBtnText = Color3.fromRGB(255, 250, 255),
+            CloseBtnText = Color3.fromRGB(255, 245, 255),
+            KeybindText = Color3.fromRGB(180, 180, 200),
+            UnbindText = Color3.fromRGB(200, 200, 210),
+            HelpText = Color3.fromRGB(140, 130, 155),
+            ErrorRed = Color3.fromRGB(255, 80, 80),
+            SuccessGreen = Color3.fromRGB(80, 255, 80),
+        },
+        Monochrome = {
+            Accent = Color3.fromRGB(255, 255, 255),
+            AccentLight = Color3.fromRGB(255, 255, 255),
+            BgMain = Color3.fromRGB(0, 0, 0),
+            BgCard = Color3.fromRGB(0, 0, 0),
+            BgSidebar = Color3.fromRGB(0, 0, 0),
+            BgBackdrop = Color3.fromRGB(0, 0, 0),
+            BgHotkey = Color3.fromRGB(0, 0, 0),
+            BgPicker = Color3.fromRGB(0, 0, 0),
+            BgList = Color3.fromRGB(0, 0, 0),
+            TextTitle = Color3.fromRGB(255, 255, 255),
+            TextSubtitle = Color3.fromRGB(150, 150, 150),
+            TextPageTitle = Color3.fromRGB(255, 255, 255),
+            TextPageDesc = Color3.fromRGB(150, 150, 150),
+            TextLabel = Color3.fromRGB(200, 200, 200),
+            TextSection = Color3.fromRGB(255, 255, 255),
+            TextTabInactive = Color3.fromRGB(160, 160, 160),
+            TextTabActive = Color3.fromRGB(255, 255, 255),
+            TextHotkey = Color3.fromRGB(180, 180, 180),
+            StrokeMain = Color3.fromRGB(255, 255, 255),
+            StrokeCard = Color3.fromRGB(200, 200, 200),
+            StrokeInput = Color3.fromRGB(120, 120, 120),
+            ToggleOff = Color3.fromRGB(80, 80, 80),
+            SliderTrack = Color3.fromRGB(50, 50, 50),
+            CloseBtn = Color3.fromRGB(255, 255, 255),
+            PanicBtn = Color3.fromRGB(200, 50, 50),
+            KeybindBg = Color3.fromRGB(255, 255, 255),
+            UnbindBg = Color3.fromRGB(120, 120, 120),
+            DropdownBg = Color3.fromRGB(0, 0, 0),
+            DropdownItem = Color3.fromRGB(0, 0, 0),
+            Gradient0 = Color3.fromRGB(0, 0, 0),
+            Gradient50 = Color3.fromRGB(0, 0, 0),
+            Gradient100 = Color3.fromRGB(0, 0, 0),
+            Stars = Color3.fromRGB(255, 255, 255),
+            Scrollbar = Color3.fromRGB(255, 255, 255),
+            Separator = Color3.fromRGB(255, 255, 255),
+            DropdownText = Color3.fromRGB(255, 255, 255),
+            DropdownOption = Color3.fromRGB(180, 180, 180),
+            DropdownHover = Color3.fromRGB(255, 255, 255),
+            PickerLabel = Color3.fromRGB(160, 160, 160),
+            ArmorPos = Color3.fromRGB(140, 140, 140),
+            SetPosBtn = Color3.fromRGB(255, 255, 255),
+            ActionBtnText = Color3.fromRGB(0, 0, 0),
+            CloseBtnText = Color3.fromRGB(0, 0, 0),
+            KeybindText = Color3.fromRGB(0, 0, 0),
+            UnbindText = Color3.fromRGB(0, 0, 0),
+            HelpText = Color3.fromRGB(150, 150, 150),
+            ErrorRed = Color3.fromRGB(255, 80, 80),
+            SuccessGreen = Color3.fromRGB(80, 255, 80),
+        },
+    },
+    Names = {"Purple", "Monochrome"},
+}
+
+function Themes.Get(name)
+    return Themes.Palettes[name] or Themes.Palettes.Purple
+end
+
+local BackgroundTextures = {
+    None = nil,
+    ["Catgirl Black"] = "rbxassetid://100444103656384",
+    ["Catgirl Pink"] = "rbxassetid://74265591038566",
+    ["2 Catgirls"] = "rbxassetid://135809148867647",
+}
+
+local BackgroundTextureNames = {"None", "Catgirl Black", "Catgirl Pink", "2 Catgirls"}
+
+local Theme = nil
+
+local function New(className, properties, parent)
+    local object = Instance.new(className)
+    for property, value in pairs(properties or {}) do
+        object[property] = value
+    end
+    object.Parent = parent
+    return object
+end
+
+local function Corner(parent, radius)
+    return New("UICorner", {CornerRadius = UDim.new(0, radius or 6)}, parent)
+end
+
+local function Stroke(parent, transparency, thickness, color)
+    return New("UIStroke", {
+        Color = color or Theme.StrokeMain,
+        Transparency = transparency or 0.72,
+        Thickness = thickness or 1,
+    }, parent)
+end
+
+local function Tween(object, properties, duration, style, direction)
+    local info = TweenInfo.new(duration or 0.3, style or Enum.EasingStyle.Quint, direction or Enum.EasingDirection.Out)
+    return TweenService:Create(object, info, properties)
+end
+
+local function FormatKeyName(key)
+    if not key then return "—" end
+    if typeof(key) == "EnumItem" then
+        if key.EnumType == Enum.KeyCode then
+            return key.Name
+        elseif key.EnumType == Enum.UserInputType then
+            if key == Enum.UserInputType.MouseButton1 then return "MB1"
+            elseif key == Enum.UserInputType.MouseButton2 then return "MB2"
+            elseif key == Enum.UserInputType.MouseButton3 then return "MB3"
+            else return key.Name end
+        end
+    end
+    return tostring(key)
+end
+
+local function IsSameKey(input, storedKey)
+    if not storedKey then return false end
+    if typeof(storedKey) == "EnumItem" and storedKey.EnumType == Enum.KeyCode then
+        return input.KeyCode == storedKey
+    elseif typeof(storedKey) == "EnumItem" and storedKey.EnumType == Enum.UserInputType then
+        return input.UserInputType == storedKey
+    end
+    return false
+end
+
+function UI.SetConfig(config)
+    UI.Config = config
+end
+
+function UI.SetTargeting(targeting)
+    UI.Targeting = targeting
+end
+
+function UI.SetCombat(combat)
+    UI.Combat = combat
+end
+
+function UI.SetMisc(misc)
+    UI.Misc = misc
+end
+
+function UI.SetFarm(farm)
+    UI.Farm = farm
+end
+
+function UI.SetMovement(movement)
+    UI.Movement = movement
+end
+
+function UI.SetVisuals(visuals)
+    UI.Visuals = visuals
+end
+
+
+function UI.UpdateHotkeyDisplay()
+    local Config = UI.Config
+    if not Config or not UI.HotkeyDisplay then return end
+    for _, child in ipairs(UI.HotkeyDisplay:GetChildren()) do
+        if child:IsA("TextLabel") then child:Destroy() end
+    end
+    if not Config.ShowHotkeys then
+        UI.HotkeyDisplay.Visible = false
+        return
+    end
+    UI.HotkeyDisplay.Visible = not UI.GUIVisible
+    local y = 6
+    local function addLine(text)
+        New("TextLabel", {
+            Size = UDim2.new(1, -16, 0, 18),
+            Position = UDim2.fromOffset(8, y),
+            BackgroundTransparency = 1,
+            Text = text,
+            TextColor3 = Theme.TextHotkey,
+            TextSize = 10,
+            Font = Enum.Font.GothamMedium,
+            TextXAlignment = Enum.TextXAlignment.Left,
+            ZIndex = 51,
+        }, UI.HotkeyDisplay)
+        y = y + 16
+    end
+    addLine("MENU  •  " .. Config.ToggleKey.Name)
+    for toggleId, _ in pairs(UI.ToggleCallbacks) do
+        local key = Config[toggleId .. "Key"]
+        if key then
+            local name = toggleId:gsub("([A-Z])", " %1")
+            name = name:gsub("^%s", "")
+            name = string.upper(name):sub(1, 12)
+            addLine(name .. "  •  " .. FormatKeyName(key))
+        end
+    end
+    local aimKey = Config.Aimbot_EnabledKey
+    if aimKey then
+        addLine("AIMBOT  •  " .. FormatKeyName(aimKey))
+    end
+    UI.HotkeyDisplay.Size = UDim2.fromOffset(155, math.max(36, y + 4))
+end
+
+function UI.Build()
+    local Config = UI.Config
+    Theme = Themes.Get(Config.GUIThemeName or "Purple")
+    if not Config then return end
+    UI.ToggleCallbacks = {}
+    UI.KeybindButtons = {}
+    local oldGui = PlayerGui:FindFirstChild("ZeeHoodUI")
+    if oldGui then oldGui:Destroy() end
+    local oldBlur = Lighting:FindFirstChild("ZeeHoodBlur")
+    if oldBlur then oldBlur:Destroy() end
+    local ScreenGui = New("ScreenGui", {
+        Name = "ZeeHoodUI",
+        ResetOnSpawn = false,
+        IgnoreGuiInset = true,
+        ZIndexBehavior = Enum.ZIndexBehavior.Sibling,
+    }, PlayerGui)
+    UI.ScreenGui = ScreenGui
+    local Background = New("Frame", {
+        Name = "Background",
+        Size = UDim2.fromScale(1, 1),
+        BackgroundColor3 = Theme.BgBackdrop,
+        BackgroundTransparency = 0.08,
+        BorderSizePixel = 0,
+        ZIndex = 1,
+        Visible = false,
+    }, ScreenGui)
+    New("UIGradient", {
+        Rotation = 35,
+        Color = ColorSequence.new({
+            ColorSequenceKeypoint.new(0, Theme.Gradient0),
+            ColorSequenceKeypoint.new(0.5, Theme.Gradient50),
+            ColorSequenceKeypoint.new(1, Theme.Gradient100),
+        }),
+    }, Background)
+    local StarContainer = New("Frame", {
+        Name = "Stars",
+        Size = UDim2.fromScale(1, 1),
+        BackgroundTransparency = 1,
+        ClipsDescendants = true,
+        ZIndex = 2,
+    }, Background)
+    for i = 1, 60 do
+        local size = math.random(1, 3)
+        local star = New("Frame", {
+            Size = UDim2.fromOffset(size, size),
+            Position = UDim2.fromScale(math.random(), math.random()),
+            BackgroundColor3 = Theme.Stars,
+            BackgroundTransparency = math.random(20, 90) / 100,
+            BorderSizePixel = 0,
+            ZIndex = 2,
+        }, StarContainer)
+        Corner(star, size)
+        task.spawn(function()
+            while star.Parent do
+                local ft = math.random(5, 15) / 10
+                Tween(star, {BackgroundTransparency = math.random(15, 55) / 100}, ft, Enum.EasingStyle.Sine, Enum.EasingDirection.InOut):Play()
+                task.wait(ft)
+                Tween(star, {BackgroundTransparency = math.random(65, 95) / 100}, ft, Enum.EasingStyle.Sine, Enum.EasingDirection.InOut):Play()
+                task.wait(ft + math.random(1, 15) / 10)
+            end
+        end)
+    end
+    local Blur = New("BlurEffect", {
+        Name = "ZeeHoodBlur",
+        Size = 0,
+    }, Lighting)
+    local GUI_WIDTH, GUI_HEIGHT = 760, 540
+    local Main = New("Frame", {
+        Name = "Main",
+        Size = UDim2.fromOffset(GUI_WIDTH, GUI_HEIGHT),
+        Position = UDim2.fromScale(0.5, 0.5),
+        AnchorPoint = Vector2.new(0.5, 0.5),
+        BackgroundColor3 = Theme.BgMain,
+        BackgroundTransparency = 0.04,
+        BorderSizePixel = 0,
+        ZIndex = 10,
+        Visible = false,
+        ClipsDescendants = true,
+    }, ScreenGui)
+    UI.Main = Main
+    UI.Background = Background
+    Corner(Main, 20)
+    Stroke(Main, 0.72, 1)
+    New("Frame", {
+        Size = UDim2.new(1, -40, 0, 1),
+        Position = UDim2.fromOffset(20, 1),
+        BackgroundColor3 = Theme.AccentLight,
+        BackgroundTransparency = 0.5,
+        BorderSizePixel = 0,
+        ZIndex = 11,
+    }, Main)
+    local TopBar = New("Frame", {
+        Size = UDim2.new(1, -30, 0, 62),
+        Position = UDim2.fromOffset(15, 10),
+        BackgroundTransparency = 1,
+        ZIndex = 12,
+        Active = true, -- Enable drag
+    }, Main)
+
+    -- Drag functionality for window mode
+    local dragging = false
+    local dragStart = nil
+    local startPos = nil
+
+    TopBar.InputBegan:Connect(function(input)
+        if input.UserInputType == Enum.UserInputType.MouseButton1 and Config.GUIWindow then
+            dragging = true
+            dragStart = input.Position
+            startPos = Main.Position
+        end
+    end)
+
+    TopBar.InputChanged:Connect(function(input)
+        if dragging and input.UserInputType == Enum.UserInputType.MouseMovement then
+            local delta = input.Position - dragStart
+            Main.Position = UDim2.new(
+                startPos.X.Scale, startPos.X.Offset + delta.X,
+                startPos.Y.Scale, startPos.Y.Offset + delta.Y
+            )
+        end
+    end)
+
+    TopBar.InputEnded:Connect(function(input)
+        if input.UserInputType == Enum.UserInputType.MouseButton1 then
+            dragging = false
+        end
+    end)
+    New("TextLabel", {
+        Size = UDim2.fromOffset(400, 27),
+        Position = UDim2.fromOffset(8, 3),
+        BackgroundTransparency = 1,
+        Text = "Stars.cc",
+        TextColor3 = Theme.TextTitle,
+        TextSize = 20,
+        Font = Enum.Font.GothamBold,
+        TextXAlignment = Enum.TextXAlignment.Left,
+        ZIndex = 13,
+    }, TopBar)
+    New("TextLabel", {
+        Size = UDim2.fromOffset(400, 20),
+        Position = UDim2.fromOffset(9, 30),
+        BackgroundTransparency = 1,
+        Text = "Made by confess",
+        TextColor3 = Theme.TextSubtitle,
+        TextSize = 9,
+        Font = Enum.Font.GothamMedium,
+        TextXAlignment = Enum.TextXAlignment.Left,
+        ZIndex = 13,
+    }, TopBar)
+    local CloseBtn = New("TextButton", {
+        Size = UDim2.fromOffset(34, 34),
+        Position = UDim2.new(1, -34, 0, 7),
+        BackgroundColor3 = Theme.CloseBtn,
+        BackgroundTransparency = 0.2,
+        BorderSizePixel = 0,
+        Text = "×",
+        TextColor3 = Theme.CloseBtnText,
+        TextSize = 20,
+        Font = Enum.Font.GothamBold,
+        AutoButtonColor = false,
+        ZIndex = 15,
+    }, TopBar)
+    Corner(CloseBtn, 9)
+    local Body = New("Frame", {
+        Size = UDim2.new(1, -30, 1, -82),
+        Position = UDim2.fromOffset(15, 72),
+        BackgroundTransparency = 1,
+        ZIndex = 12,
+    }, Main)
+    local Sidebar = New("Frame", {
+        Size = UDim2.new(0, 175, 1, 0),
+        Position = UDim2.fromOffset(0, 0),
+        BackgroundColor3 = Theme.BgSidebar,
+        BackgroundTransparency = 0.1,
+        BorderSizePixel = 0,
+        ZIndex = 13,
+    }, Body)
+    Corner(Sidebar, 15)
+    Stroke(Sidebar, 0.91, 1)
+    local Content = New("Frame", {
+        Size = UDim2.new(1, -190, 1, 0),
+        Position = UDim2.fromOffset(190, 0),
+        BackgroundTransparency = 1,
+        ClipsDescendants = true,
+        ZIndex = 13,
+    }, Body)
+    local TabNames = {"Combat", "Visuals", "Target", "Farm", "Misc", "World", "Movement", "Settings"}
+    local TabButtons = {}
+    local Pages = {}
+    for index, name in ipairs(TabNames) do
+        local button = New("TextButton", {
+            Size = UDim2.new(1, -32, 0, 43),
+            Position = UDim2.fromOffset(22, 12 + ((index - 1) * 50)),
+            BackgroundColor3 = Theme.Accent,
+            BackgroundTransparency = 1,
+            BorderSizePixel = 0,
+            Text = name,
+            TextColor3 = Theme.TextTabInactive,
+            TextSize = 12,
+            Font = Enum.Font.GothamMedium,
+            TextXAlignment = Enum.TextXAlignment.Left,
+            AutoButtonColor = false,
+            ZIndex = 15,
+        }, Sidebar)
+        Corner(button, 10)
+        New("UIPadding", {PaddingLeft = UDim.new(0, 16)}, button)
+        local indicator = New("Frame", {
+            Size = UDim2.fromOffset(3, 18),
+            Position = UDim2.new(0, 8, 0, 25 + ((index - 1) * 50)),
+            BackgroundColor3 = Theme.AccentLight,
+            BackgroundTransparency = 1,
+            BorderSizePixel = 0,
+            ZIndex = 20,
+        }, Sidebar)
+        Corner(indicator, 3)
+        TabButtons[name] = {Button = button, Indicator = indicator}
+        local page = New("Frame", {
+            Name = name,
+            Size = UDim2.fromScale(1, 1),
+            BackgroundTransparency = 1,
+            Visible = false,
+            ZIndex = 14,
+        }, Content)
+        Pages[name] = page
+    end
+
+    local function ApplyBackgroundImage()
+        local textureName = Config.GUIBackgroundImage or "None"
+        local textureId = BackgroundTextures[textureName]
+        for name, page in pairs(Pages) do
+            local existing = page:FindFirstChild("BGImage")
+            if existing then
+                existing:Destroy()
+            end
+            if textureId then
+                New("ImageLabel", {
+                    Name = "BGImage",
+                    Size = UDim2.fromScale(1, 1),
+                    BackgroundTransparency = 1,
+                    Image = textureId,
+                    ImageTransparency = 0.6,
+                    ImageColor3 = Color3.fromRGB(255, 255, 255),
+                    ScaleType = Enum.ScaleType.Stretch,
+                    ZIndex = 1,
+                }, page)
+            end
+        end
+    end
+    UI.ApplyBackgroundImage = ApplyBackgroundImage
+
+    local function PageTitle(page, title, description)
+        New("TextLabel", {
+            Size = UDim2.new(1, -20, 0, 28),
+            Position = UDim2.fromOffset(10, 7),
+            BackgroundTransparency = 1,
+            Text = title,
+            TextColor3 = Theme.TextPageTitle,
+            TextSize = 21,
+            Font = Enum.Font.GothamBold,
+            TextXAlignment = Enum.TextXAlignment.Left,
+            ZIndex = 15,
+        }, page)
+        New("TextLabel", {
+            Size = UDim2.new(1, -20, 0, 22),
+            Position = UDim2.fromOffset(10, 35),
+            BackgroundTransparency = 1,
+            Text = description,
+            TextColor3 = Theme.TextPageDesc,
+            TextSize = 10,
+            Font = Enum.Font.GothamMedium,
+            TextXAlignment = Enum.TextXAlignment.Left,
+            ZIndex = 15,
+        }, page)
+    end
+    local function CreateSeparator(parent, y)
+        New("Frame", {
+            Size = UDim2.new(1, -20, 0, 1),
+            Position = UDim2.fromOffset(10, y),
+            BackgroundColor3 = Theme.Separator,
+            BackgroundTransparency = 0.5,
+            BorderSizePixel = 0,
+            ZIndex = 16,
+        }, parent)
+    end
+
+    local function CreateCard(page, position, size)
+        local card = New("Frame", {
+            Size = size,
+            Position = position,
+            BackgroundColor3 = Theme.BgCard,
+            BackgroundTransparency = 0.35,
+            BorderSizePixel = 0,
+            ZIndex = 15,
+        }, page)
+        Corner(card, 13)
+        Stroke(card, 0.91, 1)
+        return card
+    end
+
+    local function CreateToggle(parent, y, text, default, toggleId, hasHotkey, callback)
+        local frame = New("Frame", {
+            Size = UDim2.new(1, -20, 0, 32),
+            Position = UDim2.fromOffset(10, y),
+            BackgroundTransparency = 1,
+            ZIndex = 16,
+        }, parent)
+        local labelWidth = hasHotkey and 168 or 120
+        New("TextLabel", {
+            Size = UDim2.new(1, -labelWidth, 1, 0),
+            BackgroundTransparency = 1,
+            Text = text,
+            TextColor3 = Theme.TextLabel,
+            TextSize = 12,
+            Font = Enum.Font.GothamMedium,
+            TextXAlignment = Enum.TextXAlignment.Left,
+            ZIndex = 17,
+        }, frame)
+        if hasHotkey and toggleId then
+            local keybindKey = Config[toggleId .. "Key"]
+            local keyBtn = New("TextButton", {
+                Size = UDim2.fromOffset(44, 20),
+                Position = UDim2.new(1, -102, 0.5, -10),
+                BackgroundColor3 = Theme.KeybindBg,
+                BackgroundTransparency = 0.2,
+                BorderSizePixel = 0,
+                Text = keybindKey and FormatKeyName(keybindKey) or "—",
+                TextColor3 = Theme.KeybindText,
+                TextSize = 10,
+                Font = Enum.Font.GothamBold,
+                AutoButtonColor = false,
+                ZIndex = 17,
+            }, frame)
+            Corner(keyBtn, 5)
+            keyBtn.MouseButton1Click:Connect(function()
+                if UI.ListeningKey then return end
+                UI.ListeningKey = toggleId
+                keyBtn.Text = "..."
+                Tween(keyBtn, {BackgroundTransparency = 0}, 0.2):Play()
+            end)
+            UI.KeybindButtons[toggleId] = keyBtn
+
+            -- Unbind button
+            local unbindBtn = New("TextButton", {
+                Size = UDim2.fromOffset(20, 20),
+                Position = UDim2.new(1, -126, 0.5, -10),
+                BackgroundColor3 = Theme.UnbindBg,
+                BackgroundTransparency = 0.3,
+                BorderSizePixel = 0,
+                Text = "−",
+                TextColor3 = Theme.UnbindText,
+                TextSize = 14,
+                Font = Enum.Font.GothamBold,
+                AutoButtonColor = false,
+                ZIndex = 17,
+            }, frame)
+            Corner(unbindBtn, 5)
+            unbindBtn.MouseButton1Click:Connect(function()
+                Config[toggleId .. "Key"] = nil
+                keyBtn.Text = "—"
+                UI.UpdateHotkeyDisplay()
+            end)
+        end
+        local toggle = New("TextButton", {
+            Size = UDim2.fromOffset(44, 22),
+            Position = UDim2.new(1, -50, 0.5, -11),
+            BackgroundColor3 = default and Theme.Accent or Theme.ToggleOff,
+            BorderSizePixel = 0,
+            Text = "",
+            AutoButtonColor = false,
+            ZIndex = 17,
+        }, frame)
+        Corner(toggle, 11)
+        local knob = New("Frame", {
+            Size = UDim2.fromOffset(18, 18),
+            Position = default and UDim2.new(1, -20, 0.5, -9) or UDim2.new(0, 2, 0.5, -9),
+            BackgroundColor3 = Color3.fromRGB(255, 255, 255),
+            BorderSizePixel = 0,
+            ZIndex = 18,
+        }, toggle)
+        Corner(knob, 20)
+        local state = default
+        local function setState(newState)
+            state = newState
+            Tween(toggle, {BackgroundColor3 = state and Theme.Accent or Theme.ToggleOff}, 0.2):Play()
+            Tween(knob, {Position = state and UDim2.new(1, -20, 0.5, -9) or UDim2.new(0, 2, 0.5, -9)}, 0.2):Play()
+            callback(state)
+        end
+        toggle.MouseButton1Click:Connect(function()
+            setState(not state)
+        end)
+        if toggleId then
+            UI.ToggleCallbacks[toggleId] = setState
+        end
+        return setState
+    end
+    local function CreateSlider(parent, y, text, min, max, default, callback)
+        local frame = New("Frame", {
+            Size = UDim2.new(1, -20, 0, 48),
+            Position = UDim2.fromOffset(10, y),
+            BackgroundTransparency = 1,
+            ZIndex = 16,
+        }, parent)
+        local label = New("TextLabel", {
+            Size = UDim2.new(1, 0, 0, 20),
+            BackgroundTransparency = 1,
+            Text = text .. " [" .. default .. "]",
+            TextColor3 = Theme.TextLabel,
+            TextSize = 12,
+            Font = Enum.Font.GothamMedium,
+            TextXAlignment = Enum.TextXAlignment.Left,
+            ZIndex = 17,
+        }, frame)
+        local track = New("Frame", {
+            Size = UDim2.new(1, 0, 0, 5),
+            Position = UDim2.new(0, 0, 0, 30),
+            BackgroundColor3 = Theme.SliderTrack,
+            BorderSizePixel = 0,
+            ZIndex = 17,
+        }, frame)
+        Corner(track, 3)
+        local fill = New("Frame", {
+            Size = UDim2.new((default - min) / (max - min), 0, 1, 0),
+            BackgroundColor3 = Theme.Accent,
+            BorderSizePixel = 0,
+            ZIndex = 18,
+        }, track)
+        Corner(fill, 3)
+        local dragging = false
+        local function setValue(input)
+            local pos = math.clamp((input.Position.X - track.AbsolutePosition.X) / track.AbsoluteSize.X, 0, 1)
+            local val = math.floor(min + (pos * (max - min)))
+            fill.Size = UDim2.new(pos, 0, 1, 0)
+            label.Text = text .. " [" .. val .. "]"
+            callback(val)
+        end
+        track.InputBegan:Connect(function(input)
+            if input.UserInputType == Enum.UserInputType.MouseButton1 then
+                dragging = true
+                setValue(input)
+            end
+        end)
+        UserInputService.InputChanged:Connect(function(input)
+            if dragging and input.UserInputType == Enum.UserInputType.MouseMovement then
+                setValue(input)
+            end
+        end)
+        UserInputService.InputEnded:Connect(function(input)
+            if input.UserInputType == Enum.UserInputType.MouseButton1 then
+                dragging = false
+            end
+        end)
+    end
+    local function CreateActionButton(parent, y, text, callback)
+        local btn = New("TextButton", {
+            Size = UDim2.new(1, -20, 0, 30),
+            Position = UDim2.fromOffset(10, y),
+            BackgroundColor3 = Theme.Accent,
+            BackgroundTransparency = 0.18,
+            BorderSizePixel = 0,
+            Text = text,
+            TextColor3 = Theme.ActionBtnText,
+            TextSize = 12,
+            Font = Enum.Font.GothamBold,
+            AutoButtonColor = false,
+            ZIndex = 16,
+        }, parent)
+        Corner(btn, 8)
+        btn.MouseButton1Click:Connect(callback)
+        btn.MouseEnter:Connect(function()
+            Tween(btn, {BackgroundTransparency = 0.05}, 0.15):Play()
+        end)
+        btn.MouseLeave:Connect(function()
+            Tween(btn, {BackgroundTransparency = 0.18}, 0.15):Play()
+        end)
+        return btn
+    end
+
+    local function BuildDropdown(parent, y, labelText, currentValue, options, onSelect)
+        New("TextLabel", {
+            Size = UDim2.new(1, -20, 0, 20),
+            Position = UDim2.fromOffset(10, y),
+            BackgroundTransparency = 1,
+            Text = labelText,
+            TextColor3 = Theme.TextLabel,
+            TextSize = 12,
+            Font = Enum.Font.GothamMedium,
+            TextXAlignment = Enum.TextXAlignment.Left,
+            ZIndex = 16,
+        }, parent)
+        local container = New("Frame", {
+            Size = UDim2.new(1, -20, 0, 32),
+            Position = UDim2.fromOffset(10, y + 24),
+            BackgroundColor3 = Theme.DropdownBg,
+            BackgroundTransparency = 0.15,
+            BorderSizePixel = 0,
+            ZIndex = 16,
+        }, parent)
+        Corner(container, 8)
+        Stroke(container, 0.85, 1, Theme.StrokeCard)
+        local header = New("TextButton", {
+            Size = UDim2.new(1, 0, 0, 32),
+            BackgroundColor3 = Theme.DropdownBg,
+            BackgroundTransparency = 0,
+            BorderSizePixel = 0,
+            Text = "  " .. currentValue .. "  ▼",
+            TextColor3 = Theme.DropdownText,
+            TextSize = 12,
+            Font = Enum.Font.GothamMedium,
+            TextXAlignment = Enum.TextXAlignment.Left,
+            AutoButtonColor = false,
+            ZIndex = 17,
+        }, container)
+        Corner(header, 8)
+
+        local open = false
+        local itemHeight = 36
+        local maxVisible = 3
+        local listHeight = math.min(#options, maxVisible) * itemHeight
+
+        -- Parent to same card, position below header — scrolls with page
+        local list = New("ScrollingFrame", {
+            Size = UDim2.new(1, -20, 0, 0),
+            Position = UDim2.fromOffset(10, y + 24 + 32 + 2),
+            BackgroundColor3 = Theme.BgCard,
+            BackgroundTransparency = 0.02,
+            BorderSizePixel = 0,
+            ZIndex = 100,
+            ClipsDescendants = true,
+            Visible = false,
+            ScrollBarThickness = 3,
+            ScrollBarImageColor3 = Theme.Accent,
+            CanvasSize = UDim2.new(0, 0, 0, #options * itemHeight),
+        }, parent)
+        Corner(list, 8)
+        Stroke(list, 0.85, 1, Theme.StrokeCard)
+
+        local optionButtons = {}
+        for i, optText in ipairs(options) do
+            local btn = New("TextButton", {
+                Size = UDim2.new(1, -16, 0, itemHeight - 2),
+                Position = UDim2.fromOffset(4, 4 + (i - 1) * itemHeight),
+                BackgroundColor3 = Theme.DropdownItem,
+                BackgroundTransparency = 1,
+                BorderSizePixel = 0,
+                Text = "  " .. optText,
+                TextColor3 = Theme.DropdownOption,
+                TextSize = 11,
+                Font = Enum.Font.GothamMedium,
+                TextXAlignment = Enum.TextXAlignment.Left,
+                AutoButtonColor = false,
+                ZIndex = 101,
+            }, list)
+            Corner(btn, 4)
+            btn.MouseEnter:Connect(function()
+                Tween(btn, {BackgroundTransparency = 0.3, TextColor3 = Theme.TextTabActive}, 0.15):Play()
+            end)
+            btn.MouseLeave:Connect(function()
+                Tween(btn, {BackgroundTransparency = 1, TextColor3 = Theme.DropdownOption}, 0.15):Play()
+            end)
+            btn.MouseButton1Click:Connect(function()
+                onSelect(optText)
+                header.Text = "  " .. optText .. "  ▼"
+                open = false
+                Tween(list, {Size = UDim2.new(1, -20, 0, 0)}, 0.2):Play()
+                task.delay(0.2, function()
+                    if not open then list.Visible = false end
+                end)
+            end)
+            optionButtons[i] = btn
+        end
+
+        header.MouseButton1Click:Connect(function()
+            open = not open
+            if open then
+                list.Visible = true
+                header.Text = "  " .. currentValue .. "  ▲"
+                Tween(list, {Size = UDim2.new(1, -20, 0, listHeight)}, 0.2):Play()
+            else
+                header.Text = "  " .. currentValue .. "  ▼"
+                Tween(list, {Size = UDim2.new(1, -20, 0, 0)}, 0.2):Play()
+                task.delay(0.2, function()
+                    if not open then list.Visible = false end
+                end)
+            end
+        end)
+
+        return {
+            Container = container,
+            Header = header,
+            List = list,
+            IsOpen = function() return open end,
+            Close = function()
+                open = false
+                header.Text = "  " .. currentValue .. "  ▼"
+                Tween(list, {Size = UDim2.new(1, -20, 0, 0)}, 0.2):Play()
+                task.delay(0.2, function()
+                    if not open then list.Visible = false end
+                end)
+            end,
+            SetValue = function(v)
+                currentValue = v
+                header.Text = "  " .. v .. "  ▼"
+            end,
+        }
+    end
+
+    -- COLOR PICKER (Centered Popup)
+    local ActiveColorPicker = nil
+
+    local ColorPickerFrame = New("Frame", {
+        Name = "ColorPicker",
+        Size = UDim2.fromOffset(300, 300),
+        Position = UDim2.new(0.5, -150, 0.5, -150),
+        BackgroundColor3 = Theme.BgPicker,
+        BackgroundTransparency = 0.03,
+        BorderSizePixel = 0,
+        Visible = false,
+        ZIndex = 200,
+    }, ScreenGui)
+    Corner(ColorPickerFrame, 16)
+    Stroke(ColorPickerFrame, 0.85, 1.5, Theme.StrokeCard)
+
+    New("Frame", {
+        Size = UDim2.fromScale(1, 1),
+        BackgroundColor3 = Color3.fromRGB(255, 255, 255),
+        BackgroundTransparency = 0.92,
+        BorderSizePixel = 0,
+        ZIndex = 0,
+    }, ColorPickerFrame)
+
+    local CPTitle = New("TextLabel", {
+        Size = UDim2.new(1, -48, 0, 30),
+        Position = UDim2.fromOffset(18, 10),
+        BackgroundTransparency = 1,
+        Text = "Color",
+        TextColor3 = Theme.TextPageTitle,
+        TextSize = 14,
+        Font = Enum.Font.GothamBold,
+        TextXAlignment = Enum.TextXAlignment.Left,
+        ZIndex = 201,
+    }, ColorPickerFrame)
+
+    local CPClose = New("TextButton", {
+        Size = UDim2.fromOffset(30, 30),
+        Position = UDim2.new(1, -38, 0, 10),
+        BackgroundTransparency = 1,
+        Text = "×",
+        TextColor3 = Theme.DropdownOption,
+        TextSize = 24,
+        Font = Enum.Font.GothamBold,
+        ZIndex = 201,
+    }, ColorPickerFrame)
+
+    local CPState = {
+        Hue = 0, Sat = 1, Val = 1,
+        Callback = nil, IsOpen = false, JustOpened = false, Dragging = nil,
+    }
+    local CPUpdatingHex = false
+    local CPUI = {}
+
+    local function CPUpdateColor(skipCallback)
+        local color = Color3.fromHSV(CPState.Hue, CPState.Sat, CPState.Val)
+        if CPUI.Preview then CPUI.Preview.BackgroundColor3 = color end
+        if CPUI.HexBox and not CPUpdatingHex then
+            CPUpdatingHex = true
+            local r = math.floor(color.R * 255 + 0.5)
+            local g = math.floor(color.G * 255 + 0.5)
+            local b = math.floor(color.B * 255 + 0.5)
+            CPUI.HexBox.Text = string.format("#%02X%02X%02X", r, g, b)
+            CPUpdatingHex = false
+        end
+        if CPUI.SatGrad then
+            CPUI.SatGrad.Color = ColorSequence.new({
+                ColorSequenceKeypoint.new(0, Color3.fromHSV(CPState.Hue, 0, CPState.Val)),
+                ColorSequenceKeypoint.new(1, Color3.fromHSV(CPState.Hue, 1, CPState.Val))
+            })
+        end
+        if CPUI.ValGrad then
+            CPUI.ValGrad.Color = ColorSequence.new({
+                ColorSequenceKeypoint.new(0, Color3.fromHSV(CPState.Hue, CPState.Sat, 0)),
+                ColorSequenceKeypoint.new(1, Color3.fromHSV(CPState.Hue, CPState.Sat, 1))
+            })
+        end
+        if not skipCallback and CPState.Callback then CPState.Callback(color) end
+    end
+
+    local function CPMakeSlider(y, labelText)
+        New("TextLabel", {
+            Size = UDim2.fromOffset(100, 16),
+            Position = UDim2.fromOffset(18, y),
+            BackgroundTransparency = 1,
+            Text = labelText,
+            TextColor3 = Theme.PickerLabel,
+            TextSize = 11,
+            Font = Enum.Font.Gotham,
+            ZIndex = 201,
+        }, ColorPickerFrame)
+
+        local track = New("Frame", {
+            Size = UDim2.new(1, -36, 0, 6),
+            Position = UDim2.fromOffset(18, y + 18),
+            BackgroundColor3 = Theme.SliderTrack,
+            BackgroundTransparency = 0.4,
+            BorderSizePixel = 0,
+            ZIndex = 201,
+        }, ColorPickerFrame)
+        Corner(track, 3)
+
+        local gradient = New("UIGradient", {}, track)
+
+        local knob = New("Frame", {
+            Size = UDim2.fromOffset(14, 14),
+            Position = UDim2.new(0, -7, 0.5, -7),
+            BackgroundColor3 = Color3.fromRGB(255, 255, 255),
+            BorderSizePixel = 0,
+            ZIndex = 203,
+        }, track)
+        Corner(knob, 7)
+
+        New("UIStroke", {
+            Color = Theme.Accent,
+            Thickness = 2.5,
+        }, knob)
+
+        local function SetKnobPos(v)
+            knob.Position = UDim2.new(math.clamp(v, 0, 1), -7, 0.5, -7)
+        end
+        return gradient, SetKnobPos, track
+    end
+
+    local hueGrad, SetHuePos, hueTrack = CPMakeSlider(46, "Hue")
+    hueGrad.Color = ColorSequence.new({
+        ColorSequenceKeypoint.new(0, Color3.fromRGB(255, 0, 0)),
+        ColorSequenceKeypoint.new(0.1667, Color3.fromRGB(255, 255, 0)),
+        ColorSequenceKeypoint.new(0.3333, Color3.fromRGB(0, 255, 0)),
+        ColorSequenceKeypoint.new(0.5, Color3.fromRGB(0, 255, 255)),
+        ColorSequenceKeypoint.new(0.6667, Color3.fromRGB(0, 0, 255)),
+        ColorSequenceKeypoint.new(0.8333, Color3.fromRGB(255, 0, 255)),
+        ColorSequenceKeypoint.new(1, Color3.fromRGB(255, 0, 0))
+    })
+
+    local satGrad, SetSatPos, satTrack = CPMakeSlider(88, "Saturation")
+    local valGrad, SetValPos, valTrack = CPMakeSlider(130, "Brightness")
+    CPUI.SatGrad = satGrad
+    CPUI.ValGrad = valGrad
+
+    New("TextLabel", {
+        Size = UDim2.fromOffset(60, 16),
+        Position = UDim2.fromOffset(18, 174),
+        BackgroundTransparency = 1,
+        Text = "Preview",
+        TextColor3 = Theme.PickerLabel,
+        TextSize = 11,
+        Font = Enum.Font.Gotham,
+        ZIndex = 201,
+    }, ColorPickerFrame)
+
+    local previewBox = New("Frame", {
+        Size = UDim2.fromOffset(56, 28),
+        Position = UDim2.fromOffset(18, 192),
+        BackgroundColor3 = Color3.fromHSV(0, 1, 1),
+        BorderSizePixel = 0,
+        ZIndex = 201,
+    }, ColorPickerFrame)
+    Corner(previewBox, 8)
+    Stroke(previewBox, 0.2, 1, Theme.StrokeCard)
+    CPUI.Preview = previewBox
+
+    New("TextLabel", {
+        Size = UDim2.fromOffset(60, 16),
+        Position = UDim2.fromOffset(88, 174),
+        BackgroundTransparency = 1,
+        Text = "Hex",
+        TextColor3 = Theme.PickerLabel,
+        TextSize = 11,
+        Font = Enum.Font.Gotham,
+        ZIndex = 201,
+    }, ColorPickerFrame)
+
+    local hexBox = New("TextBox", {
+        Size = UDim2.fromOffset(130, 28),
+        Position = UDim2.fromOffset(88, 192),
+        BackgroundColor3 = Theme.DropdownItem,
+        BackgroundTransparency = 0.25,
+        BorderSizePixel = 0,
+        Text = "#FF69B4",
+        TextColor3 = Theme.TextPageTitle,
+        TextSize = 12,
+        Font = Enum.Font.Gotham,
+        ClearTextOnFocus = false,
+        ZIndex = 201,
+    }, ColorPickerFrame)
+    Corner(hexBox, 8)
+    Stroke(hexBox, 0.6, 1, Theme.StrokeInput)
+    CPUI.HexBox = hexBox
+
+    local function CPGetSliderPos(track)
+        local size = track.AbsoluteSize.X
+        if size <= 0 then return nil end
+        local mousePos = UserInputService:GetMouseLocation()
+        return math.clamp((mousePos.X - track.AbsolutePosition.X) / size, 0, 1)
+    end
+
+    local function CPEnsureVisibleColor()
+        if CPState.Sat < 0.05 then
+            CPState.Sat = 0.5
+            SetSatPos(0.5)
+        end
+    end
+
+    local cpDragConn = nil
+    local function CPStartDrag(which)
+        CPState.Dragging = which
+        if cpDragConn then cpDragConn:Disconnect() end
+        cpDragConn = game:GetService("RunService").RenderStepped:Connect(function()
+            if CPState.Dragging == "hue" then
+                local pos = CPGetSliderPos(hueTrack)
+                if pos then CPState.Hue = pos; SetHuePos(pos); CPEnsureVisibleColor(); CPUpdateColor() end
+            elseif CPState.Dragging == "sat" then
+                local pos = CPGetSliderPos(satTrack)
+                if pos then CPState.Sat = pos; SetSatPos(pos); CPUpdateColor() end
+            elseif CPState.Dragging == "val" then
+                local pos = CPGetSliderPos(valTrack)
+                if pos then CPState.Val = pos; SetValPos(pos); CPUpdateColor() end
+            end
+        end)
+    end
+
+    local function CPEndDrag()
+        CPState.Dragging = nil
+        if cpDragConn then cpDragConn:Disconnect() cpDragConn = nil end
+    end
+
+    hueTrack.InputBegan:Connect(function(input)
+        if input.UserInputType == Enum.UserInputType.MouseButton1 then CPStartDrag("hue") end
+    end)
+    satTrack.InputBegan:Connect(function(input)
+        if input.UserInputType == Enum.UserInputType.MouseButton1 then CPStartDrag("sat") end
+    end)
+    valTrack.InputBegan:Connect(function(input)
+        if input.UserInputType == Enum.UserInputType.MouseButton1 then CPStartDrag("val") end
+    end)
+    UserInputService.InputEnded:Connect(function(input)
+        if input.UserInputType == Enum.UserInputType.MouseButton1 then CPEndDrag() end
+    end)
+
+    local function CPParseHex()
+        local text = hexBox.Text:gsub("#", ""):upper()
+        if #text == 3 then
+            text = text:sub(1,1):rep(2) .. text:sub(2,2):rep(2) .. text:sub(3,3):rep(2)
+        end
+        if #text ~= 6 then return nil end
+        local r = tonumber(text:sub(1,2), 16)
+        local g = tonumber(text:sub(3,4), 16)
+        local b = tonumber(text:sub(5,6), 16)
+        if not r or not g or not b then return nil end
+        return Color3.fromRGB(r, g, b)
+    end
+
+    local function CPApplyHexColor()
+        local color = CPParseHex()
+        if not color then
+            hexBox:FindFirstChildOfClass("UIStroke").Color = Color3.fromRGB(255, 80, 80)
+            task.delay(0.3, function()
+                local s = hexBox:FindFirstChildOfClass("UIStroke")
+                if s then s.Color = Theme.StrokeInput end
+            end)
+            return
+        end
+        local h, s, v = Color3.toHSV(color)
+        CPState.Hue, CPState.Sat, CPState.Val = h, s, v
+        SetHuePos(h)
+        SetSatPos(s)
+        SetValPos(v)
+        CPUpdateColor()
+        hexBox:FindFirstChildOfClass("UIStroke").Color = Color3.fromRGB(80, 255, 80)
+        task.delay(0.3, function()
+            local st = hexBox:FindFirstChildOfClass("UIStroke")
+            if st then st.Color = Theme.StrokeInput end
+        end)
+    end
+
+    hexBox.FocusLost:Connect(CPApplyHexColor)
+
+    local hexTypingConn = nil
+    hexBox:GetPropertyChangedSignal("Text"):Connect(function()
+        if CPUpdatingHex then return end
+        if hexTypingConn then hexTypingConn:Disconnect() end
+        hexTypingConn = task.delay(0.5, function()
+            hexTypingConn = nil
+            CPApplyHexColor()
+        end)
+    end)
+
+    CPClose.MouseButton1Click:Connect(function()
+        ColorPickerFrame.Visible = false
+        CPState.IsOpen = false
+        CPEndDrag()
+        ActiveColorPicker = nil
+    end)
+
+    UserInputService.InputBegan:Connect(function(input, gp)
+        if gp then return end
+        if CPState.JustOpened then return end
+        if input.UserInputType == Enum.UserInputType.MouseButton1 and CPState.IsOpen then
+            local mousePos = UserInputService:GetMouseLocation()
+            local framePos = ColorPickerFrame.AbsolutePosition
+            local frameSize = ColorPickerFrame.AbsoluteSize
+            if mousePos.X < framePos.X or mousePos.X > framePos.X + frameSize.X or
+               mousePos.Y < framePos.Y or mousePos.Y > framePos.Y + frameSize.Y then
+                ColorPickerFrame.Visible = false
+                CPState.IsOpen = false
+                CPEndDrag()
+                ActiveColorPicker = nil
+            end
+        end
+    end)
+
+    UserInputService.InputBegan:Connect(function(input, gp)
+        if gp then return end
+        if input.KeyCode == Enum.KeyCode.Escape and CPState.IsOpen then
+            ColorPickerFrame.Visible = false
+            CPState.IsOpen = false
+            CPEndDrag()
+            ActiveColorPicker = nil
+        end
+    end)
+
+    local function OpenColorPicker(setCallback, setDefaultColor, setTitle)
+        CPState.Callback = setCallback
+        CPTitle.Text = setTitle or "Color"
+        if setDefaultColor then
+            local h, s, v = Color3.toHSV(setDefaultColor)
+            CPState.Hue, CPState.Sat, CPState.Val = h, s, v
+        end
+        SetHuePos(CPState.Hue)
+        SetSatPos(CPState.Sat)
+        SetValPos(CPState.Val)
+        CPUpdateColor(true)
+        ColorPickerFrame.Visible = true
+        CPState.IsOpen = true
+        CPState.JustOpened = true
+        ActiveColorPicker = ColorPickerFrame
+        task.delay(0.2, function() CPState.JustOpened = false end)
+    end
+
+    local function CreateColorButton(parent, y, colorKey, labelText)
+        local colorValue = Config.ESP_Colors[colorKey] or Color3.fromRGB(255, 255, 255)
+        local circle = New("TextButton", {
+            Size = UDim2.fromOffset(16, 16),
+            Position = UDim2.new(1, -90, 0, y + 8),
+            BackgroundColor3 = colorValue,
+            BorderSizePixel = 0,
+            Text = "",
+            AutoButtonColor = false,
+            ZIndex = 17,
+        }, parent)
+        Corner(circle, 8)
+        Stroke(circle, 0.3, 1.5, Color3.fromRGB(255, 255, 255))
+
+        circle.MouseButton1Click:Connect(function()
+            if CPState.IsOpen and ActiveColorPicker == ColorPickerFrame then
+                ColorPickerFrame.Visible = false
+                CPState.IsOpen = false
+                CPEndDrag()
+                ActiveColorPicker = nil
+            else
+                OpenColorPicker(function(c)
+                    Config.ESP_Colors[colorKey] = c
+                    circle.BackgroundColor3 = c
+                end, circle.BackgroundColor3, labelText .. " Color")
+            end
+        end)
+
+        return circle
+    end
+    
+       -- COMBAT PAGE
+    local CombatPage = Pages.Combat
+    PageTitle(CombatPage, "Combat", "Silent aim, hitbox expander, frame TP, and rapid fire.")
+    local CombatScroll = New("ScrollingFrame", {
+        Size = UDim2.new(1, -20, 1, -72),
+        Position = UDim2.fromOffset(10, 72),
+        BackgroundTransparency = 1,
+        BorderSizePixel = 0,
+        ScrollBarThickness = 5,
+        ScrollBarImageColor3 = Theme.Accent,
+        CanvasSize = UDim2.new(0, 0, 0, 0),
+        ZIndex = 14,
+    }, CombatPage)
+    local CombatCard = CreateCard(CombatScroll, UDim2.fromOffset(0, 0), UDim2.new(1, 0, 0, 1350))
+    CombatScroll.CanvasSize = UDim2.new(0, 0, 0, 1370)
+
+    -- Aimbot Section
+    New("TextLabel", {
+        Size = UDim2.new(1, -20, 0, 20),
+        Position = UDim2.fromOffset(10, 10),
+        BackgroundTransparency = 1,
+        Text = "Aimbot",
+        TextColor3 = Theme.TextSection,
+        TextSize = 14,
+        Font = Enum.Font.GothamBold,
+        TextXAlignment = Enum.TextXAlignment.Left,
+        ZIndex = 16,
+    }, CombatCard)
+    CreateToggle(CombatCard, 34, "Enable Aimbot", Config.Aimbot_Enabled, "Aimbot_Enabled", true, function(v)
+        Config.Aimbot_Enabled = v
+    end)
+    UI.ToggleCallbacks["Aimbot_Enabled"] = nil
+    CreateToggle(CombatCard, 70, "Toggle Mode", Config.Aimbot_ToggleMode, "Aimbot_ToggleMode", false, function(v)
+        Config.Aimbot_ToggleMode = v
+    end)
+    CreateToggle(CombatCard, 106, "Sticky Target", Config.Aimbot_StickyTarget, "Aimbot_StickyTarget", false, function(v)
+        Config.Aimbot_StickyTarget = v
+    end)
+    CreateToggle(CombatCard, 142, "Team Check", Config.Aimbot_TeamCheck, "Aimbot_TeamCheck", false, function(v)
+        Config.Aimbot_TeamCheck = v
+    end)
+    CreateToggle(CombatCard, 178, "Wall Check", Config.Aimbot_WallCheck, "Aimbot_WallCheck", false, function(v)
+        Config.Aimbot_WallCheck = v
+    end)
+    CreateToggle(CombatCard, 214, "Show FOV", Config.Aimbot_ShowFOV, "Aimbot_ShowFOV", false, function(v)
+        Config.Aimbot_ShowFOV = v
+    end)
+    CreateSlider(CombatCard, 250, "Smoothness", 0, 100, Config.Aimbot_Smoothness, function(v)
+        Config.Aimbot_Smoothness = v
+    end)
+    CreateSlider(CombatCard, 296, "FOV", 10, 300, Config.Aimbot_FOV, function(v)
+        Config.Aimbot_FOV = v
+    end)
+    local aimbotPartDropdown = BuildDropdown(CombatCard, 342, "Target Part", Config.Aimbot_TargetPart or "Head",
+        {"Head", "HumanoidRootPart", "Torso", "UpperTorso", "LowerTorso", "LeftLeg", "RightLeg"},
+        function(v) Config.Aimbot_TargetPart = v end)
+    local aimbotPriorityDropdown = BuildDropdown(CombatCard, 400, "Priority", Config.Aimbot_Priority or "Closest to Mouse",
+        {"Closest to Mouse", "Closest to Player", "Lowest HP", "Highest HP"},
+        function(v) Config.Aimbot_Priority = v end)
+
+    CreateSeparator(CombatCard, 456)
+
+    -- Real Silent Aim Section
+    New("TextLabel", {
+        Size = UDim2.new(1, -20, 0, 20),
+        Position = UDim2.fromOffset(10, 466),
+        BackgroundTransparency = 1,
+        Text = "Silent Aim",
+        TextColor3 = Theme.TextSection,
+        TextSize = 14,
+        Font = Enum.Font.GothamBold,
+        TextXAlignment = Enum.TextXAlignment.Left,
+        ZIndex = 16,
+    }, CombatCard)
+
+    CreateToggle(CombatCard, 490, "Enable Silent Aim", Config.RealSilentAim_Enabled, "RealSilentAim", true, function(v)
+        Config.RealSilentAim_Enabled = v
+        if UI.Combat then
+            UI.Combat.SetRealSilentAimEnabled(v)
+        end
+    end)
+
+    CreateSlider(CombatCard, 526, "FOV Radius", 50, 300, Config.RealSilentAim_FOV or 130, function(v)
+        Config.RealSilentAim_FOV = v
+    end)
+
+    CreateSlider(CombatCard, 572, "Hit Chance %", 1, 100, Config.RealSilentAim_HitChance or 100, function(v)
+        Config.RealSilentAim_HitChance = v
+    end)
+
+    local realSilentPartDropdown = BuildDropdown(CombatCard, 618, "Target Part", Config.RealSilentAim_TargetPart or "Head",
+        {"Head", "HumanoidRootPart", "Torso", "UpperTorso"},
+        function(v) Config.RealSilentAim_TargetPart = v end)
+
+    CreateToggle(CombatCard, 676, "Wall Check", Config.RealSilentAim_WallCheck, "RealSilentAim_WallCheck", false, function(v)
+        Config.RealSilentAim_WallCheck = v
+    end)
+
+    CreateToggle(CombatCard, 712, "Team Check", Config.RealSilentAim_TeamCheck, "RealSilentAim_TeamCheck", false, function(v)
+        Config.RealSilentAim_TeamCheck = v
+    end)
+
+    CreateToggle(CombatCard, 748, "Show FOV", Config.RealSilentAim_ShowFOV, "RealSilentAim_ShowFOV", false, function(v)
+        Config.RealSilentAim_ShowFOV = v
+    end)
+
+    CreateSeparator(CombatCard, 784)
+
+    -- Hitbox Expander Section
+    New("TextLabel", {
+        Size = UDim2.new(1, -20, 0, 20),
+        Position = UDim2.fromOffset(10, 794),
+        BackgroundTransparency = 1,
+        Text = "Hitbox Expander",
+        TextColor3 = Theme.TextSection,
+        TextSize = 14,
+        Font = Enum.Font.GothamBold,
+        TextXAlignment = Enum.TextXAlignment.Left,
+        ZIndex = 16,
+    }, CombatCard)
+
+    CreateToggle(CombatCard, 818, "Enable Hitbox Expander", Config.HitboxExpander_Enabled, "HitboxExpander", true, function(v)
+        Config.HitboxExpander_Enabled = v
+        if UI.Combat then
+            UI.Combat.SetHitboxExpanderEnabled(v)
+        end
+    end)
+
+    CreateSlider(CombatCard, 854, "FOV Radius", 50, 300, Config.HitboxExpander_FOV or 120, function(v)
+        Config.HitboxExpander_FOV = v
+    end)
+
+    CreateSlider(CombatCard, 900, "Hit Chance %", 1, 100, Config.HitboxExpander_HitChance or 100, function(v)
+        Config.HitboxExpander_HitChance = v
+    end)
+
+    local hitboxPartDropdown = BuildDropdown(CombatCard, 946, "Target Part", Config.HitboxExpander_TargetPart or "Head",
+        {"Head", "HumanoidRootPart", "Torso", "UpperTorso"},
+        function(v) Config.HitboxExpander_TargetPart = v end)
+
+    CreateToggle(CombatCard, 1004, "Wall Check", Config.HitboxExpander_WallCheck, "HitboxExpander_WallCheck", false, function(v)
+        Config.HitboxExpander_WallCheck = v
+    end)
+
+    CreateToggle(CombatCard, 1040, "Team Check", Config.HitboxExpander_TeamCheck, "HitboxExpander_TeamCheck", false, function(v)
+        Config.HitboxExpander_TeamCheck = v
+    end)
+
+    CreateToggle(CombatCard, 1076, "Show FOV", Config.HitboxExpander_ShowFOV, "HitboxExpander_ShowFOV", false, function(v)
+        Config.HitboxExpander_ShowFOV = v
+    end)
+
+    CreateSeparator(CombatCard, 1112)
+
+    -- Combat Utilities Section
+    New("TextLabel", {
+        Size = UDim2.new(1, -20, 0, 20),
+        Position = UDim2.fromOffset(10, 1122),
+        BackgroundTransparency = 1,
+        Text = "Combat Utilities",
+        TextColor3 = Theme.TextSection,
+        TextSize = 14,
+        Font = Enum.Font.GothamBold,
+        TextXAlignment = Enum.TextXAlignment.Left,
+        ZIndex = 16,
+    }, CombatCard)
+
+    CreateToggle(CombatCard, 1146, "Frame TP Shoot", Config.FrameTP, "FrameTP", true, function(v)
+        Config.FrameTP = v
+    end)
+    CreateToggle(CombatCard, 1182, "One-Frame Delay", Config.OneFrameDelay, "OneFrameDelay", true, function(v)
+        Config.OneFrameDelay = v
+    end)
+    CreateToggle(CombatCard, 1218, "Rapid Fire", Config.RapidFire, "RapidFire", true, function(v)
+        Config.RapidFire = v
+    end)
+    CreateToggle(CombatCard, 1254, "Karma", Config.Karma_Enabled, "Karma_Enabled", true, function(v)
+        Config.Karma_Enabled = v
+        if UI.Combat then
+            UI.Combat.SetKarmaEnabled(v)
+        end
+    end)
+
+    -- VISUALS PAGE
+    local VisualsPage = Pages.Visuals
+    PageTitle(VisualsPage, "Visuals", "FOV, ESP suite, tracers, hitmarkers, and target highlighting.")
+    local VisualsScroll = New("ScrollingFrame", {
+        Size = UDim2.new(1, -20, 1, -72),
+        Position = UDim2.fromOffset(10, 72),
+        BackgroundTransparency = 1,
+        BorderSizePixel = 0,
+        ScrollBarThickness = 5,
+        ScrollBarImageColor3 = Theme.Accent,
+        CanvasSize = UDim2.new(0, 0, 0, 0),
+        ZIndex = 14,
+    }, VisualsPage)
+    local VisualsCard = CreateCard(VisualsScroll, UDim2.fromOffset(0, 0), UDim2.new(1, 0, 0, 1000))
+    VisualsScroll.CanvasSize = UDim2.new(0, 0, 0, 1020)
+
+    CreateToggle(VisualsCard, 14, "FOV Circle", Config.FOV_Enabled, "FOV_Enabled", false, function(v)
+        Config.FOV_Enabled = v
+    end)
+    CreateSlider(VisualsCard, 50, "FOV Radius", 50, 600, Config.FOV_Radius, function(v)
+        Config.FOV_Radius = v
+    end)
+    CreateToggle(VisualsCard, 110, "Tracers", Config.Tracers, "Tracers", false, function(v)
+        Config.Tracers = v
+    end)
+    CreateToggle(VisualsCard, 146, "Highlights", Config.Highlights, "Highlights", false, function(v)
+        Config.Highlights = v
+    end)
+    CreateToggle(VisualsCard, 182, "Hitmarkers", Config.Hitmarkers, "Hitmarkers", false, function(v)
+        Config.Hitmarkers = v
+    end)
+
+    CreateSeparator(VisualsCard, 226)
+    New("TextLabel", {
+        Size = UDim2.new(1, -20, 0, 20),
+        Position = UDim2.fromOffset(10, 236),
+        BackgroundTransparency = 1,
+        Text = "ESP Suite",
+        TextColor3 = Theme.TextSection,
+        TextSize = 14,
+        Font = Enum.Font.GothamBold,
+        TextXAlignment = Enum.TextXAlignment.Left,
+        ZIndex = 16,
+    }, VisualsCard)
+
+    CreateToggle(VisualsCard, 264, "ESP Master", Config.ESP_Enabled, "ESP_Enabled", false, function(v)
+        Config.ESP_Enabled = v
+    end)
+    CreateToggle(VisualsCard, 300, "Boxes", Config.ESP_Boxes, "ESP_Boxes", false, function(v)
+        Config.ESP_Boxes = v
+    end)
+    CreateColorButton(VisualsCard, 300, "Box", "Box")
+    CreateToggle(VisualsCard, 336, "3D Boxes", Config.ESP_Box3D, "ESP_Box3D", false, function(v)
+        Config.ESP_Box3D = v
+    end)
+    CreateToggle(VisualsCard, 372, "Names", Config.ESP_Names, "ESP_Names", false, function(v)
+        Config.ESP_Names = v
+    end)
+    CreateColorButton(VisualsCard, 372, "Name", "Name")
+    CreateToggle(VisualsCard, 408, "Distance Text", Config.ESP_Distance, "ESP_Distance", false, function(v)
+        Config.ESP_Distance = v
+    end)
+    CreateColorButton(VisualsCard, 408, "Distance", "Distance")
+    CreateToggle(VisualsCard, 444, "Health Bar", Config.ESP_Health, "ESP_Health", false, function(v)
+        Config.ESP_Health = v
+    end)
+    CreateColorButton(VisualsCard, 444, "Health", "Health")
+    CreateToggle(VisualsCard, 480, "Skeleton", Config.ESP_Skeleton, "ESP_Skeleton", false, function(v)
+        Config.ESP_Skeleton = v
+    end)
+    CreateColorButton(VisualsCard, 480, "Skeleton", "Skeleton")
+    CreateToggle(VisualsCard, 516, "Chams", Config.ESP_Chams, "ESP_Chams", false, function(v)
+        Config.ESP_Chams = v
+    end)
+    CreateColorButton(VisualsCard, 516, "ChamsFill", "Chams")
+    CreateToggle(VisualsCard, 552, "Head Dot", Config.ESP_HeadDot, "ESP_HeadDot", false, function(v)
+        Config.ESP_HeadDot = v
+    end)
+    CreateColorButton(VisualsCard, 552, "HeadDot", "Head Dot")
+    CreateToggle(VisualsCard, 588, "Weapon Names", Config.ESP_WeaponNames, "ESP_WeaponNames", false, function(v)
+        Config.ESP_WeaponNames = v
+    end)
+    CreateToggle(VisualsCard, 624, "Team Check", Config.ESP_TeamCheck, "ESP_TeamCheck", false, function(v)
+        Config.ESP_TeamCheck = v
+    end)
+    CreateToggle(VisualsCard, 660, "Target Mode Only", Config.ESP_TargetMode, "ESP_TargetMode", false, function(v)
+        Config.ESP_TargetMode = v
+    end)
+    CreateToggle(VisualsCard, 696, "Distance Limit", Config.ESP_DistanceToggle, "ESP_DistanceToggle", false, function(v)
+        Config.ESP_DistanceToggle = v
+    end)
+    CreateSlider(VisualsCard, 732, "Max ESP Distance", 50, 5000, Config.ESP_MaxDistance, function(v)
+        Config.ESP_MaxDistance = v
+    end)
+    CreateSlider(VisualsCard, 788, "Box Thickness", 1, 5, Config.ESP_BoxThickness, function(v)
+        Config.ESP_BoxThickness = v
+    end)
+        CreateSlider(VisualsCard, 844, "Head Dot Size", 1, 30, math.floor(Config.ESP_HeadDotSize * 10), function(v)
+        Config.ESP_HeadDotSize = v / 10
+    end)
+
+    local PlayerList, PanelPlayerList, refreshAllLists
+
+    -- TARGET PAGE
+    local TargetPage = Pages.Target
+    PageTitle(TargetPage, "Target", "Player selection, part targeting, and spectate.")
+    local TargetCard = CreateCard(TargetPage, UDim2.fromOffset(10, 72), UDim2.new(1, -20, 0, 410))
+    local targetPartDropdown = BuildDropdown(TargetCard, 14, "Target Part", Config.TargetPart,
+        {"Head", "HumanoidRootPart", "Torso", "UpperTorso", "LowerTorso", "LeftLeg", "RightLeg"},
+        function(v) Config.TargetPart = v end)
+    CreateActionButton(TargetCard, 76, "TP to Target", function()
+        if UI.Targeting and UI.Targeting.TeleportToTarget then
+            UI.Targeting.TeleportToTarget()
+        end
+    end)
+    CreateToggle(TargetCard, 114, "Spectate Target", Config.Spectate, "Spectate", true, function(v)
+        Config.Spectate = v
+        if not v then
+            UI.Targeting.StopSpectate()
+        end
+    end)
+    CreateToggle(TargetCard, 150, "Multi Target", Config.MultiTarget or false, "MultiTarget", false, function(v)
+        Config.MultiTarget = v
+        if UI.Targeting then
+            UI.Targeting.MultiTargetEnabled = v
+            if not v then
+                UI.Targeting.ClearTargets()
+            end
+            UI.Targeting.RefreshPlayerList(PlayerList, refreshAllLists)
+            UI.Targeting.RefreshPlayerList(PanelPlayerList, refreshAllLists)
+        end
+    end)
+    CreateActionButton(TargetCard, 186, "Clear All Targets", function()
+        if UI.Targeting then
+            UI.Targeting.ClearTargets()
+            UI.Targeting.RefreshPlayerList(PlayerList, refreshAllLists)
+            UI.Targeting.RefreshPlayerList(PanelPlayerList, refreshAllLists)
+        end
+    end)
+    New("TextLabel", {
+        Size = UDim2.new(1, -20, 0, 18),
+        Position = UDim2.fromOffset(10, 224),
+        BackgroundTransparency = 1,
+        Text = "Player List (Click to select / deselect)",
+        TextColor3 = Theme.PickerLabel,
+        TextSize = 10,
+        Font = Enum.Font.GothamBold,
+        TextXAlignment = Enum.TextXAlignment.Left,
+        ZIndex = 16,
+    }, TargetCard)
+    PlayerList = New("ScrollingFrame", {
+        Size = UDim2.new(1, -20, 0, 160),
+        Position = UDim2.fromOffset(10, 246),
+        BackgroundColor3 = Theme.BgList,
+        BackgroundTransparency = 0.3,
+        BorderSizePixel = 0,
+        ScrollBarThickness = 5,
+        ScrollBarImageColor3 = Theme.Accent,
+        CanvasSize = UDim2.new(0, 0, 0, 0),
+        ZIndex = 16,
+    }, TargetCard)
+    Corner(PlayerList, 8)
+    New("UIListLayout", {Padding = UDim.new(0, 2), Parent = PlayerList})
+
+    -- FARM PAGE
+    local FarmPage = Pages.Farm
+    PageTitle(FarmPage, "Farm", "Pull selected target to your crosshair aim point.")
+    local FarmScroll = New("ScrollingFrame", {
+        Size = UDim2.new(1, -20, 1, -72),
+        Position = UDim2.fromOffset(10, 72),
+        BackgroundTransparency = 1,
+        BorderSizePixel = 0,
+        ScrollBarThickness = 5,
+        ScrollBarImageColor3 = Theme.Accent,
+        CanvasSize = UDim2.new(0, 0, 0, 470),
+        ZIndex = 14,
+    }, FarmPage)
+    local FarmCard = CreateCard(FarmScroll, UDim2.fromOffset(0, 0), UDim2.new(1, 0, 0, 450))
+    CreateToggle(FarmCard, 14, "Enable Farm", Config.FarmEnabled, "FarmEnabled", true, function(v)
+        Config.FarmEnabled = v
+        if UI.Farm then
+            UI.Farm.SetEnabled(v)
+        end
+    end)
+    CreateSlider(FarmCard, 50, "Distance (studs)", 3, 30, Config.FarmDistance or 12, function(v)
+        Config.FarmDistance = v
+    end)
+    CreateSlider(FarmCard, 96, "Vertical Offset", -10, 10, Config.FarmVerticalOffset or 0, function(v)
+        Config.FarmVerticalOffset = v
+    end)
+    CreateSlider(FarmCard, 142, "Pull Speed", 1, 20, Config.FarmPullSpeed or 1, function(v)
+        Config.FarmPullSpeed = v
+    end)
+    CreateSeparator(FarmCard, 184)
+    CreateToggle(FarmCard, 196, "Ragebot", Config.RagebotEnabled, "RagebotEnabled", true, function(v)
+        Config.RagebotEnabled = v
+        if UI.Farm then
+            UI.Farm.SetRagebotEnabled(v)
+        end
+    end)
+    local ragebotMethodDropdown = BuildDropdown(FarmCard, 232, "Ragebot Method", Config.RagebotMethod or "FarmVoid",
+        {"FarmVoid", "FrameTPStomp", "AntiBulletTP"},
+        function(v) 
+            Config.RagebotMethod = v
+            if UI.Farm then
+                UI.Farm.SetRagebotMethod(v)
+            end
+        end)
+    New("TextLabel", {
+        Size = UDim2.new(1, -20, 0, 40),
+        Position = UDim2.fromOffset(10, 300),
+        BackgroundTransparency = 1,
+        Text = "Select a target in the Target tab first. Their head will align to your crosshair when Farm is ON. Toggle OFF to restore them.",
+        TextColor3 = Theme.HelpText,
+        TextSize = 10,
+        Font = Enum.Font.GothamMedium,
+        TextWrapped = true,
+        TextXAlignment = Enum.TextXAlignment.Left,
+        ZIndex = 16,
+    }, FarmCard)
+
+        -- MISC PAGE
+    local MiscPage = Pages.Misc
+    PageTitle(MiscPage, "Misc", "AntiStomp, teleport spam, auto armor, and utility features.")
+    local MiscScroll = New("ScrollingFrame", {
+        Size = UDim2.new(1, -20, 1, -72),
+        Position = UDim2.fromOffset(10, 72),
+        BackgroundTransparency = 1,
+        BorderSizePixel = 0,
+        ScrollBarThickness = 5,
+        ScrollBarImageColor3 = Theme.Accent,
+        CanvasSize = UDim2.new(0, 0, 0, 900),
+        ZIndex = 14,
+    }, MiscPage)
+    local MiscCard = CreateCard(MiscScroll, UDim2.fromOffset(0, 0), UDim2.new(1, 0, 0, 880))
+
+    -- AntiStomp Section
+    CreateToggle(MiscCard, 14, "AntiStomp", Config.AntiStomp, "AntiStomp", true, function(v)
+        Config.AntiStomp = v
+        if UI.Misc then
+            UI.Misc.SetAntiStomp(v)
+        end
+    end)
+    local antiStompDropdown = BuildDropdown(MiscCard, 50, "AntiStomp Mode", Config.AntiStompMode or "Void",
+        {"Void", "Force Reset"},
+        function(v) Config.AntiStompMode = v end)
+
+    CreateSeparator(MiscCard, 122)
+
+    -- Auto Stomp Section
+    CreateToggle(MiscCard, 134, "Auto Stomp", Config.AutoStompEnabled, "AutoStompEnabled", true, function(v)
+        Config.AutoStompEnabled = v
+        if UI.Misc then
+            UI.Misc.SetAutoStompEnabled(v)
+        end
+    end)
+
+    CreateSeparator(MiscCard, 174)
+
+    -- Teleport Spam Section
+    CreateToggle(MiscCard, 186, "Teleport Spam", Config.SpamEnabled, "SpamEnabled", true, function(v)
+        Config.SpamEnabled = v
+        if UI.Misc then
+            UI.Misc.ToggleSpam(v)
+        end
+    end)
+    local spamRangeDropdown = BuildDropdown(MiscCard, 226, "Spam Range", Config.SpamRange or "Close",
+        {"Close", "Far"},
+        function(v) Config.SpamRange = v end)
+    CreateSlider(MiscCard, 290, "Close Height", 50, 1000, Config.SpamCloseHeight or 350, function(v)
+        Config.SpamCloseHeight = v
+    end)
+    CreateSlider(MiscCard, 346, "Close Radius", 50, 1000, Config.SpamCloseRadius or 250, function(v)
+        Config.SpamCloseRadius = v
+    end)
+    CreateSlider(MiscCard, 402, "Far Jitter", 0, 50000, Config.SpamFarJitter or 5000, function(v)
+        Config.SpamFarJitter = v
+    end)
+    CreateSlider(MiscCard, 458, "Spam Speed", 1, 10, Config.SpamSpeed or 1, function(v)
+        Config.SpamSpeed = v
+    end)
+
+    CreateSeparator(MiscCard, 514)
+
+    -- Auto Armor Section
+    CreateToggle(MiscCard, 526, "Auto Armor", Config.AutoArmor, "AutoArmor", true, function(v)
+        Config.AutoArmor = v
+        if UI.Misc then
+            UI.Misc.SetAutoArmor(v)
+        end
+    end)
+    CreateToggle(MiscCard, 566, "Armor On Any Damage", Config.AutoArmorOnDamage, "AutoArmorOnDamage", true, function(v)
+        Config.AutoArmorOnDamage = v
+        if UI.Misc then
+            UI.Misc.EvaluateHealthHook()
+        end
+    end)
+    local armorPos = Config.AutoArmorPos or Vector3.new(0, 0, 0)
+    local ArmorPosLabel = Instance.new("TextLabel")
+    ArmorPosLabel.Size = UDim2.new(0.6, 0, 0, 16)
+    ArmorPosLabel.Position = UDim2.new(0.05, 0, 0, 600)
+    ArmorPosLabel.BackgroundTransparency = 1
+    ArmorPosLabel.Text = string.format("Pos: %.0f, %.0f, %.0f", armorPos.X, armorPos.Y, armorPos.Z)
+    ArmorPosLabel.TextColor3 = Theme.ArmorPos
+    ArmorPosLabel.Font = Enum.Font.Gotham
+    ArmorPosLabel.TextSize = 10
+    ArmorPosLabel.TextXAlignment = Enum.TextXAlignment.Left
+    ArmorPosLabel.Parent = MiscCard
+    local SetPosBtn = Instance.new("TextButton")
+    SetPosBtn.Size = UDim2.new(0.3, 0, 0, 20)
+    SetPosBtn.Position = UDim2.new(0.65, 0, 0, 598)
+    SetPosBtn.BackgroundColor3 = Theme.SetPosBtn
+    SetPosBtn.Text = "Set Pos"
+    SetPosBtn.TextColor3 = Color3.fromRGB(255, 255, 255)
+    SetPosBtn.Font = Enum.Font.GothamBold
+    SetPosBtn.TextSize = 10
+    SetPosBtn.Parent = MiscCard
+    local SetPosCorner = Instance.new("UICorner")
+    SetPosCorner.CornerRadius = UDim.new(0, 6)
+    SetPosCorner.Parent = SetPosBtn
+    SetPosBtn.MouseButton1Click:Connect(function()
+        local char = LocalPlayer.Character
+        if char then
+            local hrp = char:FindFirstChild("HumanoidRootPart")
+            if hrp then
+                local pos = hrp.Position
+                Config.AutoArmorPos = pos
+                ArmorPosLabel.Text = string.format("Pos: %.0f, %.0f, %.0f", pos.X, pos.Y, pos.Z)
+                if UI.Misc then
+                    UI.Misc.CacheArmorDetector()
+                end
+            end
+        end
+    end)
+    CreateSlider(MiscCard, 626, "Trigger Health", 1, 100, Config.AutoArmorTriggerHealth or 50, function(v)
+        Config.AutoArmorTriggerHealth = v
+    end)
+    CreateSlider(MiscCard, 682, "Cooldown", 1, 30, Config.AutoArmorCooldown or 5, function(v)
+        Config.AutoArmorCooldown = v
+    end)
+
+    -- Bottom padding
+    New("Frame", {
+        Size = UDim2.new(1, 0, 0, 40),
+        Position = UDim2.fromOffset(0, 740),
+        BackgroundTransparency = 1,
+        ZIndex = 16,
+    }, MiscCard)
+-- SPECTATE PANEL
+    local SpectatePanel = New("Frame", {
+        Size = UDim2.fromOffset(200, 320),
+        Position = UDim2.new(1, -220, 0.5, -160),
+        BackgroundColor3 = Theme.BgMain,
+        BackgroundTransparency = 0.04,
+        BorderSizePixel = 0,
+        ZIndex = 60,
+        Visible = false,
+    }, ScreenGui)
+    Corner(SpectatePanel, 16)
+    Stroke(SpectatePanel, 0.72, 1)
+    New("TextLabel", {
+        Size = UDim2.new(1, -20, 0, 24),
+        Position = UDim2.fromOffset(10, 10),
+        BackgroundTransparency = 1,
+        Text = "SPECTATE",
+        TextColor3 = Theme.TextPageTitle,
+        TextSize = 16,
+        Font = Enum.Font.GothamBold,
+        TextXAlignment = Enum.TextXAlignment.Left,
+        ZIndex = 61,
+    }, SpectatePanel)
+    CreateToggle(SpectatePanel, 42, "Spectate Target", Config.Spectate, "SpectatePanel", false, function(v)
+        Config.Spectate = v
+        if not v then
+            UI.Targeting.StopSpectate()
+            SpectatePanel.Visible = false
+            SetGUIVisible(true)
+        end
+        if UI.ToggleCallbacks["Spectate"] then
+            UI.ToggleCallbacks["Spectate"](v)
+        end
+    end)
+    New("TextLabel", {
+        Size = UDim2.new(1, -20, 0, 18),
+        Position = UDim2.fromOffset(10, 82),
+        BackgroundTransparency = 1,
+        Text = "Player List",
+        TextColor3 = Theme.PickerLabel,
+        TextSize = 10,
+        Font = Enum.Font.GothamBold,
+        TextXAlignment = Enum.TextXAlignment.Left,
+        ZIndex = 61,
+    }, SpectatePanel)
+    PanelPlayerList = New("ScrollingFrame", {
+        Size = UDim2.new(1, -20, 1, -108),
+        Position = UDim2.fromOffset(10, 102),
+        BackgroundColor3 = Theme.BgList,
+        BackgroundTransparency = 0.3,
+        BorderSizePixel = 0,
+        ScrollBarThickness = 5,
+        ScrollBarImageColor3 = Theme.Accent,
+        CanvasSize = UDim2.new(0, 0, 0, 0),
+        ZIndex = 61,
+    }, SpectatePanel)
+    Corner(PanelPlayerList, 8)
+    New("UIListLayout", {Padding = UDim.new(0, 2), Parent = PanelPlayerList})
+
+    refreshAllLists = function()
+        UI.Targeting.RefreshPlayerList(PlayerList, refreshAllLists)
+        UI.Targeting.RefreshPlayerList(PanelPlayerList, refreshAllLists)
+    end
+    refreshAllLists()
+    Players.PlayerAdded:Connect(refreshAllLists)
+    Players.PlayerRemoving:Connect(refreshAllLists)
+
+    local function SetSpectateMode(enabled)
+        Config.Spectate = enabled
+        if enabled then
+            SetGUIVisible(false)
+            SpectatePanel.Visible = true
+        else
+            UI.Targeting.StopSpectate()
+            SpectatePanel.Visible = false
+            SetGUIVisible(true)
+        end
+        if UI.ToggleCallbacks["Spectate"] then
+            UI.ToggleCallbacks["Spectate"](enabled)
+        end
+        if UI.ToggleCallbacks["SpectatePanel"] then
+            UI.ToggleCallbacks["SpectatePanel"](enabled)
+        end
+    end
+    local origSpectateCallback = UI.ToggleCallbacks["Spectate"]
+    UI.ToggleCallbacks["Spectate"] = function(enabled)
+        origSpectateCallback(enabled)
+        if enabled ~= SpectatePanel.Visible then
+            SetSpectateMode(enabled)
+        end
+    end
+
+    -- WORLD PAGE
+    local WorldPage = Pages.World
+    PageTitle(WorldPage, "World", "Lighting, atmosphere, and visual modifiers.")
+    local WorldScroll = New("ScrollingFrame", {
+        Size = UDim2.new(1, -20, 1, -72),
+        Position = UDim2.fromOffset(10, 72),
+        BackgroundTransparency = 1,
+        BorderSizePixel = 0,
+        ScrollBarThickness = 5,
+        ScrollBarImageColor3 = Theme.Accent,
+        CanvasSize = UDim2.new(0, 0, 0, 0),
+        ZIndex = 14,
+    }, WorldPage)
+    local WorldCard = CreateCard(WorldScroll, UDim2.fromOffset(0, 0), UDim2.new(1, 0, 0, 620))
+    WorldScroll.CanvasSize = UDim2.new(0, 0, 0, 640)
+
+    CreateToggle(WorldCard, 14, "Full Bright", Config.World_Fullbright, "World_Fullbright", false, function(v)
+        Config.World_Fullbright = v
+    end)
+    CreateToggle(WorldCard, 50, "No Fog", Config.World_NoFog, "World_NoFog", false, function(v)
+        Config.World_NoFog = v
+    end)
+    CreateToggle(WorldCard, 86, "No Shadows", Config.World_NoShadows, "World_NoShadows", false, function(v)
+        Config.World_NoShadows = v
+    end)
+    CreateToggle(WorldCard, 122, "No Atmosphere", Config.World_NoAtmosphere, "World_NoAtmosphere", false, function(v)
+        Config.World_NoAtmosphere = v
+    end)
+    CreateToggle(WorldCard, 158, "No Sun Rays", Config.World_NoSunRays, "World_NoSunRays", false, function(v)
+        Config.World_NoSunRays = v
+    end)
+    CreateToggle(WorldCard, 194, "No Color Correction", Config.World_NoColorCorrection, "World_NoColorCorrection", false, function(v)
+        Config.World_NoColorCorrection = v
+    end)
+    CreateToggle(WorldCard, 230, "Low GFX", Config.World_LowGFX, "World_LowGFX", false, function(v)
+        Config.World_LowGFX = v
+    end)
+    CreateToggle(WorldCard, 266, "Custom Time", Config.World_CustomTime, "World_CustomTime", false, function(v)
+        Config.World_CustomTime = v
+    end)
+    CreateSlider(WorldCard, 302, "Time of Day", 0, 24, Config.World_TimeOfDay, function(v)
+        Config.World_TimeOfDay = v
+    end)
+    CreateSlider(WorldCard, 348, "Brightness", 1, 20, Config.World_Brightness, function(v)
+        Config.World_Brightness = v
+    end)
+    local skyThemeDropdown = BuildDropdown(WorldCard, 394, "Sky Theme", Config.World_SkyTheme or "Default",
+        {"Default", "Night", "Light", "Blood", "Gray", "DarkNight", "Space", "Test", "Clouds", "Sunset2", "Galaxy2", "Nebula", "Storm2"},
+        function(v) Config.World_SkyTheme = v end)
+                -- MOVEMENT PAGE
+    local MovementPage = Pages.Movement
+    PageTitle(MovementPage, "Movement", "Speed, fly, jump, and collision modifiers.")
+    local MovementScroll = New("ScrollingFrame", {
+        Size = UDim2.new(1, -20, 1, -72),
+        Position = UDim2.fromOffset(10, 72),
+        BackgroundTransparency = 1,
+        BorderSizePixel = 0,
+        ScrollBarThickness = 5,
+        ScrollBarImageColor3 = Theme.Accent,
+        CanvasSize = UDim2.new(0, 0, 0, 750),
+        ZIndex = 14,
+    }, MovementPage)
+    local MovementCard = CreateCard(MovementScroll, UDim2.fromOffset(0, 0), UDim2.new(1, 0, 0, 740))
+
+    -- Speed Toggle
+    CreateToggle(MovementCard, 14, "Speed", Config.Move_SpeedEnabled, "Move_SpeedEnabled", true, function(v)
+        Config.Move_SpeedEnabled = v
+        if UI.Movement then UI.Movement.SetSpeedEnabled(v) end
+    end)
+
+    -- Walk Speed Slider + Input
+    New("TextLabel", {
+        Size = UDim2.new(1, -140, 0, 20),
+        Position = UDim2.fromOffset(10, 50),
+        BackgroundTransparency = 1,
+        Text = "Walk Speed",
+        TextColor3 = Theme.TextLabel,
+        TextSize = 12,
+        Font = Enum.Font.GothamMedium,
+        TextXAlignment = Enum.TextXAlignment.Left,
+        ZIndex = 16,
+    }, MovementCard)
+    local walkSpeedTrack = New("Frame", {
+        Size = UDim2.new(1, -160, 0, 5),
+        Position = UDim2.fromOffset(10, 80),
+        BackgroundColor3 = Theme.SliderTrack,
+        BorderSizePixel = 0,
+        ZIndex = 16,
+    }, MovementCard)
+    Corner(walkSpeedTrack, 3)
+    local walkSpeedFill = New("Frame", {
+        Size = UDim2.new(math.clamp((Config.Move_Speed - 16) / 284, 0, 1), 0, 1, 0),
+        BackgroundColor3 = Theme.Accent,
+        BorderSizePixel = 0,
+        ZIndex = 17,
+    }, walkSpeedTrack)
+    Corner(walkSpeedFill, 3)
+    local walkSpeedInput = New("TextBox", {
+        Size = UDim2.fromOffset(60, 24),
+        Position = UDim2.new(1, -70, 0, 50),
+        BackgroundColor3 = Theme.DropdownItem,
+        BackgroundTransparency = 0.25,
+        BorderSizePixel = 0,
+        Text = tostring(Config.Move_Speed or 50),
+        TextColor3 = Theme.TextPageTitle,
+        TextSize = 11,
+        Font = Enum.Font.Gotham,
+        ClearTextOnFocus = false,
+        ZIndex = 16,
+    }, MovementCard)
+    Corner(walkSpeedInput, 6)
+    Stroke(walkSpeedInput, 0.6, 1, Theme.StrokeInput)
+
+    local walkSpeedDragging = false
+    local function setWalkSpeed(val)
+        val = math.max(math.floor(val), 16)
+        Config.Move_Speed = val
+        walkSpeedFill.Size = UDim2.new(math.clamp((val - 16) / 284, 0, 1), 0, 1, 0)
+        walkSpeedInput.Text = tostring(val)
+    end
+    walkSpeedTrack.InputBegan:Connect(function(input)
+        if input.UserInputType == Enum.UserInputType.MouseButton1 then
+            walkSpeedDragging = true
+            local pos = math.clamp((input.Position.X - walkSpeedTrack.AbsolutePosition.X) / walkSpeedTrack.AbsoluteSize.X, 0, 1)
+            setWalkSpeed(16 + pos * 284)
+        end
+    end)
+    UserInputService.InputChanged:Connect(function(input)
+        if walkSpeedDragging and input.UserInputType == Enum.UserInputType.MouseMovement then
+            local pos = math.clamp((input.Position.X - walkSpeedTrack.AbsolutePosition.X) / walkSpeedTrack.AbsoluteSize.X, 0, 1)
+            setWalkSpeed(16 + pos * 284)
+        end
+    end)
+    UserInputService.InputEnded:Connect(function(input)
+        if input.UserInputType == Enum.UserInputType.MouseButton1 then walkSpeedDragging = false end
+    end)
+    walkSpeedInput.FocusLost:Connect(function()
+        local num = tonumber(walkSpeedInput.Text)
+        if num then setWalkSpeed(num) end
+    end)
+    walkSpeedInput:GetPropertyChangedSignal("Text"):Connect(function()
+        local num = tonumber(walkSpeedInput.Text)
+        if num then
+            Config.Move_Speed = math.max(math.floor(num), 16)
+            walkSpeedFill.Size = UDim2.new(math.clamp((Config.Move_Speed - 16) / 284, 0, 1), 0, 1, 0)
+        end
+    end)
+
+    -- High Jump Toggle
+    CreateToggle(MovementCard, 106, "High Jump", Config.Move_HighJumpEnabled, "Move_HighJumpEnabled", true, function(v)
+        Config.Move_HighJumpEnabled = v
+        if UI.Movement then UI.Movement.SetHighJumpEnabled(v) end
+    end)
+
+    -- Jump Power Slider + Input
+    New("TextLabel", {
+        Size = UDim2.new(1, -140, 0, 20),
+        Position = UDim2.fromOffset(10, 142),
+        BackgroundTransparency = 1,
+        Text = "Jump Power",
+        TextColor3 = Theme.TextLabel,
+        TextSize = 12,
+        Font = Enum.Font.GothamMedium,
+        TextXAlignment = Enum.TextXAlignment.Left,
+        ZIndex = 16,
+    }, MovementCard)
+    local jumpPowerTrack = New("Frame", {
+        Size = UDim2.new(1, -160, 0, 5),
+        Position = UDim2.fromOffset(10, 172),
+        BackgroundColor3 = Theme.SliderTrack,
+        BorderSizePixel = 0,
+        ZIndex = 16,
+    }, MovementCard)
+    Corner(jumpPowerTrack, 3)
+    local jumpPowerFill = New("Frame", {
+        Size = UDim2.new(math.clamp((Config.Move_JumpPower - 50) / 250, 0, 1), 0, 1, 0),
+        BackgroundColor3 = Theme.Accent,
+        BorderSizePixel = 0,
+        ZIndex = 17,
+    }, jumpPowerTrack)
+    Corner(jumpPowerFill, 3)
+    local jumpPowerInput = New("TextBox", {
+        Size = UDim2.fromOffset(60, 24),
+        Position = UDim2.new(1, -70, 0, 142),
+        BackgroundColor3 = Theme.DropdownItem,
+        BackgroundTransparency = 0.25,
+        BorderSizePixel = 0,
+        Text = tostring(Config.Move_JumpPower or 100),
+        TextColor3 = Theme.TextPageTitle,
+        TextSize = 11,
+        Font = Enum.Font.Gotham,
+        ClearTextOnFocus = false,
+        ZIndex = 16,
+    }, MovementCard)
+    Corner(jumpPowerInput, 6)
+    Stroke(jumpPowerInput, 0.6, 1, Theme.StrokeInput)
+
+    local jumpPowerDragging = false
+    local function setJumpPower(val)
+        val = math.max(math.floor(val), 50)
+        Config.Move_JumpPower = val
+        jumpPowerFill.Size = UDim2.new(math.clamp((val - 50) / 250, 0, 1), 0, 1, 0)
+        jumpPowerInput.Text = tostring(val)
+    end
+    jumpPowerTrack.InputBegan:Connect(function(input)
+        if input.UserInputType == Enum.UserInputType.MouseButton1 then
+            jumpPowerDragging = true
+            local pos = math.clamp((input.Position.X - jumpPowerTrack.AbsolutePosition.X) / jumpPowerTrack.AbsoluteSize.X, 0, 1)
+            setJumpPower(50 + pos * 250)
+        end
+    end)
+    UserInputService.InputChanged:Connect(function(input)
+        if jumpPowerDragging and input.UserInputType == Enum.UserInputType.MouseMovement then
+            local pos = math.clamp((input.Position.X - jumpPowerTrack.AbsolutePosition.X) / jumpPowerTrack.AbsoluteSize.X, 0, 1)
+            setJumpPower(50 + pos * 250)
+        end
+    end)
+    UserInputService.InputEnded:Connect(function(input)
+        if input.UserInputType == Enum.UserInputType.MouseButton1 then jumpPowerDragging = false end
+    end)
+    jumpPowerInput.FocusLost:Connect(function()
+        local num = tonumber(jumpPowerInput.Text)
+        if num then setJumpPower(num) end
+    end)
+    jumpPowerInput:GetPropertyChangedSignal("Text"):Connect(function()
+        local num = tonumber(jumpPowerInput.Text)
+        if num then
+            Config.Move_JumpPower = math.max(math.floor(num), 50)
+            jumpPowerFill.Size = UDim2.new(math.clamp((Config.Move_JumpPower - 50) / 250, 0, 1), 0, 1, 0)
+        end
+    end)
+
+    -- Bunny Hop Toggle
+    CreateToggle(MovementCard, 198, "Bunny Hop", Config.Move_BunnyHop, "Move_BunnyHop", true, function(v)
+        Config.Move_BunnyHop = v
+        if UI.Movement then UI.Movement.SetBunnyHop(v) end
+    end)
+
+    -- Bunny Hop Speed Slider + Input
+    New("TextLabel", {
+        Size = UDim2.new(1, -140, 0, 20),
+        Position = UDim2.fromOffset(10, 234),
+        BackgroundTransparency = 1,
+        Text = "Bunny Hop Speed",
+        TextColor3 = Theme.TextLabel,
+        TextSize = 12,
+        Font = Enum.Font.GothamMedium,
+        TextXAlignment = Enum.TextXAlignment.Left,
+        ZIndex = 16,
+    }, MovementCard)
+    local bhopSpeedTrack = New("Frame", {
+        Size = UDim2.new(1, -160, 0, 5),
+        Position = UDim2.fromOffset(10, 264),
+        BackgroundColor3 = Theme.SliderTrack,
+        BorderSizePixel = 0,
+        ZIndex = 16,
+    }, MovementCard)
+    Corner(bhopSpeedTrack, 3)
+    local bhopSpeedFill = New("Frame", {
+        Size = UDim2.new(math.clamp(((Config.Move_BunnyHopSpeed or 60) - 16) / 284, 0, 1), 0, 1, 0),
+        BackgroundColor3 = Theme.Accent,
+        BorderSizePixel = 0,
+        ZIndex = 17,
+    }, bhopSpeedTrack)
+    Corner(bhopSpeedFill, 3)
+    local bhopSpeedInput = New("TextBox", {
+        Size = UDim2.fromOffset(60, 24),
+        Position = UDim2.new(1, -70, 0, 234),
+        BackgroundColor3 = Theme.DropdownItem,
+        BackgroundTransparency = 0.25,
+        BorderSizePixel = 0,
+        Text = tostring(Config.Move_BunnyHopSpeed or 60),
+        TextColor3 = Theme.TextPageTitle,
+        TextSize = 11,
+        Font = Enum.Font.Gotham,
+        ClearTextOnFocus = false,
+        ZIndex = 16,
+    }, MovementCard)
+    Corner(bhopSpeedInput, 6)
+    Stroke(bhopSpeedInput, 0.6, 1, Theme.StrokeInput)
+
+    local bhopSpeedDragging = false
+    local function setBhopSpeed(val)
+        val = math.max(math.floor(val), 16)
+        Config.Move_BunnyHopSpeed = val
+        bhopSpeedFill.Size = UDim2.new(math.clamp((val - 16) / 284, 0, 1), 0, 1, 0)
+        bhopSpeedInput.Text = tostring(val)
+    end
+    bhopSpeedTrack.InputBegan:Connect(function(input)
+        if input.UserInputType == Enum.UserInputType.MouseButton1 then
+            bhopSpeedDragging = true
+            local pos = math.clamp((input.Position.X - bhopSpeedTrack.AbsolutePosition.X) / bhopSpeedTrack.AbsoluteSize.X, 0, 1)
+            setBhopSpeed(16 + pos * 284)
+        end
+    end)
+    UserInputService.InputChanged:Connect(function(input)
+        if bhopSpeedDragging and input.UserInputType == Enum.UserInputType.MouseMovement then
+            local pos = math.clamp((input.Position.X - bhopSpeedTrack.AbsolutePosition.X) / bhopSpeedTrack.AbsoluteSize.X, 0, 1)
+            setBhopSpeed(16 + pos * 284)
+        end
+    end)
+    UserInputService.InputEnded:Connect(function(input)
+        if input.UserInputType == Enum.UserInputType.MouseButton1 then bhopSpeedDragging = false end
+    end)
+    bhopSpeedInput.FocusLost:Connect(function()
+        local num = tonumber(bhopSpeedInput.Text)
+        if num then setBhopSpeed(num) end
+    end)
+    bhopSpeedInput:GetPropertyChangedSignal("Text"):Connect(function()
+        local num = tonumber(bhopSpeedInput.Text)
+        if num then
+            Config.Move_BunnyHopSpeed = math.max(math.floor(num), 16)
+            bhopSpeedFill.Size = UDim2.new(math.clamp((Config.Move_BunnyHopSpeed - 16) / 284, 0, 1), 0, 1, 0)
+        end
+    end)
+
+    -- No Jump Cooldown Toggle
+    CreateToggle(MovementCard, 290, "No Jump Cooldown", Config.Move_NoJumpCooldown, "Move_NoJumpCooldown", true, function(v)
+        Config.Move_NoJumpCooldown = v
+        if UI.Movement then UI.Movement.SetNoJumpCooldown(v) end
+    end)
+
+    -- Infinite Jump Toggle
+    CreateToggle(MovementCard, 326, "Infinite Jump", Config.Move_InfiniteJump, "Move_InfiniteJump", true, function(v)
+        Config.Move_InfiniteJump = v
+        if UI.Movement then UI.Movement.SetInfiniteJump(v) end
+    end)
+
+    -- NoClip Toggle
+    CreateToggle(MovementCard, 362, "NoClip", Config.Move_NoClip, "Move_NoClip", true, function(v)
+        Config.Move_NoClip = v
+        if UI.Movement then UI.Movement.SetNoClip(v) end
+    end)
+
+    CreateSeparator(MovementCard, 406)
+
+    -- Fly Section
+    CreateToggle(MovementCard, 418, "Enable Fly", Config.Move_Fly, "Move_Fly", true, function(v)
+        Config.Move_Fly = v
+        if UI.Movement then UI.Movement.SetFly(v) end
+    end)
+
+    local flyMethodDropdown = BuildDropdown(MovementCard, 454, "Fly Method", Config.Move_FlyMethod or "Tween",
+        {"Tween", "Velocity", "CFrame"},
+        function(v) Config.Move_FlyMethod = v end)
+
+    -- Fly Speed Slider + Input
+    New("TextLabel", {
+        Size = UDim2.new(1, -140, 0, 20),
+        Position = UDim2.fromOffset(10, 526),
+        BackgroundTransparency = 1,
+        Text = "Fly Speed",
+        TextColor3 = Theme.TextLabel,
+        TextSize = 12,
+        Font = Enum.Font.GothamMedium,
+        TextXAlignment = Enum.TextXAlignment.Left,
+        ZIndex = 16,
+    }, MovementCard)
+    local flySpeedTrack = New("Frame", {
+        Size = UDim2.new(1, -160, 0, 5),
+        Position = UDim2.fromOffset(10, 556),
+        BackgroundColor3 = Theme.SliderTrack,
+        BorderSizePixel = 0,
+        ZIndex = 16,
+    }, MovementCard)
+    Corner(flySpeedTrack, 3)
+    local flySpeedFill = New("Frame", {
+        Size = UDim2.new(math.clamp((Config.Move_FlySpeed - 10) / 290, 0, 1), 0, 1, 0),
+        BackgroundColor3 = Theme.Accent,
+        BorderSizePixel = 0,
+        ZIndex = 17,
+    }, flySpeedTrack)
+    Corner(flySpeedFill, 3)
+    local flySpeedInput = New("TextBox", {
+        Size = UDim2.fromOffset(60, 24),
+        Position = UDim2.new(1, -70, 0, 526),
+        BackgroundColor3 = Theme.DropdownItem,
+        BackgroundTransparency = 0.25,
+        BorderSizePixel = 0,
+        Text = tostring(Config.Move_FlySpeed or 50),
+        TextColor3 = Theme.TextPageTitle,
+        TextSize = 11,
+        Font = Enum.Font.Gotham,
+        ClearTextOnFocus = false,
+        ZIndex = 16,
+    }, MovementCard)
+    Corner(flySpeedInput, 6)
+    Stroke(flySpeedInput, 0.6, 1, Theme.StrokeInput)
+
+    local flySpeedDragging = false
+    local function setFlySpeed(val)
+        val = math.max(math.floor(val), 1)
+        Config.Move_FlySpeed = val
+        flySpeedFill.Size = UDim2.new(math.clamp((val - 10) / 290, 0, 1), 0, 1, 0)
+        flySpeedInput.Text = tostring(val)
+    end
+    flySpeedTrack.InputBegan:Connect(function(input)
+        if input.UserInputType == Enum.UserInputType.MouseButton1 then
+            flySpeedDragging = true
+            local pos = math.clamp((input.Position.X - flySpeedTrack.AbsolutePosition.X) / flySpeedTrack.AbsoluteSize.X, 0, 1)
+            setFlySpeed(10 + pos * 290)
+        end
+    end)
+    UserInputService.InputChanged:Connect(function(input)
+        if flySpeedDragging and input.UserInputType == Enum.UserInputType.MouseMovement then
+            local pos = math.clamp((input.Position.X - flySpeedTrack.AbsolutePosition.X) / flySpeedTrack.AbsoluteSize.X, 0, 1)
+            setFlySpeed(10 + pos * 290)
+        end
+    end)
+    UserInputService.InputEnded:Connect(function(input)
+        if input.UserInputType == Enum.UserInputType.MouseButton1 then flySpeedDragging = false end
+    end)
+    flySpeedInput.FocusLost:Connect(function()
+        local num = tonumber(flySpeedInput.Text)
+        if num then setFlySpeed(num) end
+    end)
+    flySpeedInput:GetPropertyChangedSignal("Text"):Connect(function()
+        local num = tonumber(flySpeedInput.Text)
+        if num then
+            Config.Move_FlySpeed = math.max(math.floor(num), 1)
+            flySpeedFill.Size = UDim2.new(math.clamp((Config.Move_FlySpeed - 10) / 290, 0, 1), 0, 1, 0)
+        end
+    end)
+
+    -- WASD Help Text
+    New("TextLabel", {
+        Size = UDim2.new(1, -20, 0, 16),
+        Position = UDim2.fromOffset(10, 576),
+        BackgroundTransparency = 1,
+        Text = "WASD to move, Space up, Shift down",
+        TextColor3 = Theme.HelpText,
+        TextSize = 10,
+        Font = Enum.Font.GothamMedium,
+        TextXAlignment = Enum.TextXAlignment.Left,
+        ZIndex = 16,
+    }, MovementCard)
+
+    -- Bottom padding
+    New("Frame", {
+        Size = UDim2.new(1, 0, 0, 40),
+        Position = UDim2.fromOffset(0, 610),
+        BackgroundTransparency = 1,
+        ZIndex = 16,
+    }, MovementCard)
+    -- SETTINGS PAGE
+    local SettingsPage = Pages.Settings
+    PageTitle(SettingsPage, "Settings", "Interface customization, config management, and safety options.")
+    local SettingsScroll = New("ScrollingFrame", {
+        Size = UDim2.new(1, -20, 1, -72),
+        Position = UDim2.fromOffset(10, 72),
+        BackgroundTransparency = 1,
+        BorderSizePixel = 0,
+        ScrollBarThickness = 5,
+        ScrollBarImageColor3 = Theme.Accent,
+        CanvasSize = UDim2.new(0, 0, 0, 1210),
+        ZIndex = 14,
+    }, SettingsPage)
+    local SettingsCard = CreateCard(SettingsScroll, UDim2.fromOffset(0, 0), UDim2.new(1, 0, 0, 1200))
+
+    -- Keybinds Section
+    New("TextLabel", {
+        Size = UDim2.new(1, -20, 0, 20),
+        Position = UDim2.fromOffset(10, 10),
+        BackgroundTransparency = 1,
+        Text = "Keybinds",
+        TextColor3 = Theme.TextSection,
+        TextSize = 14,
+        Font = Enum.Font.GothamBold,
+        TextXAlignment = Enum.TextXAlignment.Left,
+        ZIndex = 16,
+    }, SettingsCard)
+
+    -- Menu Toggle Key
+    New("TextLabel", {
+        Size = UDim2.new(1, -140, 0, 25),
+        Position = UDim2.fromOffset(15, 36),
+        BackgroundTransparency = 1,
+        Text = "Menu Toggle Key",
+        TextColor3 = Theme.TextTabActive,
+        TextSize = 12,
+        Font = Enum.Font.GothamBold,
+        TextXAlignment = Enum.TextXAlignment.Left,
+        ZIndex = 16,
+    }, SettingsCard)
+
+    local KeybindButton = New("TextButton", {
+        Size = UDim2.fromOffset(115, 30),
+        Position = UDim2.new(1, -130, 0, 34),
+        BackgroundColor3 = Theme.Accent,
+        BackgroundTransparency = 0.18,
+        BorderSizePixel = 0,
+        Text = FormatKeyName(Config.ToggleKey),
+        TextColor3 = Theme.ActionBtnText,
+        TextSize = 11,
+        Font = Enum.Font.GothamBold,
+        AutoButtonColor = false,
+        ZIndex = 17,
+    }, SettingsCard)
+    Corner(KeybindButton, 8)
+
+    -- Panic Key
+    New("TextLabel", {
+        Size = UDim2.new(1, -140, 0, 25),
+        Position = UDim2.fromOffset(15, 70),
+        BackgroundTransparency = 1,
+        Text = "Panic Key (disable all)",
+        TextColor3 = Theme.TextTabActive,
+        TextSize = 12,
+        Font = Enum.Font.GothamBold,
+        TextXAlignment = Enum.TextXAlignment.Left,
+        ZIndex = 16,
+    }, SettingsCard)
+
+    local PanicKeyButton = New("TextButton", {
+        Size = UDim2.fromOffset(115, 30),
+        Position = UDim2.new(1, -130, 0, 68),
+        BackgroundColor3 = Theme.PanicBtn,
+        BackgroundTransparency = 0.18,
+        BorderSizePixel = 0,
+        Text = Config.PanicKey and FormatKeyName(Config.PanicKey) or "—",
+        TextColor3 = Theme.ActionBtnText,
+        TextSize = 11,
+        Font = Enum.Font.GothamBold,
+        AutoButtonColor = false,
+        ZIndex = 17,
+    }, SettingsCard)
+    Corner(PanicKeyButton, 8)
+
+    PanicKeyButton.MouseButton1Click:Connect(function()
+        if UI.ListeningKey then return end
+        UI.ListeningKey = "PanicKey"
+        PanicKeyButton.Text = "PRESS KEY"
+        Tween(PanicKeyButton, {BackgroundTransparency = 0}, 0.2):Play()
+    end)
+
+    CreateSeparator(SettingsCard, 108)
+
+    -- GUI Customization Section
+    New("TextLabel", {
+        Size = UDim2.new(1, -20, 0, 20),
+        Position = UDim2.fromOffset(10, 120),
+        BackgroundTransparency = 1,
+        Text = "GUI Customization",
+        TextColor3 = Theme.TextSection,
+        TextSize = 14,
+        Font = Enum.Font.GothamBold,
+        TextXAlignment = Enum.TextXAlignment.Left,
+        ZIndex = 16,
+    }, SettingsCard)
+
+    -- GUI Scale Slider + Input
+    New("TextLabel", {
+        Size = UDim2.new(1, -140, 0, 20),
+        Position = UDim2.fromOffset(10, 144),
+        BackgroundTransparency = 1,
+        Text = "GUI Scale",
+        TextColor3 = Theme.TextLabel,
+        TextSize = 12,
+        Font = Enum.Font.GothamMedium,
+        TextXAlignment = Enum.TextXAlignment.Left,
+        ZIndex = 16,
+    }, SettingsCard)
+
+    local guiScaleTrack = New("Frame", {
+        Size = UDim2.new(1, -160, 0, 5),
+        Position = UDim2.fromOffset(10, 174),
+        BackgroundColor3 = Theme.SliderTrack,
+        BorderSizePixel = 0,
+        ZIndex = 16,
+    }, SettingsCard)
+    Corner(guiScaleTrack, 3)
+
+    local guiScaleFill = New("Frame", {
+        Size = UDim2.new((Config.GUIScale - 0.5) / 1.5, 0, 1, 0),
+        BackgroundColor3 = Theme.Accent,
+        BorderSizePixel = 0,
+        ZIndex = 17,
+    }, guiScaleTrack)
+    Corner(guiScaleFill, 3)
+
+    local guiScaleInput = New("TextBox", {
+        Size = UDim2.fromOffset(60, 24),
+        Position = UDim2.new(1, -70, 0, 144),
+        BackgroundColor3 = Theme.DropdownItem,
+        BackgroundTransparency = 0.25,
+        BorderSizePixel = 0,
+        Text = string.format("%.1f", Config.GUIScale or 1.0),
+        TextColor3 = Theme.TextPageTitle,
+        TextSize = 11,
+        Font = Enum.Font.Gotham,
+        ClearTextOnFocus = false,
+        ZIndex = 16,
+    }, SettingsCard)
+    Corner(guiScaleInput, 6)
+    Stroke(guiScaleInput, 0.6, 1, Theme.StrokeInput)
+
+    local guiScaleDragging = false
+    local function setGUIScale(val)
+        val = math.clamp(val, 0.5, 2.0)
+        Config.GUIScale = val
+        guiScaleFill.Size = UDim2.new((val - 0.5) / 1.5, 0, 1, 0)
+        guiScaleInput.Text = string.format("%.1f", val)
+        if UI.Main then
+            UI.Main.Size = UDim2.fromOffset(760 * val, 540 * val)
+        end
+    end
+
+    guiScaleTrack.InputBegan:Connect(function(input)
+        if input.UserInputType == Enum.UserInputType.MouseButton1 then
+            guiScaleDragging = true
+            local pos = math.clamp((input.Position.X - guiScaleTrack.AbsolutePosition.X) / guiScaleTrack.AbsoluteSize.X, 0, 1)
+            setGUIScale(0.5 + pos * 1.5)
+        end
+    end)
+    UserInputService.InputChanged:Connect(function(input)
+        if guiScaleDragging and input.UserInputType == Enum.UserInputType.MouseMovement then
+            local pos = math.clamp((input.Position.X - guiScaleTrack.AbsolutePosition.X) / guiScaleTrack.AbsoluteSize.X, 0, 1)
+            setGUIScale(0.5 + pos * 1.5)
+        end
+    end)
+    UserInputService.InputEnded:Connect(function(input)
+        if input.UserInputType == Enum.UserInputType.MouseButton1 then guiScaleDragging = false end
+    end)
+    guiScaleInput.FocusLost:Connect(function()
+        local num = tonumber(guiScaleInput.Text)
+        if num then setGUIScale(num) end
+    end)
+
+    -- Show Hotkeys Toggle
+    CreateToggle(SettingsCard, 188, "Show Hotkeys", Config.ShowHotkeys, "ShowHotkeys", false, function(v)
+        Config.ShowHotkeys = v
+        UI.UpdateHotkeyDisplay()
+    end)
+
+    -- Auto-hide on Screenshot Toggle
+    CreateToggle(SettingsCard, 224, "Auto-hide on Screenshot", Config.AutoHideOnScreenshot, "AutoHideOnScreenshot", false, function(v)
+        Config.AutoHideOnScreenshot = v
+    end)
+
+    -- GUI Window Mode Toggle
+    CreateToggle(SettingsCard, 260, "GUI Window Mode", Config.GUIWindow, "GUIWindow", false, function(v)
+        Config.GUIWindow = v
+        if UI.Main then
+            if v then
+                UI.Main.Size = UDim2.fromOffset(500 * (Config.GUIScale or 1), 400 * (Config.GUIScale or 1))
+                UI.Main.Position = UDim2.new(0.5, -250 * (Config.GUIScale or 1), 0.5, -200 * (Config.GUIScale or 1))
+                UI.Main.AnchorPoint = Vector2.new(0, 0)
+            else
+                UI.Main.Size = UDim2.fromOffset(760 * (Config.GUIScale or 1), 540 * (Config.GUIScale or 1))
+                UI.Main.Position = UDim2.fromScale(0.5, 0.5)
+                UI.Main.AnchorPoint = Vector2.new(0.5, 0.5)
+            end
+        end
+        if UI.Background then
+            UI.Background.Visible = not v and UI.GUIVisible
+        end
+    end)
+
+    CreateSeparator(SettingsCard, 298)
+
+    -- Performance Section
+    New("TextLabel", {
+        Size = UDim2.new(1, -20, 0, 20),
+        Position = UDim2.fromOffset(10, 310),
+        BackgroundTransparency = 1,
+        Text = "Performance",
+        TextColor3 = Theme.TextSection,
+        TextSize = 14,
+        Font = Enum.Font.GothamBold,
+        TextXAlignment = Enum.TextXAlignment.Left,
+        ZIndex = 16,
+    }, SettingsCard)
+
+    -- FPS Cap Slider + Input
+    New("TextLabel", {
+        Size = UDim2.new(1, -140, 0, 20),
+        Position = UDim2.fromOffset(10, 334),
+        BackgroundTransparency = 1,
+        Text = "FPS Cap (0 = uncapped)",
+        TextColor3 = Theme.TextLabel,
+        TextSize = 12,
+        Font = Enum.Font.GothamMedium,
+        TextXAlignment = Enum.TextXAlignment.Left,
+        ZIndex = 16,
+    }, SettingsCard)
+
+    local fpsTrack = New("Frame", {
+        Size = UDim2.new(1, -160, 0, 5),
+        Position = UDim2.fromOffset(10, 364),
+        BackgroundColor3 = Theme.SliderTrack,
+        BorderSizePixel = 0,
+        ZIndex = 16,
+    }, SettingsCard)
+    Corner(fpsTrack, 3)
+
+    local fpsFill = New("Frame", {
+        Size = UDim2.new(math.clamp((Config.FPSCap or 0) / 480, 0, 1), 0, 1, 0),
+        BackgroundColor3 = Theme.Accent,
+        BorderSizePixel = 0,
+        ZIndex = 17,
+    }, fpsTrack)
+    Corner(fpsFill, 3)
+
+    local fpsInput = New("TextBox", {
+        Size = UDim2.fromOffset(60, 24),
+        Position = UDim2.new(1, -70, 0, 334),
+        BackgroundColor3 = Theme.DropdownItem,
+        BackgroundTransparency = 0.25,
+        BorderSizePixel = 0,
+        Text = tostring(Config.FPSCap or 0),
+        TextColor3 = Theme.TextPageTitle,
+        TextSize = 11,
+        Font = Enum.Font.Gotham,
+        ClearTextOnFocus = false,
+        ZIndex = 16,
+    }, SettingsCard)
+    Corner(fpsInput, 6)
+    Stroke(fpsInput, 0.6, 1, Theme.StrokeInput)
+
+    local fpsDragging = false
+    local function setFPSCap(val)
+        val = math.clamp(math.floor(val), 0, 480)
+        Config.FPSCap = val
+        fpsFill.Size = UDim2.new(val / 480, 0, 1, 0)
+        fpsInput.Text = tostring(val)
+        if setfpscap then
+            setfpscap(val > 0 and val or 480)
+        end
+    end
+
+    fpsTrack.InputBegan:Connect(function(input)
+        if input.UserInputType == Enum.UserInputType.MouseButton1 then
+            fpsDragging = true
+            local pos = math.clamp((input.Position.X - fpsTrack.AbsolutePosition.X) / fpsTrack.AbsoluteSize.X, 0, 1)
+            setFPSCap(pos * 480)
+        end
+    end)
+    UserInputService.InputChanged:Connect(function(input)
+        if fpsDragging and input.UserInputType == Enum.UserInputType.MouseMovement then
+            local pos = math.clamp((input.Position.X - fpsTrack.AbsolutePosition.X) / fpsTrack.AbsoluteSize.X, 0, 1)
+            setFPSCap(pos * 480)
+        end
+    end)
+    UserInputService.InputEnded:Connect(function(input)
+        if input.UserInputType == Enum.UserInputType.MouseButton1 then fpsDragging = false end
+    end)
+    fpsInput.FocusLost:Connect(function()
+        local num = tonumber(fpsInput.Text)
+        if num then setFPSCap(num) end
+    end)
+
+    CreateSeparator(SettingsCard, 378)
+
+    -- Notifications Section
+    New("TextLabel", {
+        Size = UDim2.new(1, -20, 0, 20),
+        Position = UDim2.fromOffset(10, 390),
+        BackgroundTransparency = 1,
+        Text = "Notifications",
+        TextColor3 = Theme.TextSection,
+        TextSize = 14,
+        Font = Enum.Font.GothamBold,
+        TextXAlignment = Enum.TextXAlignment.Left,
+        ZIndex = 16,
+    }, SettingsCard)
+
+    -- Show Notifications Toggle
+    CreateToggle(SettingsCard, 414, "Show Notifications", Config.ShowNotifications, "ShowNotifications", false, function(v)
+        Config.ShowNotifications = v
+    end)
+
+    -- Notification Duration Slider + Input
+    New("TextLabel", {
+        Size = UDim2.new(1, -140, 0, 20),
+        Position = UDim2.fromOffset(10, 450),
+        BackgroundTransparency = 1,
+        Text = "Notification Duration",
+        TextColor3 = Theme.TextLabel,
+        TextSize = 12,
+        Font = Enum.Font.GothamMedium,
+        TextXAlignment = Enum.TextXAlignment.Left,
+        ZIndex = 16,
+    }, SettingsCard)
+
+    local notifTrack = New("Frame", {
+        Size = UDim2.new(1, -160, 0, 5),
+        Position = UDim2.fromOffset(10, 480),
+        BackgroundColor3 = Theme.SliderTrack,
+        BorderSizePixel = 0,
+        ZIndex = 16,
+    }, SettingsCard)
+    Corner(notifTrack, 3)
+
+    local notifFill = New("Frame", {
+        Size = UDim2.new(math.clamp((Config.NotificationDuration or 2.5) / 10, 0, 1), 0, 1, 0),
+        BackgroundColor3 = Theme.Accent,
+        BorderSizePixel = 0,
+        ZIndex = 17,
+    }, notifTrack)
+    Corner(notifFill, 3)
+
+    local notifInput = New("TextBox", {
+        Size = UDim2.fromOffset(60, 24),
+        Position = UDim2.new(1, -70, 0, 450),
+        BackgroundColor3 = Theme.DropdownItem,
+        BackgroundTransparency = 0.25,
+        BorderSizePixel = 0,
+        Text = string.format("%.1f", Config.NotificationDuration or 2.5),
+        TextColor3 = Theme.TextPageTitle,
+        TextSize = 11,
+        Font = Enum.Font.Gotham,
+        ClearTextOnFocus = false,
+        ZIndex = 16,
+    }, SettingsCard)
+    Corner(notifInput, 6)
+    Stroke(notifInput, 0.6, 1, Theme.StrokeInput)
+
+    local notifDragging = false
+    local function setNotifDuration(val)
+        val = math.clamp(val, 0.5, 10)
+        Config.NotificationDuration = val
+        notifFill.Size = UDim2.new(val / 10, 0, 1, 0)
+        notifInput.Text = string.format("%.1f", val)
+    end
+
+    notifTrack.InputBegan:Connect(function(input)
+        if input.UserInputType == Enum.UserInputType.MouseButton1 then
+            notifDragging = true
+            local pos = math.clamp((input.Position.X - notifTrack.AbsolutePosition.X) / notifTrack.AbsoluteSize.X, 0, 1)
+            setNotifDuration(0.5 + pos * 9.5)
+        end
+    end)
+    UserInputService.InputChanged:Connect(function(input)
+        if notifDragging and input.UserInputType == Enum.UserInputType.MouseMovement then
+            local pos = math.clamp((input.Position.X - notifTrack.AbsolutePosition.X) / notifTrack.AbsoluteSize.X, 0, 1)
+            setNotifDuration(0.5 + pos * 9.5)
+        end
+    end)
+    UserInputService.InputEnded:Connect(function(input)
+        if input.UserInputType == Enum.UserInputType.MouseButton1 then notifDragging = false end
+    end)
+    notifInput.FocusLost:Connect(function()
+        local num = tonumber(notifInput.Text)
+        if num then setNotifDuration(num) end
+    end)
+
+    CreateSeparator(SettingsCard, 494)
+
+    -- Config Management Section
+    New("TextLabel", {
+        Size = UDim2.new(1, -20, 0, 20),
+        Position = UDim2.fromOffset(10, 506),
+        BackgroundTransparency = 1,
+        Text = "Config Management",
+        TextColor3 = Theme.TextSection,
+        TextSize = 14,
+        Font = Enum.Font.GothamBold,
+        TextXAlignment = Enum.TextXAlignment.Left,
+        ZIndex = 16,
+    }, SettingsCard)
+
+    -- Save Config Button
+    local function ShowNotification(text, color)
+        if not Config.ShowNotifications then return end
+        local notif = New("Frame", {
+            Size = UDim2.new(0, 300, 0, 36),
+            Position = UDim2.new(0.5, -150, 1, -60),
+            BackgroundColor3 = Theme.BgCard,
+            BackgroundTransparency = 0.15,
+            BorderSizePixel = 0,
+            ZIndex = 200,
+        }, ScreenGui)
+        Corner(notif, 8)
+        Stroke(notif, 0.6, 1, color or Theme.Accent)
+        local notifText = New("TextLabel", {
+            Size = UDim2.new(1, -20, 1, 0),
+            Position = UDim2.fromOffset(10, 0),
+            BackgroundTransparency = 1,
+            Text = text,
+            TextColor3 = color or Theme.TextLabel,
+            TextSize = 12,
+            Font = Enum.Font.GothamMedium,
+            TextXAlignment = Enum.TextXAlignment.Left,
+            ZIndex = 201,
+        }, notif)
+        Tween(notif, {Position = UDim2.new(0.5, -150, 1, -100)}, 0.3):Play()
+        task.delay(Config.NotificationDuration or 2.5, function()
+            Tween(notif, {Position = UDim2.new(0.5, -150, 1, -40)}, 0.3):Play()
+            task.delay(0.3, function()
+                notif:Destroy()
+            end)
+        end)
+    end
+
+    CreateActionButton(SettingsCard, 530, "Save Config", function()
+        if writefile then
+            local configData = {}
+            for k, v in pairs(Config) do
+                if typeof(v) == "EnumItem" then
+                    configData[k] = {type = "Enum", value = v.Name}
+                elseif typeof(v) == "Color3" then
+                    configData[k] = {type = "Color3", r = v.R, g = v.G, b = v.B}
+                elseif typeof(v) == "Vector3" then
+                    configData[k] = {type = "Vector3", x = v.X, y = v.Y, z = v.Z}
+                else
+                    configData[k] = {type = typeof(v), value = v}
+                end
+            end
+            local success, err = pcall(function()
+                writefile("starscc_config.json", game:GetService("HttpService"):JSONEncode(configData))
+            end)
+            if success then
+                ShowNotification("Config saved successfully!", Theme.SuccessGreen)
+            else
+                ShowNotification("Failed to save: " .. tostring(err), Theme.ErrorRed)
+            end
+        else
+            ShowNotification("writefile not supported by your executor", Theme.ErrorRed)
+        end
+    end)
+
+    -- Load Config Button
+    CreateActionButton(SettingsCard, 566, "Load Config", function()
+        if readfile then
+            local success, err = pcall(function()
+                local data = readfile("starscc_config.json")
+                local configData = game:GetService("HttpService"):JSONDecode(data)
+                for k, v in pairs(configData) do
+                    if v.type == "Enum" then
+                        Config[k] = Enum.KeyCode[v.value]
+                    elseif v.type == "Color3" then
+                        Config[k] = Color3.new(v.r, v.g, v.b)
+                    elseif v.type == "Vector3" then
+                        Config[k] = Vector3.new(v.x, v.y, v.z)
+                    else
+                        Config[k] = v.value
+                    end
+                end
+            end)
+            if success then
+                -- Apply loaded theme and background image immediately
+                if Config.GUIThemeName then
+                    UI.ApplyTheme(Config.GUIThemeName)
+                end
+                if Config.GUIBackgroundImage then
+                    UI.ApplyBackgroundImage()
+                end
+                ShowNotification("Config loaded and applied!", Theme.SuccessGreen)
+            else
+                ShowNotification("Failed to load: " .. tostring(err), Theme.ErrorRed)
+            end
+        else
+            ShowNotification("readfile not supported by your executor", Theme.ErrorRed)
+        end
+    end)
+
+    -- Reset to Defaults Button
+    CreateActionButton(SettingsCard, 602, "Reset to Defaults", function()
+        for k, v in pairs(Config) do
+            if typeof(v) == "boolean" then
+                Config[k] = false
+            elseif typeof(v) == "number" then
+                if k == "Aimbot_FOV" then Config[k] = 60
+                elseif k == "Aimbot_Smoothness" then Config[k] = 15
+                elseif k == "FOV_Radius" then Config[k] = 250
+                elseif k == "ESP_MaxDistance" then Config[k] = 2000
+                elseif k == "Move_Speed" then Config[k] = 50
+                elseif k == "Move_JumpPower" then Config[k] = 100
+                elseif k == "Move_FlySpeed" then Config[k] = 50
+                elseif k == "Move_BunnyHopSpeed" then Config[k] = 60
+                elseif k == "FarmDistance" then Config[k] = 12
+                elseif k == "GUIScale" then Config[k] = 1.0
+                elseif k == "FPSCap" then Config[k] = 0
+                elseif k == "NotificationDuration" then Config[k] = 2.5
+                else Config[k] = 0 end
+            elseif typeof(v) == "string" then
+                if k == "Aimbot_TargetPart" then Config[k] = "Head"
+                elseif k == "Aimbot_Priority" then Config[k] = "Closest to Mouse"
+                elseif k == "TargetPart" then Config[k] = "Head"
+                elseif k == "AntiStompMode" then Config[k] = "Void"
+                elseif k == "SpamRange" then Config[k] = "Close"
+                elseif k == "Move_FlyMethod" then Config[k] = "Tween"
+                elseif k == "World_SkyTheme" then Config[k] = "Default"
+                elseif k == "RagebotMethod" then Config[k] = "FarmVoid"
+                else Config[k] = "" end
+            end
+        end
+        Config.ToggleKey = Enum.KeyCode.RightShift
+        Config.PanicKey = nil
+        Config.GUIThemeName = "Purple"
+        Config.GUIBackgroundImage = "None"
+        -- Apply defaults immediately
+        UI.ApplyTheme("Purple")
+        UI.ApplyBackgroundImage()
+        ShowNotification("Config reset to defaults!", Theme.SuccessGreen)
+    end)
+
+
+    -- Theme Selector
+    CreateSeparator(SettingsCard, 640)
+    New("TextLabel", {
+        Size = UDim2.new(1, -20, 0, 20),
+        Position = UDim2.fromOffset(10, 652),
+        BackgroundTransparency = 1,
+        Text = "Theme",
+        TextColor3 = Theme.TextSection,
+        TextSize = 14,
+        Font = Enum.Font.GothamBold,
+        TextXAlignment = Enum.TextXAlignment.Left,
+        ZIndex = 16,
+    }, SettingsCard)
+    local themeDropdown = BuildDropdown(SettingsCard, 676, "GUI Theme", Config.GUIThemeName or "Purple",
+        {"Purple", "Monochrome"},
+        function(v)
+            Config.GUIThemeName = v
+            UI.ApplyTheme(v)
+        end)
+
+
+    -- Background Image Selector
+    CreateSeparator(SettingsCard, 736)
+    New("TextLabel", {
+        Size = UDim2.new(1, -20, 0, 20),
+        Position = UDim2.fromOffset(10, 748),
+        BackgroundTransparency = 1,
+        Text = "Background Image",
+        TextColor3 = Theme.TextSection,
+        TextSize = 14,
+        Font = Enum.Font.GothamBold,
+        TextXAlignment = Enum.TextXAlignment.Left,
+        ZIndex = 16,
+    }, SettingsCard)
+    local bgImageDropdown = BuildDropdown(SettingsCard, 772, "Texture", Config.GUIBackgroundImage or "None",
+        BackgroundTextureNames,
+        function(v)
+            Config.GUIBackgroundImage = v
+            ApplyBackgroundImage()
+        end)
+
+    -- Bottom padding
+    New("Frame", {
+        Size = UDim2.new(1, 0, 0, 40),
+        Position = UDim2.fromOffset(0, 832),
+        BackgroundTransparency = 1,
+        ZIndex = 16,
+    }, SettingsCard)
+-- Hotkey Display
+    local HotkeyDisplay = New("Frame", {
+        Name = "HotkeyDisplay",
+        Size = UDim2.fromOffset(155, 36),
+        AnchorPoint = Vector2.new(1, 0),
+        Position = UDim2.new(1, -20, 0, 20),
+        BackgroundColor3 = Theme.BgHotkey,
+        BackgroundTransparency = 0.08,
+        BorderSizePixel = 0,
+        Visible = false,
+        ZIndex = 50,
+    }, ScreenGui)
+    Corner(HotkeyDisplay, 10)
+    Stroke(HotkeyDisplay, 0.88, 1)
+    UI.HotkeyDisplay = HotkeyDisplay
+
+    -- Tab System
+    local ActiveTab = nil
+    local function SelectTab(name)
+        ActiveTab = name
+        for tabName, data in pairs(TabButtons) do
+            local active = tabName == name
+            Tween(data.Button, {
+                BackgroundTransparency = active and 0.84 or 1,
+                TextColor3 = active and Theme.TextTabActive or Theme.TextTabInactive,
+            }, 0.2):Play()
+            Tween(data.Indicator, {BackgroundTransparency = active and 0 or 1}, 0.2):Play()
+        end
+        for pageName, page in pairs(Pages) do
+            page.Visible = pageName == name
+        end
+        if targetPartDropdown and targetPartDropdown.IsOpen() then targetPartDropdown.Close() end
+        if aimbotPartDropdown and aimbotPartDropdown.IsOpen() then aimbotPartDropdown.Close() end
+        if aimbotPriorityDropdown and aimbotPriorityDropdown.IsOpen() then aimbotPriorityDropdown.Close() end
+        if realSilentPartDropdown and realSilentPartDropdown.IsOpen() then realSilentPartDropdown.Close() end
+        if hitboxPartDropdown and hitboxPartDropdown.IsOpen() then hitboxPartDropdown.Close() end
+        if flyMethodDropdown and flyMethodDropdown.IsOpen() then flyMethodDropdown.Close() end
+        if skyThemeDropdown and skyThemeDropdown.IsOpen() then skyThemeDropdown.Close() end
+        if antiStompDropdown and antiStompDropdown.IsOpen() then antiStompDropdown.Close() end
+        if spamRangeDropdown and spamRangeDropdown.IsOpen() then spamRangeDropdown.Close() end
+    end
+    for name, data in pairs(TabButtons) do
+        data.Button.MouseButton1Click:Connect(function() SelectTab(name) end)
+        data.Button.MouseEnter:Connect(function()
+            if ActiveTab ~= name then
+                Tween(data.Button, {BackgroundTransparency = 0.94}, 0.15):Play()
+            end
+        end)
+        data.Button.MouseLeave:Connect(function()
+            if ActiveTab ~= name then
+                Tween(data.Button, {BackgroundTransparency = 1}, 0.15):Play()
+            end
+        end)
+    end
+    SelectTab("Combat")
+
+    -- Keybind Changing
+    UI.ListeningKey = nil
+    KeybindButton.MouseButton1Click:Connect(function()
+        if UI.ListeningKey then return end
+        UI.ListeningKey = "Toggle"
+        KeybindButton.Text = "PRESS KEY"
+        Tween(KeybindButton, {BackgroundTransparency = 0}, 0.2):Play()
+    end)
+
+    -- Ensure RightShift is default
+    if not Config.ToggleKey then
+        Config.ToggleKey = Enum.KeyCode.RightShift
+    end
+    KeybindButton.Text = FormatKeyName(Config.ToggleKey)
+
+    -- GUI Toggle
+    local function SetGUIVisible(visible)
+        UI.GUIVisible = visible
+        if visible then
+            Main.Visible = true
+            Background.Visible = true
+            Body.Visible = true
+            Sidebar.Visible = true
+            Content.Visible = true
+            -- Restore active tab
+            if ActiveTab then
+                SelectTab(ActiveTab)
+            end
+            Tween(Main, {
+                Size = UDim2.fromOffset(GUI_WIDTH, GUI_HEIGHT),
+                BackgroundTransparency = 0.04,
+            }, 0.4):Play()
+            Tween(Blur, {Size = 12}, 0.35):Play()
+        else
+            -- Closing animation — shrink and fade
+            Tween(Main, {
+                Size = UDim2.fromOffset(GUI_WIDTH * (Config.GUIScale or 1), 0),
+                BackgroundTransparency = 1,
+            }, 0.25, Enum.EasingStyle.Quint, Enum.EasingDirection.In):Play()
+            Tween(Blur, {Size = 0}, 0.25):Play()
+
+            -- Hide after animation completes
+            task.delay(0.25, function()
+                if not UI.GUIVisible then
+                    Main.Visible = false
+                    Background.Visible = false
+                    Body.Visible = false
+                    Sidebar.Visible = false
+                    Content.Visible = false
+                    for _, page in pairs(Pages) do
+                        page.Visible = false
+                    end
+                end
+            end)
+        end
+        UI.UpdateHotkeyDisplay()
+    end
+    UI.SetGUIVisible = SetGUIVisible
+
+    -- Input Handler
+    local mainInputConn = UserInputService.InputBegan:Connect(function(input, gameProcessed)
+        if gameProcessed then return end
+
+        if UI.ListeningKey then
+            local captured = nil
+            if input.UserInputType == Enum.UserInputType.Keyboard and input.KeyCode ~= Enum.KeyCode.Unknown then
+                if input.KeyCode == Enum.KeyCode.Delete or input.KeyCode == Enum.KeyCode.Backspace then
+                    captured = "clear"
+                else
+                    captured = input.KeyCode
+                end
+            elseif input.UserInputType == Enum.UserInputType.MouseButton1
+                or input.UserInputType == Enum.UserInputType.MouseButton2
+                or input.UserInputType == Enum.UserInputType.MouseButton3 then
+                captured = input.UserInputType
+            end
+
+            if captured then
+                if captured == "clear" then
+                    if UI.ListeningKey == "Toggle" then
+                    elseif UI.ListeningKey == "PanicKey" then
+                        Config.PanicKey = nil
+                        PanicKeyButton.Text = "—"
+                    else
+                        Config[UI.ListeningKey .. "Key"] = nil
+                        local btn = UI.KeybindButtons[UI.ListeningKey]
+                        if btn then btn.Text = "—" end
+                    end
+                else
+                    if UI.ListeningKey == "Toggle" then
+                        Config.ToggleKey = captured
+                        KeybindButton.Text = FormatKeyName(captured)
+                    elseif UI.ListeningKey == "PanicKey" then
+                        Config.PanicKey = captured
+                        PanicKeyButton.Text = FormatKeyName(captured)
+                    elseif UI.ToggleCallbacks[UI.ListeningKey] or UI.KeybindButtons[UI.ListeningKey] then
+                        Config[UI.ListeningKey .. "Key"] = captured
+                        local btn = UI.KeybindButtons[UI.ListeningKey]
+                        if btn then btn.Text = FormatKeyName(captured) end
+                    end
+                end
+                UI.ListeningKey = nil
+                Tween(KeybindButton, {BackgroundTransparency = 0.18}, 0.2):Play()
+                for _, btn in pairs(UI.KeybindButtons) do
+                    Tween(btn, {BackgroundTransparency = 0.2}, 0.2):Play()
+                end
+                UI.UpdateHotkeyDisplay()
+            end
+            return
+        end
+        if IsSameKey(input, Config.ToggleKey) then
+            SetGUIVisible(not UI.GUIVisible)
+            return
+        end
+
+        -- Panic Key — disable everything
+        if Config.PanicKey and IsSameKey(input, Config.PanicKey) then
+            -- Disable all toggles
+            for toggleId, callback in pairs(UI.ToggleCallbacks) do
+                if Config[toggleId] then
+                    callback(false)
+                end
+            end
+            -- Hide GUI
+            SetGUIVisible(false)
+            print("[Stars.cc] PANIC — All features disabled!")
+            return
+        end
+
+        -- Screenshot detection (PrintScreen key)
+        if Config.AutoHideOnScreenshot and input.KeyCode == Enum.KeyCode.PrintScreen then
+            SetGUIVisible(false)
+            task.delay(0.1, function()
+                SetGUIVisible(true)
+            end)
+            return
+        end
+        for toggleId, callback in pairs(UI.ToggleCallbacks) do
+            local key = Config[toggleId .. "Key"]
+            if key and IsSameKey(input, key) then
+                callback(not Config[toggleId])
+                return
+            end
+        end
+        if input.UserInputType == Enum.UserInputType.MouseButton1 then
+            local mousePos = UserInputService:GetMouseLocation()
+            if CPState.IsOpen and ColorPickerFrame.Visible then
+                local framePos = ColorPickerFrame.AbsolutePosition
+                local frameSize = ColorPickerFrame.AbsoluteSize
+                if mousePos.X < framePos.X or mousePos.X > framePos.X + frameSize.X or
+                   mousePos.Y < framePos.Y or mousePos.Y > framePos.Y + frameSize.Y then
+                    ColorPickerFrame.Visible = false
+                    CPState.IsOpen = false
+                    CPEndDrag()
+                    ActiveColorPicker = nil
+                end
+            end
+        end
+    end)
+    table.insert(UI.Connections, mainInputConn)
+
+    CloseBtn.MouseButton1Click:Connect(function()
+        SetGUIVisible(not UI.GUIVisible)
+    end)
+
+    local function Hover(button, normal, hover)
+        button.MouseEnter:Connect(function()
+            Tween(button, {BackgroundTransparency = hover}, 0.15):Play()
+        end)
+        button.MouseLeave:Connect(function()
+            Tween(button, {BackgroundTransparency = normal}, 0.15):Play()
+        end)
+    end
+    Hover(CloseBtn, 0.2, 0.05)
+    Hover(KeybindButton, 0.18, 0.05)
+
+    ApplyBackgroundImage()
+    Main.Size = UDim2.fromOffset(GUI_WIDTH, 0)
+    SetGUIVisible(true)
+    return ScreenGui
+end
+
+
+function UI.ApplyTheme(themeName)
+    local Config = UI.Config
+    if not Config then return end
+    Config.GUIThemeName = themeName
+    Theme = Themes.Get(themeName)
+
+    -- Disconnect all stored input connections to prevent duplicates
+    for _, conn in pairs(UI.Connections) do
+        if conn and conn.Connected then
+            conn:Disconnect()
+        end
+    end
+    UI.Connections = {}
+
+    -- Rebuild the entire UI with new theme
+    if UI.ScreenGui then
+        UI.ScreenGui:Destroy()
+    end
+    local oldBlur = Lighting:FindFirstChild("ZeeHoodBlur")
+    if oldBlur then oldBlur:Destroy() end
+    UI.Build()
+end
+
+return UI

@@ -1,3 +1,692 @@
+local Players = game:GetService("Players")
+local RunService = game:GetService("RunService")
+local Workspace = game:GetService("Workspace")
+local UserInputService = game:GetService("UserInputService")
+local VirtualInputManager = game:GetService("VirtualInputManager")
+local ReplicatedStorage = game:GetService("ReplicatedStorage")
+local LocalPlayer = Players.LocalPlayer
+local Camera = Workspace.CurrentCamera
 
+local Farm = {
+    Config = nil,
+    Targeting = nil,
+    HeartbeatConn = nil,
+    OriginalCFrame = nil,
+    TargetHighlight = nil,
+    NotificationGui = nil,
+    RagebotConn = nil,
+    RagebotKillInProgress = false,
+    RagebotModifiedTools = {},
+    RagebotKillCount = 0,
+    RagebotKillStartTime = 0,
+}
 
-local v0=game:GetService("Players");local v1=game:GetService("RunService");local v2=game:GetService("Workspace");local v3=game:GetService("UserInputService");local v4=game:GetService("VirtualInputManager");local v5=game:GetService("ReplicatedStorage");local v6=v0.LocalPlayer;local v7=v2.CurrentCamera;local v8={Config=nil,Targeting=nil,HeartbeatConn=nil,OriginalCFrame=nil,TargetHighlight=nil,NotificationGui=nil,RagebotConn=nil,RagebotKillInProgress=false,RagebotModifiedTools={},RagebotKillCount=0,RagebotKillStartTime=0 -0 };local function v9() local v46=v6.Character;if  not v46 then return nil;end return v46:FindFirstChild("HumanoidRootPart");end local function v10() local v47=v6.Character;if  not v47 then return nil;end return v47:FindFirstChildOfClass("Humanoid");end local function v11(v48) if  not v48 then return nil;end local v49=v48.Character;if  not v49 then return nil;end return v49:FindFirstChild("HumanoidRootPart");end local function v12(v50) local v51=0 + 0 ;local v52;while true do if (v51==(0 -0)) then if  not v50 then return nil;end v52=v50.Character;v51=15 -(9 + 5) ;end if (v51==(377 -(85 + 291))) then if  not v52 then return nil;end return v52:FindFirstChild("Head");end end end local function v13(v53) local v54=1265 -(243 + 1022) ;local v55;while true do if (0==v54) then if  not v53 then return nil;end v55=v53.Character;v54=1;end if (v54==(3 -2)) then if  not v55 then return nil;end return v55:FindFirstChildOfClass("Humanoid");end end end local function v14(v56) local v57=0;local v58;while true do if (v57==(1 + 0)) then if  not v58 then return false;end return v58.Health>0 ;end if (v57==(1180 -(1123 + 57))) then if  not v56 then return false;end v58=v13(v56);v57=1;end end end local function v15(v59) local v60=0 + 0 ;local v61;local v62;local v63;while true do if (v60==(255 -(163 + 91))) then if  not v61 then return false;end v62=v61:FindFirstChild("BodyEffects");v60=1932 -(1869 + 61) ;end if (v60==(1 + 2)) then return v63 and (v63.Value==true) ;end if (v60==(6 -4)) then if  not v62 then return false;end v63=v62:FindFirstChild("K.O") or v62:FindFirstChild("Knocked") ;v60=3;end if (v60==0) then if  not v59 then return false;end v61=v59.Character;v60=1 -0 ;end end end v8.Notify=function(v64,v65) v65=v65 or Color3.fromRGB(14 + 86 ,274 -74 ,150) ;if  not v8.NotificationGui then local v194=Instance.new("ScreenGui");v194.Name="ENIFarmNotifs";v194.ResetOnSpawn=false;v194.Parent=game.CoreGui;v8.NotificationGui=v194;end local v66=Instance.new("Frame");v66.Size=UDim2.new(0 + 0 ,1734 -(1329 + 145) ,971 -(140 + 831) ,32);v66.Position=UDim2.new(0.5, -(1980 -(1409 + 441)),718 -(15 + 703) , -(19 + 21));v66.BackgroundColor3=Color3.fromRGB(20,458 -(262 + 176) ,1751 -(345 + 1376) );v66.BorderSizePixel=688 -(198 + 490) ;v66.Parent=v8.NotificationGui;local v73=Instance.new("UICorner");v73.CornerRadius=UDim.new(0 -0 ,18 -10 );v73.Parent=v66;local v76=Instance.new("UIStroke");v76.Color=v65;v76.Thickness=1;v76.Parent=v66;local v80=Instance.new("TextLabel");v80.Size=UDim2.new(1, -16,1207 -(696 + 510) ,0);v80.Position=UDim2.new(0 -0 ,1270 -(1091 + 171) ,0,0 + 0 );v80.BackgroundTransparency=3 -2 ;v80.Text=v64;v80.TextColor3=Color3.fromRGB(779 -544 ,609 -(123 + 251) ,255);v80.Font=Enum.Font.GothamBold;v80.TextSize=54 -43 ;v80.TextXAlignment=Enum.TextXAlignment.Left;v80.Parent=v66;v66:TweenPosition(UDim2.new(698.5 -(208 + 490) , -130,0,20),Enum.EasingDirection.Out,Enum.EasingStyle.Quad,0.3 + 0 ,true);task.delay(1 + 1 ,function() v66:TweenPosition(UDim2.new(836.5 -(660 + 176) , -(16 + 114),202 -(14 + 188) , -(715 -(534 + 141))),Enum.EasingDirection.In,Enum.EasingStyle.Quad,0.3,true);task.wait(0.35 + 0 );if v66 then v66:Destroy();end end);end;v8.GetSelectedTarget=function() if v8.Targeting then local v200=0 + 0 ;while true do if (v200==(0 + 0)) then if v8.Targeting.MultiTargetEnabled then local v320=v8.Targeting.GetNextValidTarget();if v320 then return v320;end end if v8.Targeting.SelectedTarget then local v321=v8.Targeting.SelectedTarget;if (typeof(v321)=="Instance") then if v321:IsA("Player") then return v321;elseif (v321:IsA("BasePart") and v321.Parent) then return v0:GetPlayerFromCharacter(v321.Parent);end end end break;end end end return nil;end;v8.SaveTargetPosition=function() local v92=v8.GetSelectedTarget();if  not v92 then v8.OriginalCFrame=nil;return;end local v93=v11(v92);if v93 then v8.OriginalCFrame=v93.CFrame;v8.HighlightTarget(v92);end end;v8.RestoreTarget=function() local v94=0 -0 ;while true do if (v94==(1 -0)) then v8.ClearHighlight();break;end if (v94==(0 -0)) then if v8.OriginalCFrame then local v285=0;local v286;while true do if (v285==(0 + 0)) then v286=v8.GetSelectedTarget();if v286 then local v336=0 + 0 ;local v337;while true do if (v336==(396 -(115 + 281))) then v337=v11(v286);if (v337 and v337.Parent) then v337.CFrame=v8.OriginalCFrame;end break;end end end break;end end end v8.OriginalCFrame=nil;v94=1;end end end;v8.IsTargetAlive=function() local v95=v8.GetSelectedTarget();if  not v95 then return false;end local v96=v13(v95);if  not v96 then return false;end return v96.Health>(0 -0) ;end;v8.HighlightTarget=function(v97) local v98=0;local v99;local v100;while true do if (v98==1) then v100=Instance.new("Highlight");v100.Name="Eni_FarmHighlight";v100.FillColor=Color3.fromRGB(121 + 24 ,75,616 -361 );v100.OutlineColor=Color3.fromRGB(935 -680 ,200,255);v98=869 -(550 + 317) ;end if (v98==(0 -0)) then v8.ClearHighlight();if  not v97 then return;end v99=v97.Character;if  not v99 then return;end v98=1 -0 ;end if (v98==(8 -5)) then v8.TargetHighlight=v100;break;end if (v98==(287 -(134 + 151))) then v100.FillTransparency=1665.3 -(970 + 695) ;v100.OutlineTransparency=0 -0 ;v100.Parent=v99;v100.Adornee=v99;v98=1993 -(582 + 1408) ;end end end;v8.ClearHighlight=function() if v8.TargetHighlight then local v204=0;while true do if (v204==(0 -0)) then v8.TargetHighlight:Destroy();v8.TargetHighlight=nil;break;end end end end;v8.GetCrosshairWorldPos=function() local v101=0 -0 ;local v102;local v103;while true do if (v101==(0 -0)) then v102=v7.CFrame.Position;v103=v7.CFrame.LookVector;v101=1825 -(1195 + 629) ;end if (v101==1) then return v102 + (v103 * (v8.Config.FarmDistance or (15 -3))) + Vector3.new(241 -(187 + 54) ,v8.Config.FarmVerticalOffset or (780 -(162 + 618)) ,0 + 0 ) ;end end end;v8.PullTarget=function() if ( not v8.Config or  not v8.Config.FarmEnabled) then return;end local v104=v8.GetSelectedTarget();if  not v104 then return;end if  not v8.IsTargetAlive() then local v205=0;while true do if (v205==0) then v8.Notify("Target died",Color3.fromRGB(134 + 66 ,319 -169 ,168 -68 ));v8.RestoreTarget();v205=1 + 0 ;end if (v205==1) then return;end end end local v105=v11(v104);local v106=v12(v104);local v107=v9();if ( not v105 or  not v107) then return;end if  not v8.OriginalCFrame then local v206=1636 -(1373 + 263) ;while true do if ((1000 -(451 + 549))==v206) then v8.OriginalCFrame=v105.CFrame;v8.HighlightTarget(v104);break;end end end local v108=v8.GetCrosshairWorldPos();local v109=Vector3.new(0 + 0 ,1.5 -0 ,0 -0 );if (v106 and v105) then v109=v106.Position-v105.Position ;end local v110=v108-v109 ;local v111=CFrame.new(v110,v107.Position);local v112=v8.Config.FarmPullSpeed or 1 ;if (v112<=(1385 -(746 + 638))) then v105.CFrame=v111;else local v208=0;local v209;local v210;while true do if (v208==0) then v209=v105.CFrame;v210=v209:Lerp(v111,(1 + 0)/v112 );v208=1;end if (v208==1) then v105.CFrame=v210;break;end end end v105.Velocity=Vector3.new(0,0 -0 ,0);v105.AssemblyLinearVelocity=Vector3.new(341 -(218 + 123) ,0,1581 -(1535 + 46) );v105.RotVelocity=Vector3.new(0 + 0 ,0 + 0 ,560 -(306 + 254) );end;local function v25() local v116={};local v117=v6.Character;local v118=v6:FindFirstChild("Backpack");if v117 then local v211=v117:FindFirstChildOfClass("Tool");if (v211 and v211:FindFirstChild("GunScript")) then table.insert(v116,v211);end end if v118 then for v244,v245 in pairs(v118:GetChildren()) do if (v245:IsA("Tool") and v245:FindFirstChild("GunScript")) then table.insert(v116,v245);end end end return v116;end local function v26(v119) local v120=v6.Character;if  not v120 then return false;end local v121=v120:FindFirstChildOfClass("Tool");if v121 then pcall(function() v121.Parent=v6.Backpack;end);end local v122=pcall(function() v119.Parent=v120;end);return v122;end local function v27() local v123=v6.Character;if  not v123 then return;end local v124=v123:FindFirstChildOfClass("Tool");if v124 then v124.Parent=v6.Backpack;end end local function v28(v125) local v126=0;local v127;while true do if (v126==(0 + 0)) then if (v8.RagebotModifiedTools[v125] or  not v125:FindFirstChild("GunScript")) then return;end v127=pcall(function() local v266=getconnections(v125.Activated);for v292,v293 in ipairs(v266) do local v294=v293.Function;if v294 then local v322=debug.getinfo(v294);for v332=1 -0 ,v322.nups or 0  do local v333=debug.getupvalue(v294,v332);if ((type(v333)=="number") and (v333>(1467 -(899 + 568))) and (v333<0.5)) then debug.setupvalue(v294,v332,0);end end end end end);v126=1 + 0 ;end if (v126==(2 -1)) then if v127 then v8.RagebotModifiedTools[v125]=true;end break;end end end local function v29(v128) local v129=v12(v128);local v130=v9();if ( not v129 or  not v130) then return;end local v131=v129.Position;local v132=v130.Position;v7.CFrame=CFrame.new(v132 + Vector3.new(0,604.5 -(268 + 335) ,290 -(60 + 230) ) ,v131);local v134=v6.Character;if v134 then local v214=v134:FindFirstChild("HumanoidRootPart");if v214 then v214.CFrame=CFrame.new(v214.Position,Vector3.new(v131.X,v214.Position.Y,v131.Z));end end end local function v30(v135) local v136=572 -(426 + 146) ;local v137;local v138;local v139;local v140;local v141;local v142;local v143;local v144;local v145;while true do if (v136==(1 + 2)) then v145=CFrame.new(v144,v140);v137.CFrame=v145;v137.Velocity=Vector3.new(1456 -(282 + 1174) ,0,811 -(569 + 242) );v137.AssemblyLinearVelocity=Vector3.new(0,0,0);v136=4;end if (v136==(2 -1)) then v140=v139.Position;v141=v139.CFrame.LookVector;v142=v140 + (v141 * (1 + 3)) + Vector3.new(0,1024 -(706 + 318) ,0) ;v138=v12(v135);v136=2;end if (v136==(1251 -(721 + 530))) then v137=v11(v135);v138=v12(v135);v139=v9();if ( not v137 or  not v139) then return;end v136=1;end if ((1273 -(945 + 326))==v136) then if v138 then v7.CFrame=CFrame.new(v140 + Vector3.new(0 -0 ,1.5 + 0 ,0) ,v138.Position);end v143=Vector3.new(700 -(271 + 429) ,1.5 + 0 ,1500 -(1408 + 92) );if (v138 and v137) then v143=v138.Position-v137.Position ;end v144=v142-v143 ;v136=1089 -(461 + 625) ;end if (v136==4) then v137.RotVelocity=Vector3.new(1288 -(993 + 295) ,0 + 0 ,0);break;end end end local function v31(v146) local v147=1171 -(418 + 753) ;local v148;local v149;local v150;while true do if (v147==1) then v149=v9();if  not v149 then return false;end v147=1 + 1 ;end if (v147==2) then for v268,v269 in pairs(v148) do if  not v8.Config.RagebotEnabled then return false;end local v270=v13(v146);if ( not v270 or (v270.Health<=(0 + 0))) then return true;end if v15(v146) then return true;end v26(v269);v28(v269);task.wait(0.15 + 0 );local v271=tick();while (tick() -v271)<(1 + 0)  do local v297=529 -(406 + 123) ;while true do if (v297==(1770 -(1749 + 20))) then if ( not v270 or (v270.Health<=0)) then return true;end if v15(v146) then return true;end v297=2;end if (v297==0) then if  not v8.Config.RagebotEnabled then return false;end v270=v13(v146);v297=1 + 0 ;end if (v297==(1325 -(1249 + 73))) then if (v269 and v269.Parent) then local v338=0 + 0 ;while true do if (v338==(1145 -(466 + 679))) then v269:Activate();v269:Activate();break;end end end v1.RenderStepped:Wait();break;end if (v297==(4 -2)) then v30(v146);v29(v146);v297=8 -5 ;end end end end v150=v13(v146);v147=1903 -(106 + 1794) ;end if (v147==(1 + 2)) then if  not v150 then return true;end return (v150.Health<=(0 + 0)) or v15(v146) ;end if (v147==0) then v148=v25();if ( #v148==(0 -0)) then return false;end v147=1;end end end local function v32(v151) local v152=0 -0 ;local v153;while true do if (v152==(114 -(4 + 110))) then v153=tick();while (tick() -v153)<(586.5 -(57 + 527))  do local v272=1427 -(41 + 1386) ;local v273;local v274;while true do if (v272==(104 -(17 + 86))) then v273=v9();v274=v10();v272=2 + 0 ;end if (v272==(0 -0)) then if ( not v8.Config or  not v8.Config.RagebotEnabled) then return;end if ( not v14(v151) and  not v15(v151)) then return;end v272=2 -1 ;end if (v272==(169 -(122 + 44))) then v1.Heartbeat:Wait();break;end if (v272==(2 -0)) then if (v273 and v274 and (v274.Health>0)) then pcall(function() local v339=0 -0 ;local v340;while true do if (v339==(1 + 0)) then v340=v6.Character;if v340 then v340:BreakJoints();end break;end if (v339==(0 + 0)) then v273.CFrame=CFrame.new(0 -0 , -(50065 -(30 + 35)),0);v274.Health=0 + 0 ;v339=1258 -(1043 + 214) ;end end end);end if ( not v273 or  not v274 or (v274.Health<=0)) then local v335=0 -0 ;while true do if (v335==0) then pcall(function() v6:LoadCharacter();end);return;end end end v272=1215 -(323 + 889) ;end end end v152=1;end if (v152==(2 -1)) then pcall(function() v6:LoadCharacter();end);break;end end end local function v33(v154) local v155=v25();if ( #v155==(580 -(361 + 219))) then return false;end local v156=v9();if  not v156 then return false;end local v157=v156.CFrame;local v158=v7.CFrame;for v189,v190 in pairs(v155) do if  not v8.Config.RagebotEnabled then local v254=0;while true do if (v254==(320 -(53 + 267))) then v156.CFrame=v157;v7.CFrame=v158;v254=1 + 0 ;end if ((414 -(15 + 398))==v254) then return false;end end end local v191=v13(v154);if ( not v191 or (v191.Health<=0)) then v156.CFrame=v157;v7.CFrame=v158;return true;end if v15(v154) then break;end v26(v190);v28(v190);task.wait(982.1 -(18 + 964) );local v192=tick();while (tick() -v192)<(3 -2)  do if  not v8.Config.RagebotEnabled then v156.CFrame=v157;v7.CFrame=v158;return false;end v191=v13(v154);if ( not v191 or (v191.Health<=(0 + 0))) then v156.CFrame=v157;v7.CFrame=v158;return true;end if v15(v154) then break;end local v215=v12(v154);local v216=v11(v154);if (v215 and v216) then local v279=0 + 0 ;local v280;local v281;local v282;local v283;while true do if (v279==3) then v283=v215.Position + (v281 * (851.5 -(20 + 830))) ;v7.CFrame=CFrame.new(v283,v282);break;end if (v279==0) then v280=v215.CFrame.LookVector;v281= -v280;v279=1;end if (v279==(1 + 0)) then v282=v215.Position + (v281 * 2) ;v156.CFrame=CFrame.new(v282,v215.Position);v279=2;end if (v279==(128 -(116 + 10))) then v156.Velocity=Vector3.new(0 + 0 ,0,738 -(542 + 196) );v156.AssemblyLinearVelocity=Vector3.new(0 -0 ,0,0 + 0 );v279=2 + 1 ;end end end if (v190 and v190.Parent) then v190:Activate();end v1.RenderStepped:Wait();v156.CFrame=v157;v7.CFrame=v158;end end if v15(v154) then local v219=v5:FindFirstChild("MainRemotes") and v5.MainRemotes:FindFirstChild("MainRemoteEvent") ;if v219 then local v284=tick();while (tick() -v284)<(2 + 2)  do if  not v8.Config.RagebotEnabled then break;end local v298=v154.Character;if  not v298 then break;end local v299=v298:FindFirstChildOfClass("Humanoid");if ( not v299 or (v299.Health<=(0 -0))) then break;end local v300=v298:FindFirstChild("HumanoidRootPart");if  not v300 then break;end local v301=v298:FindFirstChild("Head");if v301 then v156.CFrame=v301.CFrame;else v156.CFrame=v300.CFrame;end v156.Velocity=Vector3.new(0 -0 ,0,0);v156.AssemblyLinearVelocity=Vector3.new(1551 -(1126 + 425) ,405 -(118 + 287) ,0 -0 );v156.RotVelocity=Vector3.new(1121 -(118 + 1003) ,0 -0 ,377 -(142 + 235) );pcall(function() v219:FireServer("Stomp");v219:FireServer("Stomp");v219:FireServer("Stomp");v219:FireServer("Stomp");v219:FireServer("Stomp");end);v1.RenderStepped:Wait();v156.CFrame=v157;end end v156.CFrame=v157;v7.CFrame=v158;v8.RagebotKillCount=v8.RagebotKillCount + 1 ;v8.Notify("Ragebot kill #"   .. v8.RagebotKillCount ,Color3.fromRGB(200,226 -176 ,50));return true;end v156.CFrame=v157;v7.CFrame=v158;return false;end local function v34(v161) local v162=v25();if ( #v162==(0 + 0)) then return false;end local v163=v9();if  not v163 then return false;end local v164=v31(v161);if v164 then local v223=0;local v224;local v225;while true do if (v223==(977 -(553 + 424))) then v224=Vector3.new(math.random( -(9454787 -4454787),5000000),math.random(440459 + 59541 ,1000000),math.random( -(4959903 + 40097),2911278 + 2088722 ));v163.CFrame=CFrame.new(v224);v223=1 + 0 ;end if (v223==(1 + 0)) then v163.Velocity=Vector3.new(0 -0 ,0 -0 ,0 -0 );v163.AssemblyLinearVelocity=Vector3.new(0 + 0 ,0 -0 ,753 -(239 + 514) );v223=2;end if ((2 + 1)==v223) then v225=tick();while (tick() -v225)<(1334 -(797 + 532))  do if  not v8.Config.RagebotEnabled then break;end if (v14(v161) and  not v15(v161)) then return true;end local v316=Vector3.new(math.random( -(3633078 + 1366922),5000000),math.random(500000,337353 + 662647 ),math.random( -5000000,11756274 -6756274 ));v163.CFrame=CFrame.new(v316);v163.Velocity=Vector3.new(0,1202 -(373 + 829) ,731 -(476 + 255) );v163.AssemblyLinearVelocity=Vector3.new(0,1130 -(369 + 761) ,0 + 0 );v1.Heartbeat:Wait();end v223=6 -2 ;end if (v223==(7 -3)) then return true;end if (v223==2) then v8.RagebotKillCount=v8.RagebotKillCount + 1 ;v8.Notify("Anti Bullet TP kill #"   .. v8.RagebotKillCount ,Color3.fromRGB(255,338 -(64 + 174) ,0 + 0 ));v223=3 -0 ;end end end return false;end local function v35() if ( not v8.Config or  not v8.Config.RagebotEnabled) then return;end if (v8.RagebotKillInProgress and ((tick() -v8.RagebotKillStartTime)>(346 -(144 + 192)))) then v8.RagebotKillInProgress=false;end if v8.RagebotKillInProgress then return;end local v165=v9();local v166=v10();if ( not v165 or  not v166 or (v166.Health<=0)) then return;end local v167=v8.GetSelectedTarget();if  not v167 then return;end if (v8.Config.RagebotMethod~="FrameTPStomp") then if ( not v14(v167) or v15(v167)) then return;end elseif ( not v14(v167) and  not v15(v167)) then return;end v8.RagebotKillInProgress=true;v8.RagebotKillStartTime=tick();local v170,v171=pcall(function() local v193;if (v8.Config.RagebotMethod=="FrameTPStomp") then v193=v33(v167);elseif (v8.Config.RagebotMethod=="AntiBulletTP") then v193=v34(v167);else v193=v31(v167);end if (v193 and (v8.Config.RagebotMethod~="AntiBulletTP")) then v32(v167);end end);if  not v170 then print("[Ragebot] Error: "   .. tostring(v171) );end v8.RagebotKillInProgress=false;end v8.StartRagebot=function() local v172=0;while true do if (v172==(216 -(42 + 174))) then if v8.RagebotConn then return;end v7.CameraType=Enum.CameraType.Scriptable;v172=1 + 0 ;end if (v172==(1 + 0)) then v8.RagebotConn=v1.Heartbeat:Connect(v35);v8.Notify("Ragebot ON",Color3.fromRGB(85 + 115 ,50,1554 -(363 + 1141) ));break;end end end;v8.StopRagebot=function() local v173=1580 -(1183 + 397) ;local v174;while true do if (v173==(5 -3)) then v7.FieldOfView=70;v174=v9();v173=3 + 0 ;end if (v173==(1 + 0)) then v27();v7.CameraType=Enum.CameraType.Custom;v173=1977 -(1913 + 62) ;end if (v173==(0 + 0)) then if v8.RagebotConn then local v310=0;while true do if (v310==(0 -0)) then v8.RagebotConn:Disconnect();v8.RagebotConn=nil;break;end end end v8.RagebotKillInProgress=false;v173=1;end if (v173==(1936 -(565 + 1368))) then if v174 then local v311=(v174.Position + Vector3.new(0,3.5 -2 ,0)) -(v174.CFrame.LookVector * (1666 -(1477 + 184))) ;v7.CFrame=CFrame.new(v311,v174.Position);end v8.Notify("Ragebot OFF",Color3.fromRGB(204 -54 ,150,150));break;end end end;v8.SetRagebotMethod=function(v175) if  not v8.Config then return;end v8.Config.RagebotMethod=v175;end;v8.SetRagebotEnabled=function(v177) if  not v8.Config then return;end v8.Config.RagebotEnabled=v177;if v177 then v8.StartRagebot();else v8.StopRagebot();end end;v8.Start=function() local v179=0 + 0 ;local v180;while true do if (v179==(858 -(564 + 292))) then if v180 then v8.Notify("Farming "   .. v180.DisplayName ,Color3.fromRGB(145,75,439 -184 ));else v8.Notify("Farm ON — select a target in Target tab",Color3.fromRGB(145,226 -151 ,559 -(244 + 60) ));end break;end if ((1 + 0)==v179) then v8.HeartbeatConn=v1.Heartbeat:Connect(v8.PullTarget);v180=v8.GetSelectedTarget();v179=478 -(41 + 435) ;end if (v179==0) then if v8.HeartbeatConn then v8.HeartbeatConn:Disconnect();end v8.SaveTargetPosition();v179=1;end end end;v8.Stop=function() if v8.HeartbeatConn then local v227=1001 -(938 + 63) ;while true do if (v227==(0 + 0)) then v8.HeartbeatConn:Disconnect();v8.HeartbeatConn=nil;break;end end end v8.RestoreTarget();print("[Stars Farm] STOPPED — Target restored");end;v8.SetEnabled=function(v181) local v182=0;while true do if ((1126 -(936 + 189))==v182) then if v181 then v8.Start();else v8.Stop();end break;end if (v182==(0 + 0)) then if  not v8.Config then return;end v8.Config.FarmEnabled=v181;v182=1;end end end;v8.Toggle=function() local v183=1613 -(1565 + 48) ;while true do if (v183==(0 + 0)) then if  not v8.Config then return;end v8.SetEnabled( not v8.Config.FarmEnabled);break;end end end;v8.SetConfig=function(v184) v8.Config=v184;end;v8.SetTargeting=function(v186) v8.Targeting=v186;end;v6.CharacterAdded:Connect(function() if (v8.Config and v8.Config.FarmEnabled) then local v228=1138 -(782 + 356) ;while true do if (v228==(267 -(176 + 91))) then task.wait(0.5 -0 );v8.SaveTargetPosition();break;end end end end);return v8;
+--// ==================== UTILS ====================
+local function GetHRP()
+    local char = LocalPlayer.Character
+    if not char then return nil end
+    return char:FindFirstChild("HumanoidRootPart")
+end
+
+local function GetHumanoid()
+    local char = LocalPlayer.Character
+    if not char then return nil end
+    return char:FindFirstChildOfClass("Humanoid")
+end
+
+local function GetTargetHRP(player)
+    if not player then return nil end
+    local char = player.Character
+    if not char then return nil end
+    return char:FindFirstChild("HumanoidRootPart")
+end
+
+local function GetTargetHead(player)
+    if not player then return nil end
+    local char = player.Character
+    if not char then return nil end
+    return char:FindFirstChild("Head")
+end
+
+local function GetTargetHumanoid(player)
+    if not player then return nil end
+    local char = player.Character
+    if not char then return nil end
+    return char:FindFirstChildOfClass("Humanoid")
+end
+
+local function IsTargetAlive(player)
+    if not player then return false end
+    local hum = GetTargetHumanoid(player)
+    if not hum then return false end
+    return hum.Health > 0
+end
+
+local function IsTargetKnocked(player)
+    if not player then return false end
+    local char = player.Character
+    if not char then return false end
+    local be = char:FindFirstChild("BodyEffects")
+    if not be then return false end
+    local ko = be:FindFirstChild("K.O") or be:FindFirstChild("Knocked")
+    return ko and ko.Value == true
+end
+
+--// ==================== NOTIFICATIONS ====================
+function Farm.Notify(text, color)
+    color = color or Color3.fromRGB(100, 200, 150)
+    if not Farm.NotificationGui then
+        local sg = Instance.new("ScreenGui")
+        sg.Name = "ENIFarmNotifs"
+        sg.ResetOnSpawn = false
+        sg.Parent = game.CoreGui
+        Farm.NotificationGui = sg
+    end
+    local frame = Instance.new("Frame")
+    frame.Size = UDim2.new(0, 260, 0, 32)
+    frame.Position = UDim2.new(0.5, -130, 0, -40)
+    frame.BackgroundColor3 = Color3.fromRGB(20, 20, 30)
+    frame.BorderSizePixel = 0
+    frame.Parent = Farm.NotificationGui
+    local corner = Instance.new("UICorner")
+    corner.CornerRadius = UDim.new(0, 8)
+    corner.Parent = frame
+    local stroke = Instance.new("UIStroke")
+    stroke.Color = color
+    stroke.Thickness = 1
+    stroke.Parent = frame
+    local label = Instance.new("TextLabel")
+    label.Size = UDim2.new(1, -16, 1, 0)
+    label.Position = UDim2.new(0, 8, 0, 0)
+    label.BackgroundTransparency = 1
+    label.Text = text
+    label.TextColor3 = Color3.fromRGB(235, 235, 255)
+    label.Font = Enum.Font.GothamBold
+    label.TextSize = 11
+    label.TextXAlignment = Enum.TextXAlignment.Left
+    label.Parent = frame
+    frame:TweenPosition(UDim2.new(0.5, -130, 0, 20), Enum.EasingDirection.Out, Enum.EasingStyle.Quad, 0.3, true)
+    task.delay(2, function()
+        frame:TweenPosition(UDim2.new(0.5, -130, 0, -40), Enum.EasingDirection.In, Enum.EasingStyle.Quad, 0.3, true)
+        task.wait(0.35)
+        if frame then frame:Destroy() end
+    end)
+end
+
+--// ==================== TARGET MANAGEMENT ====================
+function Farm.GetSelectedTarget()
+    if Farm.Targeting then
+        if Farm.Targeting.MultiTargetEnabled then
+            local mt = Farm.Targeting.GetNextValidTarget()
+            if mt then return mt end
+        end
+        if Farm.Targeting.SelectedTarget then
+            local target = Farm.Targeting.SelectedTarget
+            if typeof(target) == "Instance" then
+                if target:IsA("Player") then
+                    return target
+                elseif target:IsA("BasePart") and target.Parent then
+                    return Players:GetPlayerFromCharacter(target.Parent)
+                end
+            end
+        end
+    end
+    return nil
+end
+
+function Farm.SaveTargetPosition()
+    local target = Farm.GetSelectedTarget()
+    if not target then
+        Farm.OriginalCFrame = nil
+        return
+    end
+    local hrp = GetTargetHRP(target)
+    if hrp then
+        Farm.OriginalCFrame = hrp.CFrame
+        Farm.HighlightTarget(target)
+    end
+end
+
+function Farm.RestoreTarget()
+    if Farm.OriginalCFrame then
+        local target = Farm.GetSelectedTarget()
+        if target then
+            local hrp = GetTargetHRP(target)
+            if hrp and hrp.Parent then
+                hrp.CFrame = Farm.OriginalCFrame
+            end
+        end
+    end
+    Farm.OriginalCFrame = nil
+    Farm.ClearHighlight()
+end
+
+function Farm.IsTargetAlive()
+    local target = Farm.GetSelectedTarget()
+    if not target then return false end
+    local hum = GetTargetHumanoid(target)
+    if not hum then return false end
+    return hum.Health > 0
+end
+
+--// ==================== HIGHLIGHT ====================
+function Farm.HighlightTarget(player)
+    Farm.ClearHighlight()
+    if not player then return end
+    local char = player.Character
+    if not char then return end
+    local hl = Instance.new("Highlight")
+    hl.Name = "Eni_FarmHighlight"
+    hl.FillColor = Color3.fromRGB(145, 75, 255)
+    hl.OutlineColor = Color3.fromRGB(255, 200, 255)
+    hl.FillTransparency = 0.3
+    hl.OutlineTransparency = 0
+    hl.Parent = char
+    hl.Adornee = char
+    Farm.TargetHighlight = hl
+end
+
+function Farm.ClearHighlight()
+    if Farm.TargetHighlight then
+        Farm.TargetHighlight:Destroy()
+        Farm.TargetHighlight = nil
+    end
+end
+
+--// ==================== CORE FARM LOGIC ====================
+function Farm.GetCrosshairWorldPos()
+    local camPos = Camera.CFrame.Position
+    local forward = Camera.CFrame.LookVector
+    return camPos + (forward * (Farm.Config.FarmDistance or 12)) + Vector3.new(0, Farm.Config.FarmVerticalOffset or 0, 0)
+end
+
+function Farm.PullTarget()
+    if not Farm.Config or not Farm.Config.FarmEnabled then return end
+    local target = Farm.GetSelectedTarget()
+    if not target then return end
+    if not Farm.IsTargetAlive() then
+        Farm.Notify("Target died", Color3.fromRGB(200, 150, 100))
+        Farm.RestoreTarget()
+        return
+    end
+    local targetHRP = GetTargetHRP(target)
+    local targetHead = GetTargetHead(target)
+    local myHRP = GetHRP()
+    if not targetHRP or not myHRP then return end
+    if not Farm.OriginalCFrame then
+        Farm.OriginalCFrame = targetHRP.CFrame
+        Farm.HighlightTarget(target)
+    end
+    local headTargetPos = Farm.GetCrosshairWorldPos()
+    local headOffset = Vector3.new(0, 1.5, 0)
+    if targetHead and targetHRP then
+        headOffset = targetHead.Position - targetHRP.Position
+    end
+    local newHRPPos = headTargetPos - headOffset
+    local fakeCF = CFrame.new(newHRPPos, myHRP.Position)
+    local pullSpeed = Farm.Config.FarmPullSpeed or 1
+    if pullSpeed <= 1 then
+        targetHRP.CFrame = fakeCF
+    else
+        local current = targetHRP.CFrame
+        local lerped = current:Lerp(fakeCF, 1 / pullSpeed)
+        targetHRP.CFrame = lerped
+    end
+    targetHRP.Velocity = Vector3.new(0, 0, 0)
+    targetHRP.AssemblyLinearVelocity = Vector3.new(0, 0, 0)
+    targetHRP.RotVelocity = Vector3.new(0, 0, 0)
+end
+
+--// ==================== RAGEBOT ====================
+local function RagebotGetAllGuns()
+    local guns = {}
+    local myChar = LocalPlayer.Character
+    local backpack = LocalPlayer:FindFirstChild("Backpack")
+    if myChar then
+        local equipped = myChar:FindFirstChildOfClass("Tool")
+        if equipped and equipped:FindFirstChild("GunScript") then
+            table.insert(guns, equipped)
+        end
+    end
+    if backpack then
+        for _, item in pairs(backpack:GetChildren()) do
+            if item:IsA("Tool") and item:FindFirstChild("GunScript") then
+                table.insert(guns, item)
+            end
+        end
+    end
+    return guns
+end
+
+local function RagebotEquipTool(tool)
+    local myChar = LocalPlayer.Character
+    if not myChar then return false end
+    local current = myChar:FindFirstChildOfClass("Tool")
+    if current then
+        pcall(function() current.Parent = LocalPlayer.Backpack end)
+    end
+    local success = pcall(function() tool.Parent = myChar end)
+    return success
+end
+
+local function RagebotUnequipAll()
+    local myChar = LocalPlayer.Character
+    if not myChar then return end
+    local current = myChar:FindFirstChildOfClass("Tool")
+    if current then current.Parent = LocalPlayer.Backpack end
+end
+
+local function RagebotSetupFullAuto(tool)
+    if Farm.RagebotModifiedTools[tool] or not tool:FindFirstChild("GunScript") then return end
+    local success = pcall(function()
+        local connections = getconnections(tool.Activated)
+        for _, conn in ipairs(connections) do
+            local func = conn.Function
+            if func then
+                local info = debug.getinfo(func)
+                for i = 1, (info.nups or 0) do
+                    local val = debug.getupvalue(func, i)
+                    if type(val) == "number" and val > 0 and val < 0.5 then
+                        debug.setupvalue(func, i, 0)
+                    end
+                end
+            end
+        end
+    end)
+    if success then Farm.RagebotModifiedTools[tool] = true end
+end
+
+local function RagebotForceAim(target)
+    local targetHead = GetTargetHead(target)
+    local myHRP = GetHRP()
+    if not targetHead or not myHRP then return end
+    local targetPos = targetHead.Position
+    local myPos = myHRP.Position
+    Camera.CFrame = CFrame.new(myPos + Vector3.new(0, 1.5, 0), targetPos)
+    local char = LocalPlayer.Character
+    if char then
+        local root = char:FindFirstChild("HumanoidRootPart")
+        if root then
+            root.CFrame = CFrame.new(root.Position, Vector3.new(targetPos.X, root.Position.Y, targetPos.Z))
+        end
+    end
+end
+
+local function RagebotPullTarget(target)
+    local targetHRP = GetTargetHRP(target)
+    local targetHead = GetTargetHead(target)
+    local myHRP = GetHRP()
+    if not targetHRP or not myHRP then return end
+    local myPos = myHRP.Position
+    local myLook = myHRP.CFrame.LookVector
+    local headTargetPos = myPos + (myLook * 4) + Vector3.new(0, 0, 0)
+
+    local targetHead = GetTargetHead(target)
+    if targetHead then
+        Camera.CFrame = CFrame.new(myPos + Vector3.new(0, 1.5, 0), targetHead.Position)
+    end
+    local headOffset = Vector3.new(0, 1.5, 0)
+    if targetHead and targetHRP then
+        headOffset = targetHead.Position - targetHRP.Position
+    end
+    local newHRPPos = headTargetPos - headOffset
+    local fakeCF = CFrame.new(newHRPPos, myPos)
+    targetHRP.CFrame = fakeCF
+    targetHRP.Velocity = Vector3.new(0, 0, 0)
+    targetHRP.AssemblyLinearVelocity = Vector3.new(0, 0, 0)
+    targetHRP.RotVelocity = Vector3.new(0, 0, 0)
+end
+
+local function RagebotShootTarget(target)
+    local guns = RagebotGetAllGuns()
+    if #guns == 0 then return false end
+    local myHRP = GetHRP()
+    if not myHRP then return false end
+    for _, gun in pairs(guns) do
+        if not Farm.Config.RagebotEnabled then return false end
+        local targetHum = GetTargetHumanoid(target)
+        if not targetHum or targetHum.Health <= 0 then return true end
+        if IsTargetKnocked(target) then return true end
+        RagebotEquipTool(gun)
+        RagebotSetupFullAuto(gun)
+        task.wait(0.15)
+        local shootStart = tick()
+        while tick() - shootStart < 1 do
+            if not Farm.Config.RagebotEnabled then return false end
+            targetHum = GetTargetHumanoid(target)
+            if not targetHum or targetHum.Health <= 0 then return true end
+            if IsTargetKnocked(target) then return true end
+            RagebotPullTarget(target)
+            RagebotForceAim(target)
+            if gun and gun.Parent then
+                gun:Activate()
+                gun:Activate()
+            end
+            RunService.RenderStepped:Wait()
+        end
+    end
+    local targetHum = GetTargetHumanoid(target)
+    if not targetHum then return true end
+    return targetHum.Health <= 0 or IsTargetKnocked(target)
+end
+
+local function RagebotConstantDeath(target)
+    local startTime = tick()
+    while tick() - startTime < 2.5 do
+        if not Farm.Config or not Farm.Config.RagebotEnabled then return end
+        if not IsTargetAlive(target) and not IsTargetKnocked(target) then
+            return
+        end
+        local myHRP = GetHRP()
+        local humanoid = GetHumanoid()
+        if myHRP and humanoid and humanoid.Health > 0 then
+            pcall(function()
+                myHRP.CFrame = CFrame.new(0, -50000, 0)
+                humanoid.Health = 0
+                local char = LocalPlayer.Character
+                if char then char:BreakJoints() end
+            end)
+        end
+        if not myHRP or not humanoid or humanoid.Health <= 0 then
+            pcall(function() LocalPlayer:LoadCharacter() end)
+            return
+        end
+        RunService.Heartbeat:Wait()
+    end
+    pcall(function() LocalPlayer:LoadCharacter() end)
+end
+
+-- FrameTP method — TP inside target, shoot, return (invisible to them)
+local function RagebotFrameTPStompKill(target)
+    local guns = RagebotGetAllGuns()
+    if #guns == 0 then return false end
+    local myHRP = GetHRP()
+    if not myHRP then return false end
+    local originalCFrame = myHRP.CFrame
+    local originalCam = Camera.CFrame
+
+    for _, gun in pairs(guns) do
+        if not Farm.Config.RagebotEnabled then 
+            myHRP.CFrame = originalCFrame
+            Camera.CFrame = originalCam
+            return false 
+        end
+        local targetHum = GetTargetHumanoid(target)
+        if not targetHum or targetHum.Health <= 0 then 
+            myHRP.CFrame = originalCFrame
+            Camera.CFrame = originalCam
+            return true 
+        end
+        if IsTargetKnocked(target) then break end
+        RagebotEquipTool(gun)
+        RagebotSetupFullAuto(gun)
+        task.wait(0.1)
+
+        local shootStart = tick()
+        while tick() - shootStart < 1 do
+            if not Farm.Config.RagebotEnabled then 
+                myHRP.CFrame = originalCFrame
+                Camera.CFrame = originalCam
+                return false 
+            end
+            targetHum = GetTargetHumanoid(target)
+            if not targetHum or targetHum.Health <= 0 then 
+                myHRP.CFrame = originalCFrame
+                Camera.CFrame = originalCam
+                return true 
+            end
+            if IsTargetKnocked(target) then break end
+
+            local currentHead = GetTargetHead(target)
+            local currentHRP = GetTargetHRP(target)
+            if currentHead and currentHRP then
+                local targetLook = currentHead.CFrame.LookVector
+                local behindDirection = -targetLook
+                local behindPos = currentHead.Position + (behindDirection * 2)
+                myHRP.CFrame = CFrame.new(behindPos, currentHead.Position)
+                myHRP.Velocity = Vector3.new(0, 0, 0)
+                myHRP.AssemblyLinearVelocity = Vector3.new(0, 0, 0)
+                local camPos = currentHead.Position + (behindDirection * 1.5)
+                Camera.CFrame = CFrame.new(camPos, behindPos)
+            end
+
+            if gun and gun.Parent then
+                gun:Activate()
+            end
+
+            RunService.RenderStepped:Wait()
+            myHRP.CFrame = originalCFrame
+            Camera.CFrame = originalCam
+        end
+    end
+
+    if IsTargetKnocked(target) then
+        local mainRemote = ReplicatedStorage:FindFirstChild("MainRemotes") and ReplicatedStorage.MainRemotes:FindFirstChild("MainRemoteEvent")
+        if mainRemote then
+            local stompStart = tick()
+            while tick() - stompStart < 4 do
+                if not Farm.Config.RagebotEnabled then break end
+                local targetChar = target.Character
+                if not targetChar then break end
+                local targetHum = targetChar:FindFirstChildOfClass("Humanoid")
+                if not targetHum or targetHum.Health <= 0 then break end
+                local targetHRP = targetChar:FindFirstChild("HumanoidRootPart")
+                if not targetHRP then break end
+
+                local targetHead = targetChar:FindFirstChild("Head")
+                if targetHead then
+                    myHRP.CFrame = targetHead.CFrame
+                else
+                    myHRP.CFrame = targetHRP.CFrame
+                end
+                myHRP.Velocity = Vector3.new(0, 0, 0)
+                myHRP.AssemblyLinearVelocity = Vector3.new(0, 0, 0)
+                myHRP.RotVelocity = Vector3.new(0, 0, 0)
+
+                pcall(function()
+                    mainRemote:FireServer("Stomp")
+                    mainRemote:FireServer("Stomp")
+                    mainRemote:FireServer("Stomp")
+                    mainRemote:FireServer("Stomp")
+                    mainRemote:FireServer("Stomp")
+                end)
+
+                RunService.RenderStepped:Wait()
+                myHRP.CFrame = originalCFrame
+            end
+        end
+        myHRP.CFrame = originalCFrame
+        Camera.CFrame = originalCam
+        Farm.RagebotKillCount = Farm.RagebotKillCount + 1
+        Farm.Notify("Ragebot kill #" .. Farm.RagebotKillCount, Color3.fromRGB(200, 50, 50))
+        return true
+    end
+
+    myHRP.CFrame = originalCFrame
+    Camera.CFrame = originalCam
+    return false
+end
+
+-- Anti Bullet TP method — Farm kill + far teleport, no void
+local function RagebotAntiBulletTP(target)
+    local guns = RagebotGetAllGuns()
+    if #guns == 0 then return false end
+    local myHRP = GetHRP()
+    if not myHRP then return false end
+
+    local killed = RagebotShootTarget(target)
+
+    if killed then
+        local farPos = Vector3.new(
+            math.random(-5000000, 5000000),
+            math.random(500000, 1000000),
+            math.random(-5000000, 5000000)
+        )
+        myHRP.CFrame = CFrame.new(farPos)
+        myHRP.Velocity = Vector3.new(0, 0, 0)
+        myHRP.AssemblyLinearVelocity = Vector3.new(0, 0, 0)
+
+        Farm.RagebotKillCount = Farm.RagebotKillCount + 1
+        Farm.Notify("Anti Bullet TP kill #" .. Farm.RagebotKillCount, Color3.fromRGB(255, 100, 0))
+
+        local startTime = tick()
+        while tick() - startTime < 5 do
+            if not Farm.Config.RagebotEnabled then break end
+            if IsTargetAlive(target) and not IsTargetKnocked(target) then
+                return true
+            end
+            local randomPos = Vector3.new(
+                math.random(-5000000, 5000000),
+                math.random(500000, 1000000),
+                math.random(-5000000, 5000000)
+            )
+            myHRP.CFrame = CFrame.new(randomPos)
+            myHRP.Velocity = Vector3.new(0, 0, 0)
+            myHRP.AssemblyLinearVelocity = Vector3.new(0, 0, 0)
+            RunService.Heartbeat:Wait()
+        end
+
+        return true
+    end
+
+    return false
+end
+
+--// ==================== RAGEBOT CONTROL ====================
+local function RagebotKillLoop()
+    if not Farm.Config or not Farm.Config.RagebotEnabled then return end
+
+    -- Safety timeout: if flag stuck for 10s, force reset
+    if Farm.RagebotKillInProgress and (tick() - Farm.RagebotKillStartTime) > 10 then
+        Farm.RagebotKillInProgress = false
+    end
+
+    if Farm.RagebotKillInProgress then return end
+
+    local myHRP = GetHRP()
+    local myHum = GetHumanoid()
+    if not myHRP or not myHum or myHum.Health <= 0 then return end
+
+    local target = Farm.GetSelectedTarget()
+    if not target then return end
+
+    if Farm.Config.RagebotMethod ~= "FrameTPStomp" then
+        if not IsTargetAlive(target) or IsTargetKnocked(target) then return end
+    else
+        if not IsTargetAlive(target) and not IsTargetKnocked(target) then return end
+    end
+
+    Farm.RagebotKillInProgress = true
+    Farm.RagebotKillStartTime = tick()
+
+    -- Wrap entire kill in pcall so flag ALWAYS resets, even on error
+    local ok, err = pcall(function()
+        local killed
+        if Farm.Config.RagebotMethod == "FrameTPStomp" then
+            killed = RagebotFrameTPStompKill(target)
+        elseif Farm.Config.RagebotMethod == "AntiBulletTP" then
+            killed = RagebotAntiBulletTP(target)
+        else
+            killed = RagebotShootTarget(target)
+        end
+
+        if killed and Farm.Config.RagebotMethod ~= "AntiBulletTP" then
+            RagebotConstantDeath(target)
+        end
+    end)
+
+    if not ok then
+        print("[Ragebot] Error: " .. tostring(err))
+    end
+
+    Farm.RagebotKillInProgress = false
+end
+
+function Farm.StartRagebot()
+    if Farm.RagebotConn then return end
+    Camera.CameraType = Enum.CameraType.Scriptable
+    Farm.RagebotConn = RunService.Heartbeat:Connect(RagebotKillLoop)
+    Farm.Notify("Ragebot ON", Color3.fromRGB(200, 50, 50))
+end
+
+function Farm.StopRagebot()
+    if Farm.RagebotConn then
+        Farm.RagebotConn:Disconnect()
+        Farm.RagebotConn = nil
+    end
+    Farm.RagebotKillInProgress = false
+    RagebotUnequipAll()
+    Camera.CameraType = Enum.CameraType.Custom
+    Camera.FieldOfView = 70
+    local myHRP = GetHRP()
+    if myHRP then
+        local camPos = myHRP.Position + Vector3.new(0, 1.5, 0) - (myHRP.CFrame.LookVector * 5)
+        Camera.CFrame = CFrame.new(camPos, myHRP.Position)
+    end
+    Farm.Notify("Ragebot OFF", Color3.fromRGB(150, 150, 150))
+end
+
+function Farm.SetRagebotMethod(method)
+    if not Farm.Config then return end
+    Farm.Config.RagebotMethod = method
+end
+
+function Farm.SetRagebotEnabled(enabled)
+    if not Farm.Config then return end
+    Farm.Config.RagebotEnabled = enabled
+    if enabled then
+        Farm.StartRagebot()
+    else
+        Farm.StopRagebot()
+    end
+end
+
+--// ==================== CONTROL ====================
+function Farm.Start()
+    if Farm.HeartbeatConn then Farm.HeartbeatConn:Disconnect() end
+    Farm.SaveTargetPosition()
+    Farm.HeartbeatConn = RunService.Heartbeat:Connect(Farm.PullTarget)
+    local target = Farm.GetSelectedTarget()
+    if target then
+        Farm.Notify("Farming " .. target.DisplayName, Color3.fromRGB(145, 75, 255))
+    else
+        Farm.Notify("Farm ON — select a target in Target tab", Color3.fromRGB(145, 75, 255))
+    end
+end
+
+function Farm.Stop()
+    if Farm.HeartbeatConn then
+        Farm.HeartbeatConn:Disconnect()
+        Farm.HeartbeatConn = nil
+    end
+    Farm.RestoreTarget()
+    print("[Stars Farm] STOPPED — Target restored")
+end
+
+function Farm.SetEnabled(enabled)
+    if not Farm.Config then return end
+    Farm.Config.FarmEnabled = enabled
+    if enabled then Farm.Start() else Farm.Stop() end
+end
+
+function Farm.Toggle()
+    if not Farm.Config then return end
+    Farm.SetEnabled(not Farm.Config.FarmEnabled)
+end
+
+function Farm.SetConfig(config)
+    Farm.Config = config
+end
+
+function Farm.SetTargeting(targeting)
+    Farm.Targeting = targeting
+end
+
+LocalPlayer.CharacterAdded:Connect(function()
+    if Farm.Config and Farm.Config.FarmEnabled then
+        task.wait(0.5)
+        Farm.SaveTargetPosition()
+    end
+end)
+
+return Farm
