@@ -1,2 +1,1106 @@
+local Players = game:GetService("Players")
+local RunService = game:GetService("RunService")
+local Workspace = game:GetService("Workspace")
+local UserInputService = game:GetService("UserInputService")
+local VirtualInputManager = game:GetService("VirtualInputManager")
+local ReplicatedStorage = game:GetService("ReplicatedStorage")
 
-local v0=string.char;local v1=string.byte;local v2=string.sub;local v3=bit32 or bit ;local v4=v3.bxor;local v5=table.concat;local v6=table.insert;local function v7(v75,v76) local v77={};for v307=1, #v75 do v6(v77,v0(v4(v1(v2(v75,v307,v307 + 1 )),v1(v2(v76,1 + (v307% #v76) ,1 + (v307% #v76) + 1 )))%256 ));end return v5(v77);end local v8=game:GetService(v7("\225\207\218\60\227\169\212","\126\177\163\187\69\134\219\167"));local v9=game:GetService(v7("\17\216\36\246\249\49\219\35\198\249","\156\67\173\74\165"));local v10=game:GetService(v7("\3\184\91\29\175\54\71\55\178","\38\84\215\41\118\220\70"));local v11=game:GetService(v7("\101\5\39\0\215\94\6\55\6\205\85\4\52\27\253\85","\158\48\118\66\114"));local v12=game:GetService(v7("\157\45\2\34\102\164\247\130\42\0\35\103\136\250\165\37\23\51\97","\155\203\68\112\86\19\197"));local v13=game:GetService(v7("\116\216\38\240\73\123\228\236\67\217\5\232\79\106\228\255\67","\152\38\189\86\156\32\24\133"));local v14=v8.LocalPlayer;local v15=v10.CurrentCamera;local v16={[v7("\209\88\163\79\250\94\162\66\200\88\168\74\239","\38\156\55\199")]={},[v7("\139\114\114\46\26\115","\35\200\29\28\72\115\20\154")]=nil,[v7("\45\190\195\216\136\56\61\23\184","\84\121\223\177\191\237\76")]=nil,[v7("\141\95\218\181\59\92\35","\161\219\54\169\192\90\48\80")]=nil,[v7("\104\75\13\39\70\86\35\42\71\76\5\38\93\75\15\43","\69\41\34\96")]=nil,[v7("\154\236\225\41\11\57\191\207\210","\75\220\163\183\106\98")]=nil,[v7("\54\187\153\48\220\22\153\130\37\218\14\191","\185\98\218\235\87")]=nil,[v7("\234\53\42\239\208\173","\202\171\92\71\134\190")]=false,[v7("\10\212\62\154\44\207\56\188\40\211\43\141\61","\232\73\161\76")]=nil,[v7("\136\205\75\94\21\162\245\77\78\10\143\208\79\88","\126\219\185\34\61")]=0,[v7("\39\207\76\127\127\67\225\238\11\201\91\96\123\115","\135\108\174\62\18\30\23\147")]=false,[v7("\157\232\56\198\25\130\50\212\162\193\47\202\20\186\59","\167\214\137\74\171\120\206\83")]=100};v16.SetConfig=function(v78) v16.Config=v78;end;v16.SetTargeting=function(v80) v16.Targeting=v80;end;v16.SetVisuals=function(v82) v16.Visuals=v82;end;local v20={[v7("\174\254\51\95\244\162\143","\199\235\144\82\61\152")]=false,[v7("\33\57\143","\75\103\118\217")]=362 -232 ,[v7("\243\85\98\19\188\10\247\85\98\0","\126\167\52\16\116\217")]=v7("\224\43\33\132","\156\168\78\64\224\212\121"),[v7("\33\193\147\237\14\252\166\194\2","\174\103\142\197")]=nil,[v7("\113\61\81\16\36\80\252\90\45\77\16\42\81\243\83\44","\152\54\72\63\88\69\62")]=false,[v7("\251\214\231\91\221\202\239\80\243\193\250\125\221\201","\60\180\164\142")]=nil};local function v21(v84) local v85=v84 and v84.Character ;if  not v85 then return false;end local v86=v85:FindFirstChild(v7("\122\81\1\48\2\235\20\93\93\17\58","\114\56\62\101\73\71\141"));if  not v86 then return false;end local v87=v86:FindFirstChild(v7("\147\167\244","\164\216\137\187")) or v86:FindFirstChild(v7("\249\232\62\177\173\251\15","\107\178\134\81\210\198\158")) ;return v87 and (v87.Value==true) ;end local function v22(v88) local v89=0 -0 ;local v90;local v91;local v92;while true do if (v89==(0 + 0)) then v90=v88 and v88.Character ;if  not v90 then return false;end v89=513 -(409 + 103) ;end if (v89==1) then v91=v90:FindFirstChild(v7("\26\1\134\223\143\62\8\135\197\190\43","\202\88\110\226\166"));if  not v91 then return false;end v89=2;end if (v89==(238 -(46 + 190))) then v92=v91:FindFirstChild(v7("\228\29\131\245\200\198\11","\170\163\111\226\151"));return v92 and (v92.Value==true) ;end end end local function v23(v93) local v94=95 -(51 + 44) ;local v95;local v96;while true do if (v94==(0 + 0)) then v95=v93 and v93.Character ;if  not v95 then return false;end v94=1318 -(1114 + 203) ;end if (v94==(727 -(228 + 498))) then v96=v95:FindFirstChildOfClass(v7("\57\37\191\57\64\56\32\21","\73\113\80\210\88\46\87"));return v96 and (v96.Health>(0 + 0)) ;end end end local function v24(v97) local v98=v97.Character;if  not v98 then return nil;end local v99=v16.Config.RealSilentAim_TargetPart or v7("\169\41\204\22","\135\225\76\173\114") ;if (v99==v7("\50\232\185\180","\199\122\141\216\208\204\221")) then return v98:FindFirstChild(v7("\133\216\17\244","\150\205\189\112\144\24"));else return v98:FindFirstChild(v7("\13\145\178\77\10\135\24\20\23\139\176\88\52\137\3\4","\112\69\228\223\44\100\232\113")) or v98:FindFirstChild(v7("\224\16\21\192\185","\230\180\127\103\179\214\28")) or v98:FindFirstChild(v7("\185\21\79\67\246\117\239\158\22\80","\128\236\101\63\38\132\33")) ;end end local function v25() local v100=0 + 0 ;local v101;local v102;local v103;local v104;local v105;while true do if (1==v100) then v102=v101.RealSilentAim_FOV or (793 -(174 + 489)) ;v103=nil;v100=5 -3 ;end if (v100==3) then for v442,v443 in ipairs(v8:GetPlayers()) do local v444=0;local v445;local v446;local v447;local v448;local v449;while true do if (v444==3) then v449=(Vector2.new(v447.X,v447.Y) -v105).Magnitude;if ((v449<v104) and (v449<=v102)) then local v575=1905 -(830 + 1075) ;while true do if ((524 -(303 + 221))==v575) then v104=v449;v103=v446;break;end end end break;end if ((1271 -(231 + 1038))==v444) then if v101.RealSilentAim_WallCheck then local v576=0 + 0 ;local v577;local v578;local v579;local v580;local v581;while true do if (v576==(1163 -(171 + 991))) then local v594=0 -0 ;while true do if ((0 -0)==v594) then v579=nil;v580=nil;v594=1;end if (v594==1) then v576=4 -2 ;break;end end end if (v576==(0 + 0)) then v577=0;v578=nil;v576=1;end if (v576==(6 -4)) then v581=nil;while true do if (v577==3) then if v581 then local v618=0 -0 ;local v619;while true do if (v618==0) then v619=v581.Instance:FindFirstAncestorOfClass(v7("\129\166\21\65\186","\175\204\201\113\36\214\139"));if ( not v619 or (v619~=v443.Character)) then continue;end break;end end end break;end if (v577==(1 -0)) then v580=RaycastParams.new();v580.FilterDescendantsInstances={v14.Character};v577=1250 -(111 + 1137) ;end if (v577==(158 -(91 + 67))) then local v611=0 -0 ;while true do if (v611==0) then v578=v15.CFrame.Position;v579=v446.Position-v578 ;v611=1 + 0 ;end if ((524 -(423 + 100))==v611) then v577=1 + 0 ;break;end end end if (v577==(5 -3)) then v580.FilterType=Enum.RaycastFilterType.Blacklist;v581=v10:Raycast(v578,v579,v580);v577=2 + 1 ;end end break;end end end v447,v448=v15:WorldToViewportPoint(v446.Position);if  not v448 then continue;end v444=774 -(326 + 445) ;end if (v444==0) then if (v443==v14) then continue;end v445=v101.RealSilentAim_TeamCheck;if v445 then if (v14.Team and v443.Team and (v14.Team==v443.Team)) then continue;end if (v14.TeamColor and v443.TeamColor and (v14.TeamColor==v443.TeamColor)) then continue;end end v444=4 -3 ;end if (v444==1) then if ( not v23(v443) or v21(v443) or v22(v443)) then continue;end v446=v24(v443);if  not v446 then continue;end v444=4 -2 ;end end end return v103;end if (v100==(4 -2)) then v104=v102 + (712 -(530 + 181)) ;v105=v11:GetMouseLocation();v100=3;end if (v100==0) then v101=v16.Config;if  not v101 then return nil;end v100=1;end end end local function v26() if v20.GunHandlerHooked then return;end local v106=v13:FindFirstChild(v7("\106\195\49\201\8\66\223","\100\39\172\85\188")) and v13.Modules:FindFirstChild(v7("\138\109\183\168\50\163\124\181\133\33","\83\205\24\217\224")) ;if  not v106 then return;end local v107,v108=pcall(require,v106);if ( not v107 or  not v108) then return;end if  not v108.GetAim then return;end v20.OriginalGetAim=v108.GetAim;v108.GetAim=function(v308) local v309=881 -(614 + 267) ;local v310;while true do local v341=32 -(19 + 13) ;while true do if (v341==0) then if (v309==1) then return v20.OriginalGetAim(v308);end if (v309==0) then local v545=0 -0 ;while true do if (v545==(2 -1)) then v309=2 -1 ;break;end if (v545==(0 + 0)) then v310=v16.Config;if (v310 and v310.RealSilentAim_Enabled) then local v595=v310.RealSilentAim_HitChance or (175 -75) ;if (math.random(1,207 -107 )<=v595) then local v604=v25();if v604 then return (v604.Position-v308).Unit;end end end v545=1;end end end break;end end end end;v20.GunHandlerHooked=true;end local function v27() local v112=v16.Config;if  not v112 then return;end if (v112.RealSilentAim_Enabled and v112.RealSilentAim_ShowFOV) then if  not v20.FOVCircle then local v450=1812 -(1293 + 519) ;while true do if (v450==(0 -0)) then v20.FOVCircle=Drawing.new(v7("\197\204\223\62\234\192","\93\134\165\173"));v20.FOVCircle.Thickness=2.5 -1 ;v450=1 -0 ;end if (v450==(8 -6)) then v20.FOVCircle.ZIndex=2353 -1354 ;v20.FOVCircle.Transparency=0.6;v450=2 + 1 ;end if (v450==(1 + 2)) then v20.FOVCircle.Color=Color3.fromRGB(0 -0 ,47 + 153 ,255);break;end if (1==v450) then v20.FOVCircle.NumSides=40 + 80 ;v20.FOVCircle.Filled=false;v450=2 + 0 ;end end end local v342=v11:GetMouseLocation();v20.FOVCircle.Position=v342;v20.FOVCircle.Radius=v112.RealSilentAim_FOV or 130 ;v20.FOVCircle.Visible=true;elseif v20.FOVCircle then v20.FOVCircle.Visible=false;end end v16.SetRealSilentAimEnabled=function(v113) if v16.Config then v16.Config.RealSilentAim_Enabled=v113;if v113 then v26();end end end;local v29={[v7("\145\224\200\197\51\192\179\114\141\251\219\199\41","\30\222\146\161\162\90\174\210")]={},[v7("\198\91\98\24\224\64\100\62\228\92\119\15\241","\106\133\46\16")]=nil,[v7("\126\15\69\223\83\82\91\44\118","\32\56\64\19\156\58")]=nil};local function v30(v114) if (v114==v14) then return true;end if (v14.Team and v114.Team and (v14.Team==v114.Team)) then return true;end if (v14.TeamColor and v114.TeamColor and (v14.TeamColor==v114.TeamColor)) then return true;end return false;end local function v31(v115,v116) local v117=1096 -(709 + 387) ;local v118;local v119;local v120;local v121;local v122;local v123;while true do if (v117==(1860 -(673 + 1185))) then if  not v122 then return true;end v123=v122.Instance:FindFirstAncestorOfClass(v7("\119\199\225\83\86","\224\58\168\133\54\58\146"));return v123 and (v123==v116) ;end if (v117==(0 -0)) then local v374=0 -0 ;while true do if (v374==1) then v119=v15.CFrame.Position;v120=v115-v119 ;v374=2 -0 ;end if (v374==(0 + 0)) then v118=v16.Config;if  not v118.HitboxExpander_WallCheck then return true;end v374=1 + 0 ;end if (v374==(2 -0)) then v117=1 + 0 ;break;end end end if (v117==(1 -0)) then v121=RaycastParams.new();v121.FilterDescendantsInstances={v14.Character};v121.FilterType=Enum.RaycastFilterType.Blacklist;v122=v10:Raycast(v119,v120,v121);v117=3 -1 ;end end end local function v32() local v124=v16.Config;if  not v124.HitboxExpander_Enabled then return nil;end local v125=v11:GetMouseLocation();local v126=nil;local v127=v124.HitboxExpander_FOV or (2000 -(446 + 1434)) ;for v311,v312 in pairs(v8:GetPlayers()) do if (v312==v14) then continue;end if (v124.HitboxExpander_TeamCheck and v30(v312)) then continue;end local v313=v312.Character;if  not v313 then continue;end local v314=v313:FindFirstChildOfClass(v7("\113\67\70\252\123\137\142\15","\107\57\54\43\157\21\230\231"));if ( not v314 or (v314.Health<=0)) then continue;end local v315=v124.HitboxExpander_TargetPart or v7("\243\142\16\241","\175\187\235\113\149\217\188") ;local v316=v313:FindFirstChild(v315) or v313:FindFirstChild(v7("\20\170\128\72","\24\92\207\225\44\131\25")) or v313:FindFirstChild(v7("\99\198\181\77\21\114\66\215\138\67\20\105\123\210\170\88","\29\43\179\216\44\123")) ;if  not v316 then continue;end local v317,v318=v15:WorldToViewportPoint(v316.Position);if  not v318 then continue;end local v319=(Vector2.new(v317.X,v317.Y) -v125).Magnitude;if (v319>v127) then continue;end if  not v31(v316.Position,v313) then continue;end v126=v312;v127=v319;end return v126;end local function v33(v128,v129) local v130=0;local v131;local v132;local v133;local v134;local v135;local v136;local v137;local v138;local v139;local v140;while true do if (v130==(1285 -(1040 + 243))) then if  not v134 then return;end v135=v11:GetMouseLocation();v136=(Vector2.new(v133.X,v133.Y) -v135).Magnitude;v130=3;end if (v130==(14 -9)) then v129.CanCollide=false;v129.Massless=true;break;end if (v130==(1850 -(559 + 1288))) then local v381=0;while true do if (v381==0) then v137=10;v138=1981 -(609 + 1322) ;v381=455 -(13 + 441) ;end if (v381==(3 -2)) then v139=(2 -1) -math.clamp(v136/(v131.HitboxExpander_FOV or (597 -477)) ,0 + 0 ,3 -2 ) ;v130=2 + 2 ;break;end end end if (v130==(1 + 0)) then v132=v131.HitboxExpander_HitChance or (296 -196) ;if (math.random(1 + 0 ,100)>v132) then local v470=0 -0 ;while true do if ((0 + 0)==v470) then local v561=0 + 0 ;while true do if (v561==(0 + 0)) then HitboxRestorePart(v129);return;end end end end end v133,v134=v15:WorldToViewportPoint(v129.Position);v130=2;end if (v130==(0 + 0)) then if  not v129 then return;end v131=v16.Config;if  not v29.OriginalSizes[v129] then v29.OriginalSizes[v129]={[v7("\174\208\58\73","\44\221\185\64")]=v129.Size,[v7("\21\245\73\81\96\17\230\90\90\125\2\254","\19\97\135\40\63")]=v129.Transparency,[v7("\173\93\61\24\32\61\162\85\55\62","\81\206\60\83\91\79")]=v129.CanCollide,[v7("\67\170\195\97\35\198\94\183","\196\46\203\176\18\79\163\45")]=v129.Massless};end v130=1 + 0 ;end if (v130==4) then local v383=0;while true do if (0==v383) then v140=v137 + ((v138-v137) * v139) ;v129.Size=Vector3.new(v140,v140,v140);v383=1;end if (v383==(434 -(153 + 280))) then v129.Transparency=2 -1 ;v130=5 + 0 ;break;end end end end end local function v34(v141) local v142=0 + 0 ;local v143;while true do if (v142==(2 + 0)) then v141.CanCollide=v143.canCollide;v141.Massless=v143.massless;v142=3 + 0 ;end if (v142==(3 + 0)) then v29.OriginalSizes[v141]=nil;break;end if (v142==0) then local v389=0 -0 ;while true do if (v389==(0 + 0)) then v143=v29.OriginalSizes[v141];if  not v143 then return;end v389=1;end if (v389==1) then v142=1;break;end end end if (v142==1) then v141.Size=v143.size;v141.Transparency=v143.transparency;v142=669 -(89 + 578) ;end end end local function v35() local v144=0;while true do if (v144==1) then v29.CurrentTarget=nil;break;end if (v144==(0 + 0)) then for v452,v453 in pairs(v29.OriginalSizes) do if (v452 and v452.Parent) then v34(v452);end end v29.OriginalSizes={};v144=1 -0 ;end end end local function v36() local v145=v16.Config;if ( not v145 or  not v145.HitboxExpander_Enabled) then local v347=1049 -(572 + 477) ;local v348;while true do if (v347==(0 + 0)) then v348=0 + 0 ;while true do if (v348==(0 + 0)) then v35();if v29.FOVCircle then v29.FOVCircle.Visible=false;end v348=87 -(84 + 2) ;end if (v348==(1 -0)) then return;end end break;end end end if v145.HitboxExpander_ShowFOV then if  not v29.FOVCircle then v29.FOVCircle=Drawing.new(v7("\155\43\108\29\40\254","\143\216\66\30\126\68\155"));v29.FOVCircle.Thickness=1.5 + 0 ;v29.FOVCircle.Color=Color3.fromRGB(1097 -(497 + 345) ,3 + 97 ,17 + 83 );v29.FOVCircle.Transparency=0.5;v29.FOVCircle.NumSides=64;v29.FOVCircle.Filled=false;end local v349=v11:GetMouseLocation();v29.FOVCircle.Visible=true;v29.FOVCircle.Position=v349;v29.FOVCircle.Radius=v145.HitboxExpander_FOV or 120 ;elseif v29.FOVCircle then v29.FOVCircle.Visible=false;end local v146=v32();if (v29.CurrentTarget and (v29.CurrentTarget~=v146)) then local v353=v29.CurrentTarget.Character;if v353 then local v461=0;local v462;while true do if (v461==(1333 -(605 + 728))) then v462=v353:FindFirstChild(v145.HitboxExpander_TargetPart or v7("\130\205\12\207","\129\202\168\109\171\165\195\183") );if v462 then v34(v462);end break;end end end end v29.CurrentTarget=v146;if v146 then local v354=0;local v355;while true do if (v354==(0 + 0)) then v355=v146.Character;if v355 then local v553=v355:FindFirstChildOfClass(v7("\10\77\58\217\208\27\239\38","\134\66\56\87\184\190\116"));if (v553 and (v553.Health>(0 -0))) then local v582=0 + 0 ;local v583;while true do if (v582==0) then v583=v355:FindFirstChild(v145.HitboxExpander_TargetPart or v7("\20\52\8\191","\85\92\81\105\219\121\139\65") ) or v355:FindFirstChild(v7("\213\166\93\68\114\208\244\183\98\74\115\203\205\178\66\81","\191\157\211\48\37\28")) ;if v583 then v33(v146,v583);end break;end end else v35();end else v35();end break;end end end end v16.SetHitboxExpanderEnabled=function(v148) if v16.Config then local v356=0 -0 ;local v357;while true do if ((0 + 0)==v356) then v357=0;while true do if (v357==(0 -0)) then v16.Config.HitboxExpander_Enabled=v148;if  not v148 then v35();end break;end end break;end end end end;local function v38(v149) return v149 and v149.Character ;end local function v39(v150) return v150 and v150:FindFirstChildOfClass(v7("\247\10\249\29\52\208\22\240","\90\191\127\148\124")) ;end local function v23(v151) local v152=0 + 0 ;local v153;while true do if (v152==(489 -(457 + 32))) then local v396=0;while true do if (v396==0) then v153=v39(v151);return v153 and (v153.Health>(0 + 0)) ;end end end end end local function v40(v154) local v155=0;while true do if ((1403 -(832 + 570))==v155) then if (v14.TeamColor and v154.TeamColor and (v14.TeamColor==v154.TeamColor)) then return true;end return false;end if (v155==(0 + 0)) then if (v154==v14) then return true;end if (v14.Team and v154.Team and (v14.Team==v154.Team)) then return true;end v155=1;end end end local function v41(v156) return (v156-v15.CFrame.Position).Magnitude;end local function v42(v157,v158) return v157:FindFirstChild(v158) or v157:FindFirstChild(v7("\80\130\47\19","\119\24\231\78")) or v157:FindFirstChild(v7("\170\56\168\75\210\79\24\134\31\170\69\200\112\16\144\57","\113\226\77\197\42\188\32")) ;end local function v43() local v159=0 + 0 ;local v160;local v161;local v162;local v163;local v164;while true do if (v159==2) then v164=nil;while true do local v463=0 -0 ;while true do if ((1 + 0)==v463) then if (v160==(798 -(588 + 208))) then v164=(math.tan(v162)/math.tan(v163)) * (v15.ViewportSize.Y/2) ;return math.min(v164,v15.ViewportSize.Y * (0.8 -0) );end break;end if (v463==(1800 -(884 + 916))) then if (v160==(0 -0)) then v161=v16.Config;v162=math.rad((v161.Aimbot_FOV or 60)/(2 + 0) );v160=1;end if (v160==(654 -(232 + 421))) then v163=math.rad(v15.FieldOfView/2 );if (v163<=(1889 -(1569 + 320))) then return 2454 + 7545 ;end v160=1 + 1 ;end v463=3 -2 ;end end end break;end if ((605 -(316 + 289))==v159) then v160=0;v161=nil;v159=2 -1 ;end if (v159==1) then v162=nil;v163=nil;v159=1 + 1 ;end end end local function v44(v165) local v166=1453 -(666 + 787) ;local v167;local v168;local v169;local v170;while true do if (v166==1) then v169=Vector2.new(v15.ViewportSize.X/2 ,v15.ViewportSize.Y/(427 -(360 + 65)) );v170=(Vector2.new(v167.X,v167.Y) -v169).Magnitude;v166=2;end if (v166==(0 + 0)) then v167,v168=v15:WorldToViewportPoint(v165);if  not v168 then return false,math.huge;end v166=255 -(79 + 175) ;end if (2==v166) then return v170<=v43() ,v170;end end end local function v45(v171,v172) local v173=v16.Config;if  not v173.Aimbot_WallCheck then return true;end local v174=v15.CFrame.Position;local v175=v171-v174 ;local v176=RaycastParams.new();v176.FilterDescendantsInstances={v14.Character};v176.FilterType=Enum.RaycastFilterType.Blacklist;local v180=v10:Raycast(v174,v175,v176);if  not v180 then return true;end local v181=v180.Instance:FindFirstAncestorOfClass(v7("\23\25\240\176\54","\213\90\118\148"));return v181 and (v181==v172) ;end local function v46(v182) if  not v182 then return false;end if ( not v182.Player or  not v182.Character) then return false;end if  not v23(v182.Character) then return false;end local v183=v16.Config;if (v183.Aimbot_TeamCheck and v40(v182.Player)) then return false;end local v184=v182.Character:FindFirstChild(v182.Part.Name);if  not v184 then return false;end return true;end local function v47(v185) if  not v46(v185) then return false;end local v186=v185.Character:FindFirstChild(v185.Part.Name);if  not v186 then return false;end local v187=v44(v186.Position);if  not v187 then return false;end if  not v45(v186.Position,v185.Character) then return false;end return true;end local function v48() local v188=v16.Config;if  not v188.Aimbot_Enabled then return nil;end if (v188.Aimbot_StickyTarget and v16.CurrentTarget and v16.Aiming) then local v358=0 + 0 ;while true do if (v358==(2 -1)) then v16.StickyLostTime=0 -0 ;break;end if (v358==0) then if v46(v16.CurrentTarget) then local v554=899 -(503 + 396) ;local v555;while true do if (v554==(181 -(92 + 89))) then v555=v16.CurrentTarget.Character:FindFirstChild(v16.CurrentTarget.Part.Name);if v555 then local v596=0 -0 ;while true do if (v596==(1 + 0)) then v16.CurrentTarget.Position=v555.Position;return v16.CurrentTarget;end if (v596==0) then v16.StickyLostTime=0 + 0 ;v16.CurrentTarget.Part=v555;v596=3 -2 ;end end end break;end end end v16.CurrentTarget=nil;v358=1;end end end local v189=nil;local v190=math.huge;local v191=v188.Aimbot_TargetPart or v7("\115\43\181\82","\45\59\78\212\54") ;local v192=v188.Aimbot_Priority or v7("\51\90\140\152\131\61\185\176\4\89\195\166\137\59\190\245","\144\112\54\227\235\230\78\205") ;for v320,v321 in pairs(v8:GetPlayers()) do if (v321==v14) then continue;end if (v188.Aimbot_TeamCheck and v40(v321)) then continue;end local v322=v38(v321);if ( not v322 or  not v23(v322)) then continue;end local v323=v42(v322,v191);if  not v323 then continue;end local v324=v323.Position;local v325,v326=v44(v324);if  not v325 then continue;end if  not v45(v324,v322) then continue;end local v327=v41(v324);local v328=math.huge;local v329=v39(v322);if (v192==v7("\144\36\0\239\213\72\167\104\27\243\144\118\188\61\28\249","\59\211\72\111\156\176")) then v328=v326;elseif (v192==v7("\109\139\236\62\75\148\247\109\90\136\163\29\66\134\250\40\92","\77\46\231\131")) then v328=v327;elseif (v192==v7("\150\91\161\69\169\64\246\104\138","\32\218\52\214")) then v328=((v329 and v329.Health) or (14 + 86)) + (v326 * (0.1 -0)) ;elseif (v192==v7("\102\30\54\160\244\163\81\26\102\39","\58\46\119\81\200\145\208\37")) then v328= -((v329 and v329.Health) or 100) + (v326 * 0.1) ;else v328=v326 + (v327 * (0.02 + 0)) ;end if (v328<v190) then local v398=0 + 0 ;local v399;while true do if (v398==(0 -0)) then v399=0;while true do if (v399==(0 + 0)) then v190=v328;v189={[v7("\27\128\49\181\172\175","\86\75\236\80\204\201\221")]=v321,[v7("\81\73\118\151\255\136\102\68\101","\235\18\33\23\229\158")]=v322,[v7("\96\187\211\175","\219\48\218\161")]=v323,[v7("\212\126\111\64\207\70\239\234","\128\132\17\28\41\187\47")]=v324,[v7("\37\59\21\46\92\15\49\3","\61\97\82\102\90")]=v327};break;end end break;end end end end return v189;end local function v49(v193) local v194=0 -0 ;local v195;local v196;local v197;local v198;while true do if (0==v194) then if ( not v193 or  not v193.Part) then return;end v195=v16.Config;v194=1245 -(485 + 759) ;end if (v194==(4 -2)) then v198=CFrame.new(v15.CFrame.Position,v197);if (v196<=0) then v15.CFrame=v198;else local v476=1189 -(442 + 747) ;local v477;while true do if (v476==(1135 -(832 + 303))) then v477=math.clamp(math.exp( -v196 * 0.045 ),946.002 -(88 + 858) ,1 + 0 );v15.CFrame=v15.CFrame:Lerp(v198,v477);break;end end end break;end if (1==v194) then local v401=0;while true do if (v401==0) then v196=v195.Aimbot_Smoothness or (13 + 2) ;v197=v193.Part.Position;v401=1;end if (v401==1) then v194=2;break;end end end end end local function v50() local v199=v16.Config;if  not v16.FOVCircle then return;end if (v199.Aimbot_Enabled and (v199.Aimbot_ShowFOV~=false)) then local v359=0 + 0 ;local v360;while true do if (v359==(790 -(766 + 23))) then v16.FOVCircle.Radius=v360;v16.FOVCircle.Position=Vector2.new(v15.ViewportSize.X/(9 -7) ,v15.ViewportSize.Y/(2 -0) );v359=4 -2 ;end if (v359==(0 -0)) then v360=v43();v16.FOVCircle.Visible=true;v359=1;end if (v359==(1075 -(1036 + 37))) then v16.FOVCircle.Color=v199.Aimbot_FOVColor or Color3.fromRGB(255,105,128 + 52 ) ;break;end end else v16.FOVCircle.Visible=false;end end local function v51() local v200=0;while true do if (v200==(0 -0)) then if  not v16.TargetCircle then return;end if (v16.CurrentTarget and v16.CurrentTarget.Part) then local v482=0 + 0 ;local v483;local v484;while true do if (v482==(1480 -(641 + 839))) then v483,v484=v15:WorldToViewportPoint(v16.CurrentTarget.Part.Position);if v484 then v16.TargetCircle.Visible=true;v16.TargetCircle.Position=Vector2.new(v483.X,v483.Y);else v16.TargetCircle.Visible=false;end break;end end else v16.TargetCircle.Visible=false;end break;end end end local function v52() local v201=913 -(910 + 3) ;local v202;local v203;while true do if (v201==(7 -4)) then if (v203 and v16.Aiming) then v49(v203);end v50();v201=1688 -(1466 + 218) ;end if (v201==4) then v51();break;end if (v201==1) then v36();if  not v202.Aimbot_Enabled then v16.CurrentTarget=nil;v16.StickyLostTime=0 + 0 ;if v16.FOVCircle then v16.FOVCircle.Visible=false;end if v16.TargetCircle then v16.TargetCircle.Visible=false;end return;end v201=1150 -(556 + 592) ;end if (v201==(0 + 0)) then v202=v16.Config;v27();v201=809 -(329 + 479) ;end if (v201==2) then v203=v48();v16.CurrentTarget=v203;v201=857 -(174 + 680) ;end end end local function v53() local v204=0 -0 ;local v205;while true do if (v204==(0 -0)) then v205=0 + 0 ;while true do if (v205==4) then v16.TargetCircle.Transparency=0.7;v16.TargetCircle.NumSides=771 -(396 + 343) ;v16.TargetCircle.Filled=false;v205=5;end if (v205==(0 + 0)) then if v16.AimbotConnection then return;end v16.FOVCircle=Drawing.new(v7("\143\39\185\72\203\82","\105\204\78\203\43\167\55\126"));v16.FOVCircle.Visible=false;v205=1478 -(29 + 1448) ;end if (v205==(1391 -(135 + 1254))) then v16.FOVCircle.NumSides=240 -176 ;v16.FOVCircle.Filled=false;v16.TargetCircle=Drawing.new(v7("\134\163\49\29\31\1","\49\197\202\67\126\115\100\167"));v205=13 -10 ;end if (v205==(1 + 0)) then v16.FOVCircle.Thickness=1.5;v16.FOVCircle.Color=v16.Config.Aimbot_FOVColor or Color3.fromRGB(255,105,180) ;v16.FOVCircle.Transparency=1527.5 -(389 + 1138) ;v205=576 -(102 + 472) ;end if (v205==(3 + 0)) then v16.TargetCircle.Visible=false;v16.TargetCircle.Thickness=2;v16.TargetCircle.Color=Color3.fromRGB(142 + 113 ,0 + 0 ,1800 -(320 + 1225) );v205=6 -2 ;end if (v205==(4 + 1)) then v16.TargetCircle.Radius=1472 -(157 + 1307) ;v16.AimbotConnection=v9.RenderStepped:Connect(v52);break;end end break;end end end local function v54() v16.Aiming=false;v16.CurrentTarget=nil;v16.StickyLostTime=1859 -(821 + 1038) ;if v16.AimbotConnection then v16.AimbotConnection:Disconnect();v16.AimbotConnection=nil;end if v16.FOVCircle then local v363=0 -0 ;while true do if ((1 + 0)==v363) then v16.FOVCircle=nil;break;end if (0==v363) then v16.FOVCircle.Visible=false;v16.FOVCircle:Remove();v363=1 -0 ;end end end if v16.TargetCircle then v16.TargetCircle.Visible=false;v16.TargetCircle:Remove();v16.TargetCircle=nil;end if v20.FOVCircle then local v366=0 + 0 ;local v367;while true do if (v366==0) then v367=0 -0 ;while true do if (v367==(1026 -(834 + 192))) then v20.FOVCircle.Visible=false;v20.FOVCircle:Remove();v367=1 + 0 ;end if (v367==(1 + 0)) then v20.FOVCircle=nil;break;end end break;end end end if v29.FOVCircle then local v368=0 + 0 ;while true do if (v368==1) then v29.FOVCircle=nil;break;end if (0==v368) then v29.FOVCircle.Visible=false;v29.FOVCircle:Remove();v368=1 -0 ;end end end v35();end v11.InputBegan:Connect(function(v209,v210) local v211=304 -(300 + 4) ;local v212;local v213;local v214;local v215;local v216;while true do if (v211==(1 + 0)) then local v404=0 -0 ;while true do if (v404==(362 -(112 + 250))) then v213=v212.RealSilentAim_EnabledKey;if (v213 and ((v209.KeyCode==v213) or (v209.UserInputType==v213))) then local v566=0 + 0 ;local v567;while true do if (v566==(0 -0)) then v567=0 + 0 ;while true do if (v567==0) then v16.SetRealSilentAimEnabled( not v212.RealSilentAim_Enabled);return;end end break;end end end v404=1 + 0 ;end if (v404==(1 + 0)) then v214=v212.HitboxExpander_EnabledKey;v211=1 + 1 ;break;end end end if (v211==(0 + 0)) then if v210 then return;end v212=v16.Config;if  not v212 then return;end v211=1;end if (v211==(1416 -(1001 + 413))) then if (v214 and ((v209.KeyCode==v214) or (v209.UserInputType==v214))) then v16.SetHitboxExpanderEnabled( not v212.HitboxExpander_Enabled);return;end if  not v212.Aimbot_Enabled then return;end v215=v212.Aimbot_EnabledKey;v211=6 -3 ;end if (v211==3) then v216=(v209.KeyCode==v215) or (v209.UserInputType==v215) ;if  not v216 then return;end if v212.Aimbot_ToggleMode then v16.Aiming= not v16.Aiming;else v16.Aiming=true;end break;end end end);v11.InputEnded:Connect(function(v217,v218) local v219=882 -(244 + 638) ;local v220;local v221;local v222;while true do if (v219==(695 -(627 + 66))) then v221=v220.Aimbot_EnabledKey;v222=(v217.KeyCode==v221) or (v217.UserInputType==v221) ;v219=8 -5 ;end if (v219==(605 -(512 + 90))) then if  not v222 then return;end v16.Aiming=false;break;end if (v219==(1906 -(1665 + 241))) then if v218 then return;end v220=v16.Config;v219=718 -(373 + 344) ;end if (v219==1) then if ( not v220 or  not v220.Aimbot_Enabled) then return;end if v220.Aimbot_ToggleMode then return;end v219=2;end end end);v16.SetupFullAuto=function(v223) local v224=0 + 0 ;local v225;while true do if (v224==(0 + 0)) then if (v16.ModifiedTools[v223] or  not v223:FindFirstChild(v7("\16\78\209\26\131\68\87\39\79","\62\87\59\191\73\224\54"))) then return;end v225=pcall(function() local v464=0;local v465;while true do if (v464==(0 -0)) then v465=getconnections(v223.Activated);for v568,v569 in ipairs(v465) do local v570=0;local v571;while true do if (v570==(0 -0)) then v571=v569.Function;if v571 then local v602=0;local v603;while true do if (v602==(1099 -(35 + 1064))) then v603=debug.getinfo(v571);for v620=1,v603.nups or (0 + 0)  do local v621=0 -0 ;local v622;while true do if ((0 + 0)==v621) then v622=debug.getupvalue(v571,v620);if ((type(v622)==v7("\233\23\247\203\226\16","\169\135\98\154")) and (v622>(1236 -(298 + 938))) and (v622<0.5)) then debug.setupvalue(v571,v620,1259 -(233 + 1026) );end break;end end end break;end end end break;end end end break;end end end);v224=1667 -(636 + 1030) ;end if (v224==(1 + 0)) then if v225 then v16.ModifiedTools[v223]=true;end break;end end end;v16.FrameTeleportActivate=function(v226,v227) local v228=0 + 0 ;local v229;local v230;local v231;local v232;local v233;local v234;local v235;local v236;local v237;local v238;local v239;local v240;while true do if (v228==(0 + 0)) then v229=v16.Config;v230=v16.Targeting;v231=v16.Visuals;if ( not v229 or  not v230 or  not v231) then local v495=0 + 0 ;while true do if (v495==(221 -(55 + 166))) then v226:Activate();return;end end end v228=1;end if (v228==5) then v234.Velocity=Vector3.new(0,0 + 0 ,0 + 0 );v15.CFrame=CFrame.new(v240 + Vector3.new(0,3.5 -2 ,0) ,v232.Position);v226:Activate();if  not v227 then v9.Heartbeat:Wait();elseif v229.OneFrameDelay then v9.Heartbeat:Wait();end v228=6;end if (v228==(301 -(36 + 261))) then local v415=0 -0 ;while true do if (v415==(1368 -(34 + 1334))) then v238=v15.CFrame;v239=v236.CFrame;v415=1 + 0 ;end if (v415==1) then v240=v239.Position + (v239.LookVector * (2 + 0)) + Vector3.new(0,1283.5 -(1035 + 248) ,21 -(20 + 1) ) ;v234.CFrame=CFrame.new(v240,v239.Position);v415=2 + 0 ;end if (v415==2) then v228=324 -(134 + 185) ;break;end end end if (v228==6) then v234.CFrame=v237;v234.Velocity=Vector3.new(1133 -(549 + 584) ,685 -(314 + 371) ,0 -0 );v15.CFrame=v238;v231.PlayHitmarker();break;end if (v228==2) then if  not v233 then v226:Activate();return;end v234=v233:FindFirstChild(v7("\227\98\41\85\243\60\193\207\69\43\91\233\3\201\217\99","\168\171\23\68\52\157\83"));if  not v234 then local v496=0;while true do if ((968 -(478 + 490))==v496) then v226:Activate();return;end end end v235=v232.Parent;v228=2 + 1 ;end if (v228==3) then if  not v235 then local v497=0;while true do if (v497==(1172 -(786 + 386))) then local v572=0 -0 ;while true do if (v572==(1379 -(1055 + 324))) then local v593=1340 -(1093 + 247) ;while true do if ((0 + 0)==v593) then v226:Activate();return;end end end end end end end v236=v235:FindFirstChild(v7("\220\100\248\172\43\34\142\240\67\250\162\49\29\134\230\101","\231\148\17\149\205\69\77"));if  not v236 then local v498=0 + 0 ;while true do if (v498==0) then v226:Activate();return;end end end v237=v234.CFrame;v228=4;end if ((3 -2)==v228) then if  not v229.FrameTP then v226:Activate();return;end v232=v230.GetTarget();if  not v232 then v226:Activate();return;end v233=v14.Character;v228=6 -4 ;end end end;v16.Reset=function() v16.ModifiedTools={};end;local function v58(v242) local v243=0 -0 ;local v244;while true do if (v243==1) then if (v244 and v244:FindFirstChild(v7("\208\230\50\225\244\225\53\194\227","\178\151\147\92"))) then return true,v244;end return false,nil;end if (v243==(0 -0)) then if  not v242 then return false,nil;end v244=v242:FindFirstChildOfClass(v7("\180\168\200\247","\159\224\199\167\155\55"));v243=1 + 0 ;end end end local function v59() local v245={};for v330,v331 in pairs(v8:GetPlayers()) do if ((v331~=v14) and v331.Character) then local v422,v423=v58(v331.Character);if v422 then table.insert(v245,{[v7("\188\241\77\43\23\94","\26\236\157\44\82\114\44")]=v331,[v7("\9\38\212\73\43\45\193\94\56","\59\74\78\181")]=v331.Character,[v7("\17\222\85\86","\211\69\177\58\58")]=v423,[v7("\159\240\116\244\231\196\190\225","\171\215\133\25\149\137")]=v331.Character:FindFirstChildOfClass(v7("\201\221\63\251\225\63\245\70","\34\129\168\82\154\143\80\156")),[v7("\183\189\60\31\120\79\155\145","\233\229\210\83\107\40\46")]=v331.Character:FindFirstChild(v7("\233\87\63\215\11\206\75\54\228\10\206\86\2\215\23\213","\101\161\34\82\182")),[v7("\192\8\88\250","\78\136\109\57\158\187\130\226")]=v331.Character:FindFirstChild(v7("\22\58\248\245","\145\94\95\153"))});end end end return v245;end local function v60(v246,v247) local v248=0 -0 ;local v249;local v250;local v251;local v252;while true do if (v248==(3 -2)) then v251=RaycastParams.new();v251.FilterDescendantsInstances={v14.Character};v248=2;end if (3==v248) then return v252==nil ;end if (v248==(0 -0)) then local v425=688 -(364 + 324) ;while true do if (1==v425) then v248=2 -1 ;break;end if (v425==(0 -0)) then v249=(v247-v246).Unit;v250=(v247-v246).Magnitude;v425=1 + 0 ;end end end if (v248==(8 -6)) then v251.FilterType=Enum.RaycastFilterType.Blacklist;v252=v10:Raycast(v246,v249 * v250 ,v251);v248=4 -1 ;end end end local function v61() local v253=0;local v254;local v255;local v256;local v257;local v258;local v259;local v260;local v261;while true do if (1==v253) then if ( not v255 or  not v256) then return nil;end v257=v255.Position;v258=v59();v259=nil;v253=5 -3 ;end if ((1270 -(1249 + 19))==v253) then v260= -(1 + 0);v261=(v16.Config and v16.Config.Karma_KillDistance) or 500 ;for v466,v467 in pairs(v258) do if (v467.RootPart and v467.Humanoid and (v467.Humanoid.Health>0)) then local v534=0;local v535;local v536;local v537;while true do if ((0 -0)==v534) then v535=1086 -(686 + 400) ;v536=nil;v534=1;end if (v534==(1 + 0)) then v537=nil;while true do if (v535==(229 -(73 + 156))) then v536=v467.RootPart.Position;v537=(v536-v257).Magnitude;v535=1;end if (v535==(1 + 0)) then if (v537<=v261) then local v605=811 -(721 + 90) ;local v606;local v607;local v608;local v609;while true do if (v605==2) then v609=v607:Dot(v608);if (v609>(0.5 + 0)) then v606=v606 + 30 ;end v605=9 -6 ;end if ((471 -(224 + 246))==v605) then v607=v467.RootPart.CFrame.LookVector;v608=(v257-v536).Unit;v605=2;end if (v605==(0 -0)) then v606=0;if (v467.Head and v60(v467.Head.Position,v256.Position)) then v606=v606 + 50 ;end v605=1;end if (v605==(5 -2)) then v606=v606 + (100 -math.min(v537,19 + 81 )) ;if (v606>v260) then local v626=0 + 0 ;local v627;while true do if (v626==0) then v627=0;while true do if (v627==(0 + 0)) then v260=v606;v259=v467;break;end end break;end end end break;end end end break;end end break;end end end end return v259;end if (v253==(0 -0)) then v254=v14.Character;if  not v254 then return nil;end v255=v254:FindFirstChild(v7("\213\216\25\212\64\184\244\201\38\218\65\163\205\204\6\193","\215\157\173\116\181\46"));v256=v254:FindFirstChild(v7("\29\177\138\246","\186\85\212\235\146"));v253=1;end end end local function v62() local v262={};local v263=v14.Character;local v264=v14:FindFirstChild(v7("\224\128\21\245\41\239\91\201","\56\162\225\118\158\89\142"));local v265=(v16.Config and v16.Config.Karma_MaxGuns) or (33 -23) ;if v263 then local v369=513 -(203 + 310) ;local v370;while true do if (0==v369) then v370=v263:FindFirstChildOfClass(v7("\104\10\207\163","\184\60\101\160\207\66"));if (v370 and v370:FindFirstChild(v7("\22\151\114\143\50\144\117\172\37","\220\81\226\28"))) then table.insert(v262,v370);end break;end end end if v264 then for v430,v431 in pairs(v264:GetChildren()) do if ( #v262>=v265) then break;end if (v431:IsA(v7("\39\218\141\247","\167\115\181\226\155\138")) and v431:FindFirstChild(v7("\197\55\233\111\120\99\207\242\54","\166\130\66\135\60\27\17"))) then table.insert(v262,v431);end end end return v262;end local function v63(v266) local v267=1993 -(1238 + 755) ;local v268;local v269;while true do if (v267==(1 + 0)) then v269=v268:FindFirstChildOfClass(v7("\112\69\193\121","\80\36\42\174\21"));if v269 then v269.Parent=v14.Backpack;end v267=1536 -(709 + 825) ;end if (v267==(0 -0)) then v268=v14.Character;if  not v268 then return false;end v267=1;end if (v267==2) then local v433=0 -0 ;local v434;while true do if (v433==0) then v434=864 -(196 + 668) ;while true do if (v434==(0 -0)) then v266.Parent=v268;return true;end end break;end end end end end local function v64() local v270=0 -0 ;local v271;local v272;local v273;while true do if (v270==1) then v273=nil;while true do if (v271==(833 -(171 + 662))) then v272=v14.Character;if  not v272 then return;end v271=1;end if (v271==(94 -(4 + 89))) then v273=v272:FindFirstChildOfClass(v7("\122\31\56\118","\26\46\112\87"));if v273 then v273.Parent=v14.Backpack;end break;end end break;end if (v270==(0 -0)) then v271=0;v272=nil;v270=1 + 0 ;end end end local function v65(v274) local v275=0 -0 ;local v276;while true do if (v275==1) then local v435=0 + 0 ;while true do if (v435==(1486 -(35 + 1451))) then if  not v276 then return true;end return v276.Health<=0 ;end end end if (v275==0) then if  not v274.Character then return true;end v276=v274.Character:FindFirstChildOfClass(v7("\145\54\166\117\177\176\76\176","\212\217\67\203\20\223\223\37"));v275=1454 -(28 + 1425) ;end end end local function v66(v277,v278,v279,v280) local v281=1993 -(941 + 1052) ;local v282;local v283;local v284;while true do if (v281==(2 + 0)) then v279.CFrame=CFrame.new(v284.Position,v282.Position);v9.RenderStepped:Wait();v281=1517 -(822 + 692) ;end if (v281==(0 -0)) then v282=v277.Character and v277.Character:FindFirstChild(v7("\146\136\169\214","\178\218\237\200")) ;v283=v277.Character and v277.Character:FindFirstChild(v7("\158\160\235\209\184\186\239\212\132\186\233\196\134\180\244\196","\176\214\213\134")) ;v281=1;end if (v281==(2 + 1)) then v9.RenderStepped:Wait();for v468=298 -(45 + 252) ,v280 do local v469=0 + 0 ;while true do if (v469==(0 + 0)) then if  not v282.Parent then return true;end if (v278 and v278.Parent) then local v586=0 -0 ;while true do if (v586==(433 -(114 + 319))) then v279.CFrame=CFrame.new(v279.Position,v282.Position);v278:Activate();break;end end end v469=1 -0 ;end if (v469==1) then v9.RenderStepped:Wait();break;end end end v281=4 -0 ;end if (v281==(1 + 0)) then if ( not v282 or  not v283) then return false;end v284=v283.CFrame * CFrame.new(0,0, -3) ;v281=2;end if (v281==(5 -1)) then return v65(v277);end end end local function v67() v12:SendKeyEvent(true,Enum.KeyCode.R,false,game);task.wait(0.05);v12:SendKeyEvent(false,Enum.KeyCode.R,false,game);end local function v68() local v285=nil;if (v16.Config and v16.Config.AutoArmorPos) then v285=v16.Config.AutoArmorPos;else v285=Vector3.new( -934.12, -(52.379999999999995 -27),2534.02 -(556 + 1407) );end local v286=v14.Character;if  not v286 then return;end local v287=v286:FindFirstChild(v7("\220\184\187\213\166\89\80\240\159\185\219\188\102\88\230\185","\57\148\205\214\180\200\54"));local v288=v286:FindFirstChildOfClass(v7("\58\232\56\53\120\29\244\49","\22\114\157\85\84"));if ( not v287 or  not v288) then return;end if (v288.Health<=0) then return;end local v289=v287.CFrame;v287.CFrame=CFrame.new(v285 + Vector3.new(0,1210 -(741 + 465) ,0) );v287.Velocity=Vector3.new(465 -(170 + 295) ,0 + 0 ,0 + 0 );v287.AssemblyLinearVelocity=Vector3.new(0 -0 ,0,0 + 0 );task.wait(0.5 + 0 );for v332,v333 in pairs(v10:GetDescendants()) do if  not v333.Parent then continue;end local v334=nil;if v333.Parent:IsA(v7("\230\202\0\193\109\247\186\208","\200\164\171\115\164\61\150")) then v334=v333.Parent.Position;elseif (v333.Parent:IsA(v7("\147\251\7\64\143","\227\222\148\99\37")) and v333.Parent:FindFirstChild(v7("\27\71\95\247\247\60\91\86\196\246\60\70\98\247\235\39","\153\83\50\50\150"))) then v334=v333.Parent.HumanoidRootPart.Position;elseif (v333.Parent:IsA(v7("\112\121\119\25\127","\45\61\22\19\124\19\203")) and v333.Parent:FindFirstChild(v7("\233\23\12\241","\217\161\114\109\149\98\16"))) then v334=v333.Parent.Head.Position;end if  not v334 then continue;end if ((v334-v285).Magnitude>25) then continue;end if v333:IsA(v7("\34\50\55\100\181\121\27\52\33\76\174\123\31\48\44","\20\114\64\88\28\220")) then pcall(function() if fireproximityprompt then fireproximityprompt(v333);else local v539=0 + 0 ;local v540;while true do if ((1230 -(957 + 273))==v539) then v540=0 + 0 ;while true do if (v540==(0 + 0)) then v333:InputHoldBegin();task.wait(v333.HoldDuration + 0.1 );v540=3 -2 ;end if (v540==1) then v333:InputHoldEnd();break;end end break;end end end end);break;elseif v333:IsA(v7("\18\13\219\183\243\244\184\37\4\209\160\247\194","\221\81\97\178\212\152\176")) then pcall(function() if fireclickdetector then fireclickdetector(v333);else v333.MouseClick:Fire();end end);break;end end task.wait(0.3);v287.CFrame=v289;v287.Velocity=Vector3.new(0,0 -0 ,0);end local function v69(v293) local v294=v14.Character;if  not v294 then return;end local v295=v294:FindFirstChild(v7("\229\242\16\250\20\194\238\25\201\21\194\243\45\250\8\217","\122\173\135\125\155"));if  not v295 then return;end local v296=v295.CFrame;local v297=v62();if ( #v297==0) then return;end for v335,v336 in pairs(v297) do if v65(v293) then break;end v63(v336);v16.SetupFullAuto(v336);task.wait(0.1 -0 );local v337=v66(v293,v336,v295,99 -79 );if v337 then break;end end for v338,v339 in pairs(v62()) do local v340=0;while true do if (v340==0) then v63(v339);task.wait(0.1);v340=1781 -(389 + 1391) ;end if (v340==(1 + 0)) then v67();task.wait(0.2 + 0 );break;end end end v64();v295.CFrame=v296;task.spawn(function() v68();end);end local function v70(v299) local v300=0 -0 ;local v301;while true do if (0==v300) then if ( not v16.Config or  not v16.Config.Karma_Enabled) then return;end if v16.KarmaTriggered then return;end v300=952 -(783 + 168) ;end if (v300==(3 -2)) then v301=v16.KarmaLastHealth-v299 ;if (v301>(0 + 0)) then v16.KarmaTriggered=true;task.delay(0.05,function() local v541=v61();if v541 then v69(v541);end v16.KarmaTriggered=false;end);end v300=313 -(309 + 2) ;end if (v300==(5 -3)) then v16.KarmaLastHealth=v299;break;end end end local function v71(v302) local v303=0;local v304;while true do if (v303==(1212 -(1090 + 122))) then v304=v302:WaitForChild(v7("\172\212\13\184\49\62\193\128","\168\228\161\96\217\95\81"),2 + 3 );if  not v304 then return;end v303=3 -2 ;end if (1==v303) then v16.KarmaLastHealth=v304.Health;v16.KarmaTriggered=false;v303=2 + 0 ;end if (v303==(1120 -(628 + 490))) then v304.HealthChanged:Connect(v70);break;end end end v16.SetKarmaEnabled=function(v305) if v16.Config then local v372=0 + 0 ;while true do if (v372==(2 -1)) then if (v305 and v14.Character) then local v559=0 -0 ;local v560;while true do if (v559==0) then v560=v14.Character:FindFirstChildOfClass(v7("\243\196\35\93\33\88\210\213","\55\187\177\78\60\79"));if v560 then v16.KarmaLastHealth=v560.Health;end break;end end end break;end if (v372==(774 -(431 + 343))) then v16.Config.Karma_Enabled=v305;v16.KarmaTriggered=false;v372=1;end end end end;v16.Init=function() local v306=0 -0 ;while true do if (v306==1) then if v14.Character then v71(v14.Character);end v14.CharacterAdded:Connect(v71);break;end if (v306==(0 -0)) then v53();v26();v306=1 + 0 ;end end end;v16.Cleanup=function() v54();end;return v16;
+local LocalPlayer = Players.LocalPlayer
+local Camera = Workspace.CurrentCamera
+
+local Combat = {
+    ModifiedTools = {},
+    Config = nil,
+    Targeting = nil,
+    Visuals = nil,
+
+    -- Aimbot state
+    AimbotConnection = nil,
+    FOVCircle = nil,
+    TargetCircle = nil,
+    Aiming = false,
+    CurrentTarget = nil,
+    StickyLostTime = 0,
+
+    -- Karma state
+    KarmaTriggered = false,
+    KarmaLastHealth = 100,
+}
+
+function Combat.SetConfig(config)
+    Combat.Config = config
+end
+
+function Combat.SetTargeting(targeting)
+    Combat.Targeting = targeting
+end
+
+function Combat.SetVisuals(visuals)
+    Combat.Visuals = visuals
+end
+
+-- ═════════════════════════════════════════════════════════════════════════════
+-- REAL SILENT AIM — GunHandlerModule.GetAim Hook (LO's script)
+-- ═════════════════════════════════════════════════════════════════════════════
+
+local RealSilentAim = {
+    Enabled = false,
+    FOV = 130,
+    TargetPart = "Head",
+    FOVCircle = nil,
+    GunHandlerHooked = false,
+    OriginalGetAim = nil,
+}
+
+local function IsKnocked(plr)
+    local char = plr and plr.Character
+    if not char then return false end
+    local be = char:FindFirstChild("BodyEffects")
+    if not be then return false end
+    local ko = be:FindFirstChild("K.O") or be:FindFirstChild("Knocked")
+    return ko and ko.Value == true
+end
+
+local function IsGrabbed(plr)
+    local char = plr and plr.Character
+    if not char then return false end
+    local be = char:FindFirstChild("BodyEffects")
+    if not be then return false end
+    local g = be:FindFirstChild("Grabbed")
+    return g and g.Value == true
+end
+
+local function IsAlive(plr)
+    local char = plr and plr.Character
+    if not char then return false end
+    local hum = char:FindFirstChildOfClass("Humanoid")
+    return hum and hum.Health > 0
+end
+
+local function GetRealSilentAimTargetPart(plr)
+    local char = plr.Character
+    if not char then return nil end
+    local partName = Combat.Config.RealSilentAim_TargetPart or "Head"
+    if partName == "Head" then
+        return char:FindFirstChild("Head")
+    else
+        return char:FindFirstChild("HumanoidRootPart") or char:FindFirstChild("Torso") or char:FindFirstChild("UpperTorso")
+    end
+end
+
+local function GetClosestPlayerInRealSilentAimFOV()
+    local Config = Combat.Config
+    if not Config then return nil end
+    
+    local fov = Config.RealSilentAim_FOV or 130
+    local closest = nil
+    local smallestDist = fov + 1
+    local mousePos = UserInputService:GetMouseLocation()
+
+    for _, player in ipairs(Players:GetPlayers()) do
+        if player == LocalPlayer then continue end
+        
+        local teamCheck = Config.RealSilentAim_TeamCheck
+        if teamCheck then
+            if LocalPlayer.Team and player.Team and LocalPlayer.Team == player.Team then continue end
+            if LocalPlayer.TeamColor and player.TeamColor and LocalPlayer.TeamColor == player.TeamColor then continue end
+        end
+        
+        if not IsAlive(player) or IsKnocked(player) or IsGrabbed(player) then continue end
+
+        local part = GetRealSilentAimTargetPart(player)
+        if not part then continue end
+
+        -- Wall check
+        if Config.RealSilentAim_WallCheck then
+            local origin = Camera.CFrame.Position
+            local direction = part.Position - origin
+            local raycastParams = RaycastParams.new()
+            raycastParams.FilterDescendantsInstances = {LocalPlayer.Character}
+            raycastParams.FilterType = Enum.RaycastFilterType.Blacklist
+            local result = Workspace:Raycast(origin, direction, raycastParams)
+            if result then
+                local hitModel = result.Instance:FindFirstAncestorOfClass("Model")
+                if not hitModel or hitModel ~= player.Character then continue end
+            end
+        end
+
+        local screenPos, onScreen = Camera:WorldToViewportPoint(part.Position)
+        if not onScreen then continue end
+
+        local distance = (Vector2.new(screenPos.X, screenPos.Y) - mousePos).Magnitude
+        if distance < smallestDist and distance <= fov then
+            smallestDist = distance
+            closest = part
+        end
+    end
+
+    return closest
+end
+
+local function HookRealSilentAim()
+    if RealSilentAim.GunHandlerHooked then return end
+    
+    local GunHandler = ReplicatedStorage:FindFirstChild("Modules") and
+                       ReplicatedStorage.Modules:FindFirstChild("GunHandler")
+    
+    if not GunHandler then return end
+    
+    local success, GunHandlerModule = pcall(require, GunHandler)
+    if not success or not GunHandlerModule then return end
+    if not GunHandlerModule.GetAim then return end
+    
+    RealSilentAim.OriginalGetAim = GunHandlerModule.GetAim
+    
+    GunHandlerModule.GetAim = function(muzzlePos)
+        local Config = Combat.Config
+        if Config and Config.RealSilentAim_Enabled then
+            -- Hit chance check
+            local chance = Config.RealSilentAim_HitChance or 100
+            if math.random(1, 100) <= chance then
+                local target = GetClosestPlayerInRealSilentAimFOV()
+                if target then
+                    return (target.Position - muzzlePos).Unit
+                end
+            end
+        end
+        return RealSilentAim.OriginalGetAim(muzzlePos)
+    end
+    
+    RealSilentAim.GunHandlerHooked = true
+end
+
+local function UpdateRealSilentAimFOV()
+    local Config = Combat.Config
+    if not Config then return end
+    
+    if Config.RealSilentAim_Enabled and Config.RealSilentAim_ShowFOV then
+        if not RealSilentAim.FOVCircle then
+            RealSilentAim.FOVCircle = Drawing.new("Circle")
+            RealSilentAim.FOVCircle.Thickness = 1.5
+            RealSilentAim.FOVCircle.NumSides = 120
+            RealSilentAim.FOVCircle.Filled = false
+            RealSilentAim.FOVCircle.ZIndex = 999
+            RealSilentAim.FOVCircle.Transparency = 0.6
+            RealSilentAim.FOVCircle.Color = Color3.fromRGB(0, 200, 255)
+        end
+        local mousePos = UserInputService:GetMouseLocation()
+        RealSilentAim.FOVCircle.Position = mousePos
+        RealSilentAim.FOVCircle.Radius = Config.RealSilentAim_FOV or 130
+        RealSilentAim.FOVCircle.Visible = true
+    else
+        if RealSilentAim.FOVCircle then
+            RealSilentAim.FOVCircle.Visible = false
+        end
+    end
+end
+
+function Combat.SetRealSilentAimEnabled(enabled)
+    if Combat.Config then
+        Combat.Config.RealSilentAim_Enabled = enabled
+        if enabled then
+            HookRealSilentAim()
+        end
+    end
+end
+
+-- ═════════════════════════════════════════════════════════════════════════════
+-- HITBOX EXPANDER (was the old "Silent Aim")
+-- ═════════════════════════════════════════════════════════════════════════════
+
+local HitboxExpander = {
+    OriginalSizes = {},
+    CurrentTarget = nil,
+    FOVCircle = nil,
+}
+
+local function HitboxIsTeammate(player)
+    if player == LocalPlayer then return true end
+    if LocalPlayer.Team and player.Team and LocalPlayer.Team == player.Team then return true end
+    if LocalPlayer.TeamColor and player.TeamColor and LocalPlayer.TeamColor == player.TeamColor then return true end
+    return false
+end
+
+local function HitboxCanSee(targetPos, targetCharacter)
+    local Config = Combat.Config
+    if not Config.HitboxExpander_WallCheck then return true end
+    local origin = Camera.CFrame.Position
+    local direction = targetPos - origin
+    local raycastParams = RaycastParams.new()
+    raycastParams.FilterDescendantsInstances = {LocalPlayer.Character}
+    raycastParams.FilterType = Enum.RaycastFilterType.Blacklist
+    local result = Workspace:Raycast(origin, direction, raycastParams)
+    if not result then return true end
+    local hitModel = result.Instance:FindFirstAncestorOfClass("Model")
+    return hitModel and hitModel == targetCharacter
+end
+
+local function HitboxGetTarget()
+    local Config = Combat.Config
+    if not Config.HitboxExpander_Enabled then return nil end
+
+    local mousePos = UserInputService:GetMouseLocation()
+    local closestPlayer = nil
+    local closestDist = Config.HitboxExpander_FOV or 120
+
+    for _, player in pairs(Players:GetPlayers()) do
+        if player == LocalPlayer then continue end
+        if Config.HitboxExpander_TeamCheck and HitboxIsTeammate(player) then continue end
+
+        local char = player.Character
+        if not char then continue end
+
+        local humanoid = char:FindFirstChildOfClass("Humanoid")
+        if not humanoid or humanoid.Health <= 0 then continue end
+
+        local targetPartName = Config.HitboxExpander_TargetPart or "Head"
+        local part = char:FindFirstChild(targetPartName) or char:FindFirstChild("Head") or char:FindFirstChild("HumanoidRootPart")
+        if not part then continue end
+
+        local screenPos, onScreen = Camera:WorldToViewportPoint(part.Position)
+        if not onScreen then continue end
+
+        local dist = (Vector2.new(screenPos.X, screenPos.Y) - mousePos).Magnitude
+        if dist > closestDist then continue end
+
+        if not HitboxCanSee(part.Position, char) then continue end
+
+        closestPlayer = player
+        closestDist = dist
+    end
+
+    return closestPlayer
+end
+
+local function HitboxExpandPart(player, part)
+    if not part then return end
+    local Config = Combat.Config
+
+    if not HitboxExpander.OriginalSizes[part] then
+        HitboxExpander.OriginalSizes[part] = {
+            size = part.Size,
+            transparency = part.Transparency,
+            canCollide = part.CanCollide,
+            massless = part.Massless,
+        }
+    end
+
+    local chance = Config.HitboxExpander_HitChance or 100
+    if math.random(1, 100) > chance then
+        HitboxRestorePart(part)
+        return
+    end
+
+    local screenPos, onScreen = Camera:WorldToViewportPoint(part.Position)
+    if not onScreen then return end
+
+    local mousePos = UserInputService:GetMouseLocation()
+    local dist = (Vector2.new(screenPos.X, screenPos.Y) - mousePos).Magnitude
+
+    local baseSize = 10
+    local maxSize = 50
+    local expansionFactor = 1 - math.clamp(dist / (Config.HitboxExpander_FOV or 120), 0, 1)
+    local targetSize = baseSize + (maxSize - baseSize) * expansionFactor
+
+    part.Size = Vector3.new(targetSize, targetSize, targetSize)
+    part.Transparency = 1
+    part.CanCollide = false
+    part.Massless = true
+end
+
+local function HitboxRestorePart(part)
+    local original = HitboxExpander.OriginalSizes[part]
+    if not original then return end
+    part.Size = original.size
+    part.Transparency = original.transparency
+    part.CanCollide = original.canCollide
+    part.Massless = original.massless
+    HitboxExpander.OriginalSizes[part] = nil
+end
+
+local function HitboxRestoreAll()
+    for part, _ in pairs(HitboxExpander.OriginalSizes) do
+        if part and part.Parent then
+            HitboxRestorePart(part)
+        end
+    end
+    HitboxExpander.OriginalSizes = {}
+    HitboxExpander.CurrentTarget = nil
+end
+
+local function HitboxUpdate()
+    local Config = Combat.Config
+    if not Config or not Config.HitboxExpander_Enabled then
+        HitboxRestoreAll()
+        if HitboxExpander.FOVCircle then
+            HitboxExpander.FOVCircle.Visible = false
+        end
+        return
+    end
+
+    if Config.HitboxExpander_ShowFOV then
+        if not HitboxExpander.FOVCircle then
+            HitboxExpander.FOVCircle = Drawing.new("Circle")
+            HitboxExpander.FOVCircle.Thickness = 1.5
+            HitboxExpander.FOVCircle.Color = Color3.fromRGB(255, 100, 100)
+            HitboxExpander.FOVCircle.Transparency = 0.5
+            HitboxExpander.FOVCircle.NumSides = 64
+            HitboxExpander.FOVCircle.Filled = false
+        end
+        local mousePos = UserInputService:GetMouseLocation()
+        HitboxExpander.FOVCircle.Visible = true
+        HitboxExpander.FOVCircle.Position = mousePos
+        HitboxExpander.FOVCircle.Radius = Config.HitboxExpander_FOV or 120
+    else
+        if HitboxExpander.FOVCircle then
+            HitboxExpander.FOVCircle.Visible = false
+        end
+    end
+
+    local newTarget = HitboxGetTarget()
+
+    if HitboxExpander.CurrentTarget and HitboxExpander.CurrentTarget ~= newTarget then
+        local oldChar = HitboxExpander.CurrentTarget.Character
+        if oldChar then
+            local oldPart = oldChar:FindFirstChild(Config.HitboxExpander_TargetPart or "Head")
+            if oldPart then
+                HitboxRestorePart(oldPart)
+            end
+        end
+    end
+
+    HitboxExpander.CurrentTarget = newTarget
+
+    if newTarget then
+        local char = newTarget.Character
+        if char then
+            local humanoid = char:FindFirstChildOfClass("Humanoid")
+            if humanoid and humanoid.Health > 0 then
+                local part = char:FindFirstChild(Config.HitboxExpander_TargetPart or "Head") or char:FindFirstChild("HumanoidRootPart")
+                if part then
+                    HitboxExpandPart(newTarget, part)
+                end
+            else
+                HitboxRestoreAll()
+            end
+        else
+            HitboxRestoreAll()
+        end
+    end
+end
+
+function Combat.SetHitboxExpanderEnabled(enabled)
+    if Combat.Config then
+        Combat.Config.HitboxExpander_Enabled = enabled
+        if not enabled then
+            HitboxRestoreAll()
+        end
+    end
+end
+
+-- ═════════════════════════════════════════════════════════════════════════════
+-- AIMBOT (existing, unchanged)
+-- ═════════════════════════════════════════════════════════════════════════════
+
+local function GetCharacter(player)
+    return player and player.Character
+end
+
+local function GetHumanoid(character)
+    return character and character:FindFirstChildOfClass("Humanoid")
+end
+
+local function IsAlive(character)
+    local hum = GetHumanoid(character)
+    return hum and hum.Health > 0
+end
+
+local function IsTeammate(player)
+    if player == LocalPlayer then return true end
+    if LocalPlayer.Team and player.Team and LocalPlayer.Team == player.Team then return true end
+    if LocalPlayer.TeamColor and player.TeamColor and LocalPlayer.TeamColor == player.TeamColor then return true end
+    return false
+end
+
+local function GetDistance(position)
+    return (position - Camera.CFrame.Position).Magnitude
+end
+
+local function GetTargetPart(character, partName)
+    return character:FindFirstChild(partName)
+        or character:FindFirstChild("Head")
+        or character:FindFirstChild("HumanoidRootPart")
+end
+
+local function GetFOVRadiusPixels()
+    local Config = Combat.Config
+    local fovAngle = math.rad((Config.Aimbot_FOV or 60) / 2)
+    local camFov = math.rad(Camera.FieldOfView / 2)
+    if camFov <= 0 then return 9999 end
+    local radius = math.tan(fovAngle) / math.tan(camFov) * (Camera.ViewportSize.Y / 2)
+    return math.min(radius, Camera.ViewportSize.Y * 0.8)
+end
+
+local function IsInFOV(targetPos)
+    local screenPos, onScreen = Camera:WorldToViewportPoint(targetPos)
+    if not onScreen then return false, math.huge end
+    local center = Vector2.new(Camera.ViewportSize.X / 2, Camera.ViewportSize.Y / 2)
+    local distFromCenter = (Vector2.new(screenPos.X, screenPos.Y) - center).Magnitude
+    return distFromCenter <= GetFOVRadiusPixels(), distFromCenter
+end
+
+local function CanSee(targetPos, targetCharacter)
+    local Config = Combat.Config
+    if not Config.Aimbot_WallCheck then return true end
+    local origin = Camera.CFrame.Position
+    local direction = targetPos - origin
+    local raycastParams = RaycastParams.new()
+    raycastParams.FilterDescendantsInstances = {LocalPlayer.Character}
+    raycastParams.FilterType = Enum.RaycastFilterType.Blacklist
+    local result = Workspace:Raycast(origin, direction, raycastParams)
+    if not result then return true end
+    local hitModel = result.Instance:FindFirstAncestorOfClass("Model")
+    return hitModel and hitModel == targetCharacter
+end
+
+local function IsTargetValidSticky(target)
+    if not target then return false end
+    if not target.Player or not target.Character then return false end
+    if not IsAlive(target.Character) then return false end
+    local Config = Combat.Config
+    if Config.Aimbot_TeamCheck and IsTeammate(target.Player) then return false end
+    local part = target.Character:FindFirstChild(target.Part.Name)
+    if not part then return false end
+    return true
+end
+
+local function IsTargetValidStrict(target)
+    if not IsTargetValidSticky(target) then return false end
+    local part = target.Character:FindFirstChild(target.Part.Name)
+    if not part then return false end
+    local inFOV = IsInFOV(part.Position)
+    if not inFOV then return false end
+    if not CanSee(part.Position, target.Character) then return false end
+    return true
+end
+
+local function GetBestTarget()
+    local Config = Combat.Config
+    if not Config.Aimbot_Enabled then return nil end
+
+    if Config.Aimbot_StickyTarget and Combat.CurrentTarget and Combat.Aiming then
+        if IsTargetValidSticky(Combat.CurrentTarget) then
+            local part = Combat.CurrentTarget.Character:FindFirstChild(Combat.CurrentTarget.Part.Name)
+            if part then
+                Combat.StickyLostTime = 0
+                Combat.CurrentTarget.Part = part
+                Combat.CurrentTarget.Position = part.Position
+                return Combat.CurrentTarget
+            end
+        end
+        Combat.CurrentTarget = nil
+        Combat.StickyLostTime = 0
+    end
+
+    local bestTarget = nil
+    local bestScore = math.huge
+    local targetPartName = Config.Aimbot_TargetPart or "Head"
+    local priority = Config.Aimbot_Priority or "Closest to Mouse"
+
+    for _, player in pairs(Players:GetPlayers()) do
+        if player == LocalPlayer then continue end
+        if Config.Aimbot_TeamCheck and IsTeammate(player) then continue end
+
+        local character = GetCharacter(player)
+        if not character or not IsAlive(character) then continue end
+
+        local targetPart = GetTargetPart(character, targetPartName)
+        if not targetPart then continue end
+
+        local targetPos = targetPart.Position
+        local inFOV, fovDist = IsInFOV(targetPos)
+        if not inFOV then continue end
+
+        if not CanSee(targetPos, character) then continue end
+
+        local dist = GetDistance(targetPos)
+        local score = math.huge
+        local hum = GetHumanoid(character)
+
+        if priority == "Closest to Mouse" then
+            score = fovDist
+        elseif priority == "Closest to Player" then
+            score = dist
+        elseif priority == "Lowest HP" then
+            score = (hum and hum.Health or 100) + (fovDist * 0.1)
+        elseif priority == "Highest HP" then
+            score = -(hum and hum.Health or 100) + (fovDist * 0.1)
+        else
+            score = fovDist + (dist * 0.02)
+        end
+
+        if score < bestScore then
+            bestScore = score
+            bestTarget = {
+                Player = player,
+                Character = character,
+                Part = targetPart,
+                Position = targetPos,
+                Distance = dist,
+            }
+        end
+    end
+    return bestTarget
+end
+
+local function AimAt(target)
+    if not target or not target.Part then return end
+    local Config = Combat.Config
+    local smoothness = Config.Aimbot_Smoothness or 15
+    local aimPos = target.Part.Position
+    local targetCF = CFrame.new(Camera.CFrame.Position, aimPos)
+
+    if smoothness <= 0 then
+        Camera.CFrame = targetCF
+    else
+        local alpha = math.clamp(math.exp(-smoothness * 0.045), 0.002, 1)
+        Camera.CFrame = Camera.CFrame:Lerp(targetCF, alpha)
+    end
+end
+
+local function UpdateFOVCircle()
+    local Config = Combat.Config
+    if not Combat.FOVCircle then return end
+    if Config.Aimbot_Enabled and (Config.Aimbot_ShowFOV ~= false) then
+        local radius = GetFOVRadiusPixels()
+        Combat.FOVCircle.Visible = true
+        Combat.FOVCircle.Radius = radius
+        Combat.FOVCircle.Position = Vector2.new(Camera.ViewportSize.X / 2, Camera.ViewportSize.Y / 2)
+        Combat.FOVCircle.Color = Config.Aimbot_FOVColor or Color3.fromRGB(255, 105, 180)
+    else
+        Combat.FOVCircle.Visible = false
+    end
+end
+
+local function UpdateTargetCircle()
+    if not Combat.TargetCircle then return end
+    if Combat.CurrentTarget and Combat.CurrentTarget.Part then
+        local screenPos, onScreen = Camera:WorldToViewportPoint(Combat.CurrentTarget.Part.Position)
+        if onScreen then
+            Combat.TargetCircle.Visible = true
+            Combat.TargetCircle.Position = Vector2.new(screenPos.X, screenPos.Y)
+        else
+            Combat.TargetCircle.Visible = false
+        end
+    else
+        Combat.TargetCircle.Visible = false
+    end
+end
+
+local function OnAimbotRender()
+    local Config = Combat.Config
+
+    -- Update Real Silent Aim
+    UpdateRealSilentAimFOV()
+    
+    -- Update Hitbox Expander
+    HitboxUpdate()
+
+    if not Config.Aimbot_Enabled then
+        Combat.CurrentTarget = nil
+        Combat.StickyLostTime = 0
+        if Combat.FOVCircle then Combat.FOVCircle.Visible = false end
+        if Combat.TargetCircle then Combat.TargetCircle.Visible = false end
+        return
+    end
+
+    local target = GetBestTarget()
+    Combat.CurrentTarget = target
+
+    if target and Combat.Aiming then
+        AimAt(target)
+    end
+
+    UpdateFOVCircle()
+    UpdateTargetCircle()
+end
+
+local function StartAimbot()
+    if Combat.AimbotConnection then return end
+    Combat.FOVCircle = Drawing.new("Circle")
+    Combat.FOVCircle.Visible = false
+    Combat.FOVCircle.Thickness = 1.5
+    Combat.FOVCircle.Color = Combat.Config.Aimbot_FOVColor or Color3.fromRGB(255, 105, 180)
+    Combat.FOVCircle.Transparency = 0.5
+    Combat.FOVCircle.NumSides = 64
+    Combat.FOVCircle.Filled = false
+
+    Combat.TargetCircle = Drawing.new("Circle")
+    Combat.TargetCircle.Visible = false
+    Combat.TargetCircle.Thickness = 2
+    Combat.TargetCircle.Color = Color3.fromRGB(255, 0, 255)
+    Combat.TargetCircle.Transparency = 0.7
+    Combat.TargetCircle.NumSides = 32
+    Combat.TargetCircle.Filled = false
+    Combat.TargetCircle.Radius = 8
+
+    Combat.AimbotConnection = RunService.RenderStepped:Connect(OnAimbotRender)
+end
+
+local function StopAimbot()
+    Combat.Aiming = false
+    Combat.CurrentTarget = nil
+    Combat.StickyLostTime = 0
+    if Combat.AimbotConnection then
+        Combat.AimbotConnection:Disconnect()
+        Combat.AimbotConnection = nil
+    end
+    if Combat.FOVCircle then
+        Combat.FOVCircle.Visible = false
+        Combat.FOVCircle:Remove()
+        Combat.FOVCircle = nil
+    end
+    if Combat.TargetCircle then
+        Combat.TargetCircle.Visible = false
+        Combat.TargetCircle:Remove()
+        Combat.TargetCircle = nil
+    end
+    if RealSilentAim.FOVCircle then
+        RealSilentAim.FOVCircle.Visible = false
+        RealSilentAim.FOVCircle:Remove()
+        RealSilentAim.FOVCircle = nil
+    end
+    if HitboxExpander.FOVCircle then
+        HitboxExpander.FOVCircle.Visible = false
+        HitboxExpander.FOVCircle:Remove()
+        HitboxExpander.FOVCircle = nil
+    end
+    HitboxRestoreAll()
+end
+
+UserInputService.InputBegan:Connect(function(input, gp)
+    if gp then return end
+    local Config = Combat.Config
+    if not Config then return end
+    
+    -- Real Silent Aim toggle
+    local rsaKey = Config.RealSilentAim_EnabledKey
+    if rsaKey and (input.KeyCode == rsaKey or input.UserInputType == rsaKey) then
+        Combat.SetRealSilentAimEnabled(not Config.RealSilentAim_Enabled)
+        return
+    end
+    
+    -- Hitbox Expander toggle
+    local hbKey = Config.HitboxExpander_EnabledKey
+    if hbKey and (input.KeyCode == hbKey or input.UserInputType == hbKey) then
+        Combat.SetHitboxExpanderEnabled(not Config.HitboxExpander_Enabled)
+        return
+    end
+    
+    if not Config.Aimbot_Enabled then return end
+    local aimKey = Config.Aimbot_EnabledKey
+    local matched = (input.KeyCode == aimKey) or (input.UserInputType == aimKey)
+    if not matched then return end
+
+    if Config.Aimbot_ToggleMode then
+        Combat.Aiming = not Combat.Aiming
+    else
+        Combat.Aiming = true
+    end
+end)
+
+UserInputService.InputEnded:Connect(function(input, gp)
+    if gp then return end
+    local Config = Combat.Config
+    if not Config or not Config.Aimbot_Enabled then return end
+    if Config.Aimbot_ToggleMode then return end
+
+    local aimKey = Config.Aimbot_EnabledKey
+    local matched = (input.KeyCode == aimKey) or (input.UserInputType == aimKey)
+    if not matched then return end
+
+    Combat.Aiming = false
+end)
+
+-- ═════════════════════════════════════════════════════════════════════════════
+-- EXISTING COMBAT FEATURES (FrameTP, RapidFire, Karma — unchanged)
+-- ═════════════════════════════════════════════════════════════════════════════
+
+function Combat.SetupFullAuto(tool)
+    if Combat.ModifiedTools[tool] or not tool:FindFirstChild("GunScript") then return end
+    local success = pcall(function()
+        local connections = getconnections(tool.Activated)
+        for _, conn in ipairs(connections) do
+            local func = conn.Function
+            if func then
+                local info = debug.getinfo(func)
+                for i = 1, (info.nups or 0) do
+                    local val = debug.getupvalue(func, i)
+                    if type(val) == "number" and val > 0 and val < 0.5 then
+                        debug.setupvalue(func, i, 0)
+                    end
+                end
+            end
+        end
+    end)
+    if success then
+        Combat.ModifiedTools[tool] = true
+    end
+end
+
+function Combat.FrameTeleportActivate(tool, isRapidFire)
+    local Config = Combat.Config
+    local Targeting = Combat.Targeting
+    local Visuals = Combat.Visuals
+    if not Config or not Targeting or not Visuals then
+        tool:Activate()
+        return
+    end
+    if not Config.FrameTP then
+        tool:Activate()
+        return
+    end
+    local target = Targeting.GetTarget()
+    if not target then
+        tool:Activate()
+        return
+    end
+    local char = LocalPlayer.Character
+    if not char then
+        tool:Activate()
+        return
+    end
+    local hrp = char:FindFirstChild("HumanoidRootPart")
+    if not hrp then
+        tool:Activate()
+        return
+    end
+    local targetChar = target.Parent
+    if not targetChar then
+        tool:Activate()
+        return
+    end
+    local targetHRP = targetChar:FindFirstChild("HumanoidRootPart")
+    if not targetHRP then
+        tool:Activate()
+        return
+    end
+    local origHRP = hrp.CFrame
+    local origCam = Camera.CFrame
+    local targetCF = targetHRP.CFrame
+    local shootPos = targetCF.Position + (targetCF.LookVector * 2) + Vector3.new(0, 0.5, 0)
+    hrp.CFrame = CFrame.new(shootPos, targetCF.Position)
+    hrp.Velocity = Vector3.new(0, 0, 0)
+    Camera.CFrame = CFrame.new(shootPos + Vector3.new(0, 1.5, 0), target.Position)
+    tool:Activate()
+    if not isRapidFire then
+        RunService.Heartbeat:Wait()
+    elseif Config.OneFrameDelay then
+        RunService.Heartbeat:Wait()
+    end
+    hrp.CFrame = origHRP
+    hrp.Velocity = Vector3.new(0, 0, 0)
+    Camera.CFrame = origCam
+    Visuals.PlayHitmarker()
+end
+
+function Combat.Reset()
+    Combat.ModifiedTools = {}
+end
+
+-- ═════════════════════════════════════════════════════════════════════════════
+-- KARMA (unchanged)
+-- ═════════════════════════════════════════════════════════════════════════════
+
+local function KarmaHasGun(character)
+    if not character then return false, nil end
+    local tool = character:FindFirstChildOfClass("Tool")
+    if tool and tool:FindFirstChild("GunScript") then
+        return true, tool
+    end
+    return false, nil
+end
+
+local function KarmaGetGunPlayers()
+    local gunPlayers = {}
+    for _, player in pairs(Players:GetPlayers()) do
+        if player ~= LocalPlayer and player.Character then
+            local hasGun, tool = KarmaHasGun(player.Character)
+            if hasGun then
+                table.insert(gunPlayers, {
+                    Player = player,
+                    Character = player.Character,
+                    Tool = tool,
+                    Humanoid = player.Character:FindFirstChildOfClass("Humanoid"),
+                    RootPart = player.Character:FindFirstChild("HumanoidRootPart"),
+                    Head = player.Character:FindFirstChild("Head"),
+                })
+            end
+        end
+    end
+    return gunPlayers
+end
+
+local function KarmaHasLOS(fromPos, toPos)
+    local direction = (toPos - fromPos).Unit
+    local distance = (toPos - fromPos).Magnitude
+    local raycastParams = RaycastParams.new()
+    raycastParams.FilterDescendantsInstances = {LocalPlayer.Character}
+    raycastParams.FilterType = Enum.RaycastFilterType.Blacklist
+    local result = Workspace:Raycast(fromPos, direction * distance, raycastParams)
+    return result == nil
+end
+
+local function KarmaIdentifyShooter()
+    local myChar = LocalPlayer.Character
+    if not myChar then return nil end
+    local myRoot = myChar:FindFirstChild("HumanoidRootPart")
+    local myHead = myChar:FindFirstChild("Head")
+    if not myRoot or not myHead then return nil end
+    local myPos = myRoot.Position
+    local gunPlayers = KarmaGetGunPlayers()
+    local bestCandidate = nil
+    local bestScore = -1
+    local killDistance = (Combat.Config and Combat.Config.Karma_KillDistance) or 500
+    for _, candidate in pairs(gunPlayers) do
+        if candidate.RootPart and candidate.Humanoid and candidate.Humanoid.Health > 0 then
+            local theirPos = candidate.RootPart.Position
+            local distance = (theirPos - myPos).Magnitude
+            if distance <= killDistance then
+                local score = 0
+                if candidate.Head and KarmaHasLOS(candidate.Head.Position, myHead.Position) then
+                    score = score + 50
+                end
+                local theirLook = candidate.RootPart.CFrame.LookVector
+                local directionToMe = (myPos - theirPos).Unit
+                local dot = theirLook:Dot(directionToMe)
+                if dot > 0.5 then
+                    score = score + 30
+                end
+                score = score + (100 - math.min(distance, 100))
+                if score > bestScore then
+                    bestScore = score
+                    bestCandidate = candidate
+                end
+            end
+        end
+    end
+    return bestCandidate
+end
+
+local function KarmaGetAllGuns()
+    local guns = {}
+    local myChar = LocalPlayer.Character
+    local backpack = LocalPlayer:FindFirstChild("Backpack")
+    local maxGuns = (Combat.Config and Combat.Config.Karma_MaxGuns) or 10
+    if myChar then
+        local equipped = myChar:FindFirstChildOfClass("Tool")
+        if equipped and equipped:FindFirstChild("GunScript") then
+            table.insert(guns, equipped)
+        end
+    end
+    if backpack then
+        for _, item in pairs(backpack:GetChildren()) do
+            if #guns >= maxGuns then break end
+            if item:IsA("Tool") and item:FindFirstChild("GunScript") then
+                table.insert(guns, item)
+            end
+        end
+    end
+    return guns
+end
+
+local function KarmaEquipTool(tool)
+    local myChar = LocalPlayer.Character
+    if not myChar then return false end
+    local current = myChar:FindFirstChildOfClass("Tool")
+    if current then
+        current.Parent = LocalPlayer.Backpack
+    end
+    tool.Parent = myChar
+    return true
+end
+
+local function KarmaUnequipAll()
+    local myChar = LocalPlayer.Character
+    if not myChar then return end
+    local current = myChar:FindFirstChildOfClass("Tool")
+    if current then
+        current.Parent = LocalPlayer.Backpack
+    end
+end
+
+local function KarmaIsTargetDead(target)
+    if not target.Character then return true end
+    local humanoid = target.Character:FindFirstChildOfClass("Humanoid")
+    if not humanoid then return true end
+    return humanoid.Health <= 0
+end
+
+local function KarmaFireAtTarget(target, myTool, myRoot, shots)
+    local targetHead = target.Character and target.Character:FindFirstChild("Head")
+    local targetRoot = target.Character and target.Character:FindFirstChild("HumanoidRootPart")
+    if not targetHead or not targetRoot then return false end
+    local behindPos = targetRoot.CFrame * CFrame.new(0, 0, -3)
+    myRoot.CFrame = CFrame.new(behindPos.Position, targetHead.Position)
+    RunService.RenderStepped:Wait()
+    RunService.RenderStepped:Wait()
+    for i = 1, shots do
+        if not targetHead.Parent then return true end
+        if myTool and myTool.Parent then
+            myRoot.CFrame = CFrame.new(myRoot.Position, targetHead.Position)
+            myTool:Activate()
+        end
+        RunService.RenderStepped:Wait()
+    end
+    return KarmaIsTargetDead(target)
+end
+
+local function KarmaReloadGun()
+    VirtualInputManager:SendKeyEvent(true, Enum.KeyCode.R, false, game)
+    task.wait(0.05)
+    VirtualInputManager:SendKeyEvent(false, Enum.KeyCode.R, false, game)
+end
+
+local function KarmaGrabArmor()
+    local armorPos = nil
+    if Combat.Config and Combat.Config.AutoArmorPos then
+        armorPos = Combat.Config.AutoArmorPos
+    else
+        armorPos = Vector3.new(-934.12, -25.38, 571.02)
+    end
+    local myChar = LocalPlayer.Character
+    if not myChar then return end
+    local myRoot = myChar:FindFirstChild("HumanoidRootPart")
+    local humanoid = myChar:FindFirstChildOfClass("Humanoid")
+    if not myRoot or not humanoid then return end
+    if humanoid.Health <= 0 then return end
+    local originalCFrame = myRoot.CFrame
+    myRoot.CFrame = CFrame.new(armorPos + Vector3.new(0, 4, 0))
+    myRoot.Velocity = Vector3.new(0, 0, 0)
+    myRoot.AssemblyLinearVelocity = Vector3.new(0, 0, 0)
+    task.wait(0.5)
+    for _, obj in pairs(Workspace:GetDescendants()) do
+        if not obj.Parent then continue end
+        local parentPos = nil
+        if obj.Parent:IsA("BasePart") then
+            parentPos = obj.Parent.Position
+        elseif obj.Parent:IsA("Model") and obj.Parent:FindFirstChild("HumanoidRootPart") then
+            parentPos = obj.Parent.HumanoidRootPart.Position
+        elseif obj.Parent:IsA("Model") and obj.Parent:FindFirstChild("Head") then
+            parentPos = obj.Parent.Head.Position
+        end
+        if not parentPos then continue end
+        if (parentPos - armorPos).Magnitude > 25 then continue end
+        if obj:IsA("ProximityPrompt") then
+            pcall(function()
+                if fireproximityprompt then
+                    fireproximityprompt(obj)
+                else
+                    obj:InputHoldBegin()
+                    task.wait(obj.HoldDuration + 0.1)
+                    obj:InputHoldEnd()
+                end
+            end)
+            break
+        elseif obj:IsA("ClickDetector") then
+            pcall(function()
+                if fireclickdetector then
+                    fireclickdetector(obj)
+                else
+                    obj.MouseClick:Fire()
+                end
+            end)
+            break
+        end
+    end
+    task.wait(0.3)
+    myRoot.CFrame = originalCFrame
+    myRoot.Velocity = Vector3.new(0, 0, 0)
+end
+
+local function KarmaKillTarget(target)
+    local myChar = LocalPlayer.Character
+    if not myChar then return end
+    local myRoot = myChar:FindFirstChild("HumanoidRootPart")
+    if not myRoot then return end
+    local originalCFrame = myRoot.CFrame
+    local guns = KarmaGetAllGuns()
+    if #guns == 0 then return end
+    for gunIndex, gun in pairs(guns) do
+        if KarmaIsTargetDead(target) then break end
+        KarmaEquipTool(gun)
+        Combat.SetupFullAuto(gun)
+        task.wait(0.1)
+        local killed = KarmaFireAtTarget(target, gun, myRoot, 20)
+        if killed then break end
+    end
+    for _, gun in pairs(KarmaGetAllGuns()) do
+        KarmaEquipTool(gun)
+        task.wait(0.1)
+        KarmaReloadGun()
+        task.wait(0.2)
+    end
+    KarmaUnequipAll()
+    myRoot.CFrame = originalCFrame
+    task.spawn(function()
+        KarmaGrabArmor()
+    end)
+end
+
+local function KarmaOnHealthChanged(health)
+    if not Combat.Config or not Combat.Config.Karma_Enabled then return end
+    if Combat.KarmaTriggered then return end
+    local damage = Combat.KarmaLastHealth - health
+    if damage > 0 then
+        Combat.KarmaTriggered = true
+        task.delay(0.05, function()
+            local shooter = KarmaIdentifyShooter()
+            if shooter then
+                KarmaKillTarget(shooter)
+            end
+            Combat.KarmaTriggered = false
+        end)
+    end
+    Combat.KarmaLastHealth = health
+end
+
+local function KarmaSetupCharacter(character)
+    local humanoid = character:WaitForChild("Humanoid", 5)
+    if not humanoid then return end
+    Combat.KarmaLastHealth = humanoid.Health
+    Combat.KarmaTriggered = false
+    humanoid.HealthChanged:Connect(KarmaOnHealthChanged)
+end
+
+function Combat.SetKarmaEnabled(enabled)
+    if Combat.Config then
+        Combat.Config.Karma_Enabled = enabled
+        Combat.KarmaTriggered = false
+        if enabled and LocalPlayer.Character then
+            local humanoid = LocalPlayer.Character:FindFirstChildOfClass("Humanoid")
+            if humanoid then
+                Combat.KarmaLastHealth = humanoid.Health
+            end
+        end
+    end
+end
+
+-- ═════════════════════════════════════════════════════════════════════════════
+-- LIFECYCLE
+-- ═════════════════════════════════════════════════════════════════════════════
+
+function Combat.Init()
+    StartAimbot()
+    HookRealSilentAim() -- Attempt to hook immediately
+    if LocalPlayer.Character then
+        KarmaSetupCharacter(LocalPlayer.Character)
+    end
+    LocalPlayer.CharacterAdded:Connect(KarmaSetupCharacter)
+end
+
+function Combat.Cleanup()
+    StopAimbot()
+end
+
+return Combat
